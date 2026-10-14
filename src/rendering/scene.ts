@@ -1,10 +1,13 @@
+import 'pixi.js/prepare';
 import { Application, Assets, Container, Graphics, Rectangle, Sprite, Text, Texture } from 'pixi.js';
-import { BOARD, cellX, PLANTS } from '../game/config';
+import { BOARD, cellX, PLANTS, isPool } from '../game/config';
 import { headless, type Game, type GameEvent } from '../game/model';
 import { walkingCycleTicks } from '../game/zombie-motion';
 
-type ClipData = { frames: number[][]; durations: number[]; anchor: number[] };
-type Clip = { frames: Texture[]; ends: number[]; duration: number; offsets: number[][]; anchor: number[] };
+import { animationNames, animationFrame } from './asset-plan';
+
+type ClipData = { frames: number[][]; durations: number[]; anchor: number[]; pages: string[] };
+type Clip = { files: string[]; frames: Texture[]; ends: number[]; duration: number; anchors: number[][] };
 type Actor = { root: Container; art: Sprite; clip: string; since: number; frame: number; seen: number; previousX: number; previousY: number; motion?: { x: number; y?: number } };
 type Effect = { node: Container; born: number; duration: number; actor?: Actor };
 
@@ -13,7 +16,8 @@ export class Scene {
   private world = new Container();
   private actors = new Map<string, Actor>();
   private effects: Effect[] = [];
-  private textures!: Record<string, Texture>;
+  private textures: Record<string, Texture> = {};
+  private animationData?: Promise<{ animations: Record<string, ClipData> }>;
   private clips: Record<string, Clip> = {};
   private hover = new Graphics();
   private health = new Graphics();
@@ -30,7 +34,7 @@ export class Scene {
 
   async init(host: HTMLElement) {
     await this.app.init({ width: BOARD.width, height: BOARD.height, backgroundAlpha: 0, antialias: true,
-      resolution: window.devicePixelRatio, autoDensity: true });
+      resolution: window.devicePixelRatio, autoDensity: true, autoStart: false });
     host.appendChild(this.app.canvas);
     this.app.canvas.style.width = '100%';
     this.app.canvas.style.height = '100%';
@@ -41,21 +45,56 @@ export class Scene {
       this.app.canvas.style.width = '100%'; this.app.canvas.style.height = '100%';
       this.app.render();
     }).observe(host);
-    const base = `${import.meta.env.BASE_URL}assets/hd/`;
-    const files = { yard: 'yard.png', lawn: 'lawn.png', mower: 'original/mower.png', pea: 'pea.png', ice: 'original/snow-pea.png', stripe: 'original/bowling-stripe.png', night: 'original/night.png', grave: 'original/grave.png', puff: 'original/puff.png', hammer: 'original/hammer.png', pool: 'original/pool.png', fog: 'original/fog.png', poolCleaner: 'original/pool-cleaner.png', crater: 'original/crater.png', fogCloud:'original/fog-cloud.png' };
-    this.textures = Object.fromEntries(await Promise.all(Object.entries(files).map(async ([key, file]) => [key, await Assets.load<Texture>({ src: base + file, data: { resolution: 2 } })])));
-    const data: { pages: number; animations: Record<string, ClipData> } = await (await fetch(base + 'original/animations.json')).json();
-    const pages = await Promise.all(Array.from({ length: data.pages }, (_, i) => Assets.load<Texture>({ src: `${base}original/actors-${i}.png`, data: { resolution: 2 } })));
-    for (const [key, clip] of Object.entries(data.animations)) {
-      let duration = 0;
-      this.clips[key] = { anchor: clip.anchor, ends: clip.durations.map(ticks => duration += ticks), duration,
-        offsets: clip.frames.map(frame => [frame[5], frame[6]]),
-        frames: clip.frames.map(([page, x, y, w, h]) => new Texture({ source: pages[page].source, frame: new Rectangle(x, y, w, h) })) };
-    }
-    this.fogFrames=Array.from({length:8},(_,i)=>new Texture({source:this.textures.fogCloud.source,frame:new Rectangle(i*210,0,210,190)}));
-    this.lawnTextures = Array.from({ length: 5 }, (_, row) => new Texture({ source: this.textures.lawn.source,
-      frame: new Rectangle(220, BOARD.top + row * 100, 800, 100) }));
     this.world.sortableChildren = true;
+  }
+
+  async prepareBoard(game: Game, progress: (done: number, total: number) => void) {
+    const files: Record<string, string> = { mower: 'original/mower.webp', pea: 'pea.webp', ice: 'original/snow-pea.webp', puff: 'original/puff.webp', crater: 'original/crater.webp' };
+    const environment = game.config.environment;
+    if (environment === 'day') { files.yard = 'yard.webp'; files.lawn = 'lawn.webp'; }
+    else files[environment] = `original/${environment}.webp`;
+    if (environment === 'night') files.grave = 'original/grave.webp';
+    if (isPool(environment)) files.poolCleaner = 'original/pool-cleaner.webp';
+    if (environment === 'fog') files.fogCloud = 'original/fog-cloud.webp';
+    if (game.config.mode === 'bowling') files.stripe = 'original/bowling-stripe.webp';
+    if (game.config.mode === 'whack') files.hammer = 'original/hammer.webp';
+    const pending = Object.entries(files).filter(([key]) => !this.textures[key]);
+    let done = 0; progress(done, pending.length);
+    await Promise.all(pending.map(async ([key, file]) => {
+      this.textures[key] = await Assets.load<Texture>({ src: `${import.meta.env.BASE_URL}assets/runtime/${file}`, data: { resolution: 2 } });
+      progress(++done, pending.length);
+    }));
+    await this.app.renderer.prepare.upload(pending.map(([key]) => this.textures[key]));
+    if (environment === 'fog' && this.fogFrames.length === 0) this.fogFrames = Array.from({length:8}, (_,i) => new Texture({source:this.textures.fogCloud.source,frame:new Rectangle(i*210,0,210,190)}));
+    if (environment === 'day' && this.lawnTextures.length === 0) this.lawnTextures = Array.from({length:5}, (_,row) => new Texture({source:this.textures.lawn.source,frame:new Rectangle(220,BOARD.top+row*100,800,100)}));
+  }
+
+  async prepareActors(game: Game, progress: (done: number, total: number) => void) {
+    const base = `${import.meta.env.BASE_URL}assets/runtime/`;
+    this.animationData ??= fetch(base + 'animations.json').then(response => response.json());
+    const { animations } = await this.animationData;
+    const needed = new Set(animationNames(game, Object.keys(animations)));
+    for (const effect of this.effects) if (effect.actor) needed.add(effect.actor.clip);
+    for (const [name, clip] of Object.entries(this.clips)) if (!needed.has(name)) {
+      for (const texture of clip.frames) texture.destroy();
+      await Assets.unload(clip.files);
+      delete this.clips[name];
+    }
+    const names = [...needed].filter(name => !this.clips[name]);
+    let done = 0; progress(done, names.length);
+    await Promise.all(names.map(async name => {
+      const clip = animations[name];
+      const pages = await Promise.all(clip.pages.map(file => Assets.load<Texture>({src:base+file,data:{resolution:2}})));
+      let duration = 0;
+      this.clips[name] = {
+        files: clip.pages.map(file => base + file),
+        ends: clip.durations.map(ticks => duration += ticks), duration,
+        anchors: clip.frames.map(frame => [(clip.anchor[0]-frame[5])/frame[3], (clip.anchor[1]-frame[6])/frame[4]]),
+        frames: clip.frames.map(([page,x,y,w,h]) => new Texture({source:pages[page].source,frame:new Rectangle(x,y,w,h)})),
+      };
+      await this.app.renderer.prepare.upload(pages);
+      progress(++done, names.length);
+    }));
   }
 
   setLevel(game: Game) {
@@ -87,11 +126,11 @@ export class Scene {
     const clip = this.clips[clipName];
     const elapsed = (timeline - actor.since) * rate;
     const position = loop ? elapsed % clip.duration : Math.min(elapsed, clip.duration - .001);
-    const frame = clip.ends.findIndex(end => position < end);
+    const frame = animationFrame(clip.ends, position);
     if (actor.frame === frame) return;
     actor.frame = frame;
     actor.art.texture = clip.frames[frame];
-    actor.art.anchor.set((clip.anchor[0] - clip.offsets[frame][0]) / actor.art.texture.width, (clip.anchor[1] - clip.offsets[frame][1]) / actor.art.texture.height);
+    actor.art.anchor.set(clip.anchors[frame][0], clip.anchors[frame][1]);
   }
 
   // Capture moving actors before each fixed step; the final snapshot brackets the rendered frame.
@@ -173,17 +212,19 @@ export class Scene {
       actor.root.position.set(cellX(crater.column),game.rowY(crater.row));
       actor.root.alpha=crater.remaining<9000?.6:1;
     }
+    const kelpTargets = new Map(game.plants.filter(p => p.kelp).map(p => [p.kelp!.target, p.kelp!]));
     for (const plant of game.plants) {
+      const sleeping = game.sleeping(plant);
       const key = `p${plant.id}`; const actor = this.actor(key, plant.row * 100 + (plant.kind === 'lilypad' ? 7 : 10));
       const clip = plant.kind === 'tanglekelp' && plant.kelp ? 'tanglekelp-grab' : plant.kind === 'squash' && plant.squash && plant.squash.remaining <= 60 ? 'squash-attack' : plant.kind === 'scaredyshroom' && plant.scared ? 'scaredyshroom-scared' : plant.kind === 'sunshroom' && game.ticks - plant.born >= 12000 ? 'sunshroom-big'
         : plant.kind === 'fumeshroom' && game.ticks - plant.shotAt < 35 ? 'fumeshroom-attack'
         : plant.kind === 'chomper' ? plant.chomp!.phase === 'digest' ? 'chomper-digest' : plant.chomp!.phase === 'ready' ? 'chomper' : 'chomper-bite'
         : plant.kind === 'potatomine' && plant.actionIn > 0 ? 'potatomine-unarmed' : plant.kind === 'wallnut' && plant.health < 1334 ? 'wallnut-cracked2'
         : plant.kind === 'wallnut' && plant.health < 2667 ? 'wallnut-cracked1' : plant.kind;
-      this.animate(actor, clip, plant.kind !== 'cherrybomb' && clip !== 'chomper-bite', game.sleeping(plant) ? 0 : this.time, clip === 'chomper-bite' ? this.clips[clip].duration / 70 : 1);
+      this.animate(actor, clip, plant.kind !== 'cherrybomb' && clip !== 'chomper-bite', sleeping ? 0 : this.time, clip === 'chomper-bite' ? this.clips[clip].duration / 70 : 1);
       actor.root.position.set(cellX(plant.column), game.rowY(plant.row));
-      actor.art.tint=game.sleeping(plant)?0xa3a1be:0xffffff;
-      if (game.sleeping(plant)) {
+      actor.art.tint=sleeping?0xa3a1be:0xffffff;
+      if (sleeping) {
         const sleep=this.actor(`sleep${plant.id}`,plant.row*100+15);
         if(sleep.clip!=='sleep'){sleep.clip='sleep';const label=new Text({text:'Zzz',style:{fontSize:16,fill:0xc6d9ff}});sleep.root.addChild(label);}
         sleep.root.position.set(cellX(plant.column)+15,game.rowY(plant.row)-70);
@@ -211,7 +252,7 @@ export class Scene {
       actor.root.scale.x = (zombie.hypnotized ? -1 : 1) * (zombie.mini ? .5 : 1);
       actor.root.alpha = zombie.riseIn > 50 ? 0 : 1;
       actor.root.scale.y = (zombie.riseIn > 0 ? Math.max(.01, 1 - zombie.riseIn / 50) : 1) * (zombie.mini ? .5 : 1);
-      const kelp = game.plants.find(p => p.kelp?.target === zombie.id)?.kelp;
+      const kelp = kelpTargets.get(zombie.id);
       if (kelp && kelp.remaining <= 50) { actor.root.y += 50 - kelp.remaining; actor.root.alpha = (kelp.remaining - 1) / 50; }
       actor.art.tint = game.ticks - zombie.hitAt < 8 ? 0xe4ff9b : zombie.hypnotized ? 0xd28cff : zombie.chillIn > 0 ? 0x87c7ff : 0xffffff;
     }

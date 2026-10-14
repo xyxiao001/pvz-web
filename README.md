@@ -16,7 +16,7 @@ pnpm dev
 打开 http://127.0.0.1:5173/ 。
 
 ```sh
-pnpm test     # 104 个测试，包含新增关卡的多种子正常操作通关
+pnpm test     # 108 个测试，包含新增关卡的多种子正常操作通关
 pnpm build    # TypeScript 检查与生产构建，产物在 dist/
 pnpm preview # 本地预览生产构建
 ```
@@ -25,13 +25,23 @@ pnpm preview # 本地预览生产构建
 
 根目录 `vercel.json` 配置 Vite 构建、`dist` 输出和 Service Worker 更新缓存头。导入 GitHub 仓库后使用 Node.js 24，安装固定版本 pnpm 并按锁文件安装依赖，再执行 `pnpm build`。不需要额外环境变量；部署到站点根目录。
 
+## 按需加载与动画资源
+
+主菜单只加载界面；首次进入关卡才动态导入 Pixi 战斗模块和对应场景背景。选卡确认后，只下载本轮所选植物、保留防线、出怪列表及衍生形态的动作包，显示准备进度；恢复存档和无尽换轮也走同样的准备流程。选关 / 图鉴图片使用浏览器原生懒加载。
+
+运行时使用 `public/assets/runtime/` 的无损 WebP，PNG 母图继续保留在 `public/assets/hd/`。2425 帧动画和 73 张静态图片逐像素验证一致。首关只需 7 组动作：角色资源约 **7.2 MiB**（原全量图集约 102.8 MiB），基础角色纹理约 **30.3 MiB**（原全量 384 MiB）。按需上传纹理后开战，切关 / 重选后释放不用的角色纹理。完整包仍可一键下载用于离线游玩。
+
+浏览器生产首屏 Resource Timing 记录约 2.26 MiB、0 战斗画布，仅一个入口脚本；该值不含 Service Worker 后台预缓存的安装图标等资源，也不代表固定网速下的加载时间。动画帧选择改为二分查找，锚点提前计算，海草目标映射每帧只建立一次。逻辑步长、移速、攻击频率、GIF 帧时长保持不变；本机短测没有证明所有倍速都提升 FPS。
+
+重建运行时资源：`python3 tools/build-runtime-assets.py`；逐像素核对：`python3 tools/check-runtime-assets.py`（均需要 Pillow / WebP 支持）。先生成 HD 母图，再运行这两步。详细测量范围见 [BASELINE.md](docs/BASELINE.md#按需加载与动画资源优化2026-10-14)。
+
 ## PWA 安装与离线
 
 参考 KR 项目的构建期资源版本、启动文件预缓存、按需缓存与手动激活更新方案，已接入独立 manifest / Service Worker。主菜单 → 设置 → **安装与离线**：支持浏览器安装入口、完整资源下载进度、检查更新与主动重新加载。不会在战斗中自动刷新。
 
 先 `pnpm build`，再 `pnpm preview`（默认 http://localhost:4173/）；当前已运行的生产预览是 http://127.0.0.1:5198/ 。开发服务器 5173 不注册 Service Worker。线上将 `dist/` 部署到站点根目录并使用 HTTPS；本地 localhost / 127.0.0.1 可测试，见 [MDN 安装条件](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Making_PWAs_installable)。
 
-首次离线前点击“下载离线资源”，等待 **离线资源已就绪**（约 135.3 MiB）。仅访问主界面并不代表所有关卡资源均已缓存。启动文件自动预缓存，高清素材 / 音效按访问缓存或一次下载；版本按文件内容散列，未变化资源复用。浏览器清除站点数据会清除缓存及本地存档，安装本身不跨浏览器转移进度。
+首次离线前点击“下载离线资源”，等待 **离线资源已就绪**（约 112.5 MiB）。仅访问主界面并不代表所有关卡资源均已缓存。启动文件自动预缓存，高清素材 / 音效按访问缓存或一次下载；版本按文件内容散列，未变化资源复用。浏览器清除站点数据会清除缓存及本地存档，安装本身不跨浏览器转移进度。
 
 图标包含 HTML favicon（16/32/ICO）、Apple Touch（180）、PWA（192/512）和 maskable（512），设计与复现说明见 [PWA.md](docs/PWA.md)。内置浏览器已验证真实停服后的离线重载、进入关卡和种植，以及手动更新；未实测 Chrome / iOS 系统安装界面。
 
@@ -86,7 +96,7 @@ pnpm preview # 本地预览生产构建
 ## 资源与技术
 
 - 使用仓库中的原版菜单背景、Logo、种子栏、植物卡、波次条、割草机和暂停面板。
-- 默认使用离线生成的 2 倍素材：2425 帧植物与僵尸图片，打包为六个 4096×4096 图集，包含行走、啃食、濒死、死亡、烧焦、坚果受损、撑杆起跳与落地、滚动坚果和土豆雷动画。未实现 Reanim 骨骼、轨道或动画事件解析。
+- 默认使用离线生成的 2 倍素材：2425 帧植物与僵尸图片；HD 母图为六个 4096×4096 PNG 图集，运行时拆为按动作下载的 WebP 图集，包含行走、啃食、濒死、死亡、烧焦、坚果受损、撑杆起跳与落地、滚动坚果和土豆雷动画。未实现 Reanim 骨骼、轨道或动画事件解析。
 - 种植、收集、割草机、波次、爆炸和结算使用仓库 MP3；射击、命中仍是短合成音效，尚无背景音乐。爆炸光圈也是当前简化表现。
 - 素材来源于 ruslan831/PlantsVsZombies-decompilation、marblexu/PythonPlantsVsZombies、jiangnangame/New-Plants-vs-Zombies-JavaScript。每个原始文件的路径、SHA-256 和仓库 commit 在 [original-assets.json](docs/original-assets.json)。原始四个背景/弹丸文件记录在 [assets.json](docs/assets.json)。
 - 运行所需素材全部位于本工程，无需临时调研目录。重新打包可运行 `python3 tools/import-assets.py PYTHON_REPO JS_REPO RUSLAN_REPO`，需要 Pillow。
@@ -139,7 +149,7 @@ public/assets/         本地资源
 
 ## 2 倍高清素材
 
-目前 1–1 至 2–4、主菜单、六槽选卡和传送带统一使用 `public/assets/hd/`。原图保留在原路径，运行时直接加载高清资源，没有自动切回原图的分支。背景、HUD、卡片、植物与僵尸使用 Real-ESRGAN 的 `realesr-animevideov3-x2` 离线超分；浏览器只加载普通 PNG，不运行 AI。
+目前 1–1 至 2–4、主菜单、六槽选卡和传送带统一使用 `public/assets/hd/`。原图保留在原路径，运行时直接加载高清资源，没有自动切回原图的分支。背景、HUD、卡片、植物与僵尸使用 Real-ESRGAN 的 `realesr-animevideov3-x2` 离线超分；浏览器加载由 PNG 母图无损编码的 WebP，不运行 AI。
 
 - 当前共 52 组、1426 帧，时长、锚点、逻辑尺寸和碰撞保持原值。1370 张不同帧分别超分再打包，避免相邻图集图片影响推理。
 - Pixi 纹理使用 `resolution: 2`，物理像素翻倍而角色显示大小不变。画布根据显示宽度和设备像素比设置实际渲染分辨率，世界坐标仍为 800×600。
