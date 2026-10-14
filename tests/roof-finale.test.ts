@@ -12,7 +12,7 @@ function plant(g:Game,k:PlantKind,c:number,r:number){g.cancelSelection();g.selec
 const spawn=(g:Game,k:ZombieKind,r:number,x:number)=>(g as unknown as {spawnZombie(k:ZombieKind,r:number,x:number,w:number):Zombie}).spawnZombie(k,r,x,0);
 const seeds:PlantKind[]=['umbrella','marigold','melonpult','flowerpot','chomper','pumpkin'];
 
-test('5–6 through 5–9 preserve source waves, enemy eligibility and plant unlocks',()=>{
+test('5–6 through 5–9 preserve source waves and eligibility, with the Web early-unlock sequence',()=>{
  assert.deepEqual(LEVEL_IDS.slice(45),[46,47,48,49]);assert.deepEqual(data.waveCounts.slice(45),[20,30,20,30]);
  for(const l of LEVEL_IDS.slice(45))for(const seed of [0,.3,.8]){const waves=generateWaves(l,()=>seed);assert.equal(waves.length,LEVELS[l].waveCount);for(const k of waves.flat())assert.equal(data.zombies[k].allowedLevels[l-1],1,`${l}:${k}`);assert.ok(!waves.flat().includes('imp'));}
  for(const [l,k] of [[46,'catapult'],[48,'gargantuar']] as const){const waves=generateWaves(l,()=>.5);assert.ok(waves[Math.floor(waves.length/2)].includes(k));assert.ok(waves.at(-1)!.includes(k));}
