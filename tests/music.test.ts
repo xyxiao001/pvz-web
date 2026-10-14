@@ -53,11 +53,12 @@ test('a completed old download cannot play over the new scene or resume while pa
 });
 test('music follows the scene and Portable special-level choices',()=>{
   for(const scene of SURVIVAL_SCENES)assert.equal(battleMusic(new Game(9,1,'endless',scene)),scene);
+  assert.equal(battleMusic(new Game(35,1)),'puzzle');
   for(const level of [5,15,25] as const)assert.equal(battleMusic(new Game(level,1)),'minigame');
   for(const level of [10,20] as const)assert.equal(battleMusic(new Game(level,1)),'conveyor');
 });
-test('all eight committed tunes have reproducible hashes and valid loop markers',()=>{
-  assert.equal(Object.keys(tracks).length,8);
+test('all nine committed tunes have reproducible hashes and valid loop markers',()=>{
+  assert.equal(Object.keys(tracks).length,9);
   for(const [name,track] of Object.entries(tracks)){
     const metadata=manifest.tracks[name as keyof typeof manifest.tracks];
     const body=readFileSync(new URL('../public/assets/music/'+track.file,import.meta.url));

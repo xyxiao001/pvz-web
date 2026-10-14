@@ -68,7 +68,7 @@ export class Hud {
     this.write(shovel, 'disabled', game.phase !== 'playing', () => { shovel.disabled = game.phase !== 'playing'; });
     const disabled = game.phase !== 'playing' && game.phase !== 'paused';
     this.write(this.pause, 'disabled', disabled, () => { this.pause.disabled = disabled; });
-    this.text(this.wave, game.wave === 0 ? '准备种植' : `第 ${game.wave} / ${game.config.waveCount} 波`);
+    this.text(this.wave, game.config.mode === 'vase' ? `第 ${game.vaseStage + 1} / 3 轮 · 剩余 ${game.vases.length} 罐` : game.wave === 0 ? '准备种植' : `第 ${game.wave} / ${game.config.waveCount} 波`);
     const progress = game.wave / game.config.waveCount;
     this.write(this.fill, 'width', String(progress), () => { this.fill.style.width = `${progress * 100}%`; });
     this.write(this.head, 'right', String(progress), () => { this.head.style.right = `${progress * 84}%`; });

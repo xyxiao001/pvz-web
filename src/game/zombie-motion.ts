@@ -1,6 +1,6 @@
 import type { ZombieKind } from './config';
 
-type Walker = { kind: ZombieKind; hasPole: boolean; speed: number; mini?: boolean };
+type Walker = { kind: ZombieKind; hasPole: boolean; speed: number; mini?: boolean; flying?: boolean; sled?: number; dolphin?: boolean };
 
 // Zombie::UpdateAnimSpeed uses mVelX * frameCount / groundDistance * 47.
 // Frame counts/distances come from the source .reanim _ground tracks.
@@ -20,6 +20,7 @@ export function walkingCycleTicks(zombie: Walker) {
 // The port still walks uniformly. Use the source cycle's mean displacement,
 // including REANIM_LOOP's frameCount - 1 intervals, rather than raw mVelX.
 export function walkingSpeed(zombie: Walker) {
+  if (zombie.kind === 'zomboni' || zombie.sled || zombie.flying) return zombie.speed;
   const { frames } = track(zombie);
   return zombie.speed * .47 * frames / (frames - 1);
 }

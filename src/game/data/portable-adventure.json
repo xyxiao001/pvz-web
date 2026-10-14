@@ -37,6 +37,16 @@
     20,
     20,
     30,
+    20,
+    20,
+    30,
+    20,
+    30,
+    30,
+    10,
+    20,
+    10,
+    20,
     20
   ],
   "zombies": {
@@ -46,6 +56,16 @@
       "firstAllowedWave": 1,
       "weight": 4000,
       "allowedLevels": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
         1,
         1,
         1,
@@ -103,6 +123,16 @@
         1,
         1,
         1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
         1
       ]
     },
@@ -123,6 +153,16 @@
         1,
         1,
         0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
         1,
         1,
         1,
@@ -169,6 +209,16 @@
         0,
         0,
         1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
         0
       ]
     },
@@ -202,6 +252,16 @@
         1,
         0,
         1,
+        0,
+        0,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
         0
       ]
     },
@@ -235,6 +295,16 @@
         1,
         0,
         1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0
       ]
     },
@@ -264,6 +334,16 @@
         0,
         1,
         1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -301,7 +381,17 @@
         1,
         0,
         0,
-        1
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
       ]
     },
     "dancer": {
@@ -330,6 +420,16 @@
         1,
         1,
         1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -363,6 +463,16 @@
         1,
         1,
         1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -409,7 +519,232 @@
         0,
         1,
         1,
-        1
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "zomboni": {
+      "value": 7,
+      "startingLevel": 26,
+      "firstAllowedWave": 10,
+      "weight": 2000,
+      "allowedLevels": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "bobsled": {
+      "value": 3,
+      "startingLevel": 26,
+      "firstAllowedWave": 10,
+      "weight": 2000,
+      "allowedLevels": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "dolphin": {
+      "value": 3,
+      "startingLevel": 28,
+      "firstAllowedWave": 10,
+      "weight": 1500,
+      "allowedLevels": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0
+      ]
+    },
+    "jack": {
+      "value": 3,
+      "startingLevel": 31,
+      "firstAllowedWave": 10,
+      "weight": 1000,
+      "allowedLevels": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0
+      ]
+    },
+    "balloon": {
+      "value": 2,
+      "startingLevel": 33,
+      "firstAllowedWave": 10,
+      "weight": 2000,
+      "allowedLevels": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0
       ]
     }
   },
@@ -489,6 +824,145 @@
     {
       "kind": "cherrybomb",
       "weight": 35
+    }
+  ],
+  "conveyorThirty": [
+    {
+      "kind": "lilypad",
+      "weight": 25
+    },
+    {
+      "kind": "squash",
+      "weight": 5
+    },
+    {
+      "kind": "threepeater",
+      "weight": 25
+    },
+    {
+      "kind": "tanglekelp",
+      "weight": 5
+    },
+    {
+      "kind": "jalapeno",
+      "weight": 10
+    },
+    {
+      "kind": "spikeweed",
+      "weight": 10
+    },
+    {
+      "kind": "torchwood",
+      "weight": 10
+    },
+    {
+      "kind": "tallnut",
+      "weight": 10
+    }
+  ],
+  "vaseStages": [
+    {
+      "firstColumn": 6,
+      "green": 0,
+      "contents": [
+        {
+          "type": "seed",
+          "kind": "peashooter",
+          "count": 5
+        },
+        {
+          "type": "seed",
+          "kind": "squash",
+          "count": 5
+        },
+        {
+          "type": "zombie",
+          "kind": "normal",
+          "count": 4
+        },
+        {
+          "type": "zombie",
+          "kind": "bucket",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "firstColumn": 5,
+      "green": 2,
+      "contents": [
+        {
+          "type": "seed",
+          "kind": "peashooter",
+          "count": 4
+        },
+        {
+          "type": "seed",
+          "kind": "snowpea",
+          "count": 5
+        },
+        {
+          "type": "seed",
+          "kind": "squash",
+          "count": 4
+        },
+        {
+          "type": "zombie",
+          "kind": "normal",
+          "count": 5
+        },
+        {
+          "type": "zombie",
+          "kind": "bucket",
+          "count": 1
+        },
+        {
+          "type": "zombie",
+          "kind": "football",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "firstColumn": 4,
+      "green": 3,
+      "contents": [
+        {
+          "type": "seed",
+          "kind": "peashooter",
+          "count": 5
+        },
+        {
+          "type": "seed",
+          "kind": "snowpea",
+          "count": 5
+        },
+        {
+          "type": "seed",
+          "kind": "hypnoshroom",
+          "count": 5
+        },
+        {
+          "type": "zombie",
+          "kind": "normal",
+          "count": 6
+        },
+        {
+          "type": "zombie",
+          "kind": "bucket",
+          "count": 2
+        },
+        {
+          "type": "zombie",
+          "kind": "dancer",
+          "count": 1
+        },
+        {
+          "type": "zombie",
+          "kind": "jack",
+          "count": 1
+        }
+      ]
     }
   ],
   "graveColumns": [
@@ -673,6 +1147,16 @@
         3
       ]
     ],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
     [],
     [],
     [],

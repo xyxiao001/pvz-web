@@ -234,6 +234,156 @@
       "path": "images/Plants/PotatoMine/PotatoMineNotReady.gif",
       "sha256": "361cd934b01e773c7dc1a94960d125420b02843ea3f5532cf1b13da14fae1c31"
     },
+    "Plants/Jalapeno/Jalapeno.gif": {
+      "repository": "javascript",
+      "path": "images/Plants/Jalapeno/Jalapeno.gif",
+      "sha256": "bee998f6331b78d8fc7172fd3249b60c4253b4e834cd96f3665398e3f698cb7b"
+    },
+    "Plants/Jalapeno/JalapenoAttack.gif": {
+      "repository": "javascript",
+      "path": "images/Plants/Jalapeno/JalapenoAttack.gif",
+      "sha256": "41180119d4de87f893009989edd7bfee374ea26c4a0a1c9ab40e1c020353d1d9"
+    },
+    "Plants/Spikeweed/Spikeweed.gif": {
+      "repository": "javascript",
+      "path": "images/Plants/Spikeweed/Spikeweed.gif",
+      "sha256": "6ac2d9399d44844e5df2eb324f4fcedcb8c75e406baa45cc43a8a7c559a84ab7"
+    },
+    "Plants/Torchwood/Torchwood.gif": {
+      "repository": "javascript",
+      "path": "images/Plants/Torchwood/Torchwood.gif",
+      "sha256": "c8c27c18684ffb99fb555917d057ed09aa208d4853b91d3634857862bbd684ca"
+    },
+    "Plants/TallNut/TallNut.gif": {
+      "repository": "javascript",
+      "path": "images/Plants/TallNut/TallNut.gif",
+      "sha256": "ac29737eeb848d80e791ce9b759904511bfa1d3cd66bbe360a2555c7854ebece"
+    },
+    "Plants/TallNut/TallnutCracked1.gif": {
+      "repository": "javascript",
+      "path": "images/Plants/TallNut/TallnutCracked1.gif",
+      "sha256": "9db242fbac0b42ed5c61c7848ef29cad0cbe4137cc8f2b697b2cd957340e2094"
+    },
+    "Plants/TallNut/TallnutCracked2.gif": {
+      "repository": "javascript",
+      "path": "images/Plants/TallNut/TallnutCracked2.gif",
+      "sha256": "b91c8a7f1a2b5f9eee422ec3feefeb6b0e11c136699181353b2371ba00c24191"
+    },
+    "Plants/SeaShroom/SeaShroom.gif": {
+      "repository": "javascript",
+      "path": "images/Plants/SeaShroom/SeaShroom.gif",
+      "sha256": "92ddf923ea64c0880d42a445f3160e4594e5c2da77917d981626d9c0bb6a8d91"
+    },
+    "Plants/Cactus/Cactus.gif": {
+      "repository": "javascript",
+      "path": "images/Plants/Cactus/Cactus.gif",
+      "sha256": "799764be87388ecdec4eb02cb2144366af417c0af8e6957c01fec2123735380b"
+    },
+    "Plants/Cactus/Cactus2.gif": {
+      "repository": "javascript",
+      "path": "images/Plants/Cactus/Cactus2.gif",
+      "sha256": "2b2b7a208cdca0564d5e0da2a5e835540eb0a6fc1336a1355cca97c81ce6f70a"
+    },
+    "Zombies/Zomboni/1.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/Zomboni/1.gif",
+      "sha256": "c6d53fd3a2a52ae95dab4e6883b3bd291994d9ef4bed94d0f9ef40de5952f43c"
+    },
+    "Zombies/Zomboni/2.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/Zomboni/2.gif",
+      "sha256": "bb53d77d10226f678f0e66c5e232dc5980b56a435376c9b3a854c6faf78cf2a1"
+    },
+    "Zombies/Zomboni/3.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/Zomboni/3.gif",
+      "sha256": "53e0f436a5953a0e28a47cb3562cfca6bcb3d83f4e30b2512fb81d692003e38b"
+    },
+    "Zombies/Zomboni/5.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/Zomboni/5.gif",
+      "sha256": "e07de5f0879397bbea7160af1bc5cfd2dde05e059eab40d3e89e7eed6b2bfec0"
+    },
+    "Zombies/DolphinRiderZombie/Walk1.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/DolphinRiderZombie/Walk1.gif",
+      "sha256": "84f85b2e511bc56110ba1f91b4f32ff647a68ebf9c4482666f40c261907f6609"
+    },
+    "Zombies/DolphinRiderZombie/Walk2.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/DolphinRiderZombie/Walk2.gif",
+      "sha256": "d09cf2a6debc925175442d07c2318fd67816372b17006095693fa8bb90fa1c46"
+    },
+    "Zombies/DolphinRiderZombie/Walk3.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/DolphinRiderZombie/Walk3.gif",
+      "sha256": "43ccf0868d035efe27239adb9787f4db2e42bd5e10d7f4680ab2d9e14f92c631"
+    },
+    "Zombies/DolphinRiderZombie/Jump2.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/DolphinRiderZombie/Jump2.gif",
+      "sha256": "8c60fd5dbadaa16856aafd55991910516a1456957cbf5d557d62520fb6200dcc"
+    },
+    "Zombies/DolphinRiderZombie/Attack.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/DolphinRiderZombie/Attack.gif",
+      "sha256": "f0961f8cf5a25d9438d8dada8ae38a0fa5a8fd5fd89d8b16e4ae4a079bb79998"
+    },
+    "Zombies/DolphinRiderZombie/Die.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/DolphinRiderZombie/Die.gif",
+      "sha256": "532a215c55bfae36a3496198953bc94e73eaeb7d4500a745233b738d9afe1a63"
+    },
+    "Zombies/JackinTheBoxZombie/Walk.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/JackinTheBoxZombie/Walk.gif",
+      "sha256": "df7366a297fa60ef6adc012cdd7bc6af367d113ce2c8f0cb75648accc6622c00"
+    },
+    "Zombies/JackinTheBoxZombie/Attack.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/JackinTheBoxZombie/Attack.gif",
+      "sha256": "2e29fc89972577b098f953d745509e41255f0c0a7c939e16f578ee89ef197cf8"
+    },
+    "Zombies/JackinTheBoxZombie/OpenBox.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/JackinTheBoxZombie/OpenBox.gif",
+      "sha256": "d53942cd202bc815d82d46524804178bee9cab6775e9abe8d01411e3bca61e07"
+    },
+    "Zombies/JackinTheBoxZombie/LostHead.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/JackinTheBoxZombie/LostHead.gif",
+      "sha256": "9c15e913b718a61cde44d506ab5cf48f962558e00207466b3ce69f9b217984e3"
+    },
+    "Zombies/JackinTheBoxZombie/Die.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/JackinTheBoxZombie/Die.gif",
+      "sha256": "6611ad241327e0177efc284f79a6b1d3608a0e4c5526de618fe0fb07c3bca14a"
+    },
+    "Zombies/BalloonZombie/1.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/BalloonZombie/1.gif",
+      "sha256": "d2e44dc7209afa905250b9b86096838eb7c85b801d7fa72a3912efc023209f5d"
+    },
+    "Zombies/BalloonZombie/Walk.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/BalloonZombie/Walk.gif",
+      "sha256": "30205e95b546ccffefe5e3d6fc3e38a7412e7276b7b47f81cf7a0e8bf30d3410"
+    },
+    "Zombies/BalloonZombie/Attack.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/BalloonZombie/Attack.gif",
+      "sha256": "77bae7d382a23a6cbabeb5131c354c91c1cb64ef12af84cacd3fa8cfe17500f5"
+    },
+    "Zombies/BalloonZombie/Drop.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/BalloonZombie/Drop.gif",
+      "sha256": "685be01d1039202a3102e8851a8859d23ebf4203629fc3aa41fabbe661b6141c"
+    },
+    "Zombies/BalloonZombie/Die.gif": {
+      "repository": "javascript",
+      "path": "images/Zombies/BalloonZombie/Die.gif",
+      "sha256": "346384d9fc291d1a1ff1758ba51062005b7402d9d16aeca42de9d9c202a840bd"
+    },
     "Plants/TangleKlep/Float.gif": {
       "repository": "javascript",
       "path": "images/Plants/TangleKlep/Float.gif",
@@ -679,6 +829,156 @@
       "path": "images/Plants/FumeShroom/FumeShroomBullet.gif",
       "sha256": "fbcfb2dfbd8731322ecbe33f12e38b25395ced92c9ebcfd2005e8e0c4cef1b4b"
     },
+    "SexyAppFramework/reanim/Blover.reanim": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Blover.reanim",
+      "sha256": "146933cda2189bf494ab74c6d268bd06b9224a3ad753a2475f8971c3ce85b132"
+    },
+    "SexyAppFramework/reanim/Blover_dirt_back.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Blover_dirt_back.png",
+      "sha256": "34e8b344b4ab5133d1e8fce862c45534a7c7c97de86bc3551cd47db04035b159"
+    },
+    "SexyAppFramework/reanim/Blover_stem2.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Blover_stem2.png",
+      "sha256": "63dc77ec9b6c378de7c05138bb7c936a50d484a09d32b0f00dbd2da6521476f1"
+    },
+    "SexyAppFramework/reanim/Blover_stem1.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Blover_stem1.png",
+      "sha256": "07e0db604e761f04c4e9c30e54ba2ecc73e88b82fb40e4f5bed73df293887f09"
+    },
+    "SexyAppFramework/reanim/Blover_dirt_front.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Blover_dirt_front.png",
+      "sha256": "f58458da1f2b6b60bcafed46a5045899e768d3c91f05fc7c0e9678f723217e89"
+    },
+    "SexyAppFramework/reanim/Blover_petal.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Blover_petal.png",
+      "sha256": "3fe020328888b35feaca7f85a02765ff7563805241d671b6f1e015b10607ad24"
+    },
+    "SexyAppFramework/reanim/Blover_head.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Blover_head.png",
+      "sha256": "87ab938b8ba00944f94ca207a8a094728e3952c42e6b49f073e84725efbf9de9"
+    },
+    "SexyAppFramework/reanim/Blover_head2.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Blover_head2.png",
+      "sha256": "01f039787503847975dc7e495f9314beaaa27bc16acd373e3a57d40d6e96e9f8"
+    },
+    "SexyAppFramework/reanim/Zombie_bobsled.reanim": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Zombie_bobsled.reanim",
+      "sha256": "47711d4ae2048b018a661827a75035cb98b265c00066c166f72f2b5deaa4bd8d"
+    },
+    "SexyAppFramework/reanim/Zombie_bobsled_innerarm_lower.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Zombie_bobsled_innerarm_lower.png",
+      "sha256": "5fc094ea24e592ac526dda952a6054342c5dc12cf73f4b336082b46b858d8f5b"
+    },
+    "SexyAppFramework/reanim/Zombie_bobsled_innerarm_hand.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Zombie_bobsled_innerarm_hand.png",
+      "sha256": "99a6a5120b1d3d30886af74243bb02438ecb1245c2c7cc50c9bad260d2287362"
+    },
+    "SexyAppFramework/reanim/Zombie_bobsled_innerarm_upper.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Zombie_bobsled_innerarm_upper.png",
+      "sha256": "242d6ff4a00bf5e2bb5b960779266613d4e8db039b8b7859d74fee635a7adc66"
+    },
+    "SexyAppFramework/reanim/Zombie_bobsled_innerleg_lower.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Zombie_bobsled_innerleg_lower.png",
+      "sha256": "b7eafbe1fbde8d88cb7f8f9a35b2e1e52513a2c0dd8847f0664ed80778317ed9"
+    },
+    "SexyAppFramework/reanim/Zombie_bobsled_innerleg_foot.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Zombie_bobsled_innerleg_foot.png",
+      "sha256": "f3450df6c3a040163c68eeaec7e446d4197b097fb35e28228fe3b6944da7d951"
+    },
+    "SexyAppFramework/reanim/Zombie_bobsled_innerleg_upper.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Zombie_bobsled_innerleg_upper.png",
+      "sha256": "dfc380ecee07ae8958a0c528dbf0ed4287e9896a6bade23fbf1ac651aa338395"
+    },
+    "SexyAppFramework/reanim/Zombie_bobsled_body2.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Zombie_bobsled_body2.png",
+      "sha256": "30413289f8476a7f6a277535668a7565cb278c369eee51a994e8b6c24b63a4f5"
+    },
+    "SexyAppFramework/reanim/Zombie_bobsled_body1.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Zombie_bobsled_body1.png",
+      "sha256": "d19df8997d3adfc9cb2d228f421209da8e760ebbfd60390e3ff645da0ccf6732"
+    },
+    "SexyAppFramework/reanim/Zombie_bobsled_outerleg_foot2.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Zombie_bobsled_outerleg_foot2.png",
+      "sha256": "2585c51c4c2705203368c072920fe2ae8c3c9431c8114788f8b94e5ad1880876"
+    },
+    "SexyAppFramework/reanim/Zombie_bobsled_outerleg_foot1.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Zombie_bobsled_outerleg_foot1.png",
+      "sha256": "443f146a899e9036a43eb744ce9511574d54d560bf8ab755468fc876d04fec88"
+    },
+    "SexyAppFramework/reanim/Zombie_bobsled_outerleg_lower.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Zombie_bobsled_outerleg_lower.png",
+      "sha256": "9039ff474379fa9ba37c2cb25cf4e20b3fe57c440bb69584698fc3e44f4aa4fd"
+    },
+    "SexyAppFramework/reanim/Zombie_bobsled_outerleg_upper.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Zombie_bobsled_outerleg_upper.png",
+      "sha256": "dd0bd21b12d45de71006b94dab47fdd340dadec3a85713e0b48b817158412b72"
+    },
+    "SexyAppFramework/reanim/Zombie_bobsled_newhead.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Zombie_bobsled_newhead.png",
+      "sha256": "f48d2825b41f153607ef4b334f9813981d8263e8b20e36306ddf11c51143d499"
+    },
+    "SexyAppFramework/reanim/Zombie_jaw.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Zombie_jaw.png",
+      "sha256": "e4407b91697b8b90347eab1e124f4147c3fc6459722ae1dc74d77b491e4be931"
+    },
+    "SexyAppFramework/reanim/Zombie_bobsled_outerarm_lower.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Zombie_bobsled_outerarm_lower.png",
+      "sha256": "ff6d2450bf7d75c205e2613dc99d0d53448e13a5745269acf7915d382f18784a"
+    },
+    "SexyAppFramework/reanim/Zombie_bobsled_outerarm_hand.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Zombie_bobsled_outerarm_hand.png",
+      "sha256": "716dc4c333513bae533069d30d30bb024d5bd3e83809fdd9cebae0fa4cdd8c92"
+    },
+    "SexyAppFramework/reanim/Zombie_bobsled_outerarm_upper.png": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/reanim/Zombie_bobsled_outerarm_upper.png",
+      "sha256": "fc282b4257bc7545595cc54a80c2a97ef8cddbde42be905be4d6545026857b7b"
+    },
+    "sled.png": {
+      "repository": "ruslan",
+      "path": "images/Zombie_bobsled1.png",
+      "sha256": "cd4b65398d9e57fd34907a04c351037d76b4fb4744b0a6fa0484a180d4a66f84"
+    },
+    "vases.png": {
+      "repository": "ruslan",
+      "path": "images/Scary_Pot.png",
+      "sha256": "855e12e69ebf8b5486b092aa624d7017488cb5f4e75c7b731124229415e747e8"
+    },
+    "ice-trail.png": {
+      "repository": "javascript",
+      "path": "images/Zombies/Zomboni/ice.png",
+      "sha256": "670cc8422910943e6d66d1b285eb79e11f88dd6a56d487a644b27d7d91525319"
+    },
+    "spike.png": {
+      "repository": "javascript",
+      "path": "images/Plants/Cactus/Projectile32.png",
+      "sha256": "ce9959746747212a5a9e0063b87fcfd766f74f4106103b95f1ca075ccea71af5"
+    },
     "peashooter.png": {
       "repository": "python",
       "path": "resources/graphics/Plants/Peashooter/Peashooter_0.png",
@@ -1016,6 +1316,16 @@
       "path": "SexyAppFramework/sounds/frozen.ogg",
       "sha256": "ee214bc334b7a6f57c77be491cc8490c5ffe1f31f0857d263dd857a63c317349"
     },
+    "blover.ogg": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/sounds/blover.ogg",
+      "sha256": "79fcf7b70bcef6d336a09122811e757fbf6926485ddd3e687aa556fa4bf24e76"
+    },
+    "vase_breaking.ogg": {
+      "repository": "ruslan",
+      "path": "SexyAppFramework/sounds/vase_breaking.ogg",
+      "sha256": "1859d67690ba60206767754f2852ef4e1abe77e12173f52c679e77fff4bf7717"
+    },
     "fog-cloud.png": [
       {
         "repository": "ruslan",
@@ -1029,5 +1339,5 @@
       }
     ]
   },
-  "processing": "PNG and composited GIF frames packed without resampling; GIF frame durations retained; original RGB logo combined with its alpha plane. Only sun and zombie-burn still use port-configured PNG timing; other animated clips preserve source GIF timing. Night fume attack is a static source pose; the eight-frame fume cloud sheet uses four ticks per frame for the port effect. This is not Reanim."
+  "processing": "PNG and composited GIF frames packed without resampling; GIF frame durations retained; original RGB logo combined with its alpha plane. Only sun and zombie-burn still use port-configured PNG timing; other animated clips preserve source GIF timing. Night fume attack is a static source pose; the eight-frame fume cloud sheet uses four ticks per frame for the port effect. Blover and bobsled clips are sampled offline from original Reanim affine tracks with tools/reanim-frames.py; other GIF clips retain their source timing. This is not a complete runtime Reanim implementation."
 }

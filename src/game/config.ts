@@ -2,16 +2,23 @@ import portable from './data/portable-adventure.json';
 // Behavioral reference: PvZ-Portable 141c1476. Source locations in docs/BASELINE.md.
 export const TICK_MS = 10;
 export const BOARD = { width: 800, height: 600, left: 40, top: 80, cellWidth: 80, cellHeight: 100, columns: 9 };
-export type PlantKind = 'peashooter' | 'sunflower' | 'cherrybomb' | 'wallnut' | 'potatomine' | 'snowpea' | 'explodenut' | 'chomper' | 'repeater' | 'puffshroom' | 'sunshroom' | 'fumeshroom' | 'gravebuster' | 'hypnoshroom' | 'scaredyshroom' | 'iceshroom' | 'doomshroom' | 'lilypad' | 'squash' | 'threepeater' | 'plantern' | 'tanglekelp';
-export type ZombieKind = 'normal' | 'cone' | 'flag' | 'pole' | 'bucket' | 'newspaper' | 'door' | 'football' | 'dancer' | 'backup' | 'ducky' | 'snorkel';
-export type LevelId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25;
+export type PlantKind = 'peashooter' | 'sunflower' | 'cherrybomb' | 'wallnut' | 'potatomine' | 'snowpea' | 'explodenut' | 'chomper' | 'repeater' | 'puffshroom' | 'sunshroom' | 'fumeshroom' | 'gravebuster' | 'hypnoshroom' | 'scaredyshroom' | 'iceshroom' | 'doomshroom' | 'lilypad' | 'squash' | 'threepeater' | 'plantern' | 'tanglekelp' | 'jalapeno' | 'spikeweed' | 'torchwood' | 'tallnut' | 'seashroom' | 'cactus' | 'blover';
+export type ZombieKind = 'normal' | 'cone' | 'flag' | 'pole' | 'bucket' | 'newspaper' | 'door' | 'football' | 'dancer' | 'backup' | 'ducky' | 'snorkel' | 'zomboni' | 'bobsled' | 'dolphin' | 'jack' | 'balloon';
+export type LevelId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35;
 export type SurvivalScene = 'day' | 'night' | 'pool' | 'fog';
 export const SCENE_NAMES: Record<SurvivalScene, string> = { day: '白天庭院', night: '夜晚庭院', pool: '泳池', fog: '迷雾泳池' };
 export const SURVIVAL_SCENES: SurvivalScene[] = ['day', 'night', 'pool', 'fog'];
 export const isPool = (environment: SurvivalScene) => environment === 'pool' || environment === 'fog';
 export const isNight = (environment: SurvivalScene) => environment === 'night' || environment === 'fog';
-export const MUSHROOMS: readonly PlantKind[] = ['puffshroom','sunshroom','fumeshroom','hypnoshroom','scaredyshroom','iceshroom','doomshroom'];
+export const MUSHROOMS: readonly PlantKind[] = ['puffshroom','sunshroom','fumeshroom','hypnoshroom','scaredyshroom','iceshroom','doomshroom','seashroom'];
 export const PLANTS = {
+  jalapeno: { name: '火爆辣椒', cost: 125, cooldown: 5000, health: 300, interval: 100 },
+  spikeweed: { name: '地刺', cost: 100, cooldown: 750, health: 300, interval: 100 },
+  torchwood: { name: '火炬树桩', cost: 175, cooldown: 750, health: 300, interval: 0 },
+  tallnut: { name: '高坚果', cost: 125, cooldown: 3000, health: 8000, interval: 0 },
+  seashroom: { name: '海蘑菇', cost: 0, cooldown: 3000, health: 300, interval: 150 },
+  cactus: { name: '仙人掌', cost: 125, cooldown: 750, health: 300, interval: 150 },
+  blover: { name: '三叶草', cost: 100, cooldown: 750, health: 300, interval: 50 },
   tanglekelp: { name: '缠绕海草', cost: 25, cooldown: 3000, health: 300, interval: 0 },
   iceshroom: { name: '寒冰菇', cost: 75, cooldown: 5000, health: 300, interval: 100 },
   doomshroom: { name: '毁灭菇', cost: 125, cooldown: 5000, health: 300, interval: 100 },
@@ -37,7 +44,7 @@ export const PLANTS = {
 } as const;
 export interface LevelConfig {
   environment: SurvivalScene; label: string; title: string; description: string; rows: readonly number[]; initialSun: number;
-  mode: 'lawn' | 'bowling' | 'conveyor' | 'whack'; seeds: readonly PlantKind[]; waveCount: number; reward: PlantKind | null;
+  mode: 'lawn' | 'bowling' | 'conveyor' | 'whack' | 'vase'; seeds: readonly PlantKind[]; waveCount: number; reward: PlantKind | null;
 }
 // Day lawn survival, restricted to the eight migrated daytime plants.
 export const ENDLESS: LevelConfig = {
@@ -49,7 +56,7 @@ export const ENDLESS: LevelConfig = {
 };
 export function endlessConfig(scene: SurvivalScene): LevelConfig {
   const daytime: PlantKind[] = [...ENDLESS.seeds, 'squash', 'threepeater'];
-  const seeds: PlantKind[] = isNight(scene) ? [...daytime, ...MUSHROOMS] : daytime;
+  const seeds: PlantKind[] = isNight(scene) ? [...daytime, ...MUSHROOMS.filter(kind => kind !== 'seashroom')] : daytime;
   if (scene === 'night') seeds.push('gravebuster');
   if (isPool(scene)) seeds.push('lilypad','tanglekelp');
   if (scene === 'fog') seeds.push('plantern');
@@ -58,6 +65,8 @@ export function endlessConfig(scene: SurvivalScene): LevelConfig {
 }
 const nightSeeds: PlantKind[] = [...ENDLESS.seeds, 'puffshroom','sunshroom','fumeshroom','gravebuster','hypnoshroom','scaredyshroom'];
 const poolSeeds: PlantKind[] = [...nightSeeds, 'iceshroom','doomshroom','lilypad'];
+const latePoolSeeds: PlantKind[] = [...poolSeeds,'squash','threepeater','tanglekelp','jalapeno'];
+const fogSeeds: PlantKind[] = [...latePoolSeeds,'spikeweed','torchwood','tallnut','seashroom'];
 export const LEVELS: Record<LevelId, LevelConfig> = {
   1: { environment: 'day', mode: 'lawn', label: '1–1', title: '第一株守护者', description: '种下豌豆射手，守住中间这条草坪。', rows: [2], initialSun: 150, seeds: ['peashooter'], waveCount: portable.waveCounts[0], reward: 'sunflower' },
   2: { environment: 'day', mode: 'lawn', label: '1–2', title: '让阳光生长', description: '先种向日葵，再用射手守住三条草坪。', rows: [1, 2, 3], initialSun: 50, seeds: ['peashooter', 'sunflower'], waveCount: portable.waveCounts[1], reward: 'cherrybomb' },
@@ -83,8 +92,18 @@ export const LEVELS: Record<LevelId, LevelConfig> = {
   22: { environment: 'pool', mode: 'lawn', label: '3–2', title: '一跃压倒', description: '窝瓜可以压倒附近的僵尸，水路需要先种睡莲。', rows: [0,1,2,3,4,5], initialSun: 50, seeds: [...poolSeeds,'squash'], waveCount: portable.waveCounts[21], reward: 'threepeater' },
   23: { environment: 'pool', mode: 'lawn', label: '3–3', title: '三线守望', description: '三线射手守住相邻三排。潜水僵尸游泳时避开直射，啃食时才浮出水面。', rows: [0,1,2,3,4,5], initialSun: 50, seeds: [...poolSeeds,'squash','threepeater'], waveCount: portable.waveCounts[22], reward: 'tanglekelp' },
   24: { environment: 'pool', mode: 'lawn', label: '3–4', title: '水下的守护者', description: '缠绕海草直接种在空水面，缠住并拖走一只水路僵尸，也能抓住潜水僵尸。', rows: [0,1,2,3,4,5], initialSun: 50, seeds: [...poolSeeds,'squash','threepeater','tanglekelp'], waveCount: portable.waveCounts[23], reward: null },
-  25: { environment: 'pool', mode: 'conveyor', label: '3–5', title: '小僵尸大麻烦', description: '僵尸体型与生命变小，数量却大幅增加。使用传送带的睡莲、坚果、豌豆射手与樱桃炸弹守住泳池！', rows: [0,1,2,3,4,5], initialSun: 0, seeds: ['lilypad','wallnut','peashooter','cherrybomb'], waveCount: portable.waveCounts[24], reward: null },
+  25: { environment: 'pool', mode: 'conveyor', label: '3–5', title: '小僵尸大麻烦', description: '僵尸体型与生命变小，数量却大幅增加。使用传送带的睡莲、坚果、豌豆射手与樱桃炸弹守住泳池！', rows: [0,1,2,3,4,5], initialSun: 0, seeds: ['lilypad','wallnut','peashooter','cherrybomb'], waveCount: portable.waveCounts[24], reward: 'jalapeno' },
+  26: { environment: 'pool', mode: 'lawn', label: '3–6', title: '冰车来袭', description: '冰车碾压植物并留下冰道。火爆辣椒烧毁整排敌人，也能清除冰道。', rows: [0,1,2,3,4,5], initialSun: 50, seeds: latePoolSeeds, waveCount: portable.waveCounts[25], reward: 'spikeweed' },
+  27: { environment: 'pool', mode: 'lawn', label: '3–7', title: '地刺与冰道', description: '地刺不会被啃食，能扎破冰车轮胎。小心沿冰道滑来的雪橇队！', rows: [0,1,2,3,4,5], initialSun: 50, seeds: [...latePoolSeeds,'spikeweed'], waveCount: portable.waveCounts[26], reward: 'torchwood' },
+  28: { environment: 'pool', mode: 'lawn', label: '3–8', title: '火力与海豚', description: '火炬树桩把豌豆变成火球。海豚骑士会跃过第一道水上防线。', rows: [0,1,2,3,4,5], initialSun: 50, seeds: [...latePoolSeeds,'spikeweed','torchwood'], waveCount: portable.waveCounts[27], reward: 'tallnut' },
+  29: { environment: 'pool', mode: 'lawn', label: '3–9', title: '高坚果守泳池', description: '高坚果拥有 8000 生命，能挡住撑杆与海豚的跳跃。', rows: [0,1,2,3,4,5], initialSun: 50, seeds: [...latePoolSeeds,'spikeweed','torchwood','tallnut'], waveCount: portable.waveCounts[28], reward: null },
+  30: { environment: 'pool', mode: 'conveyor', label: '3–10', title: '泳池决战', description: '八种植物由传送带供应，迎战三面旗帜。地刺和辣椒负责拦截冰车。', rows: [0,1,2,3,4,5], initialSun: 0, seeds: ['lilypad','squash','threepeater','tanglekelp','jalapeno','spikeweed','torchwood','tallnut'], waveCount: portable.waveCounts[29], reward: 'seashroom' },
+  31: { environment: 'fog', mode: 'lawn', label: '4–1', title: '迷雾里的盒子', description: '夜晚没有天降阳光。海蘑菇可直接种在水里，小心玩偶匣僵尸爆炸。', rows: [0,1,2,3,4,5], initialSun: 50, seeds: fogSeeds, waveCount: portable.waveCounts[30], reward: 'plantern' },
+  32: { environment: 'fog', mode: 'lawn', label: '4–2', title: '照亮迷雾', description: '带上路灯花照亮附近区域，留意迷雾中的玩偶匣。', rows: [0,1,2,3,4,5], initialSun: 50, seeds: [...fogSeeds,'plantern'], waveCount: portable.waveCounts[31], reward: 'cactus' },
+  33: { environment: 'fog', mode: 'lawn', label: '4–3', title: '空中的来客', description: '气球僵尸能飞过防线，仙人掌会伸长并扎破气球。', rows: [0,1,2,3,4,5], initialSun: 50, seeds: [...fogSeeds,'plantern','cactus'], waveCount: portable.waveCounts[32], reward: 'blover' },
+  34: { environment: 'fog', mode: 'lawn', label: '4–4', title: '吹散黑夜', description: '三叶草吹走飞行中的气球，并暂时吹散全场迷雾。', rows: [0,1,2,3,4,5], initialSun: 50, seeds: [...fogSeeds,'plantern','cactus','blover'], waveCount: portable.waveCounts[33], reward: null },
+  35: { environment: 'night', mode: 'vase', label: '4–5', title: '砸罐子', description: '连续破解三组罐子。点击罐子，再拾取掉落的植物卡免费种植；绿罐里一定是植物。', rows: [0,1,2,3,4], initialSun: 0, seeds: ['peashooter','snowpea','squash','hypnoshroom'], waveCount: 3, reward: null },
 };
-export const LEVEL_IDS: LevelId[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
+export const LEVEL_IDS: LevelId[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35];
 export const cellX = (column: number) => BOARD.left + column * BOARD.cellWidth + 40;
 export const rowY = (row: number) => BOARD.top + row * BOARD.cellHeight + 78;

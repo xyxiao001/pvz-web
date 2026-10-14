@@ -22,14 +22,14 @@ test('2x art retains every animation frame, duration, anchor and logical crop of
     assert.deepEqual(after.frames.map(frame => frame.slice(3)), before.frames.map(frame => frame.slice(3)), name);
     frames += after.frames.length;
   }
-  assert.equal(frames, 2425); assert.equal(manifest.frames, frames);
+  assert.equal(frames, 3161); assert.equal(manifest.frames, frames);
 });
 
 test('all static art is exactly 2x with unchanged aspect ratio', () => {
   for (const [path, source] of Object.entries(manifest.staticSources)) {
     assert.deepEqual(pngSize(`hd/${path}`), source.size.map(n => n * 2), path);
   }
-  assert.equal(Object.keys(manifest.staticSources).length, 73);
+  assert.equal(Object.keys(manifest.staticSources).length, 84);
 });
 
 test('logical frame rectangles fit 2x atlas pixels without overlapping distinct poses', () => {

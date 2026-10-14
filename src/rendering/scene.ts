@@ -30,6 +30,7 @@ export class Scene {
   private healthKey = '';
   private hoverKey = '';
   private lawnTextures: Texture[] = [];
+  private vaseFrames: Texture[] = [];
   private explosions: { x: number; y: number }[] = [];
 
   async init(host: HTMLElement) {
@@ -58,7 +59,12 @@ export class Scene {
     if (environment === 'fog') files.fogCloud = 'original/fog-cloud.webp';
     if (game.config.mode === 'bowling') files.stripe = 'original/bowling-stripe.webp';
     if (game.config.mode === 'whack') files.hammer = 'original/hammer.webp';
+    if (game.config.mode === 'vase') {
+      files.vases = 'original/vases.webp'; files.packet = 'original/seed-packet.webp';
+      for (const kind of game.config.seeds) files[kind] = `original/${kind}.webp`;
+    }
     await this.prepareTextures(files, progress);
+    if (game.config.mode === 'vase' && this.vaseFrames.length === 0) this.vaseFrames = [0,1].map(i => new Texture({ source:this.textures.vases.source, frame:new Rectangle(i*80,101,80,101) }));
     if (environment === 'fog' && this.fogFrames.length === 0) this.fogFrames = Array.from({length:8}, (_,i) => new Texture({source:this.textures.fogCloud.source,frame:new Rectangle(i*210,0,210,190)}));
     if (environment === 'day' && this.lawnTextures.length === 0) this.lawnTextures = Array.from({length:5}, (_,row) => new Texture({source:this.textures.lawn.source,frame:new Rectangle(220,BOARD.top+row*100,800,100)}));
   }
@@ -126,7 +132,7 @@ export class Scene {
     if (actor.clip !== clipName) {
       actor.clip = clipName; actor.since = timeline; actor.frame = -1;
       // Spread idle plants across the cycle; do not synchronize every newly planted row.
-      if (loop && ['peashooter', 'sunflower', 'wallnut', 'snowpea', 'potatomine', 'chomper', 'repeater', 'puffshroom', 'sunshroom', 'sunshroom-big', 'fumeshroom', 'hypnoshroom', 'scaredyshroom', 'iceshroom','doomshroom','lilypad','squash','threepeater','plantern'].includes(clipName)) actor.since -= actor.root.uid * 17 % this.clips[clipName].duration;
+      if (loop && ['peashooter', 'sunflower', 'wallnut', 'snowpea', 'potatomine', 'chomper', 'repeater', 'puffshroom', 'sunshroom', 'sunshroom-big', 'fumeshroom', 'hypnoshroom', 'scaredyshroom', 'iceshroom','doomshroom','lilypad','squash','threepeater','plantern','spikeweed','torchwood','tallnut','seashroom','cactus'].includes(clipName)) actor.since -= actor.root.uid * 17 % this.clips[clipName].duration;
     }
     const clip = this.clips[clipName];
     const elapsed = (timeline - actor.since) * rate;
@@ -164,6 +170,18 @@ export class Scene {
   }
 
   event(event: GameEvent) {
+    if (event.kind === 'fire') {
+      const actor = this.actor(`fire-${this.stamp}`, event.row * 100 + 35);
+      actor.root.position.set(0, event.y); this.animate(actor, 'jalapeno-fire', false);
+      this.actors.delete(`fire-${this.stamp}`);
+      this.effects.push({ node: actor.root, actor, born: this.time, duration: this.clips['jalapeno-fire'].duration });
+    }
+    if (event.kind === 'vase') {
+      const shards = new Graphics();
+      for (let i=0;i<7;i++) shards.poly([i*9-30,-10, i*9-24,-24-(i%3)*5, i*9-18,-7]).fill(i%2 ? 0xb38e60 : 0x785231);
+      shards.position.set(event.x,event.y); shards.zIndex=700; this.world.addChild(shards);
+      this.effects.push({ node:shards, born:this.time, duration:25 });
+    }
     if (event.kind === 'swallow') {
       const key = `z${event.zombieId}`; const actor = this.actors.get(key);
       if (actor) { actor.root.destroy({ children: true }); this.actors.delete(key); }
@@ -206,6 +224,27 @@ export class Scene {
     if (game.phase === 'playing') this.time = game.ticks + alpha;
     else if (game.phase === 'won' || game.phase === 'lost') this.time += elapsed / 10;
     this.stamp++;
+    for (const ice of game.iceTrails) {
+      const actor = this.actor(`ice${ice.row}`, ice.row * 100 + 1);
+      actor.art.texture = this.textures.iceTrail; actor.art.width = 800 - ice.x; actor.art.height = 70;
+      actor.root.position.set(ice.x, game.rowY(ice.row) - 55); actor.root.alpha = Math.min(1, ice.remaining / 200);
+    }
+    for (const vase of game.vases) {
+      const actor = this.actor(`vase${vase.id}`, vase.row*100+15);
+      actor.art.texture = this.vaseFrames[Number(vase.green)]; actor.art.anchor.set(.5,1);
+      actor.root.position.set(cellX(vase.column),game.rowY(vase.row));
+    }
+    for (const drop of game.seedDrops) {
+      const actor = this.actor(`drop${drop.id}`, 650);
+      if (actor.clip !== 'drop') {
+        actor.clip='drop'; const card=new Sprite(this.textures.packet);card.width=48;card.height=68;card.anchor.set(.5);
+        actor.root.addChildAt(card,0);actor.art.texture=this.textures[drop.kind];actor.art.anchor.set(.5);
+        const ratio=Math.min(38/actor.art.width,48/actor.art.height);actor.art.scale.set(ratio);
+      }
+      actor.root.position.set(cellX(drop.column),game.rowY(drop.row)-40);
+      actor.root.alpha=drop.id===game.selectedDrop ? .5 : drop.remaining<300 ? .5+Math.abs(Math.sin(this.time/10))*.5 : 1;
+      actor.art.tint=drop.id===game.selectedDrop?0xd3ff7b:0xffffff;
+    }
     for (const grave of game.graves) {
       const actor = this.actor(`g${grave.id}`, grave.row * 100 + 5);
       if (actor.clip !== 'grave') { actor.clip = 'grave'; actor.art.texture = this.textures.grave; actor.art.anchor.set(.5, 1); }
@@ -221,7 +260,7 @@ export class Scene {
     for (const plant of game.plants) {
       const sleeping = game.sleeping(plant);
       const key = `p${plant.id}`; const actor = this.actor(key, plant.row * 100 + (plant.kind === 'lilypad' ? 7 : 10));
-      const clip = plant.kind === 'tanglekelp' && plant.kelp ? 'tanglekelp-grab' : plant.kind === 'squash' && plant.squash && plant.squash.remaining <= 60 ? 'squash-attack' : plant.kind === 'scaredyshroom' && plant.scared ? 'scaredyshroom-scared' : plant.kind === 'sunshroom' && game.ticks - plant.born >= 12000 ? 'sunshroom-big'
+      const clip = plant.kind === 'cactus' && plant.tall ? 'cactus-tall' : plant.kind === 'blover' && game.ticks-plant.born>50 ? 'blover-loop' : plant.kind === 'tallnut' && plant.health<2667 ? 'tallnut-cracked2' : plant.kind === 'tallnut' && plant.health<5334 ? 'tallnut-cracked1' : plant.kind === 'tanglekelp' && plant.kelp ? 'tanglekelp-grab' : plant.kind === 'squash' && plant.squash && plant.squash.remaining <= 60 ? 'squash-attack' : plant.kind === 'scaredyshroom' && plant.scared ? 'scaredyshroom-scared' : plant.kind === 'sunshroom' && game.ticks - plant.born >= 12000 ? 'sunshroom-big'
         : plant.kind === 'fumeshroom' && game.ticks - plant.shotAt < 35 ? 'fumeshroom-attack'
         : plant.kind === 'chomper' ? plant.chomp!.phase === 'digest' ? 'chomper-digest' : plant.chomp!.phase === 'ready' ? 'chomper' : 'chomper-bite'
         : plant.kind === 'potatomine' && plant.actionIn > 0 ? 'potatomine-unarmed' : plant.kind === 'wallnut' && plant.health < 1334 ? 'wallnut-cracked2'
@@ -245,15 +284,25 @@ export class Scene {
       const swimming = game.waterRow(zombie.row) && zombie.x < 780 && zombie.x > 90;
       const type = zombie.kind === 'snorkel' ? 'snorkel' : swimming ? `ducky${zombie.armor>0?(zombie.kind==='bucket'?3:2):1}` : zombie.kind === 'ducky' ? 'zombie' : zombie.kind === 'dancer' || zombie.kind === 'backup' ? zombie.kind : zombie.kind === 'football' ? zombie.armor > 0 ? 'football' : 'football-bare' : zombie.kind === 'newspaper' ? zombie.shield > 0 ? 'newspaper' : 'newspaper-mad'
         : zombie.kind === 'door' && zombie.shield > 0 ? 'door' : zombie.kind === 'pole' ? 'pole' : (zombie.kind === 'cone' || zombie.kind === 'bucket') && zombie.armor > 0 ? zombie.kind : zombie.kind === 'flag' ? 'flag' : 'zombie';
-      const clip = zombie.kind === 'snorkel' ? game.submerged(zombie) ? 'snorkel-swim' : `snorkel-${zombie.eating?'eat':'walk'}`
+      const clip = zombie.kind === 'zomboni' ? zombie.health<450 ? 'zomboni-critical' : zombie.health<900 ? 'zomboni-damaged' : 'zomboni-walk'
+        : zombie.kind === 'bobsled' ? `bobsled-${zombie.eating?'eat':'walk'}`
+        : zombie.kind === 'dolphin' ? zombie.vaultIn>0 ? 'dolphin-jump' : zombie.eating ? 'dolphin-eat' : swimming ? zombie.dolphin ? 'dolphin-ride' : 'dolphin-swim' : 'dolphin-walk'
+        : zombie.kind === 'jack' ? zombie.jackOpening ? 'jack-open' : headless(zombie) ? 'jack-headless' : `jack-${zombie.eating?'eat':'walk'}`
+        : zombie.kind === 'balloon' ? zombie.flying ? 'balloon-fly' : zombie.popIn ? 'balloon-pop' : `balloon-${zombie.eating?'eat':'walk'}`
+        : zombie.kind === 'snorkel' ? game.submerged(zombie) ? 'snorkel-swim' : `snorkel-${zombie.eating?'eat':'walk'}`
         : zombie.kind === 'dancer' && (zombie.dancePhase==='point'||zombie.dancePhase==='hold') ? 'dancer-summon'
         : swimming ? `${type}-${zombie.eating?'eat':'walk'}` : headless(zombie) ? (zombie.kind === 'dancer' || zombie.kind === 'backup' ? `${zombie.kind}-headless` : zombie.kind === 'football' ? 'football-headless' : zombie.kind === 'newspaper' ? 'newspaper-headless' : zombie.kind === 'pole' ? 'pole-headless' : 'zombie-headless')
         : zombie.rageIn > 0 ? 'newspaper-gasp' : zombie.vaultIn > 52 ? 'pole-jump' : zombie.vaultIn > 0 ? 'pole-land'
         : zombie.hasPole ? 'pole-run' : `${type}-${zombie.eating ? 'eat' : 'walk'}`;
-      const walking = clip.endsWith('-walk') || clip.endsWith('-headless') || clip === 'pole-run';
+      const walking = zombie.kind !== 'zomboni' && !zombie.sled && (clip.endsWith('-walk') || clip.endsWith('-headless') || clip === 'pole-run');
       const rate = clip === 'newspaper-gasp' ? this.clips[clip].duration / 150 : walking ? this.clips[clip].duration / walkingCycleTicks(zombie) : 1;
-      this.animate(actor, clip, zombie.vaultIn === 0 && zombie.rageIn === 0, zombie.animationTime + alpha * (zombie.frozenIn !== undefined && zombie.frozenIn > 0 ? 0 : zombie.chillIn > 0 ? .4 : 1), rate);
+      this.animate(actor, clip, !zombie.popIn && !zombie.jackOpening && zombie.vaultIn === 0 && zombie.rageIn === 0, zombie.animationTime + alpha * (zombie.frozenIn !== undefined && zombie.frozenIn > 0 ? 0 : zombie.chillIn > 0 ? .4 : 1), rate);
       this.move(actor, zombie, game.rowY(zombie.row) + 1, alpha);
+      if (zombie.kind === 'dolphin' && zombie.vaultIn>0) actor.root.y-=Math.sin(zombie.vaultIn/120*Math.PI)*55;
+      if (zombie.sled && !zombie.sledLeader) {
+        const sled=this.actor(`sled${zombie.id}`,zombie.row*100+23);sled.art.texture=this.textures.sled;sled.art.anchor.set(.2,1);
+        sled.root.position.set(actor.root.x,game.rowY(zombie.row)+10);sled.art.width=245;sled.art.height=80;
+      }
       actor.root.scale.x = (zombie.hypnotized ? -1 : 1) * (zombie.mini ? .5 : 1);
       actor.root.alpha = zombie.riseIn > 50 ? 0 : 1;
       actor.root.scale.y = (zombie.riseIn > 0 ? Math.max(.01, 1 - zombie.riseIn / 50) : 1) * (zombie.mini ? .5 : 1);
@@ -263,8 +312,9 @@ export class Scene {
     }
     for (const pea of game.peas) {
       const key = `b${pea.id}`; const actor = this.actor(key, pea.row * 100 + 30);
-      if (actor.clip !== 'pea') { actor.clip = 'pea'; actor.art.texture = pea.puff ? this.textures.puff : pea.ice ? this.textures.ice : this.textures.pea; actor.art.anchor.set(.5); actor.art.width = 19; actor.art.height = 19; }
-      this.move(actor, pea, game.rowY(pea.row) - 43, alpha);
+      const kind = pea.spike ? 'spike' : pea.puff ? 'puff' : pea.ice ? 'ice' : pea.fire ? 'fire' : 'pea';
+      if (actor.clip !== kind) { actor.clip = kind; actor.art.texture = pea.spike ? this.textures.spike : pea.puff ? this.textures.puff : pea.ice ? this.textures.ice : this.textures.pea; actor.art.anchor.set(.5); actor.art.width = pea.spike?26:19; actor.art.height = pea.spike?8:19;actor.art.tint=pea.fire?0xff7925:0xffffff; }
+      this.move(actor, pea, game.rowY(pea.row) - (pea.high ? 115 : 43), alpha);
     }
     for (const nut of game.rollers) {
       const actor = this.actor(`r${nut.id}`, nut.row * 100 + 28);
@@ -287,8 +337,8 @@ export class Scene {
     for (const [key, actor] of this.actors) if (actor.seen !== this.stamp) {
       if (key.startsWith('z')) {
         const burned = this.explosions.some(e => Math.abs(e.x - actor.root.x) <= 115 && Math.abs(e.y + 35 - actor.root.y) <= 101);
-        const special = ['dancer','backup','snorkel'].find(name=>actor.clip.startsWith(`${name}-`));
-        const clip = actor.clip.startsWith('ducky') && !burned ? 'ducky-die' : special && (special!=='snorkel'||!burned) ? `${special}-${burned?'burn':'die'}` : `${actor.clip.startsWith('football-') && !burned ? 'football' : actor.clip.startsWith('newspaper-') ? 'newspaper' : actor.clip.startsWith('pole-') ? 'pole' : 'zombie'}-${burned ? 'burn' : 'die'}`;
+        const special = ['dancer','backup','snorkel','zomboni','bobsled','dolphin','jack','balloon'].find(name=>actor.clip.startsWith(`${name}-`));
+        const clip = special && ['zomboni','bobsled','dolphin','jack','balloon'].includes(special) ? `${special}-die` : actor.clip.startsWith('ducky') && !burned ? 'ducky-die' : special && (special!=='snorkel'||!burned) ? `${special}-${burned?'burn':'die'}` : `${actor.clip.startsWith('football-') && !burned ? 'football' : actor.clip.startsWith('newspaper-') ? 'newspaper' : actor.clip.startsWith('pole-') ? 'pole' : 'zombie'}-${burned ? 'burn' : 'die'}`;
         this.animate(actor, clip, false); actor.art.tint = 0xffffff;
         this.effects.push({ node: actor.root, actor, born: this.time, duration: this.clips[clip].duration });
       } else actor.root.destroy({ children: true });
@@ -318,11 +368,13 @@ export class Scene {
     if (!hoverKey && this.hoverKey) this.hover.clear();
     this.hoverKey = hoverKey;
     if(game.config.environment==='fog') {
+      this.fog.visible = game.fogBlownIn === 0;
       const lamps=game.plants.filter(p=>p.kind==='plantern'&&p.health>0);
       const key='fog:'+lamps.map(p=>p.id).join(',');
       if(key!==this.fogKey) {
         this.fogKey=key;this.fog.removeChildren().forEach(child=>child.destroy());
-        for(let column=5;column<=9;column++)for(let row=0;row<=6;row++) {
+        const left=game.scenario==='adventure'&&game.level===31?6:5;
+        for(let column=left;column<=9;column++)for(let row=0;row<=6;row++) {
           const lit=lamps.some(p=>{const dx=Math.abs(column-p.column),dy=Math.abs(row-p.row);return dx<=3&&dy<=2&&dx+dy!==5;});
           if(!lit){const cloud=new Sprite(this.fogFrames[(column*3+row)%8]);cloud.position.set(column*80-15,row*85+20);cloud.alpha=column===5?.78:1;this.fog.addChild(cloud);}
         }

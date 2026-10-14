@@ -5,14 +5,16 @@
   "engineSource": "https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.5.0",
   "engineSha256": "c1c35d92079085de96b9d547fd7e4464bc8a2e9ccf28d7b8c712d72ade91b7cc",
   "modelSha256": "548a36f9c3f4ab8da56cd3b13badf23968bee207b396dad14d04b830e5f2ab2d",
-  "sourceAnimationSha256": "b9821a34afb7da24b0980aeef4e2d4e1c930c77bfb75c99f2837767c64b158c1",
+  "sourceAnimationSha256": "86678371cac1f777f8bc6d8ec0cf4bd742a9f612f9f3efe9ddf2077de973d71d",
   "sourceAtlasSha256": [
-    "d479dea7851ddf8aa11bc2ce430eefdbe135628d5f6c03f000607a1a1d48abc0",
-    "701a417347c5bbc8e4d8de46cb2ca5d348bc2022be0978bb12386f9c5fdb07d6",
-    "03870dcf7920d9d4c3a785679c91be4491ebe04dda43a5aeaaa80a8e33d025fe",
-    "90b7c972d83e03ba0a031f42def934c6dc89cce46b717fda58c9074cb1a29c51",
-    "baeb7a7b34b5774c768b28bf3d41b99b98784bb665601089c770ec1552a40191",
-    "0229b2a79d7ca53197256e27f1cdec46c10484f4693243bb3ddc535e21a478a7"
+    "c8aa71bcfc9cc15839fdb31643fdc72d9b99521e4a82ab9c29f02b59deec4142",
+    "efb0d2d9a5130776ece6b0c894d0abf720595194dc8fe706af41bb419c960a0f",
+    "e9aebe6d51b83f70ad7289bd13e78b2f1d1cb3e731463c24bef113e7ed78876b",
+    "af8eef6068676be460034236a9e450e8956f372abe5d1a6e57f7b7aa63cf7232",
+    "1f72b217bb39b3c1f29af3afe9315f0765c008e8911370f05eecbda708b09aac",
+    "aa0a1a9c1dacf282bf2cae634b866cf7d0392b4178b9e953759e6b8dd575d524",
+    "03786880433315f9c3557012925b940246cf072118e75467bb61a63ea64a79b1",
+    "fd3e55f6dd469d5a9438613896e5b37c06dc61eb5cc6ff919ad3568d1b59987a"
   ],
   "staticSources": {
     "original/adventure-hover.png": {
@@ -29,6 +31,13 @@
         70
       ]
     },
+    "original/blover.png": {
+      "sha256": "776e2a5ebf5ac626ca636fc8d3720a995693a97dd867f1868f3f1a1201e26b6a",
+      "size": [
+        86,
+        84
+      ]
+    },
     "original/bowling-stripe.png": {
       "sha256": "517b3250fe22e0fc6ec84371b0b82cb6765220cc57c4389810ebb4fe9b4af44d",
       "size": [
@@ -41,6 +50,13 @@
       "size": [
         112,
         46
+      ]
+    },
+    "original/cactus.png": {
+      "sha256": "975e65f44030a2acdfd61728f67eba4d5d9a69db190cc46c53c510a56bb48488",
+      "size": [
+        84,
+        77
       ]
     },
     "original/card-cherrybomb.png": {
@@ -274,11 +290,25 @@
         76
       ]
     },
+    "original/ice-trail.png": {
+      "sha256": "670cc8422910943e6d66d1b285eb79e11f88dd6a56d487a644b27d7d91525319",
+      "size": [
+        150,
+        72
+      ]
+    },
     "original/iceshroom.png": {
       "sha256": "398ca764e8b58fb6d8d2b40e6fafc2744cb0a24037e81208b136757cb025e1db",
       "size": [
         83,
         75
+      ]
+    },
+    "original/jalapeno.png": {
+      "sha256": "6bbf215deb9323325b2fa3696368f607004678edb0838bfc6b7b6d70d45fb341",
+      "size": [
+        68,
+        89
       ]
     },
     "original/lilypad.png": {
@@ -400,6 +430,13 @@
         81
       ]
     },
+    "original/seashroom.png": {
+      "sha256": "6504765612ea69ef45eb3d00f0aa9217a28ed3b35955b6e5061dca216eceecdf",
+      "size": [
+        48,
+        99
+      ]
+    },
     "original/seed-packet.png": {
       "sha256": "b7363c278458446477fe2cd68e6da8aec5fc79daac0d99db0053b028cf68675c",
       "size": [
@@ -428,6 +465,13 @@
         72
       ]
     },
+    "original/sled.png": {
+      "sha256": "cd4b65398d9e57fd34907a04c351037d76b4fb4744b0a6fa0484a180d4a66f84",
+      "size": [
+        316,
+        104
+      ]
+    },
     "original/snow-pea.png": {
       "sha256": "634822e425bdc2f71fdfc10f7914a5c841f3d32839242da31995ae149ddce547",
       "size": [
@@ -440,6 +484,20 @@
       "size": [
         71,
         71
+      ]
+    },
+    "original/spike.png": {
+      "sha256": "ce9959746747212a5a9e0063b87fcfd766f74f4106103b95f1ca075ccea71af5",
+      "size": [
+        30,
+        16
+      ]
+    },
+    "original/spikeweed.png": {
+      "sha256": "e302788400585b095bf5fc2163f32f4c1954a8ac04570c1bad8132bd7df00dd3",
+      "size": [
+        85,
+        35
       ]
     },
     "original/squash.png": {
@@ -470,6 +528,13 @@
         61
       ]
     },
+    "original/tallnut.png": {
+      "sha256": "8cbe688ae75077e4ab1e09c28d57d6194f7755294065134d6a8fcb0c046466bd",
+      "size": [
+        83,
+        119
+      ]
+    },
     "original/tanglekelp.png": {
       "sha256": "0a0719774a2329acb291644f9679bfa082d204d897ad72b48f6382e4cabbf6c3",
       "size": [
@@ -484,11 +549,25 @@
         80
       ]
     },
+    "original/torchwood.png": {
+      "sha256": "59ed0aaedaba030ba7c57623fd1422e419e8be61233c9854acb6bfaac6024d8a",
+      "size": [
+        73,
+        87
+      ]
+    },
     "original/trophy.png": {
       "sha256": "97261c8f6b50e956f0544a11c84993f5fddb3c3ccc4736955f8916bb86ff88f2",
       "size": [
         314,
         269
+      ]
+    },
+    "original/vases.png": {
+      "sha256": "855e12e69ebf8b5486b092aa624d7017488cb5f4e75c7b731124229415e747e8",
+      "size": [
+        240,
+        202
       ]
     },
     "original/wallnut.png": {
@@ -527,9 +606,9 @@
       ]
     }
   },
-  "frames": 2425,
-  "uniqueFrames": 2308,
-  "atlasPages": 6,
-  "atlasBaseRgbaMiB": 384,
-  "outputBytes": 140299057
+  "frames": 3161,
+  "uniqueFrames": 3005,
+  "atlasPages": 8,
+  "atlasBaseRgbaMiB": 512,
+  "outputBytes": 174522902
 }

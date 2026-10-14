@@ -3,6 +3,7 @@ import tracks from './music-tracks.json';
 
 export type MusicTrack = keyof typeof tracks;
 export function battleMusic(game: Game): MusicTrack {
+  if (game.config.mode === 'vase') return 'puzzle';
   if (game.config.mode === 'bowling' || game.config.mode === 'whack' || game.level === 25 && game.scenario === 'adventure') return 'minigame';
   if (game.config.mode === 'conveyor') return 'conveyor';
   return game.config.environment;

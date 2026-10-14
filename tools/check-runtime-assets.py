@@ -12,8 +12,10 @@ for name,clip in b['animations'].items():
         p,x,y,w,h=before[:5];q,u,v=after[:3]
         assert masters[p].crop((x*2,y*2,(x+w)*2,(y+h)*2)).tobytes()==pages[q].crop((u*2,v*2,(u+w)*2,(v+h)*2)).tobytes(),name
         count+=1
+static_count=0
 for path in (root/'hd').rglob('*.png'):
     if path.name.startswith('actors-'):continue
     image=Image.open(path).convert('RGBA');packed=Image.open(root/'runtime'/path.relative_to(root/'hd').with_suffix('.webp')).convert('RGBA')
     assert image.tobytes()==packed.tobytes(),path
-print(f'{count} animation frames and 73 static images are pixel-identical (RGBA).')
+    static_count+=1
+print(f'{count} animation frames and {static_count} static images are pixel-identical (RGBA).')

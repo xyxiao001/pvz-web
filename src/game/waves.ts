@@ -1,18 +1,18 @@
 import data from './data/portable-adventure.json';
 import type { LevelId, ZombieKind } from './config';
 
-const kinds: ZombieKind[] = ['normal', 'flag', 'cone', 'pole', 'bucket', 'newspaper', 'door', 'football', 'dancer', 'backup', 'ducky', 'snorkel'];
+const kinds: ZombieKind[] = ['normal', 'flag', 'cone', 'pole', 'bucket', 'newspaper', 'door', 'football', 'dancer', 'backup', 'ducky', 'snorkel', 'zomboni', 'bobsled', 'dolphin', 'jack', 'balloon'];
 export function isFlagWave(level: LevelId, wave: number) {
   const perFlag = Math.min(data.waveCounts[level - 1], 10);
   return level !== 1 && wave % perFlag === perFlag - 1;
 }
 
 // Board::PickZombieWaves / PutInMissingZombies / PickZombieType.
-// Scope: first-time adventure 1–1 … 3–5. The supplied RNG is this port's RNG.
+// Scope: first-time adventure 1–1 … 4–5. The supplied RNG is this port's RNG.
 export function generateWaves(level: LevelId, random: () => number): ZombieKind[][] {
   const count = data.waveCounts[level - 1];
   // Whack spawns timed groups from graves, not this adventure wave list.
-  if (level === 15) return Array.from({ length: count }, () => []);
+  if (level === 15 || level === 35) return Array.from({ length: level === 35 ? 3 : count }, () => []);
   const allowed: ZombieKind[] = level === 25 ? ['normal','cone','football','snorkel'] : kinds.filter(kind => {
     const def = data.zombies[kind];
     return def.startingLevel <= level && def.weight !== 0 && def.allowedLevels[level - 1] !== 0;
@@ -29,7 +29,7 @@ export function generateWaves(level: LevelId, random: () => number): ZombieKind[
       put('flag');
     }
     if (level === 5 || level === 25) points *= 4;
-    if (level === 10 || level === 20) points *= 3;
+    if (level === 10 || level === 20 || level === 30) points *= 3;
     if (introduced && (index === Math.floor(count / 2) || index === count - 1)) put(introduced);
     if (index === count - 1) for (const kind of allowed) if (!wave.includes(kind)) put(kind);
     while (points > 0) {

@@ -83,6 +83,17 @@
       "bytes": 1708333,
       "sha256": "8d56cc31963845e82a7a4c278e2c6cb31abc6f5107781616b8ede459c45b11d3"
     },
+    "puzzle": {
+      "title": "Cerebrawl",
+      "file": "puzzle.mp3",
+      "loopStart": 0.0,
+      "duration": 98.35537414965987,
+      "subsong": 10,
+      "startOrder": 177,
+      "loopOrder": 177,
+      "bytes": 1451515,
+      "sha256": "9451ab23d5d2ded3c0ff3793b959d239957470bdacaefacf18d8433c57d56b05"
+    },
     "conveyor": {
       "title": "Ultimate Battle",
       "file": "conveyor.mp3",

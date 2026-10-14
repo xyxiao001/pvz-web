@@ -27,6 +27,10 @@
     "file": "minigame.mp3",
     "loopStart": 0.0
   },
+  "puzzle": {
+    "file": "puzzle.mp3",
+    "loopStart": 0.0
+  },
   "conveyor": {
     "file": "conveyor.mp3",
     "loopStart": 16.0

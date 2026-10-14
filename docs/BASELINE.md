@@ -435,3 +435,36 @@ PWA 参考 KR 的 `tools/build/pwa.ts`、`packages/asset-runtime/src/pwa-worker.
 验证：108 项测试和生产构建通过，未运行 lint；原有时间 / 倍速 / 多关卡通关测试保留。新测试覆盖动作依赖、所有关卡及生存候选、帧边界和元数据完整性。浏览器固定阵容遍历 25 个冒险关卡、四场景无尽及恢复 / 下一轮，均成功加载和绘制，无 console error / warn；这是渲染资源回归，不混称正常游戏通关。另通过实际菜单操作验证空局保存、刷新、恢复暂停、继续后首次种植向日葵（50→0）；停服后完整离线刷新并进入首关种植（150→50）。
 
 45 植物 / 30 僵尸 / 20 豌豆 / 10 阳光同机短测，每档 150 帧 CPU 绘制提交均值：1× 0.315→0.301 ms、2× 0.309→0.229 ms、4× 0.229→0.267 ms。4× 均值略增，不能宣称所有档位 FPS 提高；这些数据也不包含 GPU 完成时间。主要确定收益是下载 / 常驻资源减少和把首帧上传移到准备阶段。记录在忽略的 `artifacts/lazy-animation-results.json`、`lazy-scenes.txt`、`lazy-menu-production.json`、`lazy-offline.png`。低显存手机和长时高旗数仍未全面测量。
+
+## 新增十关：3–6 至 4–5
+
+本次从 25 关扩为 35 关，关卡选择直接开放全部已实现关卡，继续冒险和通关记录保留。新增范围是 3–6、3–7、3–8、3–9、3–10、4–1、4–2、4–3、4–4、4–5；没有扩充四场景无尽的敌人池，也没有接入屋顶或巨人。
+
+### 源码依据与实际接入
+
+基线仍为 Portable `141c1476dd462ac3526f796e303177616f4de6bc`，下列结论来自实际读取的源码。`tools/import-level-data.py` 提取到第 35 关，输入路径和 SHA-256 留在 `portable-adventure.json`。
+
+- [Challenge.h L259](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Challenge.h#L259) 的原始波数表第 26–35 项为 20 / 30 / 20 / 30 / 30 / 10 / 20 / 10 / 20 / 20；资格矩阵位于 L360 起。4–5 走砸罐特殊流程，实际界面为三轮，不把表里的 20 当作砸罐波数。[Zombie.cpp L93](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Zombie.cpp#L93) 提供冰车、雪橇队、海豚、玩偶匣、气球的预算、引入关卡与权重。
+- [Challenge.cpp L1446](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Challenge.cpp#L1446) 的 3–10 传送带为睡莲 25、窝瓜 5、三线射手 25、海草 5、辣椒 10、地刺 10、树桩 10、高坚果 10；新增关卡使用这些权重与三面旗帜。
+- 新七种植物的价格和冷却来自 [Plant.cpp L69](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Plant.cpp#L69)。高坚果 8000 生命见 L301；地刺 20 伤害及 100 tick 周期见 L1267；三叶草启动 50 tick 见 L201，驱雾 4000 tick 见 L4258；辣椒整排 1800 伤害及清冰见 L4336。已实现这些核心效果，以及高坚果阻止撑杆 / 海豚跨越、海蘑菇空水面种植和仙人掌防空。
+- [Projectile.cpp L44](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Projectile.cpp#L44) 的火豌豆为 40 伤害，L1197 / L1221 描述豌豆点火与寒冰先融化。Web 已接入两步转换、同排小范围火焰伤害与解除冰冻。
+- 冰车 1350 生命、海豚和玩偶匣 500 生命、气球身体 270 / 气球 20 见 [Zombie.cpp L399](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Zombie.cpp#L399) 起的初始化分支。冰车速度 / 冰道 3000 tick 见 L4023；雪橇四成员、护甲和滑行见 L521。冰道条件见 [Board.cpp L2597](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Board.cpp#L2597)，没有合适冰道时换为四只普通僵尸是 L4927 的明确原版行为。
+- 海豚跳跃阶段见 [Zombie.cpp L1812](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Zombie.cpp#L1812)；玩偶匣 110 tick 开匣与爆炸见 L2031。Web 已接入冰车碾压 / 地刺爆胎、冰道禁种、雪橇滑行 / 散队、海豚越过第一道防线、气球绕过地面火力 / 水中落地沉没、开匣范围爆炸及砸罐连锁。
+- 4–1 从第 6 列起雾、4–2 至 4–4 从第 5 列起雾，依据 [Board.cpp L8693](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Board.cpp#L8693)。路灯花和三叶草分别局部 / 暂时全场驱雾。
+- [Challenge.cpp L3551](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Challenge.cpp#L3551) 的三轮砸罐配方已经提取：15 罐（射手 5、窝瓜 5、普通 4、铁桶 1）；20 罐（射手 4、寒冰 5、窝瓜 4、普通 5、铁桶 1、橄榄球 1）；25 罐（射手 / 寒冰 / 魅惑各 5、普通 6、铁桶 2、舞王 / 玩偶匣各 1）。绿罐数量 0 / 2 / 3，分别从第 6 / 5 / 4 列开始放置。L3757、L3873、L3930 的清场、掉卡、连锁和换轮清理也已接入；掉卡保留 1500 tick，依据 [Coin.cpp L1495](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Coin.cpp#L1495)。不使用正常六槽、阳光生产或割草机。
+
+### 素材、音乐和加载
+
+新增 GIF / 原始贴图沿用已固定的 JavaScript、Python 和 ruslan 素材仓库，路径及输入散列在 `docs/original-assets.json`。三叶草和雪橇队没有直接采用 GIF，使用 `tools/reanim-frames.py` 读取原 `.reanim` 的继承字段和仿射变换并离线采样；变换依据 ruslan `SexyAppFramework/todlib/Reanimator.cpp` 的 `GetTransformAtTime` / `MatrixFromTransform`，这不是完整运行时骨骼系统。
+
+新增 35 组动作，当前共 127 组、3161 帧、3005 张去重帧、84 张静态图片。新增素材进入 Real-ESRGAN 2× 和独立 WebP 动作包流程。完整角色 PNG 母图共八张 4096²，基础 RGBA 512 MiB；它们不整包加载，实际战斗仍按当前植物 / 敌人准备和释放。砸罐提前准备三轮所有可能角色及衍生伴舞，避免中途开罐才下载。运行时 WebP 文件总量约 139.6 MiB；这不是每关下载量。
+
+砸罐新增 Cerebrawl，依据 [Music.cpp L338](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/System/Music.cpp#L338) 的 order 0xB1 和 L607 的模式选择。沿用原 MO3 → libopenmpt → MP3 的离线流程，只新增这一曲，保留现有八首文件。音乐按场景切换并按需加载；首次播放仍需要用户操作。完整 PWA 离线包约 156.9 MiB / 260 项，启动预缓存仍是 11 项。
+
+### 验证与边界
+
+143 项测试、TypeScript 检查和 Vite 生产构建通过；未执行 lint。九个正常 / 传送带关使用种子 123456，三轮砸罐使用种子 1、123456，通过正常选择、实际阳光收集、种植、铲除、传送带或开罐拾卡通关，没有注入战斗资源或直接伤害。测试玩家保存在 `tests/helpers/late-adventure.ts`；额外人工运行的砸罐种子 42、100 也通关。隔离测试覆盖新植物 / 僵尸互动、冷却、暂停、三轮配方、卡片过期、延迟加载，以及 30 / 60 / 144 Hz 下相同的固定模拟结果。
+
+3161 动画帧和 84 静态图经 `tools/check-runtime-assets.py` 核对，WebP 与 2× PNG 的 RGBA 逐像素相同。浏览器验证全部 35 个入口开放、砸罐 / 拾卡 / 免费种植，以及泳池和迷雾新增角色固定阵容；固定阵容只用于视觉检查，不作为通关证据。
+
+保留的简化：冰车减速、雪橇队散队 / 碰撞、海豚入水及跳跃轨迹、仙人掌升降时序仍非原版逐帧复刻；部分受损 / 死亡动作复用现有角色动作，火豌豆使用染色弹丸，雾仍非完整原版漂移 / 渐隐。砸罐没有戴夫对话、摆罐过场、完整碎片粒子，也尚未发放供 4–6 使用的裂荚射手。4–6 及后续未开放，不能将本次新增角色视为完整无尽内容。

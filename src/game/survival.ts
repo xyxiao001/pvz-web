@@ -47,6 +47,7 @@ export function generateSurvivalWaves(stage: number, roster: readonly ZombieKind
   });
 }
 export const ZOMBIE_NAMES: Record<ZombieKind, string> = {
+  zomboni: '冰车僵尸', bobsled: '雪橇僵尸小队', dolphin: '海豚骑士僵尸', jack: '玩偶匣僵尸', balloon: '气球僵尸',
   dancer: '舞王僵尸', backup: '伴舞僵尸', ducky: '鸭子救生圈僵尸', snorkel: '潜水僵尸', football: '橄榄球僵尸', normal: '普通僵尸', flag: '旗帜僵尸', cone: '路障僵尸', pole: '撑杆僵尸',
   bucket: '铁桶僵尸', newspaper: '读报僵尸', door: '铁栅门僵尸',
 };
