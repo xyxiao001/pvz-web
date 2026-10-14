@@ -1,5 +1,7 @@
 # 植物大战僵尸 Web
 
+[在线游玩](https://pvz-web-khaki.vercel.app/) · [GitHub 仓库](https://github.com/xyxiao001/pvz-web)
+
 TypeScript + PixiJS 8 + Vite 的本地可玩版本，以 PvZ-Portable 为行为参考。已实现原版素材主菜单、战斗 HUD、角色逐帧动画，以及可连续游玩的冒险 1–1 至 3–5，共 25 关。当前是玩法切片，不是 GOTY 全量移植。
 
 ## 运行
