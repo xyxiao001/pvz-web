@@ -4,3 +4,4 @@ dist/
 artifacts/
 
 .vercel/
+.env*
