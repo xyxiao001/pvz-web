@@ -7,13 +7,13 @@ import { walkingSpeed } from './zombie-motion';
 import portable from './data/portable-adventure.json';
 
 export type Phase = 'ready' | 'playing' | 'paused' | 'intermission' | 'won' | 'lost';
-export interface Plant { id: number; kind: PlantKind; row: number; column: number; health: number; actionIn: number; born: number; shotAt: number; awake?: boolean; rearIn?: number; productionEnding?: number; scared?: boolean; tall?: boolean; kelp?: { target: number; remaining: number }; squash?: { remaining: number; x: number; target: number };
+export interface Plant { id: number; kind: PlantKind; row: number; column: number; health: number; actionIn: number; born: number; shotAt: number; awake?: boolean; winterLaunchIn?: number; rearIn?: number; productionEnding?: number; scared?: boolean; tall?: boolean; kelp?: { target: number; remaining: number }; squash?: { remaining: number; x: number; target: number };
   chomp?: { phase: 'ready' | 'bite' | 'digest' | 'recover'; remaining: number } }
 export const headless = (zombie: Zombie) => !['zomboni','catapult','gargantuar'].includes(zombie.kind) && zombie.health < Math.trunc((['pole','dancer','dolphin','jack','ladder'].includes(zombie.kind) ? 500 : 270) / (zombie.mini ? 4 : 1)) / 3;
 export interface Roller { id: number; kind: 'wallnut' | 'explodenut'; row: number; x: number; y: number; direction: number; hit: number[] }
 export interface Packet { id: number; kind: PlantKind; x: number }
 export interface Zombie { id: number; kind: ZombieKind; armor: number; row: number; x: number; health: number; speed: number; biteIn: number; eating: boolean; wave: number; hitAt: number; chillIn: number; hasPole: boolean; vaultIn: number; animationTime: number; shield: number; rageIn: number; riseIn: number; hypnotized?: boolean; mini?: boolean; frozenIn?: number; summonIn?: number; dancePhase?: 'intro' | 'point' | 'hold' | 'dance'; danceIn?: number; leader?: number; slot?: number; flying?: boolean; popIn?: number; dolphin?: boolean; jackIn?: number; jackOpening?: boolean; sled?: number; sledLeader?: number; crashIn?: number; blownIn?: number; underground?: boolean; emergingIn?: number; backwards?: boolean; metalRemoved?: boolean; pogo?: boolean; butterIn?: number; ladderIn?: number; garlicIn?: number; garlicRow?: number; catapult?: { ammo: number; remaining: number; phase: 'walk' | 'shoot' | 'reload' }; giant?: { thrown: boolean; phase: 'walk' | 'smash' | 'throw'; remaining: number }; flight?: { remaining: number; duration: number; startX: number; endX: number }; landingIn?: number; bungee?: { phase: 'down' | 'wait' | 'up'; remaining: number; column: number; drop?: ZombieKind } }
-export interface Pea { id: number; row: number; x: number; ice: boolean; puff: boolean; age: number; longRange?: boolean; fire?: boolean; torch?: number; spike?: boolean; high?: boolean; vx?: number; vy?: number; y?: number; originY?: number; star?: boolean; lob?: { kind: 'cabbage' | 'kernel' | 'butter' | 'melon' | 'basketball'; target: number; startX: number; endX: number; startY: number; endY: number; duration: number } }
+export interface Pea { id: number; row: number; x: number; ice: boolean; puff: boolean; age: number; longRange?: boolean; fire?: boolean; torch?: number; spike?: boolean; high?: boolean; vx?: number; vy?: number; y?: number; originY?: number; star?: boolean; lob?: { kind: 'cabbage' | 'kernel' | 'butter' | 'melon' | 'wintermelon' | 'basketball'; target: number; startX: number; endX: number; startY: number; endY: number; duration: number } }
 export interface Vase { id: number; row: number; column: number; green: boolean; content: { type: 'seed'; kind: PlantKind } | { type: 'zombie'; kind: ZombieKind } }
 export interface SeedDrop { id: number; kind: PlantKind; row: number; column: number; remaining: number }
 export interface Sun { id: number; x: number; y: number; targetY: number; expiresIn: number; born: number; value: number }
@@ -61,10 +61,11 @@ export class Game {
   seedDrops: SeedDrop[] = [];
   selectedDrop: number | null = null;
   cooldowns: Record<BasePlantKind, number> = { umbrella:0, marigold:0, melonpult:0, splitpea:0, starfruit:0, pumpkin:0, magnetshroom:0, cabbagepult:0, flowerpot:0, kernelpult:0, coffeebean:0, garlic:0, jalapeno: 0, spikeweed: 0, torchwood: 0, tallnut: 0, seashroom: 0, cactus: 0, blover: 0, tanglekelp: 0, peashooter: 0, sunflower: 0, cherrybomb: 0, wallnut: 0, potatomine: 0, snowpea: 0, explodenut: 0, chomper: 0, repeater: 0, puffshroom: 0, sunshroom: 0, fumeshroom: 0, gravebuster: 0, hypnoshroom: 0, scaredyshroom: 0, iceshroom: 0, doomshroom: 0, lilypad: 0, squash: 0, threepeater: 0, plantern: 0 };
+  wintermelonCooldown = 0;
   upgradeCooldowns = { gatlingpea: 0, twinsunflower: 0 };
   get seedCapacity() { return this.scenario === 'endless' ? 10 : 6; }
   get canStart() { return !this.needsSeedChoice || this.seeds.length >= 6 && this.seeds.length <= this.seedCapacity; }
-  cooldown(kind: PlantKind) { return isUpgrade(kind) ? this.upgradeCooldowns[kind] : this.cooldowns[kind]; }
+  cooldown(kind: PlantKind) { return kind === 'wintermelon' ? this.wintermelonCooldown : isUpgrade(kind) ? this.upgradeCooldowns[kind] : this.cooldowns[kind]; }
   plantCost(kind: PlantKind) {
     return PLANTS[kind].cost + (this.scenario === 'endless' && isUpgrade(kind) ? this.plants.filter(p => p.kind === kind).length * 50 : 0);
   }
@@ -250,13 +251,14 @@ export class Game {
         this.selectedPacket = null;
       } else {
         this.sun -= this.plantCost(kind);
-        if (isUpgrade(kind)) this.upgradeCooldowns[kind] = PLANTS[kind].cooldown;
+        if (kind === 'wintermelon') this.wintermelonCooldown = PLANTS[kind].cooldown;
+        else if (isUpgrade(kind)) this.upgradeCooldowns[kind] = PLANTS[kind].cooldown;
         else this.cooldowns[kind] = PLANTS[kind].cooldown;
       }
       if (isUpgrade(kind)) this.plants = this.plants.filter(p => p.column !== column || p.row !== row || p.kind !== UPGRADES[kind]);
       this.plants.push({ id: ++this.id, kind, column, row, health: PLANTS[kind].health,
         actionIn: kind === 'gatlingpea' ? 100 : kind === 'sunflower' || kind === 'twinsunflower' || kind === 'sunshroom' || kind === 'marigold' ? 300 + Math.floor(this.random() * 951) : kind === 'jalapeno' || kind === 'cherrybomb' || kind === 'iceshroom' || kind === 'doomshroom' ? 100 : kind === 'potatomine' ? 1500 : kind === 'gravebuster' ? 400 : kind === 'coffeebean' ? 100
-          : kind === 'peashooter' || kind === 'snowpea' || kind === 'repeater' || kind === 'puffshroom' || kind === 'fumeshroom' || kind === 'scaredyshroom' || kind === 'threepeater' || kind === 'seashroom' || kind === 'cactus' || kind === 'splitpea' || kind === 'starfruit' || kind === 'cabbagepult' || kind === 'kernelpult' || kind === 'melonpult' ? Math.floor(this.random() * 151) : 50,
+          : kind === 'peashooter' || kind === 'snowpea' || kind === 'repeater' || kind === 'puffshroom' || kind === 'fumeshroom' || kind === 'scaredyshroom' || kind === 'threepeater' || kind === 'seashroom' || kind === 'cactus' || kind === 'splitpea' || kind === 'starfruit' || kind === 'cabbagepult' || kind === 'kernelpult' || kind === 'melonpult' || kind === 'wintermelon' ? Math.floor(this.random() * 151) : 50,
         born: this.ticks, shotAt: -100, ...(kind === 'chomper' ? { chomp: { phase: 'ready' as const, remaining: 0 } } : {}) });
     }
     this.selected = null;
@@ -384,7 +386,7 @@ export class Game {
     this.craters = this.craters.filter(c => c.remaining > 0);
     if (this.poolFrozenIn > 0) this.poolFrozenIn--;
     for (const kind of this.seeds) if (this.cooldown(kind) > 0) {
-      if (isUpgrade(kind)) this.upgradeCooldowns[kind]--; else this.cooldowns[kind]--;
+      if (kind === 'wintermelon') this.wintermelonCooldown--; else if (isUpgrade(kind)) this.upgradeCooldowns[kind]--; else this.cooldowns[kind]--;
     }
     if (!this.started) return;
 
@@ -435,6 +437,7 @@ export class Game {
         }
         continue;
       }
+      if (plant.winterLaunchIn && --plant.winterLaunchIn === 1) this.fireLob(plant);
       --plant.actionIn;
       // Portable UpdateShooter checks the repeater at 25 and at zero: a 25-tick pair.
       if (plant.kind === 'gatlingpea' && [68, 51, 35, 18].includes(plant.actionIn)) this.firePea(plant);
@@ -475,6 +478,7 @@ export class Game {
       }
       if (plant.kind === 'splitpea') { this.firePea(plant); this.fireRear(plant); plant.rearIn=25;plant.actionIn=150-Math.floor(this.random()*15);continue; }
       if (plant.kind === 'starfruit') { this.fireStars(plant);plant.actionIn=150-Math.floor(this.random()*15);continue; }
+      if (plant.kind === 'wintermelon') { this.fireLob(plant, true); plant.actionIn=300-Math.floor(this.random()*15); continue; }
       if (plant.kind === 'cabbagepult' || plant.kind === 'kernelpult' || plant.kind === 'melonpult') { this.fireLob(plant);plant.actionIn=300-Math.floor(this.random()*15);continue; }
       if (plant.kind === 'threepeater') {
         if (this.zombies.some(z=>!z.hypnotized&&!this.flying(z)&&!this.submerged(z)&&z.health>0&&z.riseIn===0&&Math.abs(z.row-plant.row)<=1&&z.x>cellX(plant.column)&&z.x<825))
@@ -1096,13 +1100,15 @@ export class Game {
     const target=this.zombies.find(z=>!z.hypnotized&&!this.flying(z)&&!this.submerged(z)&&z.health>0&&Math.abs(z.x-pea.x)<22&&Math.abs(this.rowY(z.row,z.x)-43-pea.y!)<32);
     if(target){this.damageZombie(target,20);target.hitAt=this.ticks;pea.x=1000;}
   }
-  private fireLob(plant: Plant) {
+  private fireLob(plant: Plant, prepareWinter = false) {
     const x=cellX(plant.column), target=this.zombies.filter(z=>!z.hypnotized&&!this.flying(z)&&!z.flight&&!z.landingIn&&!z.underground&&!z.emergingIn&&(!z.bungee||z.bungee.phase==='wait')&&z.health>0&&z.row===plant.row&&z.x>x-10&&z.x<825).sort((a,b)=>a.x-b.x)[0];
     if(!target && !(this.boss && bossVulnerable(this.boss)))return;
-    const kind=plant.kind==='melonpult'?'melon':plant.kind==='cabbagepult'?'cabbage':this.random()<.25?'butter':'kernel';
+    if (prepareWinter) { plant.winterLaunchIn=36; plant.shotAt=this.ticks; return; }
+    const kind=plant.kind==='wintermelon'?'wintermelon':plant.kind==='melonpult'?'melon':plant.kind==='cabbagepult'?'cabbage':this.random()<.25?'butter':'kernel';
     const duration=100,endX=target ? target.x-(target.eating||target.bungee||target.giant&&target.giant.phase!=='walk'||target.catapult&&target.catapult.phase!=='walk'?0:walkingSpeed(target)*duration) : 740;
     this.peas.push({id:++this.id,row:plant.row,x,y:this.rowY(plant.row,x)-60,age:0,ice:false,puff:false,lob:{kind,target:target ? target.id : -1,startX:x,endX,startY:this.rowY(plant.row,x)-60,endY:this.rowY(plant.row,endX)-55,duration}});
-    plant.shotAt=this.ticks;this.events.push({kind:'shoot',x,y:this.rowY(plant.row,x)-60});
+    if (plant.kind !== 'wintermelon') plant.shotAt=this.ticks;
+    this.events.push({kind:'shoot',x,y:this.rowY(plant.row,x)-60});
   }
   private updateLob(pea: Pea) {
     const shot=pea.lob!,t=++pea.age/shot.duration;
@@ -1113,13 +1119,16 @@ export class Game {
       if(victim){const umbrella=this.findUmbrella(victim.column,victim.row);if(umbrella)umbrella.shotAt=this.ticks;else victim.health-=75;}
       pea.x=1000;return;
     }
-    if(shot.target===-1 && this.boss){damageBoss(this.boss,shot.kind==='melon'?80:shot.kind==='kernel'?20:40,this.ticks);pea.x=1000;return;}
+    if(shot.target===-1 && this.boss){if(shot.kind==='wintermelon'&&bossVulnerable(this.boss))this.boss.chillIn=Math.max(this.boss.chillIn,1000);damageBoss(this.boss,shot.kind==='melon'||shot.kind==='wintermelon'?80:shot.kind==='kernel'?20:40,this.ticks);pea.x=1000;return;}
     const target=this.zombies.find(z=>z.id===shot.target&&z.health>0&&!z.underground&&(!z.bungee||z.bungee.phase==='wait')&&Math.abs(z.x-shot.endX)<65);
     if(target){
-      if(shot.kind==='melon'){
+      if(shot.kind==='melon'||shot.kind==='wintermelon'){
         const nearby=this.zombies.filter(z=>z!==target&&!z.hypnotized&&!this.flying(z)&&!this.submerged(z)&&z.health>0&&Math.abs(z.row-target.row)<=1&&Math.abs(z.x-target.x)<=80);
         const splash=nearby.length*26>560?Math.max(1,Math.trunc(80*560/(nearby.length*26*3))):26;
-        for(const z of [target,...nearby]){const damage=z===target?80:splash;if(z.shield>0)this.damageZombie(z,Math.min(z.shield,damage));this.damageZombie(z,damage,true);z.hitAt=this.ticks;}
+        for(const z of [target,...nearby]){const damage=z===target?80:splash;if(z.shield>0)this.damageZombie(z,Math.min(z.shield,damage));this.damageZombie(z,damage,true);z.hitAt=this.ticks;
+          // Portable CanBeChilled: ice machines and riding sled teams resist chill; catapults do not.
+          if (shot.kind==='wintermelon' && z.kind!=='zomboni' && !z.sled && !z.underground && !z.emergingIn && !z.riseIn && z.health>0 && !headless(z)) z.chillIn=Math.max(z.chillIn,1000);
+        }
       }else{this.damageZombie(target,shot.kind==='kernel'?20:40,true);target.hitAt=this.ticks;if(shot.kind==='butter'&&target.kind!=='catapult'&&target.kind!=='zomboni')target.butterIn=400;}
     }
     pea.x=1000;

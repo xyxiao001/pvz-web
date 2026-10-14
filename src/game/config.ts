@@ -3,7 +3,7 @@ import portable from './data/portable-adventure.json';
 export const TICK_MS = 10;
 export const BOARD = { width: 800, height: 600, left: 40, top: 80, cellWidth: 80, cellHeight: 100, columns: 9 };
 export type BasePlantKind = 'peashooter' | 'sunflower' | 'cherrybomb' | 'wallnut' | 'potatomine' | 'snowpea' | 'explodenut' | 'chomper' | 'repeater' | 'puffshroom' | 'sunshroom' | 'fumeshroom' | 'gravebuster' | 'hypnoshroom' | 'scaredyshroom' | 'iceshroom' | 'doomshroom' | 'lilypad' | 'squash' | 'threepeater' | 'plantern' | 'tanglekelp' | 'jalapeno' | 'spikeweed' | 'torchwood' | 'tallnut' | 'seashroom' | 'cactus' | 'blover' | 'splitpea' | 'starfruit' | 'pumpkin' | 'magnetshroom' | 'cabbagepult' | 'flowerpot' | 'kernelpult' | 'coffeebean' | 'garlic' | 'umbrella' | 'marigold' | 'melonpult';
-export const UPGRADES = { gatlingpea: 'repeater', twinsunflower: 'sunflower' } as const;
+export const UPGRADES = { gatlingpea: 'repeater', twinsunflower: 'sunflower', wintermelon: 'melonpult' } as const;
 export type UpgradeKind = keyof typeof UPGRADES;
 export type PlantKind = BasePlantKind | UpgradeKind;
 export const isUpgrade = (kind: PlantKind): kind is UpgradeKind => kind in UPGRADES;
@@ -17,6 +17,7 @@ export const isPool = (environment: Environment) => environment === 'pool' || en
 export const isNight = (environment: Environment) => environment === 'night' || environment === 'fog';
 export const MUSHROOMS: readonly PlantKind[] = ['puffshroom','sunshroom','fumeshroom','hypnoshroom','scaredyshroom','iceshroom','doomshroom','seashroom','magnetshroom'];
 export const PLANTS = {
+  wintermelon: { name: '冰西瓜', cost: 200, cooldown: 5000, health: 300, interval: 300 },
   gatlingpea: { name: '机枪射手', cost: 250, cooldown: 5000, health: 300, interval: 150 },
   twinsunflower: { name: '双子向日葵', cost: 150, cooldown: 5000, health: 300, interval: 2500 },
   umbrella: { name: '叶子保护伞', cost: 100, cooldown: 750, health: 300, interval: 0 },
@@ -84,7 +85,7 @@ export function endlessConfig(scene: SurvivalScene): LevelConfig {
     if (scene === 'roof' && ['spikeweed','potatomine'].includes(kind)) return false;
     return true;
   });
-  return { ...ENDLESS, environment: scene, title: `${SCENE_NAMES[scene]}无尽`, seeds: [...seeds, 'gatlingpea', 'twinsunflower'],
+  return { ...ENDLESS, environment: scene, title: `${SCENE_NAMES[scene]}无尽`, seeds: [...seeds, 'gatlingpea', 'twinsunflower', 'wintermelon'],
     rows: isPool(scene) ? [0,1,2,3,4,5] : [0,1,2,3,4] };
 }
 const nightSeeds: PlantKind[] = [...ENDLESS.seeds, 'puffshroom','sunshroom','fumeshroom','gravebuster','hypnoshroom','scaredyshroom'];

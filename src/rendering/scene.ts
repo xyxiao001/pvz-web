@@ -183,13 +183,13 @@ export class Scene {
 
   setPointer(pointer: { x: number; y: number } | null) { this.pointer = pointer; }
 
-  private animate(actor: Actor, clipName: string, loop = true, timeline = this.time, rate = 1) {
+  private animate(actor: Actor, clipName: string, loop = true, timeline = this.time, rate = 1, shootingTicks?: number) {
     if (hasPlantMotion(clipName)) {
       if (!actor.rig) {
         actor.rig = this.plantMotion.create(clipName); actor.root.addChild(actor.rig.root); actor.art.visible = false;
         actor.clip = clipName; actor.since = timeline - actor.root.uid * 17 % this.plantMotion.duration(clipName);
       }
-      actor.rig.render((timeline - actor.since) * rate);
+      actor.rig.render((timeline - actor.since) * rate, shootingTicks);
       return;
     }
     if (actor.clip !== clipName) {
@@ -329,7 +329,7 @@ export class Scene {
         : plant.kind === 'chomper' ? plant.chomp!.phase === 'digest' ? 'chomper-digest' : plant.chomp!.phase === 'ready' ? 'chomper' : 'chomper-bite'
         : plant.kind === 'potatomine' && plant.actionIn > 0 ? 'potatomine-unarmed' : plant.kind === 'wallnut' && plant.health < 1334 ? 'wallnut-cracked2'
         : plant.kind === 'wallnut' && plant.health < 2667 ? 'wallnut-cracked1' : plant.kind;
-      if(plant.kind==='flowerpot'){actor.art.texture=this.textures.flowerpot;actor.art.anchor.set(.5,.82);}else this.animate(actor, clip, plant.kind !== 'cherrybomb' && clip !== 'chomper-bite' && clip !== 'umbrella-block' && clip !== 'melonpult-attack', sleeping ? 0 : this.time, clip === 'chomper-bite' ? this.clips[clip].duration / 70 : clip==='umbrella-block'?this.clips[clip].duration/65:clip==='melonpult-attack'?this.clips[clip].duration/155:1);
+      if(plant.kind==='flowerpot'){actor.art.texture=this.textures.flowerpot;actor.art.anchor.set(.5,.82);}else this.animate(actor, clip, plant.kind !== 'cherrybomb' && clip !== 'chomper-bite' && clip !== 'umbrella-block' && clip !== 'melonpult-attack', sleeping ? 0 : this.time, clip === 'chomper-bite' ? this.clips[clip].duration / 70 : clip==='umbrella-block'?this.clips[clip].duration/65:clip==='melonpult-attack'?this.clips[clip].duration/155:1, plant.kind==='wintermelon' && plant.winterLaunchIn!==undefined ? game.ticks+(game.phase==='playing'?alpha:0)-plant.shotAt : undefined);
       actor.root.position.set(cellX(plant.column), game.rowY(plant.row,cellX(plant.column)));
       if(game.config.environment==='roof'&&plant.kind!=='flowerpot')actor.root.y-=12;
       actor.art.tint=sleeping?0xa3a1be:0xffffff;
@@ -387,7 +387,7 @@ export class Scene {
     for (const pea of game.peas) {
       const key = `b${pea.id}`; const actor = this.actor(key, pea.row * 100 + 30);
       const kind = pea.lob ? pea.lob.kind : pea.star?'star': pea.spike ? 'spike' : pea.puff ? 'puff' : pea.ice ? 'ice' : pea.fire ? 'fire' : 'pea';
-      if (actor.clip !== kind) { actor.clip = kind; actor.art.texture = pea.lob?this.textures[pea.lob.kind]:pea.star?this.textures.star:pea.spike ? this.textures.spike : pea.puff ? this.textures.puff : pea.ice ? this.textures.ice : this.textures.pea; actor.art.anchor.set(.5); actor.art.width = pea.lob?.kind==='melon'?38:pea.lob?25:pea.star?28:pea.spike?26:19; actor.art.height = pea.lob?.kind==='melon'?38:pea.lob?25:pea.star?28:pea.spike?8:19;actor.art.tint=pea.fire?0xff7925:0xffffff; }
+      if (actor.clip !== kind) { actor.clip = kind; actor.art.texture = pea.lob?this.textures[pea.lob.kind]:pea.star?this.textures.star:pea.spike ? this.textures.spike : pea.puff ? this.textures.puff : pea.ice ? this.textures.ice : this.textures.pea; actor.art.anchor.set(.5); actor.art.width = (pea.lob?.kind==='melon'||pea.lob?.kind==='wintermelon')?38:pea.lob?25:pea.star?28:pea.spike?26:19; actor.art.height = (pea.lob?.kind==='melon'||pea.lob?.kind==='wintermelon')?38:pea.lob?25:pea.star?28:pea.spike?8:19;actor.art.tint=pea.fire?0xff7925:0xffffff; }
       this.move(actor, pea, pea.y!==undefined?pea.y:pea.originY!==undefined?pea.originY-(pea.high?72:0):game.rowY(pea.row) - (pea.high ? 115 : 43), alpha);
     }
     for (const nut of game.rollers) {

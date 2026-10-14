@@ -17,7 +17,7 @@ const step = (game: Game, count: number) => { for (let i = 0; i < count; i++) { 
 test('endless uses five rows, 50 sun, all migrated day plants and up to ten selected slots without adventure unlocks', () => {
   const game = new Game(1, 12, 'endless');
   assert.equal(game.sun, 50); assert.deepEqual(game.config.rows, [0,1,2,3,4]);
-  assert.equal(game.config.seeds.length, 36); assert.equal(game.config.reward, null);
+  assert.equal(game.config.seeds.length, 37); assert.equal(game.config.reward, null);
   game.start(); assert.equal(game.phase, 'ready');
   game.chooseSeed('lilypad'); assert.equal(game.seeds.length, 0);
   for (const kind of loadout) game.chooseSeed(kind);

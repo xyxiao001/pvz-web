@@ -11,6 +11,7 @@ export function combatTextureFiles(game: Game) {
   if (plants.has('snowpea') || game.peas.some(pea => pea.ice)) files.ice = 'original/snow-pea.webp';
   if (plants.has('puffshroom') || plants.has('scaredyshroom') || plants.has('seashroom') || game.peas.some(pea => pea.puff)) files.puff = 'original/puff.webp';
   if(plants.has('starfruit'))files.star='original/star.webp';
+  if(plants.has('wintermelon') || game.peas.some(pea=>pea.lob?.kind==='wintermelon'))files.wintermelon='original/wintermelon-projectile.webp';
   if(plants.has('melonpult'))files.melon='original/melon.webp';
   if(plants.has('marigold')||game.coins.length){files.coinSilver='original/coin-silver.webp';files.coinGold='original/coin-gold.webp';}
   if(plants.has('cabbagepult'))files.cabbage='original/cabbage.webp';

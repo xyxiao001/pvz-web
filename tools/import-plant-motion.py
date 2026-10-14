@@ -14,7 +14,7 @@ inputs.mkdir(parents=True, exist_ok=True); results.mkdir(parents=True, exist_ok=
 images = {p.stem.upper(): p for p in directory.glob('*.png')}
 sources = {}; definitions = {}; fields = ['x','y','sx','sy','kx','ky','f','a','i']
 def record(path): sources[str(path.relative_to(repo))] = hashlib.sha256(path.read_bytes()).hexdigest()
-for key, name, layer, duration in [('peashooter','PeaShooter','anim_full_idle',100),('sunflower','SunFlower','anim_idle',100),('threepeater','ThreePeater','anim_idle',144),('gatlingpea','GatlingPea','anim_idle',144),('twinsunflower','TwinSunflower','anim_idle',144)]:
+for key, name, layer, duration in [('peashooter','PeaShooter','anim_full_idle',100),('sunflower','SunFlower','anim_idle',100),('threepeater','ThreePeater','anim_idle',144),('gatlingpea','GatlingPea','anim_idle',144),('twinsunflower','TwinSunflower','anim_idle',144),('wintermelon','WinterMelon','anim_idle',248)]:
     path = directory / (name+'.reanim'); record(path)
     xml = ET.fromstring('<root>'+path.read_text()+'</root>'); tracks = {}
     for track in xml.findall('track'):
@@ -38,12 +38,18 @@ for key, name, layer, duration in [('peashooter','PeaShooter','anim_full_idle',1
     groups=[group(layer)]
     if key=='gatlingpea': groups.append(group('anim_head_idle','anim_idle'))
     if key=='threepeater': groups += [group('anim_head_idle'+i,'anim_head'+i) for i in ['1','3','2']]
-    used=sorted({p[8] for g in groups for t in g['tracks'] for p in t['poses'] if p[8]})
+    shooting={'duration':group('anim_shooting')['length']/35*100,'groups':[group('anim_shooting')]} if key=='wintermelon' else None
+    all_groups=groups+shooting['groups'] if shooting else groups
+    used=sorted({p[8] for g in all_groups for t in g['tracks'] for p in t['poses'] if p[8]})
     definitions[key]={'duration':duration,'origin':[-40,-74 if key!='threepeater' else -80],'groups':groups,'images':used}
+    if shooting: definitions[key]['shooting']=shooting
     for name in used:
         path=images[name];record(path);Image.open(path).convert('RGBA').save(inputs/(name+'.png'))
+projectile=directory/'WinterMelon_projectile.png'; record(projectile)
+Image.open(projectile).convert('RGBA').save(inputs/'WINTERMELON_PROJECTILE.png')
 engine=root/'artifacts/hd-work/runtime/realesrgan-ncnn-vulkan'
 subprocess.run([str(engine),'-i',str(inputs),'-o',str(results),'-m',str(engine.parent/'models'),'-n','realesr-animevideov3','-s','2','-f','png'],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+Image.open(results/'WINTERMELON_PROJECTILE.png').save(root/'public/assets/runtime/original/wintermelon-projectile.webp',lossless=True,method=6)
 for key,definition in definitions.items():
     entries=[];x=2;y=2;row=0
     for name in definition.pop('images'):
@@ -56,7 +62,7 @@ for key,definition in definitions.items():
     atlas.save(output/(key+'.webp'),lossless=True,method=6,exact=True)
     definition['frames']=rects
     (output/(key+'.json')).write_text(json.dumps(definition,separators=(',',':')))
-    if key in ['gatlingpea','twinsunflower']:
+    if key in ['gatlingpea','twinsunflower','wintermelon']:
         portrait=Image.new('RGBA',(320,320))
         for g in definition['groups']:
             for t in g['tracks']:

@@ -60,7 +60,16 @@
     "SexyAppFramework/reanim/SunFlower_double_petals.png": "ccc2a0ce6c919b6bfc5ded136c8dacf7fd97938a2f1a6bbff7c3f23fa96d3121",
     "SexyAppFramework/reanim/TwinSunflower_leaf.png": "7953adcd57917ad2b102b1ebd59df0d30fdc545ca4f677e7f0e7313301060ea7",
     "SexyAppFramework/reanim/TwinSunflower_stem1.png": "e9f41c63c7d59beef54db41b9ca974d274ce3f071bd4b7ab6ea6cd872f955b24",
-    "SexyAppFramework/reanim/TwinSunflower_stem2.png": "16dce1b2a960069cff6da5c4b1e9add3d79180dbecbbd6d4bc1e70e7613c82c7"
+    "SexyAppFramework/reanim/TwinSunflower_stem2.png": "16dce1b2a960069cff6da5c4b1e9add3d79180dbecbbd6d4bc1e70e7613c82c7",
+    "SexyAppFramework/reanim/WinterMelon.reanim": "c2305a4e4b744a254b91b0751c9c79cca9b7d2648572ef30d563393289e57eaf",
+    "SexyAppFramework/reanim/WinterMelon_basket.png": "aa1c2e2cc40d864b322632f2c28847fd7e31b47dca7a3ed2d1edff50e7ae392c",
+    "SexyAppFramework/reanim/WinterMelon_basket_overlay.png": "24a089f4348cd293dd42fd22e88a2f433f59e7efc2cfafb68ec1b0771ddfc064",
+    "SexyAppFramework/reanim/WinterMelon_blink1.png": "2f1b171e9f3016b0a703414f82da3aecacd69b814ea0e9a73ee6271b9576527e",
+    "SexyAppFramework/reanim/WinterMelon_blink2.png": "553d40c7930d2c664e73f338a23914ee3f8aecf431599abd4388dd1a04d1205f",
+    "SexyAppFramework/reanim/WinterMelon_eyebrow.png": "93a5952443aef7ec01ade5fad5a051a3ef8830a5b82a3298ef8bf69f32c0213a",
+    "SexyAppFramework/reanim/WinterMelon_melon.png": "a421602a350512914b6e8c204e871d273a6644a5de3c6fde5f10904e0650dd41",
+    "SexyAppFramework/reanim/WinterMelon_projectile.png": "4848a9449bb461b9f53a063cdc4eb025c27a2d02ad2b47150b4f47895395de3c",
+    "SexyAppFramework/reanim/WinterMelon_stalk.png": "aa03c7e272eae343d38d00ea9327ffed8e6909a63f6e95e69241ad4f7de528c0"
   },
   "scaling": "Real-ESRGAN animevideov3 2x per source part; packed without resampling"
 }

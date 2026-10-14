@@ -24,7 +24,8 @@ for (const [scene, hash] of Object.entries({
   roof:'7a8ec40bb85727bc232c2fb398c7fb66bc8f5d0f6fb3417308426a44bab94d5b',
 }) as [Parameters<typeof denseGame>[0],string][]) test(`dense ${scene} simulation preserves the pre-optimization result`,()=>{
   const game=denseGame(scene);for(let i=0;i<1000;i++){game.step();game.drainEvents();}
-  const { upgradeCooldowns, ...originalState } = game.snapshot();
+  const { wintermelonCooldown, upgradeCooldowns, ...originalState } = game.snapshot();
+  assert.equal(wintermelonCooldown,0);
   assert.deepEqual(upgradeCooldowns, { gatlingpea: 0, twinsunflower: 0 });
   assert.equal(createHash('sha256').update(JSON.stringify(originalState)).digest('hex'),hash);
 });
