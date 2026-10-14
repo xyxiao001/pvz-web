@@ -1,5 +1,5 @@
 import { createBoss, stepBoss, damageBoss, bossVulnerable, type Boss } from './boss';
-import { BOARD, UPGRADES, isUpgrade, type BasePlantKind, cellX, endlessConfig, isPool, isNight, MUSHROOMS, LEVELS, PLANTS, type SurvivalScene, type LevelId, type PlantKind, type ZombieKind } from './config';
+import { BOARD, UPGRADES, isUpgrade, type BasePlantKind, cellX, survivalConfig, isPool, isNight, MUSHROOMS, LEVELS, PLANTS, type SurvivalMode, type SurvivalScene, type LevelId, type PlantKind, type ZombieKind } from './config';
 import { generateSurvivalWaves, isSurvivalFlagWave, survivalRoster } from './survival';
 import { generateWaves, isFlagWave } from './waves';
 import { RowPicker } from './row-picker';
@@ -63,7 +63,7 @@ export class Game {
   cooldowns: Record<BasePlantKind, number> = { umbrella:0, marigold:0, melonpult:0, splitpea:0, starfruit:0, pumpkin:0, magnetshroom:0, cabbagepult:0, flowerpot:0, kernelpult:0, coffeebean:0, garlic:0, jalapeno: 0, spikeweed: 0, torchwood: 0, tallnut: 0, seashroom: 0, cactus: 0, blover: 0, tanglekelp: 0, peashooter: 0, sunflower: 0, cherrybomb: 0, wallnut: 0, potatomine: 0, snowpea: 0, explodenut: 0, chomper: 0, repeater: 0, puffshroom: 0, sunshroom: 0, fumeshroom: 0, gravebuster: 0, hypnoshroom: 0, scaredyshroom: 0, iceshroom: 0, doomshroom: 0, lilypad: 0, squash: 0, threepeater: 0, plantern: 0 };
   wintermelonCooldown = 0;
   upgradeCooldowns = { gatlingpea: 0, twinsunflower: 0 };
-  get seedCapacity() { return this.scenario === 'endless' ? 10 : 6; }
+  get seedCapacity() { return this.isSurvival ? 10 : 6; }
   get canStart() { return !this.needsSeedChoice || this.seeds.length >= 6 && this.seeds.length <= this.seedCapacity; }
   cooldown(kind: PlantKind) { return kind === 'wintermelon' ? this.wintermelonCooldown : isUpgrade(kind) ? this.upgradeCooldowns[kind] : this.cooldowns[kind]; }
   plantCost(kind: PlantKind) {
@@ -92,16 +92,16 @@ export class Game {
   survivalStage = 0;
   survivalEnemies: ZombieKind[] = [];
 
-  constructor(readonly level: LevelId, seed: number, readonly scenario: 'adventure' | 'endless' = 'adventure', readonly survivalScene: SurvivalScene = 'day') {
+  constructor(readonly level: LevelId, seed: number, readonly scenario: 'adventure' | SurvivalMode = 'adventure', readonly survivalScene: SurvivalScene = 'day') {
     if (scenario === 'adventure' && level === 50) this.boss = createBoss();
-    this.config = scenario === 'endless' ? endlessConfig(survivalScene) : LEVELS[level];
-    this.needsSeedChoice = scenario === 'endless' || this.config.mode === 'lawn' && level > 7;
+    this.config = scenario !== 'adventure' ? survivalConfig(survivalScene, scenario) : LEVELS[level];
+    this.needsSeedChoice = scenario !== 'adventure' || this.config.mode === 'lawn' && level > 7;
     this.seeds = this.needsSeedChoice ? [] : [...this.config.seeds];
     this.sun = this.config.initialSun;
     this.randomState = seed >>> 0;
-    if (scenario === 'endless') this.survivalEnemies = survivalRoster(0, () => this.random(), survivalScene);
-    this.waves = scenario === 'endless' ? generateSurvivalWaves(0, this.survivalEnemies, () => this.random()) : generateWaves(level, () => this.random());
-    if (scenario === 'endless') this.started = true;
+    if (scenario !== 'adventure') this.survivalEnemies = survivalRoster(0, () => this.random(), survivalScene, scenario);
+    this.waves = scenario !== 'adventure' ? generateSurvivalWaves(0, this.survivalEnemies, () => this.random(), scenario) : generateWaves(level, () => this.random());
+    if (scenario !== 'adventure') this.started = true;
     this.rowPicker = new RowPicker(this.config.rows);
     if (this.config.mode === 'bowling') {
       this.conveyor.push({ id: ++this.id, kind: 'wallnut', x: 0 });
@@ -112,7 +112,7 @@ export class Game {
     }
     if (this.config.mode === 'whack') { this.started = true; this.waveIn = 200; this.addWhackGraves(9); }
     if (this.config.environment === 'night' && this.config.mode !== 'whack' && this.config.mode !== 'vase') {
-      const columns = scenario === 'endless' ? [[4,1],[5,1],[6,2],[7,2],[8,3]] : portable.graveColumns[level - 1];
+      const columns = scenario !== 'adventure' ? [[4,1],[5,1],[6,2],[7,2],[8,3]] : portable.graveColumns[level - 1];
       for (const [column, count] of columns) {
         const rows = [...this.config.rows];
         for (let i = 0; i < count; i++) this.graves.push({ id: ++this.id, column, row: rows.splice(Math.floor(this.random() * rows.length), 1)[0] });
@@ -149,19 +149,22 @@ export class Game {
 
   get hasConveyor() { return this.config.mode === 'bowling' || this.config.mode === 'conveyor'; }
 
-  isFlagWave(wave: number) { return this.scenario === 'endless' ? isSurvivalFlagWave(wave) : isFlagWave(this.level, wave); }
+  get isSurvival() { return this.scenario !== 'adventure'; }
+  get survivalGoal() { return this.scenario === 'survival-normal' ? 5 : this.scenario === 'survival-hard' ? 10 : null; }
+
+  isFlagWave(wave: number) { return this.isSurvival ? isSurvivalFlagWave(wave) : isFlagWave(this.level, wave); }
 
   get survivalFlags() {
     // Board::GetSurvivalFlagsCompleted: a flag in progress is not yet a cleared flag.
-    const pendingFlag = this.isFlagWave(this.wave - 1) && this.phase !== 'intermission';
-    return this.survivalStage * 2 + Math.floor((this.wave - Number(pendingFlag)) / 10);
+    const pendingFlag = this.isFlagWave(this.wave - 1) && this.phase !== 'intermission' && this.phase !== 'won';
+    return this.survivalStage * this.config.waveCount / 10 + Math.floor((this.wave - Number(pendingFlag)) / 10);
   }
 
   nextSurvivalStage() {
-    if (this.scenario !== 'endless' || this.phase !== 'intermission') return;
+    if (this.scenario === 'adventure' || this.phase !== 'intermission') return;
     this.survivalStage++;
-    this.survivalEnemies = survivalRoster(this.survivalStage, () => this.random(), this.survivalScene);
-    this.waves = generateSurvivalWaves(this.survivalStage, this.survivalEnemies, () => this.random());
+    this.survivalEnemies = survivalRoster(this.survivalStage, () => this.random(), this.survivalScene, this.scenario);
+    this.waves = generateSurvivalWaves(this.survivalStage, this.survivalEnemies, () => this.random(), this.scenario);
     this.wave = 0; this.waveIn = 600; this.waveElapsed = 0; this.waveThreshold = 0; this.flagWarningIn = 0;
     this.rowPicker.beginSurvivalStage();
     this.cancelSelection();
@@ -737,10 +740,10 @@ export class Game {
     }
 
     if (this.graveWaveIn > 0 && --this.graveWaveIn === 0) {
-      if(this.config.environment==='roof')for(let i=0;i<(this.level<43?2:3);i++)this.dropFromSky(this.random()<.5?'normal':'cone',this.config.rows[Math.floor(this.random()*5)],this.wave-1);
+      if(this.config.environment==='roof')for(let i=0;i<(this.survivalGoal!==null?3:this.level<43?2:3);i++)this.dropFromSky(this.random()<.5?'normal':'cone',this.config.rows[Math.floor(this.random()*5)],this.wave-1);
       if (isPool(this.config.environment) && this.poolFrozenIn === 0) {
         const cells = [2,3].flatMap(row => [5,6,7,8].map(column => ({row,column})));
-        const count = this.scenario === 'endless' ? 3 : this.level <= 22 ? 2 : 3;
+        const count = this.isSurvival ? 3 : this.level <= 22 ? 2 : 3;
         for (let i=0;i<count;i++) {
           const cell = cells.splice(Math.floor(this.random()*cells.length),1)[0];
           const z = this.spawnZombie(this.random()<.5?'normal':'cone',cell.row,cellX(cell.column)-35,this.wave-1); z.riseIn=50;
@@ -771,7 +774,7 @@ export class Game {
         this.events.push({ kind: 'flag', x: 400, y: 280 });
       } else if (this.waveIn === 0) this.spawnWave();
     } else if (!this.zombies.some(z => !z.hypnotized) && this.graveWaveIn === 0) {
-      if (this.scenario === 'endless') {
+      if (this.isSurvival && (this.survivalGoal === null || (this.survivalStage + 1) * this.config.waveCount / 10 < this.survivalGoal)) {
         this.cancelSelection(); this.phase = 'intermission';
       } else {
         this.phase = 'won';

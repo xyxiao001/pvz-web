@@ -9,6 +9,9 @@ export type PlantKind = BasePlantKind | UpgradeKind;
 export const isUpgrade = (kind: PlantKind): kind is UpgradeKind => kind in UPGRADES;
 export type ZombieKind = 'normal' | 'cone' | 'flag' | 'pole' | 'bucket' | 'newspaper' | 'door' | 'football' | 'dancer' | 'backup' | 'ducky' | 'snorkel' | 'zomboni' | 'bobsled' | 'dolphin' | 'jack' | 'balloon' | 'digger' | 'pogo' | 'bungee' | 'ladder' | 'catapult' | 'gargantuar' | 'imp';
 export type LevelId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50;
+export type SurvivalMode = 'endless' | 'survival-normal' | 'survival-hard';
+export const SURVIVAL_MODES: SurvivalMode[] = ['survival-normal', 'survival-hard', 'endless'];
+export const SURVIVAL_MODE_NAMES: Record<SurvivalMode, string> = { 'survival-normal': '普通', 'survival-hard': '困难', endless: '无尽' };
 export type SurvivalScene = 'day' | 'night' | 'pool' | 'fog' | 'roof';
 export const SCENE_NAMES: Record<SurvivalScene, string> = { day: '白天庭院', night: '夜晚庭院', pool: '泳池', fog: '迷雾泳池', roof: '屋顶' };
 export const SURVIVAL_SCENES: SurvivalScene[] = ['day', 'night', 'pool', 'fog', 'roof'];
@@ -87,6 +90,15 @@ export function endlessConfig(scene: SurvivalScene): LevelConfig {
   });
   return { ...ENDLESS, environment: scene, title: `${SCENE_NAMES[scene]}无尽`, seeds: [...seeds, 'gatlingpea', 'twinsunflower', 'wintermelon'],
     rows: isPool(scene) ? [0,1,2,3,4,5] : [0,1,2,3,4] };
+}
+// Board::GetNumWavesPerSurvivalStage / IsFinalSurvivalStage: 5×10 or 5×20 waves.
+export function survivalConfig(scene: SurvivalScene, mode: SurvivalMode): LevelConfig {
+  const config = endlessConfig(scene);
+  if (mode === 'endless') return config;
+  const normal = mode === 'survival-normal';
+  return { ...config, label: `生存 · ${SURVIVAL_MODE_NAMES[mode]}`, title: `${SCENE_NAMES[scene]}生存（${SURVIVAL_MODE_NAMES[mode]}）`,
+    waveCount: normal ? 10 : 20,
+    description: `守住 ${normal ? 5 : 10} 面旗帜获胜。每轮 ${normal ? 10 : 20} 波，共五轮；轮间保留防线、阳光和冷却，可重新选卡。` };
 }
 const nightSeeds: PlantKind[] = [...ENDLESS.seeds, 'puffshroom','sunshroom','fumeshroom','gravebuster','hypnoshroom','scaredyshroom'];
 const poolSeeds: PlantKind[] = [...nightSeeds, 'iceshroom','doomshroom','lilypad'];

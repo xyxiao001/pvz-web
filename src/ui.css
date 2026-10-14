@@ -133,3 +133,7 @@ footer{color:#8d9d76;font-size:11px}
 .chooser-details{top:18%;max-height:52cqw;overflow-y:auto;scrollbar-width:thin}
 .plant-detail{border-top:1px solid #9caa7777;margin-top:1cqw;padding-top:1cqw;text-align:left}
 .plant-detail h4{font-size:1.5cqw;margin:0;color:#ffe08f}.plant-detail p{font-size:1.3cqw;margin:.5cqw 0}.plant-detail small{font-size:1.1cqw;color:#bcd08a}
+
+.survival-modes{display:flex;justify-content:center;gap:1cqw;margin:1cqw 0}.survival-modes .wood-button{margin:0;font-size:1.6cqw;padding:.7cqw 1.6cqw}.survival-modes [aria-pressed="true"]{color:#e7ff92;outline:2px solid #d1db71;outline-offset:1px}
+
+@container(min-width:601px){.survival-scenes{grid-template-columns:repeat(3,minmax(0,1fr))}.survival-scenes h3{font-size:1.7cqw}}

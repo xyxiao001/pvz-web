@@ -1,22 +1,24 @@
 import data from './data/portable-adventure.json';
-import { isPool, type SurvivalScene, type ZombieKind } from './config';
+import { isPool, type SurvivalMode, type SurvivalScene, type ZombieKind } from './config';
 
 export const isSurvivalFlagWave = (wave: number) => wave % 10 === 9;
 
 // Challenge::InitZombieWavesSurvival: two basic types + at most nine
 // sampled types, excluding spawned-only units and terrain-incompatible enemies.
-export function survivalRoster(stage: number, random: () => number, scene: SurvivalScene = 'day'): ZombieKind[] {
-  if (stage === 0) return ['normal', 'cone', 'bucket'];
+export function survivalRoster(stage: number, random: () => number, scene: SurvivalScene = 'day', mode: SurvivalMode = 'endless'): ZombieKind[] {
+  if (stage === 0) return mode === 'survival-normal' ? ['normal', 'cone'] : ['normal', 'cone', 'bucket'];
   const basic: ZombieKind = random() < .2 ? 'newspaper' : 'cone';
   const roster: ZombieKind[] = ['normal', basic];
   const migrated: ZombieKind[] = ['cone','pole','bucket','newspaper','door','football','dancer','snorkel','zomboni','dolphin','jack','balloon','digger','pogo','bungee','ladder','catapult','gargantuar','bobsled'];
   const candidates = migrated.filter(kind => kind !== basic
+    && (mode !== 'survival-normal' || ['cone','pole','bucket','newspaper','door','football','dancer','snorkel'].includes(kind))
+    && (mode === 'endless' || kind !== 'bobsled' && (scene === 'roof' || kind !== 'bungee'))
     && (isPool(scene) || !['snorkel','dolphin'].includes(kind))
     && (scene !== 'roof' || !['digger','dancer'].includes(kind))
     && (kind !== 'bobsled' || stage >= 3 && !['night','roof'].includes(scene))
     && (scene !== 'night' || kind !== 'zomboni'));
   // Web endless broadens the roster from round four; early rounds keep their pacing.
-  const count = Math.min(stage + 1 + (stage >= 3 ? 2 : 0), 9);
+  const count = Math.min(stage + 1 + (mode === 'endless' && stage >= 3 ? 2 : 0), 9);
   for (let i = 0; i < count; i++) roster.push(candidates.splice(Math.floor(random() * candidates.length), 1)[0]);
   // A sled stage also includes the ice machine that makes its track.
   if (roster.includes('bobsled') && !roster.includes('zomboni')) {
@@ -29,14 +31,15 @@ export function survivalRoster(stage: number, random: () => number, scene: Survi
 // Board::PickZombieWaves, GetNumWavesPerSurvivalStage; Board.h caps each wave
 // at 50. Original costs/weights are shared with adventure, but no intro or
 // final-wave "all missing types" injection applies in survival.
-export function generateSurvivalWaves(stage: number, roster: readonly ZombieKind[], random: () => number): ZombieKind[][] {
-  const flags = stage * 2;
+export function generateSurvivalWaves(stage: number, roster: readonly ZombieKind[], random: () => number, mode: SurvivalMode = 'endless'): ZombieKind[][] {
+  const waveCount = mode === 'survival-normal' ? 10 : 20;
+  const flags = stage * waveCount / 10;
   const earlier = Math.round(15 * Math.max(0, Math.min(1, (flags - 18) / 32)));
   const decay = Math.max(0, Math.min(1, (flags - 10) / 40));
   const weight = (kind: ZombieKind) => Math.round(data.zombies[kind].weight * (1 - decay * (kind === 'normal' ? .9 : kind === 'cone' ? .75 : 0)));
-  return Array.from({ length: 20 }, (_, index) => {
+  return Array.from({ length: waveCount }, (_, index) => {
     const wave: ZombieKind[] = [];
-    let points = stage === 0 ? Math.floor(index / 3) + 1 : Math.floor((stage * 20 + index) * 2 / 5) + 1;
+    let points = stage === 0 ? Math.floor(index / 3) + 1 : Math.floor((stage * waveCount + index) * 2 / 5) + 1;
     const put = (kind: ZombieKind) => { wave.push(kind); points -= data.zombies[kind].value; };
     if (isSurvivalFlagWave(index)) {
       const normals = Math.min(points, 8);

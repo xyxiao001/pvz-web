@@ -19,12 +19,12 @@ import { Game } from '../game/model';
 import type { SurvivalScene } from '../game/config';
 import type { GameSpeed } from '../game/clock';
 export interface SurvivalSave { game: ReturnType<Game['snapshot']>; speed: GameSpeed }
-const survivalKey = (scene: SurvivalScene) => `pvz-web:survival:v1:${scene}`;
+const survivalKey = (scene: SurvivalScene, mode: Game['scenario']) => mode === 'endless' ? `pvz-web:survival:v1:${scene}` : `pvz-web:survival:v1:${mode}:${scene}`;
 export function saveSurvival(game: Game, speed: GameSpeed) {
-  localStorage.setItem(survivalKey(game.survivalScene), JSON.stringify({ game: game.snapshot(), speed }));
+  localStorage.setItem(survivalKey(game.survivalScene, game.scenario), JSON.stringify({ game: game.snapshot(), speed }));
 }
-export function loadSurvival(scene: SurvivalScene): SurvivalSave | null {
-  const record = localStorage.getItem(survivalKey(scene));
+export function loadSurvival(scene: SurvivalScene, mode: Game['scenario'] = 'endless'): SurvivalSave | null {
+  const record = localStorage.getItem(survivalKey(scene, mode));
   return record === null ? null : JSON.parse(record) as SurvivalSave;
 }
-export function clearSurvival(scene: SurvivalScene) { localStorage.removeItem(survivalKey(scene)); }
+export function clearSurvival(scene: SurvivalScene, mode: Game['scenario'] = 'endless') { localStorage.removeItem(survivalKey(scene, mode)); }

@@ -7,7 +7,7 @@ import { ZOMBIE_NAMES } from './game/survival';
 import { GameClock, type GameSpeed } from './game/clock';
 import { Hud } from './rendering/hud';
 import type { Scene } from './rendering/scene';
-import { BOARD, SURVIVAL_SCENES, SCENE_NAMES, isNight, type SurvivalScene, LEVEL_IDS, LEVELS, PLANTS, type LevelId, type PlantKind } from './game/config';
+import { BOARD, SURVIVAL_MODES, SURVIVAL_MODE_NAMES, type SurvivalMode, SURVIVAL_SCENES, SCENE_NAMES, isNight, type SurvivalScene, LEVEL_IDS, LEVELS, PLANTS, type LevelId, type PlantKind } from './game/config';
 import { Game } from './game/model';
 import { GameAudio } from './platform/audio';
 import { GameMusic, battleMusic } from './platform/music';
@@ -42,7 +42,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <nav class="menu-modes" aria-label="游戏模式">
       <button id="adventure" class="mode-button mode-adventure" aria-label="开始冒险"><span class="mode-eyebrow">守住你的草坪</span><strong>冒险模式</strong><span class="mode-detail">种下第一道防线 <b aria-hidden="true">▶</b></span></button>
       <button id="levels" class="mode-button mode-levels"><img src="${asset('shovel.png')}" alt=""/><span><strong>关卡选择</strong><small>白天 · 夜晚 · 泳池 · 迷雾 · 屋顶</small></span></button>
-      <button id="endless" class="mode-button mode-endless"><span class="menu-trophy" aria-hidden="true"></span><span><strong>无尽生存</strong><small>五种庭院，挑战更多旗帜</small></span></button>
+      <button id="endless" class="mode-button mode-endless"><span class="menu-trophy" aria-hidden="true"></span><span><strong>生存模式</strong><small>普通 · 困难 · 无尽挑战</small></span></button>
     </nav>
     <button id="almanac" class="almanac-menu"><img src="${asset('seed-packet.png')}" alt=""/><img class="almanac-portrait" src="${asset('peashooter.png')}" alt=""/><span>植物图鉴<small>认识你的庭院守护者</small></span></button>
     <div class="menu-tools"><button id="achievements" class="wood-button">成就</button><button id="settings" class="wood-button">设置</button><button id="help" class="wood-button">帮助</button></div>
@@ -65,7 +65,7 @@ const clock = new GameClock();
 const hud = new Hud($('#battle-hud'));
 let packetKey = '';
 let lastPhase = ''; let messageUntil = 0;
-const backLabel = () => game.scenario === 'endless' && game.phase !== 'lost' ? '保存退出' : '返回主菜单';
+const backLabel = () => game.isSurvival && game.phase !== 'lost' && game.phase !== 'won' ? '保存退出' : '返回主菜单';
 
 function showMenu() {
   $('.page').classList.remove('in-battle', 'endless-game');
@@ -105,7 +105,7 @@ function setLevel(level: LevelId, scenario: Game['scenario'] = 'adventure', surv
 }
 async function mountGame() {
   $('.page').classList.remove('in-battle');
-  $('.page').classList.toggle('endless-game', game.scenario === 'endless');
+  $('.page').classList.toggle('endless-game', game.isSurvival);
   screen = 'loading'; scene?.app.stop(); $('#battle-hud').hidden = true; updateMusic();
   panel('<h2>正在准备庭院…</h2><p id="loading-status" role="status">准备画面</p>');
   const progress = (done: number, total: number) => { $('#loading-status').textContent = `加载资源 ${done} / ${total}`; };
@@ -119,7 +119,7 @@ async function mountGame() {
   $('#speed').textContent = `${clock.speed}×`; $('#speed').setAttribute('aria-label', `游戏速度 ${clock.speed} 倍`);
   $('#canvas-host').classList.toggle('whack-field', game.config.mode === 'whack' || game.config.mode === 'vase');
   $('.seed-bank').classList.toggle('conveyor-bank', game.hasConveyor);
-  $('footer').innerHTML = game.scenario === 'endless' ? '点击选卡、种植与收集阳光 <span><kbd>1</kbd>–<kbd>9</kbd> / <kbd>0</kbd> 选卡　<kbd>Esc</kbd> 取消 / 暂停</span>' : '点击选卡、种植与收集阳光 <span><kbd>1</kbd>–<kbd>6</kbd> 选卡　<kbd>Esc</kbd> 取消 / 暂停</span>';
+  $('footer').innerHTML = game.isSurvival ? '点击选卡、种植与收集阳光 <span><kbd>1</kbd>–<kbd>9</kbd> / <kbd>0</kbd> 选卡　<kbd>Esc</kbd> 取消 / 暂停</span>' : '点击选卡、种植与收集阳光 <span><kbd>1</kbd>–<kbd>6</kbd> 选卡　<kbd>Esc</kbd> 取消 / 暂停</span>';
   $('#shovel').hidden = game.scenario === 'adventure' && game.level < 6;
   document.querySelectorAll('.meter-flag').forEach(flag => flag.remove());
   $('.wave-meter').insertAdjacentHTML('beforeend', game.waves.map((_, index) => game.isFlagWave(index) ? `<img loading="lazy" class="meter-flag" style="left:${(1 - (index + 1) / game.config.waveCount) * 84}%" src="${asset('meter-flag.png')}" alt="第 ${index + 1} 波旗帜"/>` : '').join(''));
@@ -132,13 +132,13 @@ function renderSeedBank() {
   hud.bindSeeds();
 }
 function seedChooser() {
-  const enemies = [...new Set(game.scenario === 'endless' ? game.survivalEnemies : game.waves.flat())];
+  const enemies = [...new Set(game.isSurvival ? game.survivalEnemies : game.waves.flat())];
   panel(`<div id="chosen-seeds" class="chosen-seeds" aria-label="${game.seedCapacity} 个植物槽位"></div>
     <section class="chooser-catalog" aria-label="植物卡册"><h2>选择你的植物</h2>
       <div class="seed-options">${game.config.seeds.map(kind => `<button class="seed-option" data-choice="${kind}" title="${PLANTS[kind].name} · ${game.plantCost(kind)} 阳光" aria-label="选择${PLANTS[kind].name}" aria-pressed="false">${seedImage(kind, game.plantCost(kind))}</button>`).join('')}${Array.from({ length: 40 - game.config.seeds.length }, () => '<span class="seed-silhouette" aria-hidden="true"></span>').join('')}</div>
       <div class="chooser-footer"><button id="clear-seeds" class="text-button">清空选卡</button><span id="choice-count" role="status"></span><button id="start" class="seed-start" disabled>一起摇滚吧！</button></div>
     </section>
-    <aside class="chooser-details"><span class="kicker">${game.scenario === 'endless' ? `无尽生存 · 第 ${game.survivalStage + 1} 轮` : `冒险模式 ${game.config.label}`}</span><h3>${game.config.title}</h3><p>${game.scenario === 'endless' ? `已守住 ${game.survivalFlags} 旗 · ${game.sun} 阳光` : SCENE_NAMES[game.config.environment]}</p><div class="chooser-enemies"><h4>${game.scenario === 'endless' ? '本轮僵尸' : '本关僵尸'}</h4><p>${enemies.map(kind => ZOMBIE_NAMES[kind]).join(' · ')}</p></div><p class="chooser-tip">${game.scenario === 'endless' ? '可携带 6–10 张植物卡' : '选满六张卡片后出发'}<br/>点击上方卡片可放回</p><div id="plant-detail" class="plant-detail"><h4>了解你的植物</h4><p>悬停或聚焦卡片，查看用途与种植条件。</p></div></aside>
+    <aside class="chooser-details"><span class="kicker">${game.isSurvival ? `生存 · ${SURVIVAL_MODE_NAMES[game.scenario as SurvivalMode]} · 第 ${game.survivalStage + 1} 轮` : `冒险模式 ${game.config.label}`}</span><h3>${game.config.title}</h3><p>${game.isSurvival ? `已守住 ${game.survivalFlags} 旗 · ${game.sun} 阳光` : SCENE_NAMES[game.config.environment]}</p><div class="chooser-enemies"><h4>${game.isSurvival ? '本轮僵尸' : '本关僵尸'}</h4><p>${enemies.map(kind => ZOMBIE_NAMES[kind]).join(' · ')}</p></div><p class="chooser-tip">${game.isSurvival ? '可携带 6–10 张植物卡' : '选满六张卡片后出发'}<br/>点击上方卡片可放回</p><div id="plant-detail" class="plant-detail"><h4>了解你的植物</h4><p>悬停或聚焦卡片，查看用途与种植条件。</p></div></aside>
     <button class="wood-button chooser-back back-menu">${backLabel()}</button>`, 'seed-chooser');
   overlay.classList.add('chooser-overlay'); $('#battle-hud').classList.add('choosing');
   const update = () => {
@@ -203,8 +203,8 @@ function phasePanel() {
     else panel(`<span class="kicker">冒险模式 ${game.config.label}</span><img loading="lazy" class="intro-plant" src="${asset(`${game.config.seeds.at(-1)}.png`)}" alt=""/><h2>${game.config.title}</h2><p>${game.config.description}</p><div class="facts">${game.config.rows.length} 条草坪　·　${game.boss ? '僵王博士' : game.config.mode === 'vase' ? '三轮砸罐子' : `${game.config.waveCount} 波僵尸`}　·　${game.hasConveyor ? '传送带供应 · 无需阳光' : `${game.config.initialSun} 初始阳光`}</div><button id="start" class="wood-button large">${game.config.mode === 'vase' ? '开始砸罐子' : game.config.mode === 'whack' ? '拿起木槌' : game.config.mode === 'bowling' ? '开始保龄球' : game.config.mode === 'conveyor' ? '开始传送带决战' : '开始种植'}</button><button class="text-button back-menu">${backLabel()}</button>`);
     $('#start').onclick = async () => { $<HTMLButtonElement>('#start').disabled = true; $('#start').textContent = '准备角色…'; await Promise.all([audio.unlock(game), scene.prepareActors(game, (done,total) => { $('#start').textContent = `准备角色 ${done} / ${total}`; })]); game.start(); updateHud(); };
   } else if (game.phase === 'paused') {
-    panel(`<div class="pause-content"><h2>庭院休息中</h2><p>准备好了，就继续守护草坪。</p><button id="resume" class="wood-button large">继续游戏</button><button id="restart" class="wood-button large">重新开始</button><button class="wood-button large back-menu">${game.scenario === 'endless' ? '保存退出' : '返回主菜单'}</button><div class="pause-audio"><button id="pause-fullscreen" class="text-button">切换全屏</button><button id="pause-sound" class="text-button">音效：${audio.muted ? '关闭' : '开启'}</button><button id="pause-music" class="text-button">音乐：${music.enabled ? '开启' : '关闭'}</button></div></div>`, 'pause-panel');
-    $('#resume').onclick = async () => { await audio.unlock(game); game.resume(); updateHud(); }; $('#restart').onclick = () => { if(game.scenario==='endless')clearSurvival(game.survivalScene); setLevel(game.level, game.scenario, game.survivalScene); };
+    panel(`<div class="pause-content"><h2>庭院休息中</h2><p>准备好了，就继续守护草坪。</p><button id="resume" class="wood-button large">继续游戏</button><button id="restart" class="wood-button large">重新开始</button><button class="wood-button large back-menu">${game.isSurvival ? '保存退出' : '返回主菜单'}</button><div class="pause-audio"><button id="pause-fullscreen" class="text-button">切换全屏</button><button id="pause-sound" class="text-button">音效：${audio.muted ? '关闭' : '开启'}</button><button id="pause-music" class="text-button">音乐：${music.enabled ? '开启' : '关闭'}</button></div></div>`, 'pause-panel');
+    $('#resume').onclick = async () => { await audio.unlock(game); game.resume(); updateHud(); }; $('#restart').onclick = () => { if(game.isSurvival)clearSurvival(game.survivalScene, game.scenario); setLevel(game.level, game.scenario, game.survivalScene); };
     $('#pause-fullscreen').onclick = toggleFullscreen;
     $('#pause-music').onclick = () => { music.enabled = !music.enabled; $('#pause-music').textContent = `音乐：${music.enabled ? '开启' : '关闭'}`; };
     $('#pause-sound').onclick = () => { audio.muted = !audio.muted; $('#pause-sound').textContent = `音效：${audio.muted ? '关闭' : '开启'}`; };
@@ -214,6 +214,9 @@ function phasePanel() {
   } else if (game.phase === 'intermission') {
     panel(`<span class="kicker">${game.config.title} · 第 ${game.survivalStage + 1} 轮完成</span><h2>已守住 ${game.survivalFlags} 面旗帜！</h2><p>下一轮保留上轮所选卡片，可直接开战，也可以调整阵容。<br/>场上植物、剩余阳光、卡片冷却和割草机状态保留。</p><div class="facts">累计击败 ${game.kills} 只僵尸 · 剩余 ${game.sun} 阳光</div><button id="repick" class="wood-button large">继续守护 · 查看阵容</button><button class="text-button back-menu">保存退出</button>`);
     $('#repick').onclick = () => { game.nextSurvivalStage(); clock.reset(); messageUntil = 0; updateHud(); };
+  } else if (game.phase === 'won' && game.isSurvival) {
+    panel(`<span class="kicker">${game.config.title}</span><img class="reward-image" src="${asset('trophy.png')}" alt="生存挑战奖杯"/><h2>生存挑战完成！</h2><p>已守住 ${game.survivalGoal} 面旗帜，完成全部五轮。</p><div class="facts">击败 ${game.kills} 只僵尸 · 使用 ${game.planted} 张植物卡</div><button id="survival-again" class="wood-button large">再次挑战</button><button class="text-button back-menu">返回主菜单</button>`, 'paper-panel reward-panel');
+    $('#survival-again').onclick = () => setLevel(game.level, game.scenario, game.survivalScene);
   } else if (game.phase === 'won') {
     const reward = game.config.reward;
     const shovel = game.level === 4;
@@ -223,10 +226,10 @@ function phasePanel() {
     $('#next').onclick = () => game.level < lastLevel ? setLevel((game.level + 1) as LevelId) : showMenu();
     $('#replay').onclick = () => setLevel(game.level);
   } else {
-    panel(`<span class="kicker">僵尸入侵</span><h2>僵尸吃掉了你的脑子！</h2>${game.scenario === 'endless' ? `<p>本次守住 ${game.survivalFlags} 面旗帜 · 累计击败 ${game.kills} 只僵尸</p>` : ''}<p>${game.config.mode === 'whack' ? '先敲最靠近房子的僵尸，<br/>路障需要两锤，铁桶需要三锤。' : game.config.mode === 'bowling' ? '把坚果滚向最靠近房子的僵尸，<br/>留下爆炸坚果应对密集队伍。' : game.boss ? '僵王低头时集中攻击，<br/>留好寒冰菇与火爆辣椒反制冰火球。' : game.config.mode === 'conveyor' ? '及时使用传送带植物，<br/>留下樱桃炸弹应对密集队伍。' : '试着先种向日葵积攒阳光，<br/>再把射手放在靠左的位置。'}</p><button id="retry" class="wood-button large">重新开始</button><button class="text-button back-menu">${backLabel()}</button>`);
+    panel(`<span class="kicker">僵尸入侵</span><h2>僵尸吃掉了你的脑子！</h2>${game.isSurvival ? `<p>本次守住 ${game.survivalFlags} 面旗帜 · 累计击败 ${game.kills} 只僵尸</p>` : ''}<p>${game.config.mode === 'whack' ? '先敲最靠近房子的僵尸，<br/>路障需要两锤，铁桶需要三锤。' : game.config.mode === 'bowling' ? '把坚果滚向最靠近房子的僵尸，<br/>留下爆炸坚果应对密集队伍。' : game.boss ? '僵王低头时集中攻击，<br/>留好寒冰菇与火爆辣椒反制冰火球。' : game.config.mode === 'conveyor' ? '及时使用传送带植物，<br/>留下樱桃炸弹应对密集队伍。' : '试着先种向日葵积攒阳光，<br/>再把射手放在靠左的位置。'}</p><button id="retry" class="wood-button large">重新开始</button><button class="text-button back-menu">${backLabel()}</button>`);
     $('#retry').onclick = () => setLevel(game.level, game.scenario, game.survivalScene);
   }
-  document.querySelectorAll<HTMLButtonElement>('.back-menu').forEach(button => button.onclick = () => { if (game.scenario === 'endless' && game.phase !== 'lost') saveSurvival(game, clock.speed); showMenu(); });
+  document.querySelectorAll<HTMLButtonElement>('.back-menu').forEach(button => button.onclick = () => { if (game.isSurvival && game.phase !== 'lost' && game.phase !== 'won') saveSurvival(game, clock.speed); showMenu(); });
 }
 function updateHud() {
   if (screen !== 'battle') return;
@@ -251,7 +254,7 @@ function updateHud() {
     else if (game.selected === 'twinsunflower') advice = '把双子向日葵种在向日葵上升级';
     else if (game.planted === 0) advice = game.level === 1 ? '选择豌豆射手，再点击中间的草地' : isNight(game.config.environment) ? '夜晚没有天空阳光，用阳光植物积攒阳光，小喷菇免费' : '先种向日葵，积攒阳光';
     else if (game.collected === 0 && game.suns.length > 0) advice = '点击阳光收集';
-    else if (game.ticks < messageUntil) advice = game.wave === game.config.waveCount ? game.scenario === 'endless' ? '本轮最后一波！' : '最后一波！' : '僵尸来了！';
+    else if (game.ticks < messageUntil) advice = game.wave === game.config.waveCount ? game.isSurvival ? '本轮最后一波！' : '最后一波！' : '僵尸来了！';
     else if (game.selected) advice = `把${PLANTS[game.selected].name}种在草地上`;
   }
   updateConveyor(); hud.update(game, advice);
@@ -276,15 +279,19 @@ $('#speed').onclick = () => {
 };
 $('#adventure').onclick = () => setLevel(Math.min(lastLevel, completedLevel() + 1) as LevelId);
 $('#levels').onclick = levelPicker;
-$('#endless').onclick = () => {
-  panel(`<span class="kicker">生存 · 无尽</span><h2>选择无尽场景</h2><p>每轮 20 波，可携带 6–10 张植物卡，轮间可换卡。<br/>暂停菜单可保存退出；每个场景分别保留一份进度。</p><div class="survival-scenes">${SURVIVAL_SCENES.map(scene => {
-    const saved = loadSurvival(scene);
-    return `<article><img loading="lazy" src="${import.meta.env.BASE_URL}assets/runtime/previews/${scene}.webp" alt=""/><h3>${SCENE_NAMES[scene]}</h3><p>${scene==='day'?'五行草坪 · 天空阳光':scene==='night'?'五行夜晚 · 墓碑与蘑菇':scene==='pool'?'六行泳池 · 睡莲与水路':scene==='roof'?'五行屋顶 · 花盆与投手':'六行迷雾 · 无天空阳光 · 路灯花照明'}</p>${saved ? `<button class="wood-button" data-continue="${scene}">继续第 ${saved.game.survivalStage+1} 轮</button>` : ''}<button class="text-button" data-survival="${scene}">${saved ? '新开一局（替换此存档）' : '开始挑战'}</button></article>`;
-  }).join('')}</div><p>可使用机枪射手、双子向日葵、冰西瓜等升级植物。后续轮次加入雪橇小队、巨人、投石车、气球等敌人，按场景分配。</p><button id="close" class="wood-button">返回主菜单</button>`, 'paper-panel wide-panel survival-panel');
-  document.querySelectorAll<HTMLButtonElement>('[data-survival]').forEach(button => button.onclick = () => { const scene = button.dataset.survival as SurvivalScene; clearSurvival(scene); setLevel(9,'endless',scene); });
-  document.querySelectorAll<HTMLButtonElement>('[data-continue]').forEach(button => button.onclick = () => { const saved=loadSurvival(button.dataset.continue as SurvivalScene)!; game=Game.restore(saved.game); clock.speed=saved.speed; mountGame(); });
+function survivalPicker(mode: SurvivalMode) {
+  const goal = mode === 'survival-normal' ? 5 : 10;
+  const waves = mode === 'survival-normal' ? 10 : 20;
+  panel(`<span class="kicker">生存模式</span><h2>选择你的生存挑战</h2><div class="survival-modes" role="group" aria-label="生存难度">${SURVIVAL_MODES.map(item => `<button class="wood-button" data-survival-mode="${item}" aria-pressed="${item === mode}">${SURVIVAL_MODE_NAMES[item]}${item === 'endless' ? '' : item === 'survival-normal' ? ' · 5 旗' : ' · 10 旗'}</button>`).join('')}</div><p>${mode === 'endless' ? '没有终点，挑战更多旗帜。' : `五个场景各有独立关卡；守住 ${goal} 面旗帜获胜。`}<br/>每轮 ${waves} 波，可携带 6–10 张植物卡，轮间可换卡。暂停可保存退出，各难度与场景的存档互不覆盖。</p><div class="survival-scenes">${SURVIVAL_SCENES.map(scene => {
+    const saved = loadSurvival(scene, mode);
+    return `<article><img loading="lazy" src="${import.meta.env.BASE_URL}assets/runtime/previews/${scene}.webp" alt=""/><h3>${SCENE_NAMES[scene]} · ${SURVIVAL_MODE_NAMES[mode]}</h3><p>${scene==='day'?'五行草坪 · 天空阳光':scene==='night'?'五行夜晚 · 墓碑与蘑菇':scene==='pool'?'六行泳池 · 睡莲与水路':scene==='roof'?'五行屋顶 · 花盆与投手':'六行迷雾 · 无天空阳光 · 路灯花照明'}</p>${saved ? `<button class="wood-button" data-continue="${scene}">继续第 ${saved.game.survivalStage+1} 轮</button>` : ''}<button class="text-button" data-survival="${scene}">${saved ? '新开一局（替换此存档）' : '开始挑战'}</button></article>`;
+  }).join('')}</div><button id="close" class="wood-button">返回主菜单</button>`, 'paper-panel wide-panel survival-panel');
+  document.querySelectorAll<HTMLButtonElement>('[data-survival-mode]').forEach(button => button.onclick = () => survivalPicker(button.dataset.survivalMode as SurvivalMode));
+  document.querySelectorAll<HTMLButtonElement>('[data-survival]').forEach(button => button.onclick = () => { const scene = button.dataset.survival as SurvivalScene; clearSurvival(scene, mode); setLevel(9, mode, scene); });
+  document.querySelectorAll<HTMLButtonElement>('[data-continue]').forEach(button => button.onclick = () => { const saved=loadSurvival(button.dataset.continue as SurvivalScene, mode)!; game=Game.restore(saved.game); clock.speed=saved.speed; mountGame(); });
   $('#close').onclick = closeMenuPanel;
-};
+}
+$('#endless').onclick = () => survivalPicker('endless');
 $('#almanac').onclick = () => {
   panel(`<span class="kicker">植物图鉴</span><h2>认识你的守护者</h2><div class="almanac-grid">${(Object.keys(PLANTS) as PlantKind[]).map(kind => `<article><img loading="lazy" src="${asset(`${kind}.png`)}" alt=""/><div><h3>${PLANTS[kind].name}<span>${kind === 'explodenut' ? '传送带专用' : `${PLANTS[kind].cost} 阳光`}</span></h3><p>${PLANT_DESCRIPTIONS[kind]}</p></div></article>`).join('')}</div><button id="close" class="wood-button">返回主菜单</button>`, 'paper-panel wide-panel'); $('#close').onclick = closeMenuPanel;
 };
@@ -354,8 +361,8 @@ async function ensureScene() {
         if (event.kind !== 'wave' || game.wave === game.config.waveCount) audio.play(event.kind);
         scene.event(event);
         if (event.kind === 'wave') messageUntil = game.ticks + 280;
-        if (event.kind === 'win') completeLevel(game.level);
-        if (event.kind === 'lose' && game.scenario === 'endless') clearSurvival(game.survivalScene);
+        if (event.kind === 'win') { if (game.scenario === 'adventure') completeLevel(game.level); else clearSurvival(game.survivalScene, game.scenario); }
+        if (event.kind === 'lose' && game.isSurvival) clearSurvival(game.survivalScene, game.scenario);
       }
       if (screen === 'battle') { scene.render(game, ticker.deltaMS * clock.speed, clock.alpha); updateHud(); }
     });
