@@ -9,7 +9,11 @@ export function runtimePublicAssets(): Plugin {
     name: 'runtime-public-assets', apply: 'build',
     configResolved(config) { source = resolve(config.root, 'public'); output = resolve(config.root, config.build.outDir); },
     async writeBundle() {
-      const copy = async (path: string) => { await mkdir(resolve(output, path, '..'), { recursive: true }); await cp(resolve(source, path), resolve(output, path), { recursive: true }); };
+      const copy = async (path: string) => { await mkdir(resolve(output, path, '..'), { recursive: true }); await cp(resolve(source, path), resolve(output, path), {
+        recursive: true,
+        // Giant states now share one native part atlas; retain baked art only for authoring comparisons.
+        filter: file => !(file.startsWith(resolve(source, 'assets/runtime/clips/gargantuar-')) && file.endsWith('.webp')),
+      }); };
       const sounds = (await readdir(resolve(source, 'assets/original'))).filter(file => /\.(mp3|ogg)$/.test(file));
       const icons = (await readdir(resolve(source, 'icons'))).filter(file => file !== 'icon-master.png');
       await Promise.all(['assets/runtime', 'assets/music', 'manifest.webmanifest', ...sounds.map(file => `assets/original/${file}`), ...icons.map(file => `icons/${file}`)].map(copy));

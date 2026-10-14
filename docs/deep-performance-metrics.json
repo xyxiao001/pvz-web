@@ -1,0 +1,202 @@
+{
+  "baseline": "3df0b41",
+  "giantAssets": {
+    "before": {
+      "downloadBytes": 49832528,
+      "rgbaBytes": 218886384,
+      "pages": 19
+    },
+    "after": {
+      "downloadBytes": 769530,
+      "rgbaBytes": 2424832,
+      "pages": 1
+    }
+  },
+  "simulation": {
+    "method": "Same Node process; 100 zombies and six wall-nut/pumpkin cells per row, 1000 ticks. Alternate before/after order; discard two warmups; seven measured trials. Full saved-state SHA-256 compared.",
+    "results": [
+      {
+        "environment": "day",
+        "beforeMedianMs": 47.829000000000065,
+        "afterMedianMs": 37.57483300000001,
+        "measurements": {
+          "before": [
+            47.68408299999999,
+            47.07170800000006,
+            47.829000000000065,
+            47.32616699999994,
+            48.04695800000002,
+            49.359874999999874,
+            49.92233299999998
+          ],
+          "after": [
+            37.18033300000002,
+            37.82854099999997,
+            37.57483300000001,
+            37.315291,
+            37.42729200000008,
+            37.76191700000004,
+            39.11308400000007
+          ]
+        },
+        "hashes": {
+          "before": [
+            "ab7aa56611a89ee02ec1783a7ab0d190ad0c86935f71ec58c985ed9517e2b680",
+            "ab7aa56611a89ee02ec1783a7ab0d190ad0c86935f71ec58c985ed9517e2b680",
+            "ab7aa56611a89ee02ec1783a7ab0d190ad0c86935f71ec58c985ed9517e2b680",
+            "ab7aa56611a89ee02ec1783a7ab0d190ad0c86935f71ec58c985ed9517e2b680",
+            "ab7aa56611a89ee02ec1783a7ab0d190ad0c86935f71ec58c985ed9517e2b680",
+            "ab7aa56611a89ee02ec1783a7ab0d190ad0c86935f71ec58c985ed9517e2b680",
+            "ab7aa56611a89ee02ec1783a7ab0d190ad0c86935f71ec58c985ed9517e2b680"
+          ],
+          "after": [
+            "ab7aa56611a89ee02ec1783a7ab0d190ad0c86935f71ec58c985ed9517e2b680",
+            "ab7aa56611a89ee02ec1783a7ab0d190ad0c86935f71ec58c985ed9517e2b680",
+            "ab7aa56611a89ee02ec1783a7ab0d190ad0c86935f71ec58c985ed9517e2b680",
+            "ab7aa56611a89ee02ec1783a7ab0d190ad0c86935f71ec58c985ed9517e2b680",
+            "ab7aa56611a89ee02ec1783a7ab0d190ad0c86935f71ec58c985ed9517e2b680",
+            "ab7aa56611a89ee02ec1783a7ab0d190ad0c86935f71ec58c985ed9517e2b680",
+            "ab7aa56611a89ee02ec1783a7ab0d190ad0c86935f71ec58c985ed9517e2b680"
+          ]
+        }
+      },
+      {
+        "environment": "pool",
+        "beforeMedianMs": 53.91670799999997,
+        "afterMedianMs": 43.655915999999934,
+        "measurements": {
+          "before": [
+            53.31691599999999,
+            70.9865000000002,
+            53.91670799999997,
+            54.880750000000035,
+            54.18995799999993,
+            53.416833,
+            52.933667000000014
+          ],
+          "after": [
+            44.203250000000025,
+            49.94695899999988,
+            43.655915999999934,
+            43.728374999999915,
+            42.77870800000005,
+            42.83979199999999,
+            42.74370899999985
+          ]
+        },
+        "hashes": {
+          "before": [
+            "2b1882ff899ec8835b97af2ca98ac033aafb908beb8fbf1d31e68b5b352bed28",
+            "2b1882ff899ec8835b97af2ca98ac033aafb908beb8fbf1d31e68b5b352bed28",
+            "2b1882ff899ec8835b97af2ca98ac033aafb908beb8fbf1d31e68b5b352bed28",
+            "2b1882ff899ec8835b97af2ca98ac033aafb908beb8fbf1d31e68b5b352bed28",
+            "2b1882ff899ec8835b97af2ca98ac033aafb908beb8fbf1d31e68b5b352bed28",
+            "2b1882ff899ec8835b97af2ca98ac033aafb908beb8fbf1d31e68b5b352bed28",
+            "2b1882ff899ec8835b97af2ca98ac033aafb908beb8fbf1d31e68b5b352bed28"
+          ],
+          "after": [
+            "2b1882ff899ec8835b97af2ca98ac033aafb908beb8fbf1d31e68b5b352bed28",
+            "2b1882ff899ec8835b97af2ca98ac033aafb908beb8fbf1d31e68b5b352bed28",
+            "2b1882ff899ec8835b97af2ca98ac033aafb908beb8fbf1d31e68b5b352bed28",
+            "2b1882ff899ec8835b97af2ca98ac033aafb908beb8fbf1d31e68b5b352bed28",
+            "2b1882ff899ec8835b97af2ca98ac033aafb908beb8fbf1d31e68b5b352bed28",
+            "2b1882ff899ec8835b97af2ca98ac033aafb908beb8fbf1d31e68b5b352bed28",
+            "2b1882ff899ec8835b97af2ca98ac033aafb908beb8fbf1d31e68b5b352bed28"
+          ]
+        }
+      },
+      {
+        "environment": "roof",
+        "beforeMedianMs": 61.89033300000028,
+        "afterMedianMs": 51.486042,
+        "measurements": {
+          "before": [
+            61.82112499999994,
+            61.89033300000028,
+            61.99400000000014,
+            63.38887499999964,
+            61.62683300000026,
+            62.29312499999969,
+            61.386167000000114
+          ],
+          "after": [
+            52.79250000000002,
+            52.07533300000023,
+            51.21775000000025,
+            51.55487499999981,
+            51.486042,
+            51.372292000000016,
+            51.44512500000019
+          ]
+        },
+        "hashes": {
+          "before": [
+            "96ece9c380fbd2af2e4f19671911f46f81a8fdb3991c07a33c2be2e2745c1b39",
+            "96ece9c380fbd2af2e4f19671911f46f81a8fdb3991c07a33c2be2e2745c1b39",
+            "96ece9c380fbd2af2e4f19671911f46f81a8fdb3991c07a33c2be2e2745c1b39",
+            "96ece9c380fbd2af2e4f19671911f46f81a8fdb3991c07a33c2be2e2745c1b39",
+            "96ece9c380fbd2af2e4f19671911f46f81a8fdb3991c07a33c2be2e2745c1b39",
+            "96ece9c380fbd2af2e4f19671911f46f81a8fdb3991c07a33c2be2e2745c1b39",
+            "96ece9c380fbd2af2e4f19671911f46f81a8fdb3991c07a33c2be2e2745c1b39"
+          ],
+          "after": [
+            "96ece9c380fbd2af2e4f19671911f46f81a8fdb3991c07a33c2be2e2745c1b39",
+            "96ece9c380fbd2af2e4f19671911f46f81a8fdb3991c07a33c2be2e2745c1b39",
+            "96ece9c380fbd2af2e4f19671911f46f81a8fdb3991c07a33c2be2e2745c1b39",
+            "96ece9c380fbd2af2e4f19671911f46f81a8fdb3991c07a33c2be2e2745c1b39",
+            "96ece9c380fbd2af2e4f19671911f46f81a8fdb3991c07a33c2be2e2745c1b39",
+            "96ece9c380fbd2af2e4f19671911f46f81a8fdb3991c07a33c2be2e2745c1b39",
+            "96ece9c380fbd2af2e4f19671911f46f81a8fdb3991c07a33c2be2e2745c1b39"
+          ]
+        }
+      }
+    ]
+  },
+  "render": {
+    "method": "Same browser, 800x600 world, 20 giant zombies. Warm 30 frames; measure 180 requestAnimationFrame callbacks; Scene.render + app.render CPU submission time, excludes battle simulation and GPU completion.",
+    "results": [
+      {
+        "version": "before",
+        "giantRig": false,
+        "oldGiantClips": 7,
+        "textureSources": 36,
+        "rgbaMiB": 268.0373229980469,
+        "giants": 20,
+        "frames": 180,
+        "medianCpuMs": 0.10000000894069672,
+        "p95CpuMs": 0.29999999701976776,
+        "p95IntervalMs": 9.30000000000291
+      },
+      {
+        "version": "after",
+        "giantRig": true,
+        "oldGiantClips": 0,
+        "textureSources": 18,
+        "rgbaMiB": 61.60350036621094,
+        "giants": 20,
+        "frames": 180,
+        "medianCpuMs": 0.4000000059604645,
+        "p95CpuMs": 0.5999999940395355,
+        "p95IntervalMs": 9.60000000000582
+      }
+    ]
+  },
+  "release": {
+    "before": {
+      "version": "after",
+      "giantRig": true,
+      "oldGiantClips": 0,
+      "textureSources": 18,
+      "rgbaMiB": 61.60350036621094
+    },
+    "after": {
+      "version": "after",
+      "giantRig": false,
+      "oldGiantClips": 0,
+      "textureSources": 0,
+      "rgbaMiB": 0
+    },
+    "destroyed": 401,
+    "total": 401
+  }
+}

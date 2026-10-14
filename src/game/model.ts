@@ -509,6 +509,8 @@ export class Game {
       }
     }
 
+    // Opposing zombies only exist after hypnosis. Avoid an all-pairs search otherwise.
+    let hasHypnotized = this.zombies.some(zombie => zombie.hypnotized);
     for (const zombie of this.zombies) {
       if (zombie.health <= 0) continue;
       if (zombie.blownIn !== undefined && zombie.blownIn > 0) {
@@ -589,9 +591,9 @@ export class Game {
         const tall=this.plants.find(p=>p.kind==='tallnut'&&p.health>0&&p.row===zombie.row&&zombie.x-cellX(p.column)>0&&zombie.x-cellX(p.column)<65);
         if(tall){zombie.pogo=false;zombie.speed=.3;}else{zombie.eating=false;zombie.x-=.45*speedFactor;continue;}
       }
-      const rival = this.zombies.find(other => other !== zombie && !!other.hypnotized !== !!zombie.hypnotized
+      const rival = hasHypnotized ? this.zombies.find(other => other !== zombie && !!other.hypnotized !== !!zombie.hypnotized
         && other.health > 0 && !this.flying(other) && !headless(other) && other.row === zombie.row && other.riseIn === 0 && other.vaultIn === 0
-        && (other.x - zombie.x) * (zombie.hypnotized || zombie.backwards ? 1 : -1) >= -30 && (other.x - zombie.x) * (zombie.hypnotized || zombie.backwards ? 1 : -1) < 40);
+        && (other.x - zombie.x) * (zombie.hypnotized || zombie.backwards ? 1 : -1) >= -30 && (other.x - zombie.x) * (zombie.hypnotized || zombie.backwards ? 1 : -1) < 40) : undefined;
       if (rival) {
         zombie.eating = true;
         if (--zombie.biteIn <= 0) { this.damageZombie(rival, 4, true); rival.hitAt = this.ticks; zombie.biteIn = zombie.chillIn > 0 ? 8 : 4; }
@@ -611,7 +613,7 @@ export class Game {
         if(zombie.kind==='ladder'&&zombie.shield>0&&['wallnut','tallnut','pumpkin'].includes(food.kind)){zombie.ladderIn=100;zombie.x=cellX(food.column)+35;continue;}
         if (--zombie.biteIn <= 0) {
           if (food.kind === 'hypnoshroom' && !this.sleeping(food)) {
-            food.health = 0; zombie.hypnotized = true; zombie.speed = .17; zombie.eating = false;
+            food.health = 0; zombie.hypnotized = true; hasHypnotized = true; zombie.speed = .17; zombie.eating = false;
             if (zombie.kind === 'dancer') for (const follower of this.zombies) if (follower.leader === zombie.id) { follower.hypnotized = true; follower.speed = .17; }
             this.events.push({ kind: 'hypnotize', x: zombie.x, y: this.rowY(zombie.row) - 50 });
           } else food.health -= 4;

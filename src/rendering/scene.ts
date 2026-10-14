@@ -1,3 +1,4 @@
+import { GiantMotion, hasGiantMotion, type GiantRig } from './giant-motion';
 import { hasPlantMotion, PlantMotion, type PlantRig } from './plant-motion';
 import { renderResolution } from './resolution';
 import { loadInBatches } from '../platform/load-queue';
@@ -12,7 +13,7 @@ import { animationNames, animationFrame, combatTextureFiles } from './asset-plan
 
 type ClipData = { frames: number[][]; durations: number[]; anchor: number[]; pages: string[] };
 type Clip = { files: string[]; frames: Texture[]; ends: number[]; duration: number; anchors: number[][] };
-type Actor = { rig?: PlantRig; root: Container; art: Sprite; clip: string; since: number; frame: number; seen: number; previousX: number; previousY: number; motion?: { x: number; y?: number } };
+type Actor = { giantRig?: GiantRig; rig?: PlantRig; root: Container; art: Sprite; clip: string; since: number; frame: number; seen: number; previousX: number; previousY: number; motion?: { x: number; y?: number } };
 type Effect = { node: Container; born: number; duration: number; actor?: Actor };
 
 export class Scene {
@@ -20,6 +21,7 @@ export class Scene {
   private world = new Container();
   private bossArt?: BossArt;
   private plantMotion = new PlantMotion();
+  private giantMotion = new GiantMotion();
   private actors = new Map<string, Actor>();
   private effects: Effect[] = [];
   private textures: Record<string, Texture> = {};
@@ -116,7 +118,8 @@ export class Scene {
       await Assets.unload(clip.files);
       delete this.clips[name];
     }
-    const names = [...needed].filter(name => !this.clips[name]);
+    await this.giantMotion.prepare([...needed].some(hasGiantMotion), texture => this.app.renderer.prepare.upload(texture));
+    const names = [...needed].filter(name => !hasGiantMotion(name) && !this.clips[name]);
     const files = [...new Set(names.flatMap(name => animations[name].pages))];
     const pages = new Map<string, Texture>();
     let done = 0; progress(done, files.length);
@@ -149,6 +152,7 @@ export class Scene {
     this.clearObjects();
     if (this.bossArt) { await this.bossArt.destroy(); this.bossArt = undefined; }
     await this.plantMotion.destroy();
+    await this.giantMotion.destroy();
     const files = [...this.textureFiles];
     for (const clip of Object.values(this.clips)) {
       clip.frames.forEach(texture => texture.destroy()); files.push(...clip.files);
@@ -183,6 +187,10 @@ export class Scene {
 
   setPointer(pointer: { x: number; y: number } | null) { this.pointer = pointer; }
 
+  private clipDuration(name: string) {
+    return hasGiantMotion(name) ? this.giantMotion.duration(name) : this.clips[name].duration;
+  }
+
   private animate(actor: Actor, clipName: string, loop = true, timeline = this.time, rate = 1, shootingTicks?: number) {
     if (hasPlantMotion(clipName)) {
       if (!actor.rig) {
@@ -197,8 +205,15 @@ export class Scene {
       // Spread idle plants across the cycle; do not synchronize every newly planted row.
       if (loop && ['peashooter', 'sunflower', 'wallnut', 'snowpea', 'potatomine', 'chomper', 'repeater', 'puffshroom', 'sunshroom', 'sunshroom-big', 'fumeshroom', 'hypnoshroom', 'scaredyshroom', 'iceshroom','doomshroom','lilypad','squash','threepeater','plantern','spikeweed','torchwood','tallnut','seashroom','cactus'].includes(clipName)) actor.since -= actor.root.uid * 17 % this.clips[clipName].duration;
     }
-    const clip = this.clips[clipName];
     const elapsed = (timeline - actor.since) * rate;
+    if (hasGiantMotion(clipName)) {
+      if (!actor.giantRig) {
+        actor.giantRig = this.giantMotion.create(); actor.root.addChild(actor.giantRig.root); actor.art.visible = false;
+      }
+      actor.giantRig.render(clipName, elapsed, loop);
+      return;
+    }
+    const clip = this.clips[clipName];
     const position = loop ? elapsed % clip.duration : Math.min(elapsed, clip.duration - .001);
     const frame = animationFrame(clip.ends, position);
     if (actor.frame === frame) return;
@@ -364,7 +379,7 @@ export class Scene {
         : zombie.rageIn > 0 ? 'newspaper-gasp' : zombie.vaultIn > 52 ? 'pole-jump' : zombie.vaultIn > 0 ? 'pole-land'
         : zombie.hasPole ? 'pole-run' : `${type}-${zombie.eating ? 'eat' : 'walk'}`;
       const walking = zombie.kind !== 'zomboni' && zombie.kind !== 'catapult' && !zombie.sled && (clip.endsWith('-walk') || clip.endsWith('-headless') || clip === 'pole-run');
-      const rate = zombie.giant&&zombie.giant.phase!=='walk'?this.clips[clip].duration/(zombie.giant.phase==='smash'?134:138):zombie.catapult?.phase==='shoot'?this.clips[clip].duration/129:zombie.catapult?.phase==='walk'?.55:zombie.catapult?.phase==='reload'?1.2:clip === 'newspaper-gasp' ? this.clips[clip].duration / 150 : walking ? this.clips[clip].duration / walkingCycleTicks(zombie) : 1;
+      const rate = zombie.giant&&zombie.giant.phase!=='walk'?this.clipDuration(clip)/(zombie.giant.phase==='smash'?134:138):zombie.catapult?.phase==='shoot'?this.clips[clip].duration/129:zombie.catapult?.phase==='walk'?.55:zombie.catapult?.phase==='reload'?1.2:clip === 'newspaper-gasp' ? this.clips[clip].duration / 150 : walking ? this.clipDuration(clip) / walkingCycleTicks(zombie) : 1;
       this.animate(actor, clip, !zombie.popIn && !zombie.jackOpening && zombie.vaultIn === 0 && zombie.rageIn === 0 && (!zombie.giant||zombie.giant.phase==='walk') && zombie.catapult?.phase!=='shoot' && !zombie.flight && !zombie.landingIn, zombie.animationTime + alpha * (zombie.frozenIn !== undefined && zombie.frozenIn > 0 ? 0 : zombie.chillIn > 0 ? .4 : 1), rate);
       this.move(actor, zombie, game.rowY(zombie.row,zombie.x) + 1, alpha);
       if(zombie.flight){const f=zombie.flight;actor.root.y-=Math.sin((1-f.remaining/f.duration)*Math.PI)*110+f.remaining/f.duration*88;}
@@ -381,7 +396,7 @@ export class Scene {
       const kelp = kelpTargets.get(zombie.id);
       if (kelp && kelp.remaining <= 50) { actor.root.y += 50 - kelp.remaining; actor.root.alpha = (kelp.remaining - 1) / 50; }
       if(zombie.underground)actor.root.alpha=.55;
-      actor.art.tint = zombie.butterIn ? 0xffdc63 : game.ticks - zombie.hitAt < 8 ? 0xe4ff9b : zombie.hypnotized ? 0xd28cff : zombie.chillIn > 0 ? 0x87c7ff : 0xffffff;
+      (actor.giantRig?.root ?? actor.art).tint = zombie.butterIn ? 0xffdc63 : game.ticks - zombie.hitAt < 8 ? 0xe4ff9b : zombie.hypnotized ? 0xd28cff : zombie.chillIn > 0 ? 0x87c7ff : 0xffffff;
     }
     for(const l of game.ladders){const actor=this.actor(`ladder${l.column}-${l.row}`,l.row*100+24);actor.art.texture=this.textures.ladder;actor.art.anchor.set(.5,1);actor.art.width=65;actor.art.height=115;actor.root.position.set(cellX(l.column)+20,game.rowY(l.row,cellX(l.column)));}
     for (const pea of game.peas) {
@@ -418,8 +433,8 @@ export class Scene {
         const burned = this.explosions.some(e => Math.abs(e.x - actor.root.x) <= 115 && Math.abs(e.y + 35 - actor.root.y) <= 101);
         const special = ['dancer','backup','snorkel','zomboni','bobsled','dolphin','jack','balloon','digger','pogo','bungee','ladder','catapult','gargantuar','imp'].find(name=>actor.clip.startsWith(`${name}-`));
         const clip = special && ['zomboni','bobsled','dolphin','jack','balloon','digger','pogo','bungee','ladder','catapult','gargantuar','imp'].includes(special) ? `${special}${special==='gargantuar'&&actor.clip.includes('-bare-')?'-bare':''}-die` : actor.clip.startsWith('ducky') && !burned ? 'ducky-die' : special && (special!=='snorkel'||!burned) ? `${special}-${burned?'burn':'die'}` : `${actor.clip.startsWith('football-') && !burned ? 'football' : actor.clip.startsWith('newspaper-') ? 'newspaper' : actor.clip.startsWith('pole-') ? 'pole' : 'zombie'}-${burned ? 'burn' : 'die'}`;
-        this.animate(actor, clip, false); actor.art.tint = 0xffffff;
-        this.effects.push({ node: actor.root, actor, born: this.time, duration: this.clips[clip].duration });
+        this.animate(actor, clip, false); (actor.giantRig?.root ?? actor.art).tint = 0xffffff;
+        this.effects.push({ node: actor.root, actor, born: this.time, duration: this.clipDuration(clip) });
       } else actor.root.destroy({ children: true });
       this.actors.delete(key);
     }

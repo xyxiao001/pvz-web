@@ -62,6 +62,19 @@ test('friendly and hostile zombies chew each other, and surviving allies do not 
  tick(g,4);assert.equal(ally.armor,1396);assert.equal(enemy.health,266);assert.equal(enemy.shield,1100);assert.equal(ally.eating,true);assert.equal(enemy.eating,true);
  g.wave=g.config.waveCount;g.zombies=[ally];g.step();assert.equal(g.phase,'won');
 });
+test('hypnosis takes effect for later enemies in the same tick, including dancer followers',()=>{
+ for(const kind of ['normal','dancer'] as const){
+  const g=play();g.sun=150;plant(g,'hypnoshroom',2,2);
+  const converted={...zombie(kind,cellX(2)+10),biteIn:1};
+  const follower={...zombie('backup',cellX(2)+15),id:902,leader:converted.id};
+  const enemy={...zombie('normal',cellX(2)+25),id:901,biteIn:1};
+  g.zombies=kind==='dancer'?[converted,follower,enemy]:[converted,enemy];
+  g.step();
+  assert.equal(converted.hypnotized,true);assert.equal(enemy.eating,true);
+  assert.equal(converted.health,266);assert.equal(enemy.x,cellX(2)+25);
+  if(kind==='dancer')assert.equal(follower.hypnotized,true);
+ }
+});
 test('scaredy attacks distant enemies with lasting spores, hides near enemies in adjacent rows, and ignores allies',()=>{
  const g=play();g.sun=100;plant(g,'scaredyshroom',0,2);const p=g.plants[0];const z=zombie('normal',700);z.speed=0;g.zombies=[z];p.actionIn=1;
  g.step();assert.equal(g.peas.length,1);assert.equal(g.peas[0].longRange,true);tick(g,80);assert.ok(g.peas.length>0);tick(g,100);assert.equal(z.health,250);
