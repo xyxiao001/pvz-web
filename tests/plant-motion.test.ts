@@ -1,13 +1,32 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Matrix } from 'pixi.js';
-import { motionFrame, poseMatrix, type Pose } from '../src/rendering/plant-motion';
+import { Container, Matrix } from 'pixi.js';
+import { applyPose, motionFrame, poseMatrix, type Pose } from '../src/rendering/plant-motion';
 import { renderResolution } from '../src/rendering/resolution';
 import pea from '../public/assets/runtime/plant-motion/peashooter.json';
 import sunflower from '../public/assets/runtime/plant-motion/sunflower.json';
 import threepeater from '../public/assets/runtime/plant-motion/threepeater.json';
 import gatling from '../public/assets/runtime/plant-motion/gatlingpea.json';
 import twin from '../public/assets/runtime/plant-motion/twinsunflower.json';
+import winter from '../public/assets/runtime/plant-motion/wintermelon.json';
+
+test('direct Pixi transforms preserve every native pose, interpolated frame and mirrored scale', () => {
+  const part = new Container(), expected = new Matrix();
+  const compare = (a: Pose, b: Pose, fraction: number) => {
+    applyPose(part, a, b, fraction); part.updateLocalTransform();
+    poseMatrix(expected, a, b, fraction);
+    for (const component of ['a','b','c','d','tx','ty'] as const)
+      assert.ok(Math.abs(part.localTransform[component] - expected[component]) < 1e-8, component);
+  };
+  for (const group of [...[pea, sunflower, threepeater, gatling, twin, winter].flatMap(d => d.groups), ...winter.shooting.groups]) {
+    for (const track of group.tracks) for (let i=0;i<track.poses.length;i++)
+      for (const fraction of [0, .25, .5, .75, 1]) compare(track.poses[i] as Pose, track.poses[(i+1)%track.poses.length] as Pose, fraction);
+  }
+  const a: Pose = [10, -20, -2, 0, 180, -270, 0, 1, 'part'];
+  const b: Pose = [-40, 50, 0, -3, 350, 20, 0, 1, 'part'];
+  for (const fraction of [0, .25, .5, .75, 1]) compare(a,b,fraction);
+  part.destroy();
+});
 
 test('native plant motion interpolates between poses without changing cycle duration at 1x/2x/4x', () => {
   for (const definition of [pea, sunflower, threepeater, gatling, twin]) {

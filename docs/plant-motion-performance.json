@@ -1,0 +1,31 @@
+{
+  "plants": 60,
+  "frames": 600,
+  "results": {
+    "before": [
+      227.18162499999994,
+      245.91133400000012,
+      253.89824999999973,
+      245.3570840000002,
+      234.24141599999984,
+      233.46266699999978,
+      235.739333
+    ],
+    "after": [
+      78.74108300000012,
+      80.33504100000005,
+      84.53008299999965,
+      83.47800000000007,
+      77.52866699999959,
+      77.09595900000022,
+      84.21691599999986
+    ]
+  },
+  "median": {
+    "before": 235.739333,
+    "after": 80.33504100000005
+  },
+  "improvementPercent": 65.92208861471579,
+  "baseline": "f6d1cf9",
+  "method": "Same Node.js process, alternating before/after order, 2 warmup trials and 7 recorded trials; 60 mixed native rigs, 600 frames, including local transform rebuild. Texture.EMPTY; no GPU rendering or combat simulation."
+}

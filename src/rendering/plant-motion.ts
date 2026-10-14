@@ -15,6 +15,15 @@ export function poseMatrix(out: Matrix, a: Pose, b: Pose, fraction: number) {
   const sx = lerp(2), sy = lerp(3), kx = lerp(4) * Math.PI / 180, ky = lerp(5) * Math.PI / 180;
   return out.set(Math.cos(kx) * sx, Math.sin(kx) * sx, -Math.sin(ky) * sy, Math.cos(ky) * sy, lerp(0), lerp(1));
 }
+// Reanim already supplies scale and skew. Applying them directly avoids a matrix
+// decomposition (atan2/sqrt) followed by Pixi rebuilding the same transform.
+export function applyPose(part: Container, a: Pose, b: Pose, fraction: number) {
+  part.position.set(a[0] + (b[0] - a[0]) * fraction, a[1] + (b[1] - a[1]) * fraction);
+  part.scale.set(a[2] + (b[2] - a[2]) * fraction, a[3] + (b[3] - a[3]) * fraction);
+  part.rotation = 0;
+  part.skew.set(-(a[5] + (b[5] - a[5]) * fraction) * Math.PI / 180,
+    (a[4] + (b[4] - a[4]) * fraction) * Math.PI / 180);
+}
 export function motionFrame(ticks: number, duration: number, length: number, loop = true) {
   const position = loop ? ((ticks % duration + duration) % duration) / duration * length : Math.min(Math.max(ticks / duration, 0), 1) * (length - 1);
   const frame = Math.floor(position);
@@ -53,7 +62,7 @@ export class PlantRig {
         if (!sprite.visible) continue;
         sprite.texture = this.loaded.textures[a[8]];
         sprite.alpha = a[7] + (b[7] - a[7]) * fraction;
-        sprite.setFromMatrix(poseMatrix(this.matrix, a, b, fraction));
+        applyPose(sprite, a, b, fraction);
       }
     }
   }
@@ -67,8 +76,10 @@ export class PlantMotion {
     const pending = names.filter(name => !this.loaded.has(name)); let done = 0;
     progress(done, pending.length);
     await loadInBatches(pending, 3, async name => {
-      const definition = await fetch(`${this.base}${name}.json`).then(r => r.json()) as Definition;
-      const atlas = await Assets.load<Texture>({ src: `${this.base}${name}.webp`, data: { resolution: 2 } });
+      const [definition, atlas] = await Promise.all([
+        fetch(`${this.base}${name}.json`).then(r => r.json()) as Promise<Definition>,
+        Assets.load<Texture>({ src: `${this.base}${name}.webp`, data: { resolution: 2 } }),
+      ]);
       await upload(atlas);
       const textures = Object.fromEntries(Object.entries(definition.frames).map(([key, rect]) => [key, new Texture({ source: atlas.source, frame: new Rectangle(...rect) })]));
       this.loaded.set(name, { definition, textures }); progress(++done, pending.length);
