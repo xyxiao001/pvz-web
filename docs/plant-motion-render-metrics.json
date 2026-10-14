@@ -1,0 +1,77 @@
+{
+  "complete": true,
+  "results": [
+    {
+      "key": "before",
+      "speed": 1,
+      "medianCpuMs": 0.20000000298023224,
+      "p95CpuMs": 0.6000000089406967,
+      "frameP95Ms": 10.099999994039536,
+      "canvas": [
+        2380,
+        1785
+      ],
+      "animationRgbaMiB": 129.41310119628906
+    },
+    {
+      "key": "after",
+      "speed": 1,
+      "medianCpuMs": 0.5,
+      "p95CpuMs": 0.7000000029802322,
+      "frameP95Ms": 9.400000005960464,
+      "canvas": [
+        1600,
+        1200
+      ],
+      "animationRgbaMiB": 125.9910888671875
+    },
+    {
+      "key": "before",
+      "speed": 2,
+      "medianCpuMs": 0.20000000298023224,
+      "p95CpuMs": 0.30000001192092896,
+      "frameP95Ms": 9.100000008940697,
+      "canvas": [
+        2380,
+        1785
+      ],
+      "animationRgbaMiB": 129.41310119628906
+    },
+    {
+      "key": "after",
+      "speed": 2,
+      "medianCpuMs": 0.5,
+      "p95CpuMs": 0.7000000029802322,
+      "frameP95Ms": 8.900000005960464,
+      "canvas": [
+        1600,
+        1200
+      ],
+      "animationRgbaMiB": 125.9910888671875
+    },
+    {
+      "key": "before",
+      "speed": 4,
+      "medianCpuMs": 0.20000000298023224,
+      "p95CpuMs": 0.30000001192092896,
+      "frameP95Ms": 9.5,
+      "canvas": [
+        2380,
+        1785
+      ],
+      "animationRgbaMiB": 129.41310119628906
+    },
+    {
+      "key": "after",
+      "speed": 4,
+      "medianCpuMs": 0.4000000059604645,
+      "p95CpuMs": 0.6000000089406967,
+      "frameP95Ms": 8.699999988079071,
+      "canvas": [
+        1600,
+        1200
+      ],
+      "animationRgbaMiB": 125.9910888671875
+    }
+  ]
+}

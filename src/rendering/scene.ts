@@ -1,3 +1,5 @@
+import { hasPlantMotion, PlantMotion, type PlantRig } from './plant-motion';
+import { renderResolution } from './resolution';
 import { loadInBatches } from '../platform/load-queue';
 import { BossArt } from './boss';
 import 'pixi.js/prepare';
@@ -10,13 +12,14 @@ import { animationNames, animationFrame, combatTextureFiles } from './asset-plan
 
 type ClipData = { frames: number[][]; durations: number[]; anchor: number[]; pages: string[] };
 type Clip = { files: string[]; frames: Texture[]; ends: number[]; duration: number; anchors: number[][] };
-type Actor = { root: Container; art: Sprite; clip: string; since: number; frame: number; seen: number; previousX: number; previousY: number; motion?: { x: number; y?: number } };
+type Actor = { rig?: PlantRig; root: Container; art: Sprite; clip: string; since: number; frame: number; seen: number; previousX: number; previousY: number; motion?: { x: number; y?: number } };
 type Effect = { node: Container; born: number; duration: number; actor?: Actor };
 
 export class Scene {
   readonly app = new Application();
   private world = new Container();
   private bossArt?: BossArt;
+  private plantMotion = new PlantMotion();
   private actors = new Map<string, Actor>();
   private effects: Effect[] = [];
   private textures: Record<string, Texture> = {};
@@ -41,14 +44,14 @@ export class Scene {
 
   async init(host: HTMLElement) {
     await this.app.init({ width: BOARD.width, height: BOARD.height, backgroundAlpha: 0, antialias: true,
-      resolution: window.devicePixelRatio, autoDensity: true, autoStart: false });
+      resolution: renderResolution(host.clientWidth, window.devicePixelRatio), autoDensity: true, autoStart: false });
     host.appendChild(this.app.canvas);
     this.app.canvas.style.width = '100%';
     this.app.canvas.style.height = '100%';
     this.app.canvas.setAttribute('aria-label', '庭院战场。先选植物，再点击草地种植；点击阳光收集。');
-    // Keep the 800×600 world; render enough physical pixels for its displayed size.
+    // Keep the 800×600 world and match display density up to the 2× source artwork.
     new ResizeObserver(([entry]) => {
-      this.app.renderer.resize(BOARD.width, BOARD.height, entry.contentRect.width / BOARD.width * window.devicePixelRatio);
+      this.app.renderer.resize(BOARD.width, BOARD.height, renderResolution(entry.contentRect.width, window.devicePixelRatio));
       this.app.canvas.style.width = '100%'; this.app.canvas.style.height = '100%';
       this.app.render();
     }).observe(host);
@@ -101,11 +104,12 @@ export class Scene {
 
   private async loadActors(game: Game, progress: (done: number, total: number) => void) {
     await this.prepareTextures(combatTextureFiles(game), progress);
+    await this.plantMotion.prepare([...new Set([...game.seeds, ...game.plants.map(p => p.kind)])].filter(hasPlantMotion), progress, texture => this.app.renderer.prepare.upload(texture));
     if(game.boss&&!this.bossArt){this.bossArt=new BossArt();await this.bossArt.load(progress);this.bossArt.root.zIndex=590;this.world.addChild(this.bossArt.root);}
     const base = `${import.meta.env.BASE_URL}assets/runtime/`;
     this.animationData ??= fetch(base + 'animations.json').then(response => response.json());
     const { animations } = await this.animationData;
-    const needed = new Set(animationNames(game, Object.keys(animations)));
+    const needed = new Set(animationNames(game, Object.keys(animations)).filter(name => !hasPlantMotion(name)));
     for (const effect of this.effects) if (effect.actor) needed.add(effect.actor.clip);
     for (const [name, clip] of Object.entries(this.clips)) if (!needed.has(name)) {
       for (const texture of clip.frames) texture.destroy();
@@ -144,6 +148,7 @@ export class Scene {
   private async clearResources() {
     this.clearObjects();
     if (this.bossArt) { await this.bossArt.destroy(); this.bossArt = undefined; }
+    await this.plantMotion.destroy();
     const files = [...this.textureFiles];
     for (const clip of Object.values(this.clips)) {
       clip.frames.forEach(texture => texture.destroy()); files.push(...clip.files);
@@ -179,6 +184,14 @@ export class Scene {
   setPointer(pointer: { x: number; y: number } | null) { this.pointer = pointer; }
 
   private animate(actor: Actor, clipName: string, loop = true, timeline = this.time, rate = 1) {
+    if (hasPlantMotion(clipName)) {
+      if (!actor.rig) {
+        actor.rig = this.plantMotion.create(clipName); actor.root.addChild(actor.rig.root); actor.art.visible = false;
+        actor.clip = clipName; actor.since = timeline - actor.root.uid * 17 % this.plantMotion.duration(clipName);
+      }
+      actor.rig.render((timeline - actor.since) * rate);
+      return;
+    }
     if (actor.clip !== clipName) {
       actor.clip = clipName; actor.since = timeline; actor.frame = -1;
       // Spread idle plants across the cycle; do not synchronize every newly planted row.

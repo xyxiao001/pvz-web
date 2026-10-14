@@ -104,3 +104,13 @@ footer{color:#8d9d76;font-size:11px}
 .seed-silhouette{width:6.25cqw;height:8.8cqw;background:url('/assets/runtime/ui/seed-silhouette.webp') center/100% 100%;opacity:.55}
 .seed-chooser .seed-option,.seed-chooser .chosen-seed{transform-origin:top left}
 .seed-chooser .chosen-seeds{z-index:1}
+
+/* Battle HUD has its own 87 px strip; the unchanged 800×600 world sits below it. */
+.page.in-battle{width:min(calc(100% - 24px),calc((100dvh - 80px)*800/687))}
+.page.in-battle .game-frame{aspect-ratio:800/687}
+.page.in-battle #canvas-host{top:10.875cqw;height:calc(100% - 10.875cqw)}
+.page.in-battle .seed-bank{height:10.875cqw}
+.page.in-battle .advice{top:25%}
+.page.in-battle:fullscreen{width:100%;height:100%;padding:0}
+.page.in-battle:fullscreen .game-frame{width:min(calc(100dvw - 8px),calc((100dvh - 8px)*800/687))}
+@media(max-width:650px){.page.in-battle{width:100%}}

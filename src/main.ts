@@ -67,6 +67,7 @@ let lastPhase = ''; let messageUntil = 0;
 const backLabel = () => game.scenario === 'endless' && game.phase !== 'lost' ? '保存退出' : '返回主菜单';
 
 function showMenu() {
+  $('.page').classList.remove('in-battle');
   game.pause(); screen = 'menu'; clock.reset(); if (scene) void scene.release();
   $('#menu').hidden = false; $('#battle-hud').hidden = true; overlay.hidden = true;
   updateMusic();
@@ -102,6 +103,7 @@ function setLevel(level: LevelId, scenario: Game['scenario'] = 'adventure', surv
   mountGame();
 }
 async function mountGame() {
+  $('.page').classList.remove('in-battle');
   screen = 'loading'; scene?.app.stop(); $('#battle-hud').hidden = true; updateMusic();
   panel('<h2>正在准备庭院…</h2><p id="loading-status" role="status">准备画面</p>');
   const progress = (done: number, total: number) => { $('#loading-status').textContent = `加载资源 ${done} / ${total}`; };
@@ -183,6 +185,7 @@ function updateConveyor() {
   hud.bindSeeds();
 }
 function phasePanel() {
+  $('.page').classList.toggle('in-battle', game.phase !== 'ready');
   updateMusic();
   if (game.phase === 'playing') { overlay.hidden = true; overlay.classList.remove('chooser-overlay'); $('#battle-hud').classList.remove('choosing'); return; }
   if (game.phase === 'ready') {
