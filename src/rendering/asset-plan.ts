@@ -13,7 +13,6 @@ export function combatTextureFiles(game: Game) {
   if(plants.has('starfruit'))files.star='original/star.webp';
   if(plants.has('melonpult'))files.melon='original/melon.webp';
   if(plants.has('marigold')||game.coins.length){files.coinSilver='original/coin-silver.webp';files.coinGold='original/coin-gold.webp';}
-  if(game.waves.flat().includes('catapult'))files.basketball='original/basketball.webp';
   if(plants.has('cabbagepult'))files.cabbage='original/cabbage.webp';
   if(plants.has('kernelpult')){files.kernel='original/kernel.webp';files.butter='original/butter.webp';}
   if(game.boss||game.waves.flat().includes('catapult'))files.basketball='original/basketball.webp';

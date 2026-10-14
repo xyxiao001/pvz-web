@@ -178,7 +178,7 @@ function phasePanel() {
     $('#next').onclick = () => game.level < lastLevel ? setLevel((game.level + 1) as LevelId) : showMenu();
     $('#replay').onclick = () => setLevel(game.level);
   } else {
-    panel(`<span class="kicker">僵尸入侵</span><h2>僵尸吃掉了你的脑子！</h2>${game.scenario === 'endless' ? `<p>本次守住 ${game.survivalFlags} 面旗帜 · 累计击败 ${game.kills} 只僵尸</p>` : ''}<p>${game.config.mode === 'whack' ? '先敲最靠近房子的僵尸，<br/>路障需要两锤，铁桶需要三锤。' : game.config.mode === 'bowling' ? '把坚果滚向最靠近房子的僵尸，<br/>留下爆炸坚果应对密集队伍。' : game.config.mode === 'conveyor' ? '及时使用传送带植物，<br/>留下樱桃炸弹应对密集队伍。' : '试着先种向日葵积攒阳光，<br/>再把射手放在靠左的位置。'}</p><button id="retry" class="wood-button large">重新开始</button><button class="text-button back-menu">${backLabel()}</button>`);
+    panel(`<span class="kicker">僵尸入侵</span><h2>僵尸吃掉了你的脑子！</h2>${game.scenario === 'endless' ? `<p>本次守住 ${game.survivalFlags} 面旗帜 · 累计击败 ${game.kills} 只僵尸</p>` : ''}<p>${game.config.mode === 'whack' ? '先敲最靠近房子的僵尸，<br/>路障需要两锤，铁桶需要三锤。' : game.config.mode === 'bowling' ? '把坚果滚向最靠近房子的僵尸，<br/>留下爆炸坚果应对密集队伍。' : game.boss ? '僵王低头时集中攻击，<br/>留好寒冰菇与火爆辣椒反制冰火球。' : game.config.mode === 'conveyor' ? '及时使用传送带植物，<br/>留下樱桃炸弹应对密集队伍。' : '试着先种向日葵积攒阳光，<br/>再把射手放在靠左的位置。'}</p><button id="retry" class="wood-button large">重新开始</button><button class="text-button back-menu">${backLabel()}</button>`);
     $('#retry').onclick = () => setLevel(game.level, game.scenario, game.survivalScene);
   }
   document.querySelectorAll<HTMLButtonElement>('.back-menu').forEach(button => button.onclick = () => { if (game.scenario === 'endless' && game.phase !== 'lost') saveSurvival(game, clock.speed); showMenu(); });
