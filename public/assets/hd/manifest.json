@@ -5,18 +5,22 @@
   "engineSource": "https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.5.0",
   "engineSha256": "c1c35d92079085de96b9d547fd7e4464bc8a2e9ccf28d7b8c712d72ade91b7cc",
   "modelSha256": "548a36f9c3f4ab8da56cd3b13badf23968bee207b396dad14d04b830e5f2ab2d",
-  "sourceAnimationSha256": "bfccb0969a5a83aa777bc2862c451cb69888d9657f6f09357bf98ab48e95bbf5",
+  "sourceAnimationSha256": "e30a86eb9897d4e8c513420fc15273b972563632234222aa344f2e5a5e42bf94",
   "sourceAtlasSha256": [
-    "b8b31215e9964734a055ba047bbcbc1e7921c09c378de8c83093c9ca46f39636",
-    "df55e0f97e2d11a92a8428e9c4623deea7704c6d8f57f9da5f242e328218f2e4",
-    "cf6a17c3a03ea5d1fc8e48d1521b3abb7ceae6e925b82c0d876acabcedcefcd0",
-    "82bf2277a9cded541d23a884119b3db09d81c4cf45c8652949aa08b77bac774b",
-    "9b10aa47f6d14657c1b8b9b5e03a91f0d0172d3f61aec7e5a5dc69c026450aa9",
-    "4000351ee5b9878e5a88b991a2326672ae91cb270fc7ac37006d8484f6e2272c",
-    "8e670b6fa6cae6586e16734a39bfb8a06a06ea38623beace83e0b1d67a0ed65d",
-    "1c931284f4e70001de9d721d53f036afb1263766c73fd875a92be4cfd157a894",
-    "5b1a52656a8078b92a70936e7a6491159bcd9ef976d6e2ad5e45507e6d02e3fc",
-    "356e6fb5a7e88a4f4ffd0585e53ce81acc1cefc53711bda3756c960b76f589ee"
+    "3ae7f64f598bbbbf9dba486e6301c444936250b1858722a4de4f1fbbf936ee35",
+    "55c55d92ca45f3ce1d03ad7e72a1df17d990d855517b7cc25d05426f61031df5",
+    "df0bbd37d73156765566e674043540c3eddeeed59e95ebceb0f1309cf944bb2f",
+    "5ff0302ad6962b6a134dc7d9ebc3f6b6e184471848be652acba34e5f494fd766",
+    "b41233623c7a909fbf052276b92dcc786a9ac4c5d670da0d0b33e42e74a6dd26",
+    "57525a67b2d44429d1e42dd6cc56fb535f5b0be836bee38945582feec5c90c3b",
+    "cba913ae1b010edb7700992772dbb3a774050bf030e41c587116e6482664ad88",
+    "6c2757b786ae5da9c0538a33787a6c377bcb60ef282f285681bf48782ccb597a",
+    "dce87022fd6f61891776711713f5716406dc03549ef094b53f249102ba8ca6db",
+    "0d4e5932aac034d0a602d0e9ab1bae678fbab2dc953da8bd483ac415216a9baf",
+    "8a67abd32a85579e7831be34028b0aa502950edf576be5d074950cdc542a8efd",
+    "7cffd952b0beb22960caed2b271fdbb8e44fa818928565ce18c4cd9c02899c06",
+    "d09922270337227dda34193fa3f3280bd6d5f9af1b5eef3719795537b4169ee8",
+    "5619098d377be9066d293ceb76c01264d5a4dd707f1f6ade807cce07877330ef"
   ],
   "staticSources": {
     "original/adventure-hover.png": {
@@ -31,6 +35,13 @@
       "size": [
         166,
         70
+      ]
+    },
+    "original/basketball.png": {
+      "sha256": "b91373694b3d608a37b47824f49004ecb7bed6acd557d239e2e67a904931d804",
+      "size": [
+        31,
+        31
       ]
     },
     "original/blover.png": {
@@ -243,6 +254,20 @@
         97
       ]
     },
+    "original/coin-gold.png": {
+      "sha256": "eed8cfd4c630a69411083b5c428489ed42acac54c14e602eb2d0a2958ffac44d",
+      "size": [
+        45,
+        45
+      ]
+    },
+    "original/coin-silver.png": {
+      "sha256": "6849c6cedadb019d47bfbad78582f24e9fbb7ee6d0662cc846f5dc5e7007fd4f",
+      "size": [
+        43,
+        40
+      ]
+    },
     "original/conveyor-back.png": {
       "sha256": "7ce8f28f45ba83afa463db197c3f7e9b8f81d14a875c4182988a9c5dd42c34a8",
       "size": [
@@ -409,6 +434,27 @@
       "size": [
         54,
         72
+      ]
+    },
+    "original/marigold.png": {
+      "sha256": "bdec47c776e4aa311b793eef4325fdb5a6d93245ab46188fa7bb1ab78cb5a286",
+      "size": [
+        52,
+        72
+      ]
+    },
+    "original/melon.png": {
+      "sha256": "5fb4a55cf49f41c495069d37b9092d45a2da7dfe247658f7bddb1e362b7b5531",
+      "size": [
+        55,
+        48
+      ]
+    },
+    "original/melonpult.png": {
+      "sha256": "f0a3e0633957254ce39afa7ba8f6f61c9f0a8d430ebb27931d927c9821fa81be",
+      "size": [
+        100,
+        89
       ]
     },
     "original/menu.png": {
@@ -684,6 +730,13 @@
         269
       ]
     },
+    "original/umbrella.png": {
+      "sha256": "f88c66868d8e4c4ca17f02e7a1620e65f3ec74acef7ba84b15b268ed3827df11",
+      "size": [
+        78,
+        66
+      ]
+    },
     "original/vases.png": {
       "sha256": "855e12e69ebf8b5486b092aa624d7017488cb5f4e75c7b731124229415e747e8",
       "size": [
@@ -727,9 +780,9 @@
       ]
     }
   },
-  "frames": 3993,
-  "uniqueFrames": 3765,
-  "atlasPages": 10,
-  "atlasBaseRgbaMiB": 640,
-  "outputBytes": 215603101
+  "frames": 4622,
+  "uniqueFrames": 4321,
+  "atlasPages": 14,
+  "atlasBaseRgbaMiB": 896,
+  "outputBytes": 283237446
 }

@@ -1,14 +1,14 @@
 import data from './data/portable-adventure.json';
 import type { LevelId, ZombieKind } from './config';
 
-const kinds: ZombieKind[] = ['normal', 'flag', 'cone', 'pole', 'bucket', 'newspaper', 'door', 'football', 'dancer', 'backup', 'ducky', 'snorkel', 'zomboni', 'bobsled', 'dolphin', 'jack', 'balloon', 'digger', 'pogo', 'bungee', 'ladder'];
+const kinds: ZombieKind[] = ['normal', 'flag', 'cone', 'pole', 'bucket', 'newspaper', 'door', 'football', 'dancer', 'backup', 'ducky', 'snorkel', 'zomboni', 'bobsled', 'dolphin', 'jack', 'balloon', 'digger', 'pogo', 'bungee', 'ladder', 'catapult', 'gargantuar', 'imp'];
 export function isFlagWave(level: LevelId, wave: number) {
   const perFlag = Math.min(data.waveCounts[level - 1], 10);
   return level !== 1 && wave % perFlag === perFlag - 1;
 }
 
 // Board::PickZombieWaves / PutInMissingZombies / PickZombieType.
-// Scope: first-time adventure 1–1 … 5–5. The supplied RNG is this port's RNG.
+// Scope: first-time adventure 1–1 … 5–9. The supplied RNG is this port's RNG.
 export function generateWaves(level: LevelId, random: () => number): ZombieKind[][] {
   const count = data.waveCounts[level - 1];
   // Whack spawns timed groups from graves, not this adventure wave list.

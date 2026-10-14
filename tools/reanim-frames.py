@@ -6,7 +6,7 @@ import math
 import xml.etree.ElementTree as ET
 from PIL import Image
 
-def render_clip(directory, name, layer, size, offset, record):
+def render_clip(directory, name, layer, size, offset, record, hidden=()):
     path = directory / (name + '.reanim')
     record(path)
     xml = ET.fromstring('<root>' + path.read_text() + '</root>')
@@ -25,7 +25,8 @@ def render_clip(directory, name, layer, size, offset, record):
     for index, marker in enumerate(tracks[layer]):
         if marker['f'] < 0: continue
         frame = Image.new('RGBA', size)
-        for poses in tracks.values():
+        for track_name, poses in tracks.items():
+            if any(track_name.startswith(prefix) for prefix in hidden): continue
             t = poses[index]
             if not t['i'] or t['f'] < 0 or t['a'] == 0: continue
             image_name = t['i'].removeprefix('IMAGE_REANIM_')

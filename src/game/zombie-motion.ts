@@ -11,7 +11,9 @@ const FOOTBALL = { frames: 30, distance: 30 };
 const DANCER = { frames: 21, distance: 28.6 };
 const SNORKEL = { frames: 37, distance: 59.9 };
 const PAPER = { frames: 47, distance: 57.8 };
-const track = (zombie: Walker) => zombie.kind === 'dancer' || zombie.kind === 'backup' ? DANCER : zombie.kind === 'snorkel' ? SNORKEL : zombie.kind === 'football' ? FOOTBALL : zombie.kind === 'newspaper' ? PAPER : zombie.kind === 'pole' ? zombie.hasPole ? POLE_RUN : POLE_WALK : NORMAL;
+const GIANT = { frames: 49, distance: 124.1 };
+const IMP = { frames: 33, distance: 62.9 };
+const track = (zombie: Walker) => zombie.kind === 'gargantuar' ? GIANT : zombie.kind === 'imp' ? IMP : zombie.kind === 'dancer' || zombie.kind === 'backup' ? DANCER : zombie.kind === 'snorkel' ? SNORKEL : zombie.kind === 'football' ? FOOTBALL : zombie.kind === 'newspaper' ? PAPER : zombie.kind === 'pole' ? zombie.hasPole ? POLE_RUN : POLE_WALK : NORMAL;
 
 export function walkingCycleTicks(zombie: Walker) {
   return track(zombie).distance / (zombie.speed * .47) * (zombie.mini ? .5 : 1);
@@ -20,7 +22,7 @@ export function walkingCycleTicks(zombie: Walker) {
 // The port still walks uniformly. Use the source cycle's mean displacement,
 // including REANIM_LOOP's frameCount - 1 intervals, rather than raw mVelX.
 export function walkingSpeed(zombie: Walker) {
-  if (zombie.kind === 'zomboni' || zombie.sled || zombie.flying) return zombie.speed;
+  if (zombie.kind === 'zomboni' || zombie.kind === 'catapult' || zombie.sled || zombie.flying) return zombie.speed;
   const { frames } = track(zombie);
   return zombie.speed * .47 * frames / (frames - 1);
 }

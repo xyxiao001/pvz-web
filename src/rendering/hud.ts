@@ -42,7 +42,7 @@ export class Hud {
   private text(node: HTMLElement, text: string) { this.write(node, 'text', text, () => { node.textContent = text; }); }
   private class(node: HTMLElement, key: string, enabled: boolean) { this.write(node, key, enabled, () => node.classList.toggle(key, enabled)); }
   update(game: Game, advice: string) {
-    this.text(this.level, game.scenario === 'endless' ? ` ${game.config.title} · 第 ${game.survivalStage + 1} 轮 · 已守住 ${game.survivalFlags} 旗` : `冒险模式 ${game.config.label}`);
+    this.text(this.level, game.scenario === 'endless' ? ` ${game.config.title} · 第 ${game.survivalStage + 1} 轮 · 已守住 ${game.survivalFlags} 旗` : `冒险模式 ${game.config.label}${game.seeds.includes('marigold')||game.money>0?` · 金币 ${game.money}`:''}`);
     this.text(this.sun, String(game.sun));
     if (game.hasConveyor) {
       const frame = Math.floor(game.ticks / 4) % 6;

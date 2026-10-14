@@ -189,6 +189,27 @@ render_clip = runpy.run_path(str(root / 'tools/reanim-frames.py'))['render_clip'
 reanim = ruslan_repo / 'SexyAppFramework/reanim'
 def record_reanim(path): sources[str(path.relative_to(ruslan_repo))] = record(path)
 for key, name, layer, size, offset, anchor in [
+    ('umbrella', 'Umbrellaleaf', 'anim_idle', (240, 200), (75, 65), (115, 138)),
+    ('umbrella-block', 'Umbrellaleaf', 'anim_block', (240, 200), (75, 65), (115, 138)),
+    ('marigold', 'Marigold', 'anim_idle', (170, 160), (35, 40), (75, 113)),
+    ('melonpult', 'Melonpult', 'anim_idle', (220, 200), (65, 70), (105, 143)),
+    ('melonpult-attack', 'Melonpult', 'anim_shooting', (220, 200), (65, 70), (105, 143)),
+    ('catapult-walk', 'Zombie_catapult', 'anim_walk', (360, 310), (90, 110), (140, 253)),
+    ('catapult-shoot', 'Zombie_catapult', 'anim_shoot', (360, 310), (90, 110), (140, 253)),
+    ('catapult-idle', 'Zombie_catapult', 'anim_idle', (360, 310), (90, 110), (140, 253)),
+    ('catapult-die', 'Zombie_charred_catapult', 'charred', (360, 310), (90, 110), (140, 253)),
+    ('gargantuar-walk', 'Zombie_gargantuar', 'anim_walk', (520, 450), (190, 180), (240, 325)),
+    ('gargantuar-smash', 'Zombie_gargantuar', 'anim_smash', (520, 450), (190, 180), (240, 325)),
+    ('gargantuar-throw', 'Zombie_gargantuar', 'anim_throw', (520, 450), (190, 180), (240, 325)),
+    ('gargantuar-die', 'Zombie_gargantuar', 'anim_death', (520, 450), (190, 180), (240, 325)),
+    ('gargantuar-bare-walk', 'Zombie_gargantuar', 'anim_walk', (520, 450), (190, 180), (240, 325)),
+    ('gargantuar-bare-smash', 'Zombie_gargantuar', 'anim_smash', (520, 450), (190, 180), (240, 325)),
+    ('gargantuar-bare-die', 'Zombie_gargantuar', 'anim_death', (520, 450), (190, 180), (240, 325)),
+    ('imp-walk', 'Zombie_imp', 'anim_walk', (230, 250), (60, 90), (110, 220)),
+    ('imp-eat', 'Zombie_imp', 'anim_eat', (230, 250), (60, 90), (110, 220)),
+    ('imp-thrown', 'Zombie_imp', 'anim_thrown', (230, 250), (60, 90), (110, 220)),
+    ('imp-land', 'Zombie_imp', 'anim_land', (230, 250), (60, 90), (110, 220)),
+    ('imp-die', 'Zombie_imp', 'anim_death', (230, 250), (60, 90), (110, 220)),
     ('cabbagepult', 'Cabbagepult', 'anim_idle', (170, 160), (35, 40), (75, 113)),
     ('cabbagepult-attack', 'Cabbagepult', 'anim_shooting', (170, 160), (35, 40), (75, 113)),
     ('kernelpult', 'Cornpult', 'anim_idle', (170, 160), (35, 40), (75, 113)),
@@ -218,9 +239,9 @@ for key, name, layer, size, offset, anchor in [
     ('bobsled-eat','Zombie_bobsled','anim_eat',(220,210),(50,20),(100,180)),
     ('bobsled-die','Zombie_bobsled','anim_death',(220,210),(50,20),(100,180)),
 ]:
-    frames = render_clip(reanim,name,layer,size,offset,record_reanim)
+    frames = render_clip(reanim,name,layer,size,offset,record_reanim, hidden=('Zombie_imp','Zombie_gargantuar_whiterope') if key.startswith('gargantuar-bare') else ())
     data[key] = pack(frames,[5 if name=='Blover' else 10]*len(frames),list(anchor))
-    if key in ['blover','cabbagepult','kernelpult','magnetshroom']: frames[0].crop(frames[0].getbbox()).save(output/(key+'.png'))
+    if key in ['blover','cabbagepult','kernelpult','magnetshroom','umbrella','marigold','melonpult']: frames[0].crop(frames[0].getbbox()).save(output/(key+'.png'))
 for name in ['Zombie_bobsled1.png','Scary_Pot.png']:
     copy(ruslan_repo/'images'/name, 'sled.png' if name.startswith('Zombie') else 'vases.png')
 copy(js_repo/'images/Zombies/Zomboni/ice.png','ice-trail.png')
@@ -228,7 +249,7 @@ copy(js_repo/'images/Plants/Cactus/Projectile32.png','spike.png')
 Image.open(ruslan_repo/'images/background5.jpg').convert('RGBA').save(output/'roof.png')
 sources['roof.png']=record(ruslan_repo/'images/background5.jpg')
 for source,target in [('BungeeTarget.png','bungee-target.png'),('BungeeCord.png','bungee-cord.png')]: copy(ruslan_repo/'images'/source,target)
-for source,target in [('Cabbagepult_cabbage.png','cabbage.png'),('Cornpult_kernal.png','kernel.png'),('Cornpult_butter.png','butter.png'),('Zombie_ladder_1.png','ladder.png')]: copy(reanim/source,target)
+for source,target in [('Melonpult_melon.png','melon.png'),('Zombie_catapult_basketball.png','basketball.png'),('coin_silver_dollar.png','coin-silver.png'),('coin_gold_dollar.png','coin-gold.png'),('Cabbagepult_cabbage.png','cabbage.png'),('Cornpult_kernal.png','kernel.png'),('Cornpult_butter.png','butter.png'),('Zombie_ladder_1.png','ladder.png')]: copy(reanim/source,target)
 Image.open(js_repo/'images/Plants/Starfruit/Star.gif').convert('RGBA').save(output/'star.png')
 sources['star.png']=record(js_repo/'images/Plants/Starfruit/Star.gif')
 build_atlases()
@@ -302,7 +323,7 @@ manifest = {
         ('javascript', js_repo, 'https://github.com/jiangnangame/New-Plants-vs-Zombies-JavaScript'),
         ('ruslan', ruslan_repo, 'https://github.com/ruslan831/PlantsVsZombies-decompilation')]},
     'files': sources,
-    'processing': 'PNG and composited GIF frames packed without resampling; GIF frame durations retained; original RGB logo combined with its alpha plane. Only sun and zombie-burn still use port-configured PNG timing; other animated clips preserve source GIF timing. Night fume attack is a static source pose; the eight-frame fume cloud sheet uses four ticks per frame for the port effect. Blover, bobsled, cabbagepult, kernelpult, magnetshroom, digger, pogo, bungee and ladder clips are sampled offline from original Reanim affine tracks with tools/reanim-frames.py; other GIF clips retain their source timing. This is not a complete runtime Reanim implementation.'
+    'processing': 'PNG and composited GIF frames packed without resampling; GIF frame durations retained; original RGB logo combined with its alpha plane. Only sun and zombie-burn still use port-configured PNG timing; other animated clips preserve source GIF timing. Night fume attack is a static source pose; the eight-frame fume cloud sheet uses four ticks per frame for the port effect. Blover, bobsled, cabbagepult, kernelpult, magnetshroom, digger, pogo, bungee, ladder, umbrella, marigold, melonpult, catapult, gargantuar and imp clips are sampled offline from original Reanim affine tracks with tools/reanim-frames.py; other GIF clips retain their source timing. This is not a complete runtime Reanim implementation.'
 }
 (root / 'docs/original-assets.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(data)} animations, {sum(len(a["frames"]) for a in data.values())} frames, {len(pages)} atlases')

@@ -495,3 +495,24 @@ PWA 参考 KR 的 `tools/build/pwa.ts`、`packages/asset-runtime/src/pwa-worker.
 资源现为 160 组 / 3993 帧、101 张静态图。2× PNG 母图共十页；客户端仍按所选植物及本关敌人加载独立 WebP 动作包，首关不会加载屋顶、矿工、跳跳或投手动作。每一帧和静态图片均通过 HD 与无损 WebP 的 RGBA 逐像素比较。新关沿用六槽选卡、倍速、自动阳光落地后收集、暂停与返回菜单。
 
 验证：169 项测试覆盖旧关回归、新十关正常操作完整通关、来源数据、保护层、出土反击、五向弹丸、吸铁、屋顶坡面、黄油、咖啡、放梯、蹦极偷取与空投；30 / 60 / 144 Hz 下新战斗与天气状态一致。正常操作脚本没有修改阳光、冷却、僵尸生命、波次或胜负状态；只证明所测固定种子可通关，不代表所有策略或种子都能通关。浏览器另检查屋顶六槽选卡、预置花盆、HUD、三种新场景切换与资源加载。
+
+## 屋顶后续四关：5–6 至 5–9
+
+以 Portable `141c1476dd462ac3526f796e303177616f4de6bc` 为行为参考，继续实际读取 C++，不以 README 声明作为验证。本轮开放 46–49，共 49 关直接可选；5–10 首领战没有伪装成普通波次关卡。
+
+| 已接入规则 | 源码证据 |
+| --- | --- |
+| 波数 20 / 30 / 20 / 30，逐关敌人资格；投石车从 46 关、巨人从 48 关引入，小鬼权重为零，由巨人生成 | `src/Lawn/Challenge.h` 的 `gZombieWaves`、`gZombieAllowedLevels`，`Zombie.cpp:103–105`；由 `tools/import-level-data.py` 提取，源文件 SHA256 记录在 `portable-adventure.json` |
+| 保护伞 100 阳光 / 750 tick，金盏花 50 / 3000，西瓜 300 / 750，基础生命 300 | [Plant.cpp:86–88](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Plant.cpp#L86) |
+| 保护伞覆盖自身及相邻八格；弹开篮球、拒绝蹦极偷取/空投 | [Board.cpp:9187](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Board.cpp#L9187)、[Projectile.cpp:599](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Projectile.cpp#L599)、`Zombie.cpp:1298` |
+| 金盏花生产间隔 2350–2500 tick，10% 金币；最终波开始 6000 tick 后停止生产 | [Plant.cpp:1003](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Plant.cpp#L1003)；`Coin.cpp:1304` 内部钱币单位，UI 按银 10 / 金 50 显示 |
+| 投石车 850 生命、20 发篮球；到 x≤650 且找到目标时停下，优先本行最左侧植物；300 tick 攻击周期，篮球 75 伤害 | [Zombie.cpp:470](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Zombie.cpp#L470)、[1522–1640](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Zombie.cpp#L1522)、`Projectile.cpp:47` |
+| 巨人 3000 生命；砸击同格植物和底座，半血以下且 x>400 抛出一次小鬼；屋顶抛距另减 180 | [Zombie.cpp:413](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Zombie.cpp#L413)、[2080–2250](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Zombie.cpp#L2080) |
+| 冒险小鬼 270 生命，70 仅用于 IZombie；移动平均速度使用原动画地面轨道，巨人 49 帧/124.1、小鬼 33 帧/62.9 | `Zombie.cpp:238,675–683,1165,4104`，原 `Zombie_gargantuar.reanim`、`Zombie_imp.reanim` 的 `_ground` |
+| 西瓜直接 80、附近三排溅射 26；密集目标按原式限制溅射总伤害，门盾与身体同时受击 | [Projectile.cpp:41](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Projectile.cpp#L41)、[407–507](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Projectile.cpp#L407) |
+
+素材仍由 ruslan 固定版本的 Reanim 和原始 PNG 离线合成，新增保护伞展开、西瓜抛射、巨人砸击/投掷/无小鬼状态、小鬼飞行/落地、投石车攻击等。`reanim-frames.py` 的隐藏轨道只用于去掉已经抛出的小鬼与白绳，不替换角色美术。全部 181 个动画片段、4622 帧和 108 张静态图按原管线处理为 2× 高清图，再打包为分片无损 WebP；战斗资产按选卡和波次名单加载，巨人关卡同时加载小鬼。
+
+明确的 Web 适配边界：本项目继续使用身体锚点和简化横向碰撞范围，西瓜溅射用同/邻排 ±80 px；抛射与小鬼飞行使用定时弧线，不是完整原版三维加速度。保护伞在命中时直接拦截并播放展开动作，没有逐帧反弹物理。投石车破损外观与篮球篮逐球减少未接入，死亡使用原烧毁素材；巨人武器变体与分阶段破损未接入。金盏花钱币可手动收集、显示本局金额，不增加阳光，没有跨局钱包或商店。新关卡复用屋顶音乐、六槽选卡、暂停、倍速和阳光落地后自动收集。
+
+验证：`pnpm test` 全部 190 项通过，新增 21 项包含 46–49 各两组随机种子的正常六卡操作通关（无阳光、生命、波次或冷却修改），以及拦截、砸击、抛小鬼、免疫、溅射破盾、收币、暂停和 30/60/144 Hz 等价测试。`pnpm build` 通过；RGBA 检查确认 4622 帧和 108 张静态 WebP 与高清母图逐像素一致。浏览器实际验证 49 关菜单、5–9 六槽装配、金盏花种植、点击收币显示 10 金币、暂停，以及新角色固定阵容渲染；未记录 error/warn。未运行 lint。

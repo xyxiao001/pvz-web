@@ -10,6 +10,9 @@ export function combatTextureFiles(game: Game) {
   if (plants.has('snowpea') || game.peas.some(pea => pea.ice)) files.ice = 'original/snow-pea.webp';
   if (plants.has('puffshroom') || plants.has('scaredyshroom') || plants.has('seashroom') || game.peas.some(pea => pea.puff)) files.puff = 'original/puff.webp';
   if(plants.has('starfruit'))files.star='original/star.webp';
+  if(plants.has('melonpult'))files.melon='original/melon.webp';
+  if(plants.has('marigold')||game.coins.length){files.coinSilver='original/coin-silver.webp';files.coinGold='original/coin-gold.webp';}
+  if(game.waves.flat().includes('catapult'))files.basketball='original/basketball.webp';
   if(plants.has('cabbagepult'))files.cabbage='original/cabbage.webp';
   if(plants.has('kernelpult')){files.kernel='original/kernel.webp';files.butter='original/butter.webp';}
   if(game.config.environment==='roof'){files.ladder='original/ladder.webp';files.bungeeTarget='original/bungee-target.webp';files.bungeeCord='original/bungee-cord.webp';}
@@ -36,6 +39,7 @@ export function animationNames(game: Game, available: string[]) {
   if (game.config.environment === 'night' || isPool(game.config.environment)) { enemies.add('normal'); enemies.add('cone'); }
   for (const kind of enemies) {
     roots.add(kind === 'normal' || kind === 'ducky' ? 'zombie' : kind);
+    if (kind === 'gargantuar') roots.add('imp');
     if (kind === 'dancer') roots.add('backup');
   }
   if (isPool(game.config.environment)) {

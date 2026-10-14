@@ -6,19 +6,21 @@ import { walkingSpeed } from './zombie-motion';
 import portable from './data/portable-adventure.json';
 
 export type Phase = 'ready' | 'playing' | 'paused' | 'intermission' | 'won' | 'lost';
-export interface Plant { id: number; kind: PlantKind; row: number; column: number; health: number; actionIn: number; born: number; shotAt: number; awake?: boolean; rearIn?: number; scared?: boolean; tall?: boolean; kelp?: { target: number; remaining: number }; squash?: { remaining: number; x: number; target: number };
+export interface Plant { id: number; kind: PlantKind; row: number; column: number; health: number; actionIn: number; born: number; shotAt: number; awake?: boolean; rearIn?: number; productionEnding?: number; scared?: boolean; tall?: boolean; kelp?: { target: number; remaining: number }; squash?: { remaining: number; x: number; target: number };
   chomp?: { phase: 'ready' | 'bite' | 'digest' | 'recover'; remaining: number } }
-export const headless = (zombie: Zombie) => zombie.kind !== 'zomboni' && zombie.health < Math.trunc((['pole','dancer','dolphin','jack','ladder'].includes(zombie.kind) ? 500 : 270) / (zombie.mini ? 4 : 1)) / 3;
+export const headless = (zombie: Zombie) => !['zomboni','catapult','gargantuar'].includes(zombie.kind) && zombie.health < Math.trunc((['pole','dancer','dolphin','jack','ladder'].includes(zombie.kind) ? 500 : 270) / (zombie.mini ? 4 : 1)) / 3;
 export interface Roller { id: number; kind: 'wallnut' | 'explodenut'; row: number; x: number; y: number; direction: number; hit: number[] }
 export interface Packet { id: number; kind: PlantKind; x: number }
-export interface Zombie { id: number; kind: ZombieKind; armor: number; row: number; x: number; health: number; speed: number; biteIn: number; eating: boolean; wave: number; hitAt: number; chillIn: number; hasPole: boolean; vaultIn: number; animationTime: number; shield: number; rageIn: number; riseIn: number; hypnotized?: boolean; mini?: boolean; frozenIn?: number; summonIn?: number; dancePhase?: 'intro' | 'point' | 'hold' | 'dance'; danceIn?: number; leader?: number; slot?: number; flying?: boolean; popIn?: number; dolphin?: boolean; jackIn?: number; jackOpening?: boolean; sled?: number; sledLeader?: number; crashIn?: number; blownIn?: number; underground?: boolean; emergingIn?: number; backwards?: boolean; metalRemoved?: boolean; pogo?: boolean; butterIn?: number; ladderIn?: number; garlicIn?: number; garlicRow?: number; bungee?: { phase: 'down' | 'wait' | 'up'; remaining: number; column: number; drop?: ZombieKind } }
-export interface Pea { id: number; row: number; x: number; ice: boolean; puff: boolean; age: number; longRange?: boolean; fire?: boolean; torch?: number; spike?: boolean; high?: boolean; vx?: number; vy?: number; y?: number; originY?: number; star?: boolean; lob?: { kind: 'cabbage' | 'kernel' | 'butter'; target: number; startX: number; endX: number; startY: number; endY: number; duration: number } }
+export interface Zombie { id: number; kind: ZombieKind; armor: number; row: number; x: number; health: number; speed: number; biteIn: number; eating: boolean; wave: number; hitAt: number; chillIn: number; hasPole: boolean; vaultIn: number; animationTime: number; shield: number; rageIn: number; riseIn: number; hypnotized?: boolean; mini?: boolean; frozenIn?: number; summonIn?: number; dancePhase?: 'intro' | 'point' | 'hold' | 'dance'; danceIn?: number; leader?: number; slot?: number; flying?: boolean; popIn?: number; dolphin?: boolean; jackIn?: number; jackOpening?: boolean; sled?: number; sledLeader?: number; crashIn?: number; blownIn?: number; underground?: boolean; emergingIn?: number; backwards?: boolean; metalRemoved?: boolean; pogo?: boolean; butterIn?: number; ladderIn?: number; garlicIn?: number; garlicRow?: number; catapult?: { ammo: number; remaining: number; phase: 'walk' | 'shoot' | 'reload' }; giant?: { thrown: boolean; phase: 'walk' | 'smash' | 'throw'; remaining: number }; flight?: { remaining: number; duration: number; startX: number; endX: number }; landingIn?: number; bungee?: { phase: 'down' | 'wait' | 'up'; remaining: number; column: number; drop?: ZombieKind } }
+export interface Pea { id: number; row: number; x: number; ice: boolean; puff: boolean; age: number; longRange?: boolean; fire?: boolean; torch?: number; spike?: boolean; high?: boolean; vx?: number; vy?: number; y?: number; originY?: number; star?: boolean; lob?: { kind: 'cabbage' | 'kernel' | 'butter' | 'melon' | 'basketball'; target: number; startX: number; endX: number; startY: number; endY: number; duration: number } }
 export interface Vase { id: number; row: number; column: number; green: boolean; content: { type: 'seed'; kind: PlantKind } | { type: 'zombie'; kind: ZombieKind } }
 export interface SeedDrop { id: number; kind: PlantKind; row: number; column: number; remaining: number }
 export interface Sun { id: number; x: number; y: number; targetY: number; expiresIn: number; born: number; value: number }
+export interface Coin { id: number; x: number; y: number; targetY: number; born: number; expiresIn: number; value: number }
 export interface Mower { row: number; x: number; state: 'ready' | 'moving' | 'spent' }
 export type GameEvent = { kind: 'plant' | 'shoot' | 'hit' | 'mower' | 'wave' | 'win' | 'lose' | 'explode' | 'flag' | 'whack' | 'hypnotize' | 'freeze' | 'blover' | 'vase' | 'thunder' | 'bungee' | 'coffee'; x: number; y: number }
   | { kind: 'fire'; x: number; y: number; row: number }
+  | { kind: 'coin'; x: number; y: number; value: number }
   | { kind: 'sun'; x: number; y: number; value: number }
   | { kind: 'fume'; x: number; y: number; row: number }
   | { kind: 'swallow'; x: number; y: number; zombieId: number };
@@ -42,6 +44,8 @@ export class Game {
   zombies: Zombie[] = [];
   peas: Pea[] = [];
   suns: Sun[] = [];
+  coins: Coin[] = [];
+  money = 0;
   mowers: Mower[];
   graves: { id: number; row: number; column: number }[] = [];
   private graveWaveIn = 0;
@@ -55,7 +59,7 @@ export class Game {
   vases: Vase[] = [];
   seedDrops: SeedDrop[] = [];
   selectedDrop: number | null = null;
-  cooldowns: Record<PlantKind, number> = { splitpea:0, starfruit:0, pumpkin:0, magnetshroom:0, cabbagepult:0, flowerpot:0, kernelpult:0, coffeebean:0, garlic:0, jalapeno: 0, spikeweed: 0, torchwood: 0, tallnut: 0, seashroom: 0, cactus: 0, blover: 0, tanglekelp: 0, peashooter: 0, sunflower: 0, cherrybomb: 0, wallnut: 0, potatomine: 0, snowpea: 0, explodenut: 0, chomper: 0, repeater: 0, puffshroom: 0, sunshroom: 0, fumeshroom: 0, gravebuster: 0, hypnoshroom: 0, scaredyshroom: 0, iceshroom: 0, doomshroom: 0, lilypad: 0, squash: 0, threepeater: 0, plantern: 0 };
+  cooldowns: Record<PlantKind, number> = { umbrella:0, marigold:0, melonpult:0, splitpea:0, starfruit:0, pumpkin:0, magnetshroom:0, cabbagepult:0, flowerpot:0, kernelpult:0, coffeebean:0, garlic:0, jalapeno: 0, spikeweed: 0, torchwood: 0, tallnut: 0, seashroom: 0, cactus: 0, blover: 0, tanglekelp: 0, peashooter: 0, sunflower: 0, cherrybomb: 0, wallnut: 0, potatomine: 0, snowpea: 0, explodenut: 0, chomper: 0, repeater: 0, puffshroom: 0, sunshroom: 0, fumeshroom: 0, gravebuster: 0, hypnoshroom: 0, scaredyshroom: 0, iceshroom: 0, doomshroom: 0, lilypad: 0, squash: 0, threepeater: 0, plantern: 0 };
   wave = 0;
   kills = 0;
   planted = 0;
@@ -125,7 +129,7 @@ export class Game {
   waterRow(row: number) { return isPool(this.config.environment) && (row === 2 || row === 3); }
   sleeping(plant: Plant) { return !plant.awake && !isNight(this.config.environment) && MUSHROOMS.includes(plant.kind); }
   flying(z: Zombie) { return z.kind === 'balloon' && (z.flying || (z.popIn !== undefined && z.popIn > 0)); }
-  submerged(z: Zombie) { return !!z.underground || !!z.emergingIn || !!z.bungee && z.bungee.phase !== 'wait' || z.kind === 'snorkel' && this.waterRow(z.row) && z.x > 100 && z.x < 770 && !z.eating; }
+  submerged(z: Zombie) { return !!z.flight || !!z.landingIn || !!z.underground || !!z.emergingIn || !!z.bungee && z.bungee.phase !== 'wait' || z.kind === 'snorkel' && this.waterRow(z.row) && z.x > 100 && z.x < 770 && !z.eating; }
 
   private random() {
     this.randomState = (Math.imul(this.randomState, 1664525) + 1013904223) >>> 0;
@@ -237,8 +241,8 @@ export class Game {
         this.cooldowns[kind] = PLANTS[kind].cooldown;
       }
       this.plants.push({ id: ++this.id, kind, column, row, health: PLANTS[kind].health,
-        actionIn: kind === 'sunflower' || kind === 'sunshroom' ? 300 + Math.floor(this.random() * 951) : kind === 'jalapeno' || kind === 'cherrybomb' || kind === 'iceshroom' || kind === 'doomshroom' ? 100 : kind === 'potatomine' ? 1500 : kind === 'gravebuster' ? 400 : kind === 'coffeebean' ? 100
-          : kind === 'peashooter' || kind === 'snowpea' || kind === 'repeater' || kind === 'puffshroom' || kind === 'fumeshroom' || kind === 'scaredyshroom' || kind === 'threepeater' || kind === 'seashroom' || kind === 'cactus' || kind === 'splitpea' || kind === 'starfruit' || kind === 'cabbagepult' || kind === 'kernelpult' ? Math.floor(this.random() * 151) : 50,
+        actionIn: kind === 'sunflower' || kind === 'sunshroom' || kind === 'marigold' ? 300 + Math.floor(this.random() * 951) : kind === 'jalapeno' || kind === 'cherrybomb' || kind === 'iceshroom' || kind === 'doomshroom' ? 100 : kind === 'potatomine' ? 1500 : kind === 'gravebuster' ? 400 : kind === 'coffeebean' ? 100
+          : kind === 'peashooter' || kind === 'snowpea' || kind === 'repeater' || kind === 'puffshroom' || kind === 'fumeshroom' || kind === 'scaredyshroom' || kind === 'threepeater' || kind === 'seashroom' || kind === 'cactus' || kind === 'splitpea' || kind === 'starfruit' || kind === 'cabbagepult' || kind === 'kernelpult' || kind === 'melonpult' ? Math.floor(this.random() * 151) : 50,
         born: this.ticks, shotAt: -100, ...(kind === 'chomper' ? { chomp: { phase: 'ready' as const, remaining: 0 } } : {}) });
     }
     this.selected = null;
@@ -296,12 +300,14 @@ export class Game {
   private spawnZombie(kind: ZombieKind, row: number, x: number, wave: number) {
     const zombie: Zombie = { id: ++this.id, kind, armor: kind === 'digger' ? 100 : kind === 'football' ? 1400 : kind === 'cone' ? 370 : kind === 'bucket' ? 1100 : 0,
       shield: kind === 'ladder' ? 500 : kind === 'newspaper' ? 150 : kind === 'door' ? 1100 : 0, rageIn: 0, riseIn: 0, row, x,
-      health: kind === 'bungee' ? 450 : kind === 'zomboni' ? 1350 : ['pole','dancer','dolphin','jack','ladder'].includes(kind) ? 500 : 270, speed: kind === 'pogo' ? .45 : kind === 'ladder' ? .79 + this.random() * .02 : kind === 'digger' ? .66 + this.random()*.02 : kind === 'dolphin' ? .89 + this.random() * .02 : kind === 'bobsled' ? .6 : ['pole','football','snorkel','jack'].includes(kind) ? .66 + this.random() * .02 : kind === 'dancer' || kind === 'backup' || kind === 'flag' ? .45 : .23 + this.random() * .14,
+      health: kind === 'gargantuar' ? 3000 : kind === 'catapult' ? 850 : kind === 'bungee' ? 450 : kind === 'zomboni' ? 1350 : ['pole','dancer','dolphin','jack','ladder'].includes(kind) ? 500 : 270, speed: kind === 'pogo' ? .45 : kind === 'ladder' ? .79 + this.random() * .02 : kind === 'digger' ? .66 + this.random()*.02 : kind === 'dolphin' ? .89 + this.random() * .02 : kind === 'bobsled' ? .6 : ['pole','football','snorkel','jack'].includes(kind) ? .66 + this.random() * .02 : kind === 'dancer' || kind === 'backup' || kind === 'flag' ? .45 : .23 + this.random() * .14,
       biteIn: 4, eating: false, wave, hitAt: -100, chillIn: 0, hasPole: kind === 'pole', vaultIn: 0, animationTime: 0 };
     if (this.scenario === 'adventure' && this.level === 25) { zombie.mini = true; zombie.health = Math.trunc(zombie.health / 4); zombie.armor = Math.trunc(zombie.armor / 4); zombie.shield = Math.trunc(zombie.shield / 4); }
     if (kind === 'dancer') { zombie.summonIn = 0; zombie.dancePhase = 'intro'; zombie.danceIn = 300 + Math.floor(this.random() * 12); }
     if (kind === 'digger') zombie.underground = true;
     if (kind === 'pogo') zombie.pogo = true;
+    if (kind === 'catapult') zombie.catapult = { ammo: 20, remaining: 0, phase: 'walk' };
+    if (kind === 'gargantuar') zombie.giant = { thrown: false, remaining: 0, phase: 'walk' };
     if (kind === 'bungee') { const targets=this.plants.filter(p=>!this.zombies.some(z=>z.bungee?.column===p.column&&z.row===p.row)); const target=targets[Math.floor(this.random()*targets.length)]; const column=target?target.column:4+Math.floor(this.random()*5); zombie.row=target?target.row:row; zombie.x=cellX(column); zombie.bungee={phase:'down',remaining:375,column}; this.events.push({kind:'bungee',x:zombie.x,y:this.rowY(zombie.row,zombie.x)}); }
     if (kind === 'dolphin') zombie.dolphin = true;
     if (kind === 'balloon') zombie.flying = true;
@@ -378,8 +384,9 @@ export class Game {
 
     // Match Board::UpdateGameObjects ordering: plants, zombies, projectiles, suns, mowers.
     for (const plant of this.plants) {
+      if(plant.kind==='marigold'&&this.wave===this.config.waveCount&&plant.productionEnding===undefined)plant.productionEnding=this.ticks+6000;
       if (plant.kind === 'tanglekelp') { this.updateKelp(plant); continue; }
-      if (plant.health <= 0 || this.sleeping(plant) || ['wallnut','tallnut','torchwood','hypnoshroom','lilypad','flowerpot','pumpkin','garlic','plantern'].includes(plant.kind)) continue;
+      if (plant.health <= 0 || this.sleeping(plant) || ['wallnut','tallnut','torchwood','hypnoshroom','lilypad','flowerpot','pumpkin','garlic','plantern','umbrella'].includes(plant.kind)) continue;
       if (plant.kind === 'magnetshroom') { this.updateMagnet(plant); continue; }
       if (plant.kind === 'coffeebean') { if (--plant.actionIn===0) { const mushroom=this.plants.find(p=>p.column===plant.column&&p.row===plant.row&&this.sleeping(p)); if(mushroom)mushroom.awake=true;plant.health=0;this.events.push({kind:'coffee',x:cellX(plant.column),y:this.rowY(plant.row,cellX(plant.column))}); } continue; }
       if (plant.kind === 'splitpea') { if (plant.rearIn && --plant.rearIn===0) this.fireRear(plant); }
@@ -432,7 +439,7 @@ export class Game {
         this.events.push({ kind: 'fire', x: 0, y: this.rowY(plant.row, cellX(plant.column)), row: plant.row }); continue;
       }
       if (plant.kind === 'iceshroom') {
-        for (const z of this.zombies) if (!z.hypnotized && z.health > 0 && z.kind !== 'zomboni' && !z.sled) {
+        for (const z of this.zombies) if (!z.hypnotized && z.health > 0 && z.kind !== 'zomboni' && z.kind !== 'catapult' && !z.sled) {
           const cold = z.chillIn > 0 || (z.frozenIn !== undefined && z.frozenIn > 0);
           z.frozenIn = this.waterRow(z.row) ? 300 : cold ? 300 + Math.floor(this.random()*101) : 400 + Math.floor(this.random()*201);
           z.chillIn = 2000; this.damageZombie(z,20,true);
@@ -449,11 +456,18 @@ export class Game {
       }
       if (plant.kind === 'splitpea') { this.firePea(plant); this.fireRear(plant); plant.rearIn=25;plant.actionIn=150-Math.floor(this.random()*15);continue; }
       if (plant.kind === 'starfruit') { this.fireStars(plant);plant.actionIn=150-Math.floor(this.random()*15);continue; }
-      if (plant.kind === 'cabbagepult' || plant.kind === 'kernelpult') { this.fireLob(plant);plant.actionIn=300-Math.floor(this.random()*15);continue; }
+      if (plant.kind === 'cabbagepult' || plant.kind === 'kernelpult' || plant.kind === 'melonpult') { this.fireLob(plant);plant.actionIn=300-Math.floor(this.random()*15);continue; }
       if (plant.kind === 'threepeater') {
         if (this.zombies.some(z=>!z.hypnotized&&!this.flying(z)&&!this.submerged(z)&&z.health>0&&z.riseIn===0&&Math.abs(z.row-plant.row)<=1&&z.x>cellX(plant.column)&&z.x<825))
           for (const row of this.config.rows) if (Math.abs(row-plant.row)<=1) this.firePea({...plant,row},true);
         plant.shotAt = this.ticks; plant.actionIn = 150-Math.floor(this.random()*15); continue;
+      }
+      if (plant.kind === 'marigold') {
+        if (plant.productionEnding !== undefined && this.ticks >= plant.productionEnding) continue;
+        const x=cellX(plant.column), y=this.rowY(plant.row,x);
+        this.coins.push({id:++this.id,x:x+12,y:y-55,targetY:y-10,born:this.ticks,expiresIn:1500,value:this.random()<.1?50:10});
+        plant.actionIn=2500-150+Math.floor(this.random()*151);plant.shotAt=this.ticks;
+        continue;
       }
       if (plant.kind === 'cherrybomb') {
         this.ladders=this.ladders.filter(l=>Math.abs(l.row-plant.row)>1||Math.abs(l.column-plant.column)>1);
@@ -485,6 +499,14 @@ export class Game {
       const speedFactor = zombie.chillIn > 0 ? .4 : 1;
       zombie.animationTime += speedFactor;
       if (zombie.riseIn > 0) { zombie.riseIn--; zombie.eating = false; continue; }
+      if (zombie.flight) {
+        const f=zombie.flight; f.remaining--; zombie.x=f.startX+(f.endX-f.startX)*(1-f.remaining/f.duration);
+        if(f.remaining===0){zombie.flight=undefined;zombie.landingIn=21;}
+        continue;
+      }
+      if(zombie.landingIn){zombie.landingIn--;continue;}
+      if(zombie.catapult){this.updateCatapult(zombie);continue;}
+      if(zombie.giant){this.updateGiant(zombie,speedFactor);continue;}
       if (zombie.bungee) { this.updateBungee(zombie); continue; }
       if (zombie.underground) { zombie.x-=zombie.speed*speedFactor; if(zombie.x<45){zombie.underground=false;zombie.emergingIn=230;zombie.backwards=true;zombie.speed=.12;}continue; }
       if (zombie.emergingIn) { zombie.emergingIn--;continue; }
@@ -596,7 +618,7 @@ export class Game {
             this.damageZombie(z, 40); z.chillIn = 0; z.frozenIn = 0;
           }
         } else this.damageZombie(target, 20);
-        if (pea.ice && reachesBody && target.kind !== 'zomboni' && !target.sled) target.chillIn = 1000;
+        if (pea.ice && reachesBody && target.kind !== 'zomboni' && target.kind !== 'catapult' && !target.sled) target.chillIn = 1000;
         target.hitAt = this.ticks;
         this.events.push({ kind: 'hit', x: pea.x, y: this.rowY(pea.row) - 43 });
         pea.x = 1000;
@@ -634,6 +656,8 @@ export class Game {
     }
     this.suns = this.suns.filter(sun => sun.expiresIn > 0);
 
+    for(const coin of this.coins){coin.y=Math.min(coin.targetY,coin.y+1.5);if(coin.y===coin.targetY)coin.expiresIn--;}
+    this.coins=this.coins.filter(coin=>coin.expiresIn>0);
     for (const mower of this.mowers) {
       if (mower.state === 'ready' && this.zombies.some(zombie => !zombie.hypnotized && !this.flying(zombie) && !zombie.underground && !zombie.bungee && zombie.health > 0 && zombie.row === mower.row && zombie.x < 28)) {
         mower.state = 'moving';
@@ -852,12 +876,12 @@ export class Game {
   }
 
   private updateSquash(plant: Plant) {
-    const target = () => this.zombies.filter(z => !z.hypnotized && !this.flying(z) && z.health>0 && !headless(z) && z.row===plant.row && z.riseIn===0 && z.vaultIn===0 && Math.abs(z.x-cellX(plant.column))<100).sort((a,b)=>Math.abs(a.x-cellX(plant.column))-Math.abs(b.x-cellX(plant.column)))[0];
+    const target = () => this.zombies.filter(z => !z.hypnotized && !this.flying(z) && !z.flight && !z.landingIn && z.health>0 && !headless(z) && z.row===plant.row && z.riseIn===0 && z.vaultIn===0 && Math.abs(z.x-cellX(plant.column))<100).sort((a,b)=>Math.abs(a.x-cellX(plant.column))-Math.abs(b.x-cellX(plant.column)))[0];
     if (!plant.squash) { const z=target(); if(z) plant.squash={remaining:185,x:z.x,target:z.id}; return; }
     plant.squash.remaining--;
     if (plant.squash.remaining===60) { const z=this.zombies.find(z=>z.id===plant.squash!.target); if(z) plant.squash.x=z.x-30*walkingSpeed(z); }
     if (plant.squash.remaining===0) {
-      for (const z of this.zombies) if(!z.hypnotized&&!this.flying(z)&&z.row===plant.row&&Math.abs(z.x-plant.squash.x)<65&&z.vaultIn===0) this.damageZombie(z,1800,true);
+      for (const z of this.zombies) if(!z.hypnotized&&!this.flying(z)&&!z.flight&&!z.landingIn&&z.row===plant.row&&Math.abs(z.x-plant.squash.x)<65&&z.vaultIn===0) this.damageZombie(z,1800,true);
       plant.health=0; this.events.push({kind:'hit',x:plant.squash.x,y:this.rowY(plant.row, cellX(plant.column))});
     }
   }
@@ -923,14 +947,14 @@ export class Game {
 
   private updateChomper(plant: Plant) {
     const state = plant.chomp!;
-    const target = () => this.zombies.filter(z => !z.hypnotized && !this.flying(z) && !z.underground && (!z.bungee||z.bungee.phase==='wait') && z.health > 0 && z.riseIn === 0 && z.row === plant.row
+    const target = () => this.zombies.filter(z => !z.hypnotized && !this.flying(z) && !z.flight && !z.landingIn && !z.underground && (!z.bungee||z.bungee.phase==='wait') && z.health > 0 && z.riseIn === 0 && z.row === plant.row
       && z.x - cellX(plant.column) >= -10 && z.x - cellX(plant.column) <= 100).sort((a, b) => a.x - b.x)[0];
     if (state.phase === 'ready') {
       if (target()) { state.phase = 'bite'; state.remaining = 70; }
     } else if (--state.remaining === 0) {
       if (state.phase === 'bite') {
         const zombie = target();
-        if (zombie?.kind === 'zomboni') { this.damageZombie(zombie, 40, true); state.phase = 'recover'; state.remaining = 30; }
+        if (zombie && ['zomboni','catapult','gargantuar'].includes(zombie.kind)) { this.damageZombie(zombie, 40, true); state.phase = 'recover'; state.remaining = 30; }
         else if (zombie && !zombie.hasPole && zombie.vaultIn === 0) {
           zombie.health = 0;
           this.events.push({ kind: 'swallow', zombieId: zombie.id, x: cellX(plant.column), y: this.rowY(plant.row, cellX(plant.column)) });
@@ -941,6 +965,65 @@ export class Game {
   }
 
   drainEvents() { return this.events.splice(0); }
+  collectCoin(id: number) {
+    if(this.phase!=='playing')return;
+    const index=this.coins.findIndex(coin=>coin.id===id);
+    if(index===-1)return;
+    const [coin]=this.coins.splice(index,1);this.money+=coin.value;
+    this.events.push({kind:'coin',x:coin.x,y:coin.y,value:coin.value});
+  }
+  private findUmbrella(column: number,row: number) {
+    return this.plants.find(p=>p.kind==='umbrella'&&p.health>0&&Math.abs(p.column-column)<=1&&Math.abs(p.row-row)<=1);
+  }
+  // Zombie::FindCatapultTarget / UpdateZombieCatapult: leftmost plant, 20 balls,
+  // 300-tick firing cycles; 32-pose anim_shoot at 24 fps releases at 0.545.
+  private updateCatapult(z: Zombie) {
+    const state=z.catapult!;
+    const target=()=>this.plants.filter(p=>p.health>0&&p.row===z.row&&cellX(p.column)<z.x-100)
+      .sort((a,b)=>a.column-b.column||Number(a.kind==='flowerpot')-Number(b.kind==='flowerpot')||Number(a.kind==='pumpkin')-Number(b.kind==='pumpkin'))[0];
+    if(state.phase==='walk'){
+      z.eating=false;
+      if(z.x<=650&&state.ammo>0&&target()){state.phase='shoot';state.remaining=300;}
+      else {z.x-=z.speed;for(const p of this.plants)if(p.row===z.row&&Math.abs(cellX(p.column)-z.x)<40)p.health=0;}
+      return;
+    }
+    state.remaining--;
+    if(state.phase==='shoot'&&state.remaining===230){
+      const p=target();
+      if(p){const x=z.x+65,endX=cellX(p.column);this.peas.push({id:++this.id,row:z.row,x,y:this.rowY(z.row,x)-110,age:0,ice:false,puff:false,lob:{kind:'basketball',target:p.id,startX:x,endX,startY:this.rowY(z.row,x)-110,endY:this.rowY(z.row,endX)-45,duration:120}});}
+    }
+    if(state.phase==='shoot'&&state.remaining===171){state.ammo--;state.phase='reload';}
+    if(state.remaining===0){state.phase=state.ammo>0&&target()?'shoot':'walk';if(state.phase==='shoot')state.remaining=300;}
+  }
+  // Giant smash/throw use 33/34-pose source clips at 24 fps. The Web port uses
+  // a deterministic arc for the thrown imp; roof landing distance follows source.
+  private updateGiant(z: Zombie,speedFactor: number) {
+    const state=z.giant!;
+    const food=()=>this.plants.find(p=>p.health>0&&p.row===z.row&&z.x-cellX(p.column)<55&&z.x-cellX(p.column)>-30);
+    if(state.phase==='walk'){
+      z.eating=false;
+      if(!state.thrown&&z.health<1500&&z.x>400){state.phase='throw';state.remaining=138;}
+      else if(food()){state.phase='smash';state.remaining=134;}
+      else z.x-=walkingSpeed(z)*speedFactor;
+      return;
+    }
+    const before=state.remaining;state.remaining=Math.max(0,state.remaining-speedFactor);
+    if(state.phase==='smash'&&before>48&&state.remaining<=48){
+      const p=food();if(p)for(const victim of this.plants)if(victim.column===p.column&&victim.row===p.row)victim.health=0;
+      this.events.push({kind:'hit',x:z.x,y:this.rowY(z.row,z.x)});
+    }
+    if(state.phase==='throw'&&before>36&&state.remaining<=36){
+      state.thrown=true;
+      let distance=z.x-360-(this.config.environment==='roof'?180:0);
+      distance=Math.max(this.config.environment==='roof'?-140:40,distance);
+      if(distance>140)distance-=this.random()*100;
+      const imp=this.spawnZombie('imp',z.row,z.x-133,z.wave);
+      const duration=Math.max(30,Math.round(Math.abs(distance)/3));
+      imp.flight={startX:imp.x,endX:imp.x-distance,duration,remaining:duration};
+    }
+    if(state.remaining===0)state.phase='walk';
+  }
+
   private fireRear(plant: Plant) {
     const x=cellX(plant.column);
     if(!this.zombies.some(z=>!z.hypnotized&&!this.flying(z)&&!this.submerged(z)&&z.health>0&&z.row===plant.row&&z.x<x))return;
@@ -958,10 +1041,10 @@ export class Game {
     if(target){this.damageZombie(target,20);target.hitAt=this.ticks;pea.x=1000;}
   }
   private fireLob(plant: Plant) {
-    const x=cellX(plant.column), target=this.zombies.filter(z=>!z.hypnotized&&!this.flying(z)&&!z.underground&&!z.emergingIn&&(!z.bungee||z.bungee.phase==='wait')&&z.health>0&&z.row===plant.row&&z.x>x-10&&z.x<825).sort((a,b)=>a.x-b.x)[0];
+    const x=cellX(plant.column), target=this.zombies.filter(z=>!z.hypnotized&&!this.flying(z)&&!z.flight&&!z.landingIn&&!z.underground&&!z.emergingIn&&(!z.bungee||z.bungee.phase==='wait')&&z.health>0&&z.row===plant.row&&z.x>x-10&&z.x<825).sort((a,b)=>a.x-b.x)[0];
     if(!target)return;
-    const kind=plant.kind==='cabbagepult'?'cabbage':this.random()<.25?'butter':'kernel';
-    const duration=100,endX=target.x-(target.eating||target.bungee?0:walkingSpeed(target)*duration);
+    const kind=plant.kind==='melonpult'?'melon':plant.kind==='cabbagepult'?'cabbage':this.random()<.25?'butter':'kernel';
+    const duration=100,endX=target.x-(target.eating||target.bungee||target.giant&&target.giant.phase!=='walk'||target.catapult&&target.catapult.phase!=='walk'?0:walkingSpeed(target)*duration);
     this.peas.push({id:++this.id,row:plant.row,x,y:this.rowY(plant.row,x)-60,age:0,ice:false,puff:false,lob:{kind,target:target.id,startX:x,endX,startY:this.rowY(plant.row,x)-60,endY:this.rowY(plant.row,endX)-55,duration}});
     plant.shotAt=this.ticks;this.events.push({kind:'shoot',x,y:this.rowY(plant.row,x)-60});
   }
@@ -969,8 +1052,19 @@ export class Game {
     const shot=pea.lob!,t=++pea.age/shot.duration;
     pea.x=shot.startX+(shot.endX-shot.startX)*t;pea.y=shot.startY+(shot.endY-shot.startY)*t-Math.sin(t*Math.PI)*150;
     if(t<1)return;
+    if(shot.kind==='basketball'){
+      const victim=this.plants.find(p=>p.id===shot.target&&p.health>0);
+      if(victim){const umbrella=this.findUmbrella(victim.column,victim.row);if(umbrella)umbrella.shotAt=this.ticks;else victim.health-=75;}
+      pea.x=1000;return;
+    }
     const target=this.zombies.find(z=>z.id===shot.target&&z.health>0&&!z.underground&&(!z.bungee||z.bungee.phase==='wait')&&Math.abs(z.x-shot.endX)<65);
-    if(target){this.damageZombie(target,shot.kind==='kernel'?20:40,true);target.hitAt=this.ticks;if(shot.kind==='butter')target.butterIn=400;}
+    if(target){
+      if(shot.kind==='melon'){
+        const nearby=this.zombies.filter(z=>z!==target&&!z.hypnotized&&!this.flying(z)&&!this.submerged(z)&&z.health>0&&Math.abs(z.row-target.row)<=1&&Math.abs(z.x-target.x)<=80);
+        const splash=nearby.length*26>560?Math.max(1,Math.trunc(80*560/(nearby.length*26*3))):26;
+        for(const z of [target,...nearby]){const damage=z===target?80:splash;if(z.shield>0)this.damageZombie(z,Math.min(z.shield,damage));this.damageZombie(z,damage,true);z.hitAt=this.ticks;}
+      }else{this.damageZombie(target,shot.kind==='kernel'?20:40,true);target.hitAt=this.ticks;if(shot.kind==='butter'&&target.kind!=='catapult'&&target.kind!=='zomboni')target.butterIn=400;}
+    }
     pea.x=1000;
   }
   private updateMagnet(plant: Plant) {
@@ -991,6 +1085,8 @@ export class Game {
     const state=z.bungee!;
     if(--state.remaining>0)return;
     if(state.phase==='down'){
+      const umbrella=this.findUmbrella(state.column,z.row);
+      if(umbrella){umbrella.shotAt=this.ticks;state.phase='up';state.remaining=100;return;}
       if(state.drop){this.spawnZombie(state.drop,z.row,z.x,z.wave);state.phase='up';state.remaining=100;}
       else{state.phase='wait';state.remaining=300;}
     }else if(state.phase==='wait'){

@@ -14,9 +14,9 @@ const spawn=(g:Game,k:ZombieKind,r:number,x:number)=>(g as unknown as {spawnZomb
 const roof:PlantKind[]=['sunflower','cabbagepult','kernelpult','flowerpot','pumpkin','peashooter'];
 
 test('new ten adventures retain extracted wave tables and first-adventure enemy eligibility',()=>{
- assert.deepEqual(LEVEL_IDS.slice(35),[36,37,38,39,40,41,42,43,44,45]);
- assert.deepEqual(data.waveCounts.slice(35),[10,20,10,20,20,10,20,20,30,20]);
- for(const l of LEVEL_IDS.slice(35)){
+ assert.deepEqual(LEVEL_IDS.slice(35,45),[36,37,38,39,40,41,42,43,44,45]);
+ assert.deepEqual(data.waveCounts.slice(35,45),[10,20,10,20,20,10,20,20,30,20]);
+ for(const l of LEVEL_IDS.slice(35,45)){
   assert.equal(LEVELS[l].waveCount,data.waveCounts[l-1]);
   for(const k of generateWaves(l,()=>.5).flat().filter(k=>!(l===45&&k==='bungee')))assert.equal(data.zombies[k].allowedLevels[l-1],1,`${l}:${k}`);
  }
@@ -91,6 +91,6 @@ test('new roof shots and underground movement agree at 30, 60 and 144 Hz',()=>{
  assert.deepEqual(results[0],results[1]);assert.deepEqual(results[1],results[2]);
 });
 import { playRoofAdventure } from './helpers/roof-adventure';
-for(const level of LEVEL_IDS.slice(35))test(`adventure ${LEVELS[level].label} finishes using normal six-slot/conveyor commands`,()=>{
+for(const level of LEVEL_IDS.slice(35,45))test(`adventure ${LEVELS[level].label} finishes using normal six-slot/conveyor commands`,()=>{
  const g=playRoofAdventure(level,123456);assert.equal(g.phase,'won',`wave ${g.wave}, tick ${g.ticks}`);assert.equal(g.wave,g.config.waveCount);
 });

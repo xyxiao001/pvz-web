@@ -202,7 +202,7 @@ export class Scene {
       glow.position.set(event.x, event.y); glow.zIndex = 800;
       this.world.addChild(glow); this.effects.push({ node: glow, born: this.time, duration: 40 });
     }
-    if (event.kind === 'sun') {
+    if (event.kind === 'sun' || event.kind === 'coin') {
       const label = new Text({ text: `+${event.value}`, style: { fontFamily: 'Arial', fontWeight: 'bold', fontSize: 25,
         fill: 0xfffbc2, stroke: { color: 0x496225, width: 3 } } });
       label.anchor.set(.5); label.position.set(event.x, event.y - 10); label.zIndex = 999;
@@ -262,12 +262,12 @@ export class Scene {
     for (const plant of game.plants) {
       const sleeping = game.sleeping(plant);
       const key = `p${plant.id}`; const actor = this.actor(key, plant.row * 100 + (['lilypad','flowerpot'].includes(plant.kind) ? 7 : plant.kind==='pumpkin'?18:plant.kind==='coffeebean'?19:10));
-      const clip = ['cabbagepult','kernelpult','magnetshroom'].includes(plant.kind) && game.ticks-plant.shotAt<50 ? `${plant.kind}-attack` : plant.kind==='pumpkin'&&plant.health<1334?'pumpkin-cracked2':plant.kind==='pumpkin'&&plant.health<2667?'pumpkin-cracked1':plant.kind==='garlic'&&plant.health<134?'garlic-cracked2':plant.kind==='garlic'&&plant.health<267?'garlic-cracked1': plant.kind === 'cactus' && plant.tall ? 'cactus-tall' : plant.kind === 'blover' && game.ticks-plant.born>50 ? 'blover-loop' : plant.kind === 'tallnut' && plant.health<2667 ? 'tallnut-cracked2' : plant.kind === 'tallnut' && plant.health<5334 ? 'tallnut-cracked1' : plant.kind === 'tanglekelp' && plant.kelp ? 'tanglekelp-grab' : plant.kind === 'squash' && plant.squash && plant.squash.remaining <= 60 ? 'squash-attack' : plant.kind === 'scaredyshroom' && plant.scared ? 'scaredyshroom-scared' : plant.kind === 'sunshroom' && game.ticks - plant.born >= 12000 ? 'sunshroom-big'
+      const clip = plant.kind==='umbrella'&&game.ticks-plant.shotAt<65?'umbrella-block':plant.kind==='melonpult'&&game.ticks-plant.shotAt<155?'melonpult-attack':['cabbagepult','kernelpult','magnetshroom'].includes(plant.kind) && game.ticks-plant.shotAt<50 ? `${plant.kind}-attack` : plant.kind==='pumpkin'&&plant.health<1334?'pumpkin-cracked2':plant.kind==='pumpkin'&&plant.health<2667?'pumpkin-cracked1':plant.kind==='garlic'&&plant.health<134?'garlic-cracked2':plant.kind==='garlic'&&plant.health<267?'garlic-cracked1': plant.kind === 'cactus' && plant.tall ? 'cactus-tall' : plant.kind === 'blover' && game.ticks-plant.born>50 ? 'blover-loop' : plant.kind === 'tallnut' && plant.health<2667 ? 'tallnut-cracked2' : plant.kind === 'tallnut' && plant.health<5334 ? 'tallnut-cracked1' : plant.kind === 'tanglekelp' && plant.kelp ? 'tanglekelp-grab' : plant.kind === 'squash' && plant.squash && plant.squash.remaining <= 60 ? 'squash-attack' : plant.kind === 'scaredyshroom' && plant.scared ? 'scaredyshroom-scared' : plant.kind === 'sunshroom' && game.ticks - plant.born >= 12000 ? 'sunshroom-big'
         : plant.kind === 'fumeshroom' && game.ticks - plant.shotAt < 35 ? 'fumeshroom-attack'
         : plant.kind === 'chomper' ? plant.chomp!.phase === 'digest' ? 'chomper-digest' : plant.chomp!.phase === 'ready' ? 'chomper' : 'chomper-bite'
         : plant.kind === 'potatomine' && plant.actionIn > 0 ? 'potatomine-unarmed' : plant.kind === 'wallnut' && plant.health < 1334 ? 'wallnut-cracked2'
         : plant.kind === 'wallnut' && plant.health < 2667 ? 'wallnut-cracked1' : plant.kind;
-      if(plant.kind==='flowerpot'){actor.art.texture=this.textures.flowerpot;actor.art.anchor.set(.5,.82);}else this.animate(actor, clip, plant.kind !== 'cherrybomb' && clip !== 'chomper-bite', sleeping ? 0 : this.time, clip === 'chomper-bite' ? this.clips[clip].duration / 70 : 1);
+      if(plant.kind==='flowerpot'){actor.art.texture=this.textures.flowerpot;actor.art.anchor.set(.5,.82);}else this.animate(actor, clip, plant.kind !== 'cherrybomb' && clip !== 'chomper-bite' && clip !== 'umbrella-block' && clip !== 'melonpult-attack', sleeping ? 0 : this.time, clip === 'chomper-bite' ? this.clips[clip].duration / 70 : clip==='umbrella-block'?this.clips[clip].duration/65:clip==='melonpult-attack'?this.clips[clip].duration/155:1);
       actor.root.position.set(cellX(plant.column), game.rowY(plant.row,cellX(plant.column)));
       if(game.config.environment==='roof'&&plant.kind!=='flowerpot')actor.root.y-=12;
       actor.art.tint=sleeping?0xa3a1be:0xffffff;
@@ -287,7 +287,7 @@ export class Scene {
       const swimming = game.waterRow(zombie.row) && zombie.x < 780 && zombie.x > 90;
       const type = zombie.kind === 'snorkel' ? 'snorkel' : swimming ? `ducky${zombie.armor>0?(zombie.kind==='bucket'?3:2):1}` : zombie.kind === 'ducky' ? 'zombie' : zombie.kind === 'dancer' || zombie.kind === 'backup' ? zombie.kind : zombie.kind === 'football' ? zombie.armor > 0 ? 'football' : 'football-bare' : zombie.kind === 'newspaper' ? zombie.shield > 0 ? 'newspaper' : 'newspaper-mad'
         : zombie.kind === 'door' && zombie.shield > 0 ? 'door' : zombie.kind === 'pole' ? 'pole' : (zombie.kind === 'cone' || zombie.kind === 'bucket') && zombie.armor > 0 ? zombie.kind : zombie.kind === 'flag' ? 'flag' : 'zombie';
-      const clip = zombie.kind==='digger'?`digger-${zombie.underground?'dig':zombie.emergingIn?'rise':zombie.eating?'eat':'walk'}`
+      const clip = zombie.giant?`gargantuar-${zombie.giant.thrown&&zombie.giant.phase!=='throw'?'bare-':''}${zombie.giant.phase}`:zombie.catapult?`catapult-${zombie.catapult.phase==='reload'?'idle':zombie.catapult.phase}`:zombie.kind==='imp'?`imp-${zombie.flight?'thrown':zombie.landingIn?'land':zombie.eating?'eat':'walk'}`:zombie.kind==='digger'?`digger-${zombie.underground?'dig':zombie.emergingIn?'rise':zombie.eating?'eat':'walk'}`
         :zombie.kind==='pogo'?`pogo-${zombie.pogo?'bounce':zombie.eating?'eat':'walk'}`
         :zombie.kind==='bungee'?`bungee-${zombie.bungee?.phase==='down'?'drop':'idle'}`
         :zombie.kind==='ladder'?`ladder-${zombie.ladderIn?'place':zombie.shield<=0?'bare':zombie.eating?'eat':'walk'}`
@@ -301,10 +301,11 @@ export class Scene {
         : swimming ? `${type}-${zombie.eating?'eat':'walk'}` : headless(zombie) ? (zombie.kind === 'dancer' || zombie.kind === 'backup' ? `${zombie.kind}-headless` : zombie.kind === 'football' ? 'football-headless' : zombie.kind === 'newspaper' ? 'newspaper-headless' : zombie.kind === 'pole' ? 'pole-headless' : 'zombie-headless')
         : zombie.rageIn > 0 ? 'newspaper-gasp' : zombie.vaultIn > 52 ? 'pole-jump' : zombie.vaultIn > 0 ? 'pole-land'
         : zombie.hasPole ? 'pole-run' : `${type}-${zombie.eating ? 'eat' : 'walk'}`;
-      const walking = zombie.kind !== 'zomboni' && !zombie.sled && (clip.endsWith('-walk') || clip.endsWith('-headless') || clip === 'pole-run');
-      const rate = clip === 'newspaper-gasp' ? this.clips[clip].duration / 150 : walking ? this.clips[clip].duration / walkingCycleTicks(zombie) : 1;
-      this.animate(actor, clip, !zombie.popIn && !zombie.jackOpening && zombie.vaultIn === 0 && zombie.rageIn === 0, zombie.animationTime + alpha * (zombie.frozenIn !== undefined && zombie.frozenIn > 0 ? 0 : zombie.chillIn > 0 ? .4 : 1), rate);
+      const walking = zombie.kind !== 'zomboni' && zombie.kind !== 'catapult' && !zombie.sled && (clip.endsWith('-walk') || clip.endsWith('-headless') || clip === 'pole-run');
+      const rate = zombie.giant&&zombie.giant.phase!=='walk'?this.clips[clip].duration/(zombie.giant.phase==='smash'?134:138):zombie.catapult?.phase==='shoot'?this.clips[clip].duration/129:zombie.catapult?.phase==='walk'?.55:zombie.catapult?.phase==='reload'?1.2:clip === 'newspaper-gasp' ? this.clips[clip].duration / 150 : walking ? this.clips[clip].duration / walkingCycleTicks(zombie) : 1;
+      this.animate(actor, clip, !zombie.popIn && !zombie.jackOpening && zombie.vaultIn === 0 && zombie.rageIn === 0 && (!zombie.giant||zombie.giant.phase==='walk') && zombie.catapult?.phase!=='shoot' && !zombie.flight && !zombie.landingIn, zombie.animationTime + alpha * (zombie.frozenIn !== undefined && zombie.frozenIn > 0 ? 0 : zombie.chillIn > 0 ? .4 : 1), rate);
       this.move(actor, zombie, game.rowY(zombie.row,zombie.x) + 1, alpha);
+      if(zombie.flight){const f=zombie.flight;actor.root.y-=Math.sin((1-f.remaining/f.duration)*Math.PI)*110+f.remaining/f.duration*88;}
       if(zombie.pogo)actor.root.y-=Math.abs(Math.sin(zombie.animationTime/80*Math.PI))*45;
       if(zombie.bungee){const b=zombie.bungee;actor.root.y-=b.phase==='down'?b.remaining*8:b.phase==='up'?(100-b.remaining)*8:0;const target=this.actor(`target${zombie.id}`,zombie.row*100+8);target.art.texture=this.textures.bungeeTarget;target.art.anchor.set(.5);target.root.position.set(zombie.x,game.rowY(zombie.row,zombie.x)-15);const rope=this.actor(`rope${zombie.id}`,zombie.row*100+19);rope.art.texture=this.textures.bungeeCord;rope.art.anchor.set(.5,1);rope.art.width=5;rope.art.height=Math.max(1,actor.root.y-80);rope.root.position.set(zombie.x,actor.root.y-80);}
       if (zombie.kind === 'dolphin' && zombie.vaultIn>0) actor.root.y-=Math.sin(zombie.vaultIn/120*Math.PI)*55;
@@ -324,7 +325,7 @@ export class Scene {
     for (const pea of game.peas) {
       const key = `b${pea.id}`; const actor = this.actor(key, pea.row * 100 + 30);
       const kind = pea.lob ? pea.lob.kind : pea.star?'star': pea.spike ? 'spike' : pea.puff ? 'puff' : pea.ice ? 'ice' : pea.fire ? 'fire' : 'pea';
-      if (actor.clip !== kind) { actor.clip = kind; actor.art.texture = pea.lob?this.textures[pea.lob.kind]:pea.star?this.textures.star:pea.spike ? this.textures.spike : pea.puff ? this.textures.puff : pea.ice ? this.textures.ice : this.textures.pea; actor.art.anchor.set(.5); actor.art.width = pea.lob?25:pea.star?28:pea.spike?26:19; actor.art.height = pea.lob?25:pea.star?28:pea.spike?8:19;actor.art.tint=pea.fire?0xff7925:0xffffff; }
+      if (actor.clip !== kind) { actor.clip = kind; actor.art.texture = pea.lob?this.textures[pea.lob.kind]:pea.star?this.textures.star:pea.spike ? this.textures.spike : pea.puff ? this.textures.puff : pea.ice ? this.textures.ice : this.textures.pea; actor.art.anchor.set(.5); actor.art.width = pea.lob?.kind==='melon'?38:pea.lob?25:pea.star?28:pea.spike?26:19; actor.art.height = pea.lob?.kind==='melon'?38:pea.lob?25:pea.star?28:pea.spike?8:19;actor.art.tint=pea.fire?0xff7925:0xffffff; }
       this.move(actor, pea, pea.y!==undefined?pea.y:pea.originY!==undefined?pea.originY-(pea.high?72:0):game.rowY(pea.row) - (pea.high ? 115 : 43), alpha);
     }
     for (const nut of game.rollers) {
@@ -332,6 +333,11 @@ export class Scene {
       actor.root.zIndex = nut.row * 100 + 28;
       this.animate(actor, nut.kind === 'wallnut' ? 'wallnut-roll' : 'explodenut');
       this.move(actor, nut, nut.y, alpha);
+    }
+    for(const coin of game.coins){
+      const actor=this.actor(`coin${coin.id}`,700);actor.art.texture=coin.value===50?this.textures.coinGold:this.textures.coinSilver;
+      actor.art.anchor.set(.5);actor.art.width=30;actor.art.height=30;this.move(actor,coin,coin.y,alpha);
+      actor.root.alpha=coin.expiresIn<150?.45+Math.abs(Math.sin(game.ticks/10))*.55:1;
     }
     for (const sun of game.suns) {
       const key = `s${sun.id}`; const actor = this.actor(key, 700);
@@ -348,8 +354,8 @@ export class Scene {
     for (const [key, actor] of this.actors) if (actor.seen !== this.stamp) {
       if (key.startsWith('z')) {
         const burned = this.explosions.some(e => Math.abs(e.x - actor.root.x) <= 115 && Math.abs(e.y + 35 - actor.root.y) <= 101);
-        const special = ['dancer','backup','snorkel','zomboni','bobsled','dolphin','jack','balloon','digger','pogo','bungee','ladder'].find(name=>actor.clip.startsWith(`${name}-`));
-        const clip = special && ['zomboni','bobsled','dolphin','jack','balloon','digger','pogo','bungee','ladder'].includes(special) ? `${special}-die` : actor.clip.startsWith('ducky') && !burned ? 'ducky-die' : special && (special!=='snorkel'||!burned) ? `${special}-${burned?'burn':'die'}` : `${actor.clip.startsWith('football-') && !burned ? 'football' : actor.clip.startsWith('newspaper-') ? 'newspaper' : actor.clip.startsWith('pole-') ? 'pole' : 'zombie'}-${burned ? 'burn' : 'die'}`;
+        const special = ['dancer','backup','snorkel','zomboni','bobsled','dolphin','jack','balloon','digger','pogo','bungee','ladder','catapult','gargantuar','imp'].find(name=>actor.clip.startsWith(`${name}-`));
+        const clip = special && ['zomboni','bobsled','dolphin','jack','balloon','digger','pogo','bungee','ladder','catapult','gargantuar','imp'].includes(special) ? `${special}${special==='gargantuar'&&actor.clip.includes('-bare-')?'-bare':''}-die` : actor.clip.startsWith('ducky') && !burned ? 'ducky-die' : special && (special!=='snorkel'||!burned) ? `${special}-${burned?'burn':'die'}` : `${actor.clip.startsWith('football-') && !burned ? 'football' : actor.clip.startsWith('newspaper-') ? 'newspaper' : actor.clip.startsWith('pole-') ? 'pole' : 'zombie'}-${burned ? 'burn' : 'die'}`;
         this.animate(actor, clip, false); actor.art.tint = 0xffffff;
         this.effects.push({ node: actor.root, actor, born: this.time, duration: this.clips[clip].duration });
       } else actor.root.destroy({ children: true });

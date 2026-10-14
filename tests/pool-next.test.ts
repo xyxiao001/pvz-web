@@ -10,7 +10,7 @@ const step=(g:Game,n:number)=>{for(let i=0;i<n;i++){g.step();g.drainEvents();}};
 const z=(kind:Zombie['kind'],x:number):Zombie=>({id:999,kind,row:2,x,health:270,armor:0,shield:0,speed:.3,biteIn:4,eating:false,wave:0,hitAt:-100,chillIn:0,hasPole:false,vaultIn:0,animationTime:0,rageIn:0,riseIn:0});
 function kelpGame(){const g=new Game(24,1);for(const p of ['tanglekelp','lilypad','sunflower','peashooter','wallnut','cherrybomb'] as const)g.chooseSeed(p);g.start();g.sun=200;return g;}
 test('3–4 and 3–5 use original wave counts and Little Trouble conveyor weights',()=>{
- assert.deepEqual(LEVEL_IDS,Object.keys(LEVELS).map(Number));assert.equal(LEVEL_IDS.at(-1),45);
+ assert.deepEqual(LEVEL_IDS,Object.keys(LEVELS).map(Number));assert.equal(LEVEL_IDS.at(-1),49);
  assert.deepEqual(data.waveCounts.slice(23,25),[30,20]);assert.deepEqual(data.conveyorTwentyFive,[{kind:'lilypad',weight:25},{kind:'wallnut',weight:15},{kind:'peashooter',weight:25},{kind:'cherrybomb',weight:35}]);
  assert.equal(PLANTS.tanglekelp.cost,25);assert.equal(PLANTS.tanglekelp.cooldown,3000);
  const waves=generateWaves(25,()=>.5);assert.equal(waves[0].reduce((n,k)=>n+data.zombies[k].value,0),4);assert.ok(waves.flat().every(k=>['normal','cone','flag','football','snorkel'].includes(k)));

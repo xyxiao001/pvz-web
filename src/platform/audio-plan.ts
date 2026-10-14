@@ -18,6 +18,7 @@ export function soundFiles(game: Game) {
   if (game.config.mode === 'whack') files.whack = 'bonk.ogg';
   if(game.level===40&&game.scenario==='adventure')files.thunder='thunder.ogg';
   if(game.config.environment==='roof')files.bungee='bungee_scream.ogg';
+  if(plants.has('marigold'))files.coin='points.mp3';
   if(plants.has('coffeebean'))files.coffee='coffee.ogg';
   return files;
 }

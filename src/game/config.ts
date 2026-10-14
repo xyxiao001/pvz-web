@@ -2,9 +2,9 @@ import portable from './data/portable-adventure.json';
 // Behavioral reference: PvZ-Portable 141c1476. Source locations in docs/BASELINE.md.
 export const TICK_MS = 10;
 export const BOARD = { width: 800, height: 600, left: 40, top: 80, cellWidth: 80, cellHeight: 100, columns: 9 };
-export type PlantKind = 'peashooter' | 'sunflower' | 'cherrybomb' | 'wallnut' | 'potatomine' | 'snowpea' | 'explodenut' | 'chomper' | 'repeater' | 'puffshroom' | 'sunshroom' | 'fumeshroom' | 'gravebuster' | 'hypnoshroom' | 'scaredyshroom' | 'iceshroom' | 'doomshroom' | 'lilypad' | 'squash' | 'threepeater' | 'plantern' | 'tanglekelp' | 'jalapeno' | 'spikeweed' | 'torchwood' | 'tallnut' | 'seashroom' | 'cactus' | 'blover' | 'splitpea' | 'starfruit' | 'pumpkin' | 'magnetshroom' | 'cabbagepult' | 'flowerpot' | 'kernelpult' | 'coffeebean' | 'garlic';
-export type ZombieKind = 'normal' | 'cone' | 'flag' | 'pole' | 'bucket' | 'newspaper' | 'door' | 'football' | 'dancer' | 'backup' | 'ducky' | 'snorkel' | 'zomboni' | 'bobsled' | 'dolphin' | 'jack' | 'balloon' | 'digger' | 'pogo' | 'bungee' | 'ladder';
-export type LevelId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45;
+export type PlantKind = 'peashooter' | 'sunflower' | 'cherrybomb' | 'wallnut' | 'potatomine' | 'snowpea' | 'explodenut' | 'chomper' | 'repeater' | 'puffshroom' | 'sunshroom' | 'fumeshroom' | 'gravebuster' | 'hypnoshroom' | 'scaredyshroom' | 'iceshroom' | 'doomshroom' | 'lilypad' | 'squash' | 'threepeater' | 'plantern' | 'tanglekelp' | 'jalapeno' | 'spikeweed' | 'torchwood' | 'tallnut' | 'seashroom' | 'cactus' | 'blover' | 'splitpea' | 'starfruit' | 'pumpkin' | 'magnetshroom' | 'cabbagepult' | 'flowerpot' | 'kernelpult' | 'coffeebean' | 'garlic' | 'umbrella' | 'marigold' | 'melonpult';
+export type ZombieKind = 'normal' | 'cone' | 'flag' | 'pole' | 'bucket' | 'newspaper' | 'door' | 'football' | 'dancer' | 'backup' | 'ducky' | 'snorkel' | 'zomboni' | 'bobsled' | 'dolphin' | 'jack' | 'balloon' | 'digger' | 'pogo' | 'bungee' | 'ladder' | 'catapult' | 'gargantuar' | 'imp';
+export type LevelId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49;
 export type SurvivalScene = 'day' | 'night' | 'pool' | 'fog';
 export const SCENE_NAMES: Record<SurvivalScene, string> = { day: '白天庭院', night: '夜晚庭院', pool: '泳池', fog: '迷雾泳池' };
 export const SURVIVAL_SCENES: SurvivalScene[] = ['day', 'night', 'pool', 'fog'];
@@ -13,6 +13,9 @@ export const isPool = (environment: Environment) => environment === 'pool' || en
 export const isNight = (environment: Environment) => environment === 'night' || environment === 'fog';
 export const MUSHROOMS: readonly PlantKind[] = ['puffshroom','sunshroom','fumeshroom','hypnoshroom','scaredyshroom','iceshroom','doomshroom','seashroom','magnetshroom'];
 export const PLANTS = {
+  umbrella: { name: '叶子保护伞', cost: 100, cooldown: 750, health: 300, interval: 0 },
+  marigold: { name: '金盏花', cost: 50, cooldown: 3000, health: 300, interval: 2500 },
+  melonpult: { name: '西瓜投手', cost: 300, cooldown: 750, health: 300, interval: 300 },
   splitpea: { name: '裂荚射手', cost: 125, cooldown: 750, health: 300, interval: 150 },
   starfruit: { name: '杨桃', cost: 125, cooldown: 750, health: 300, interval: 150 },
   pumpkin: { name: '南瓜头', cost: 125, cooldown: 3000, health: 4000, interval: 0 },
@@ -80,6 +83,7 @@ const latePoolSeeds: PlantKind[] = [...poolSeeds,'squash','threepeater','tanglek
 const fogSeeds: PlantKind[] = [...latePoolSeeds,'spikeweed','torchwood','tallnut','seashroom'];
 const lateFogSeeds: PlantKind[] = [...fogSeeds,'plantern','cactus','blover','splitpea'];
 const roofSeeds: PlantKind[] = ([...lateFogSeeds,'starfruit','pumpkin','magnetshroom','cabbagepult'] as PlantKind[]).filter(k => !['lilypad','seashroom','tanglekelp','spikeweed','gravebuster','potatomine'].includes(k));
+const lateRoofSeeds: PlantKind[] = [...roofSeeds,'flowerpot','kernelpult','coffeebean','garlic','umbrella'];
 export const LEVELS: Record<LevelId, LevelConfig> = {
   1: { environment: 'day', mode: 'lawn', label: '1–1', title: '第一株守护者', description: '种下豌豆射手，守住中间这条草坪。', rows: [2], initialSun: 150, seeds: ['peashooter'], waveCount: portable.waveCounts[0], reward: 'sunflower' },
   2: { environment: 'day', mode: 'lawn', label: '1–2', title: '让阳光生长', description: '先种向日葵，再用射手守住三条草坪。', rows: [1, 2, 3], initialSun: 50, seeds: ['peashooter', 'sunflower'], waveCount: portable.waveCounts[1], reward: 'cherrybomb' },
@@ -125,8 +129,12 @@ export const LEVELS: Record<LevelId, LevelConfig> = {
   42: { environment: 'roof', mode: 'lawn', label: '5–2', title: '铺满花盆', description: '用花盆扩展屋顶防线，保护后方的阳光生产。', rows: [0, 1, 2, 3, 4], initialSun: 50, seeds: [...roofSeeds,'flowerpot'], waveCount: portable.waveCounts[41], reward: 'kernelpult' },
   43: { environment: 'roof', mode: 'lawn', label: '5–3', title: '黄油与扶梯', description: '玉米投手偶尔投出定身黄油；扶梯僵尸会给坚果搭梯。', rows: [0, 1, 2, 3, 4], initialSun: 50, seeds: [...roofSeeds,'flowerpot','kernelpult'], waveCount: portable.waveCounts[42], reward: 'coffeebean' },
   44: { environment: 'roof', mode: 'lawn', label: '5–4', title: '唤醒屋顶蘑菇', description: '咖啡豆唤醒白天睡眠的蘑菇，磁力菇可以吸走扶梯。', rows: [0, 1, 2, 3, 4], initialSun: 50, seeds: [...roofSeeds,'flowerpot','kernelpult','coffeebean'], waveCount: portable.waveCounts[43], reward: 'garlic' },
-  45: { environment: 'roof', mode: 'conveyor', label: '5–5', title: '蹦极突袭', description: '僵尸从天而降！使用花盆、食人花、南瓜头与樱桃炸弹守住屋顶。', rows: [0, 1, 2, 3, 4], initialSun: 0, seeds: ['flowerpot','chomper','pumpkin','cherrybomb'], waveCount: portable.waveCounts[44], reward: null },
+  45: { environment: 'roof', mode: 'conveyor', label: '5–5', title: '蹦极突袭', description: '僵尸从天而降！使用花盆、食人花、南瓜头与樱桃炸弹守住屋顶。', rows: [0, 1, 2, 3, 4], initialSun: 0, seeds: ['flowerpot','chomper','pumpkin','cherrybomb'], waveCount: portable.waveCounts[44], reward: 'umbrella' },
+  46: { environment: 'roof', mode: 'lawn', label: '5–6', title: '撑起保护伞', description: '投石车会瞄准后排！叶子保护伞保护周围九格，弹开篮球和蹦极僵尸。', rows: [0,1,2,3,4], initialSun: 50, seeds: lateRoofSeeds, waveCount: portable.waveCounts[45], reward: 'marigold' },
+  47: { environment: 'roof', mode: 'lawn', label: '5–7', title: '屋顶的金币', description: '金盏花定期产出钱币。守住投石车和扶梯僵尸的进攻，收集本局金币。', rows: [0,1,2,3,4], initialSun: 50, seeds: [...lateRoofSeeds,'marigold'], waveCount: portable.waveCounts[46], reward: 'melonpult' },
+  48: { environment: 'roof', mode: 'lawn', label: '5–8', title: '巨人的脚步', description: '巨人会砸毁植物，受伤后抛出小鬼！西瓜的溅射火力与爆炸植物可以阻挡它。', rows: [0,1,2,3,4], initialSun: 50, seeds: [...lateRoofSeeds,'marigold','melonpult'], waveCount: portable.waveCounts[47], reward: null },
+  49: { environment: 'roof', mode: 'lawn', label: '5–9', title: '屋顶最后防线', description: '三面旗帜的屋顶大战。用保护伞守护后方，集中西瓜与爆炸火力迎战巨人。', rows: [0,1,2,3,4], initialSun: 50, seeds: [...lateRoofSeeds,'marigold','melonpult'], waveCount: portable.waveCounts[48], reward: null },
 };
-export const LEVEL_IDS: LevelId[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45];
+export const LEVEL_IDS: LevelId[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49];
 export const cellX = (column: number) => BOARD.left + column * BOARD.cellWidth + 40;
 export const rowY = (row: number) => BOARD.top + row * BOARD.cellHeight + 78;
