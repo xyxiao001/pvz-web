@@ -1,0 +1,65 @@
+/* Garden HUD: shared wood, stone and seed-packet surfaces. */
+:root{--wood-edge:#38210e;--wood-light:#b57b3d;--paper:#f1e2ae;--ink:#342710;--leaf:#bfd762}
+body{background:radial-gradient(ellipse at 50% 30%,#344c28,#142015 70%)}
+.page-top{color:#8f9c75;font-size:10px;letter-spacing:2px}.page-top span:first-child{font-size:13px;color:#c7d2ac;letter-spacing:4px}
+.game-frame{border:5px solid #5a492a;border-radius:12px;box-shadow:0 0 0 2px #192014,0 0 0 3px #8a7a48,0 20px 60px #0007}
+footer{color:#8d9d76;font-size:11px}
+.main-menu{isolation:isolate;background-position:80% center}
+.main-menu:after{content:'';position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 -8cqw 10cqw -5cqw #13230dc9,inset 0 0 4cqw #0a210b55;z-index:-1}
+.game-logo{left:3%;top:6%;width:47%;filter:drop-shadow(0 .7cqw .2cqw #13220b99);z-index:1}
+.garden-sign{position:absolute;left:7%;top:26%;width:34%;padding:1cqw 2cqw 1.4cqw;transform:rotate(-4deg);text-align:center;color:#ffedbc;border:.4cqw solid #4c2d17;border-radius:.5cqw;background:repeating-linear-gradient(2deg,#0000 0 1.4cqw,#4f2c1b44 1.5cqw 1.6cqw),linear-gradient(#a87036,#754521);box-shadow:inset 0 .25cqw #dca869,inset 0 -.3cqw #402813,0 .5cqw .4cqw #13200b55;text-shadow:0 .2cqw #4b2c18}
+.garden-sign:before,.garden-sign:after{content:'';position:absolute;top:44%;width:.7cqw;height:.7cqw;border-radius:50%;background:#302d22;box-shadow:0 .1cqw #d7b778}.garden-sign:before{left:1cqw}.garden-sign:after{right:1cqw}
+.garden-sign span{display:block;font-size:1.15cqw;letter-spacing:.5cqw;color:#e8cb8d}.garden-sign b{display:block;margin-top:.4cqw;font-size:2.5cqw;letter-spacing:.2cqw}
+.garden-defenders{position:absolute;left:5%;bottom:19%;width:39%;height:27%;filter:drop-shadow(0 .6cqw .25cqw #21341677)}
+.garden-defenders:before{content:'';position:absolute;bottom:-1cqw;left:0;right:0;height:4cqw;background:#29451899;border-radius:50%;filter:blur(.7cqw)}
+.garden-defenders img{position:absolute;bottom:0;object-fit:contain;transform-origin:50% 95%;animation:garden-sway 4s ease-in-out infinite}
+.defender-sunflower{left:0;width:36%;height:80%;animation-delay:-1.4s!important}.defender-pea{left:27%;width:48%;height:100%;z-index:1}.defender-wallnut{right:0;width:32%;height:64%;animation-delay:-2.8s!important}
+@keyframes garden-sway{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+.menu-modes{position:absolute;left:52%;top:22%;width:40%;display:flex;flex-direction:column;gap:1.5cqw;transform:rotate(2deg)}
+.mode-button{position:relative;width:100%;border:0;padding:1.5cqw 2.5cqw;color:#f5e8bb;background:url('/assets/runtime/original/button.webp') center/100% 100% no-repeat;filter:drop-shadow(0 .5cqw .25cqw #1d211b88);text-shadow:0 .25cqw #30362e;transition:transform .15s,filter .15s}
+.mode-button:hover{transform:translateY(-.3cqw) rotate(-1deg);filter:brightness(1.15) drop-shadow(0 .7cqw .3cqw #1d211b88)}.mode-button:active{transform:translateY(.2cqw)}
+.mode-button strong{display:block;font-size:3.8cqw;letter-spacing:.3cqw;font-weight:900;line-height:1.2}.mode-button small{display:block;font-size:1.35cqw;color:#d3d8b7;margin-top:.5cqw;letter-spacing:.1cqw}
+.mode-adventure{min-height:13.7cqw;padding:1.6cqw 3cqw 2.3cqw;color:#e7f294}.mode-adventure strong{font-size:4.8cqw;text-shadow:0 .3cqw #283517,0 0 1cqw #24351b}.mode-eyebrow{display:block;margin-bottom:.6cqw;font-size:1.2cqw;color:#e0e2c5;letter-spacing:.45cqw}.mode-detail{display:block;font-size:1.4cqw;color:#e7deb9;margin-top:.8cqw}.mode-detail b{margin-left:1cqw;color:#d9ed80}
+.mode-levels,.mode-endless{display:flex;align-items:center;justify-content:center;gap:1.5cqw;min-height:10.7cqw;padding:1.5cqw 2.7cqw 2cqw}.mode-levels img,.mode-endless img{width:5.8cqw;height:6.5cqw;object-fit:contain;filter:drop-shadow(0 .2cqw .2cqw #1b241c)}.mode-levels img{transform:rotate(-14deg)}.mode-endless strong{color:#f5d277}
+.almanac-menu{position:absolute;left:7%;bottom:6.5%;width:36%;height:8cqw;display:flex;align-items:center;gap:1.5cqw;padding:1cqw 1.7cqw 1cqw 7.2cqw;background:linear-gradient(100deg,#6c4927f0,#382b19e8);border:.3cqw solid #b49655;border-radius:.7cqw;box-shadow:0 .5cqw .3cqw #17220b77,inset 0 0 0 .3cqw #3d2c16;transform:rotate(-3deg);color:#f4e3a6;text-shadow:0 .2cqw #372515;text-align:left}
+.almanac-menu>img:first-child{position:absolute;left:1.4cqw;bottom:.8cqw;width:4.8cqw;height:6.7cqw;transform:rotate(-8deg)}.almanac-menu .almanac-portrait{position:absolute;left:2cqw;bottom:2.7cqw;width:3.4cqw;height:3.4cqw;object-fit:contain;transform:rotate(-8deg)}.almanac-menu span{font-size:2.5cqw;font-weight:900}.almanac-menu small{display:block;font-size:1.1cqw;color:#d5c28e;margin-top:.4cqw}.almanac-menu:hover{filter:brightness(1.15);transform:rotate(-1deg)}
+.menu-tools{position:absolute;right:9%;bottom:10%;display:flex;gap:1cqw;transform:rotate(2deg)}.menu-tools .wood-button{min-width:15cqw;font-size:2cqw;height:6.5cqw}
+.garden-note{position:absolute;bottom:2.8%;width:100%;text-align:center;font-size:1.2cqw;letter-spacing:.25cqw;color:#f1e5b9;text-shadow:0 .2cqw .2cqw #14200d}
+/* Panels read as trays and signs inside the garden. */
+.overlay{background:#101d12a3}
+.paper-panel{border:.7cqw solid #85552a;border-radius:1.2cqw;background:repeating-linear-gradient(3deg,#0000 0 3cqw,#361b0b22 3.05cqw 3.15cqw),radial-gradient(ellipse at top,#79502b,#482b16 85%);color:var(--paper);box-shadow:0 0 0 .25cqw #d3a864,0 1.4cqw 3cqw #09110cd9,inset 0 0 0 .3cqw #35220f,inset 0 .6cqw 1.2cqw #29160888;padding:2.5cqw 3cqw}
+.paper-panel h2{color:#fff0bb;font-size:3.2cqw;text-shadow:0 .25cqw #241c0b;letter-spacing:.2cqw}.paper-panel p{color:#e0cc9e;line-height:1.6}.kicker{display:inline-block;padding:.4cqw 2cqw;border-bottom:1px solid #ad884c;color:#cbd98b;font-size:1.1cqw;letter-spacing:.4cqw}.facts{color:#d5c38e;font-size:1.3cqw}
+.wood-button{color:#ffedba;text-shadow:0 .2cqw #242d25;filter:drop-shadow(0 .3cqw .1cqw #1e160b66);transition:filter .12s,transform .12s}.wood-button:active{transform:translateY(.2cqw)}
+.paper-panel .text-button{color:#ded29d;text-decoration:none;border-bottom:1px solid #b69c5f77;width:fit-content}.paper-panel .text-button:hover{color:#fff3b7;border-color:#f4d377}
+.level-panel{width:91%;padding:1.8cqw 2.2cqw}.level-panel .level-grid{grid-template-columns:repeat(5,1fr);gap:.9cqw;margin:1.5cqw 0}.level-panel .level-card{position:relative;background:linear-gradient(#ebdca7,#c3ae75);border:.3cqw solid #382c18;border-radius:.65cqw;box-shadow:inset 0 .2cqw #fff1c4,0 .25cqw #29190e;padding:.65cqw .5cqw;display:grid;grid-template-columns:4cqw 1fr;gap:.3cqw .4cqw;text-align:left;color:#3d4021}
+.level-card b{font-size:1.6cqw;grid-column:2;grid-row:1;color:#5d4e27}.level-panel .level-card img{grid-column:1;grid-row:1 / 4;width:3.9cqw;height:5cqw;align-self:center}.level-panel .level-card strong{font-size:1.2cqw;grid-column:2;line-height:1.3}.level-card small{font-size:.85cqw;grid-column:2}.level-card:disabled{opacity:.52;filter:grayscale(.65)}.level-card:hover:not(:disabled){background:linear-gradient(#fff0b9,#d9ca88);box-shadow:0 0 0 .2cqw #b6ce5d}
+.chosen-seeds{background:linear-gradient(#281c10,#51361b);border:.45cqw solid #aa783b;box-shadow:inset 0 .4cqw .8cqw #130e0b88,0 .2cqw #d0a25a;padding:1cqw}.empty-seed{border:.2cqw dashed #81683a;background:#251f1466;box-shadow:inset 0 0 1cqw #140e0a77;color:#806b42}.chosen-seed{box-shadow:0 .3cqw .4cqw #1b100aaa}
+.seed-options{padding:1.3cqw;border-radius:.6cqw;background:#2b1b0d66;box-shadow:inset 0 .2cqw .6cqw #160c0866}.seed-option{color:#f1dfac}.seed-option:hover:not(:disabled){transform:translateY(-.2cqw)}.chooser-panel #choice-count{color:#cddf8a;font-weight:bold}.chooser-panel{width:85%;padding:1.7cqw 2.7cqw}.chooser-panel .kicker{font-size:1cqw}.chooser-panel h2{font-size:2.8cqw}.chooser-panel p{font-size:1.25cqw;margin:.6cqw 0}.chooser-panel .chosen-seeds{margin:1cqw 0}.chooser-panel .chosen-seed,.chooser-panel .empty-seed{width:6.5cqw;height:8.8cqw}
+.survival-scenes article{background:#30200f99;border:.3cqw solid #ad8648;box-shadow:inset 0 0 0 .2cqw #382410,0 .3cqw #28180c;border-radius:.8cqw;padding:1cqw}.survival-scenes img{height:5.5cqw;border:.25cqw solid #281e10;border-radius:.35cqw}.survival-scenes h3{color:#f3dfaa;font-size:2cqw}.survival-scenes .text-button{font-weight:bold;color:#d6e88d;font-size:1.5cqw}.survival-scenes p{font-size:1.15cqw}
+.almanac-grid article{background:linear-gradient(110deg,#e8d9a6,#c8b27c);border:.3cqw solid #3b2915;border-radius:.65cqw;padding:1cqw;box-shadow:inset 0 .2cqw #f9eab6}.almanac-grid h3{color:#374321;font-size:1.8cqw}.almanac-grid h3 span{color:#756030}.almanac-grid p{color:#534529;font-size:1.2cqw}.almanac-grid img{width:7cqw;max-height:9cqw;object-fit:contain}.help-list{color:#e6d6a9}
+.reward-panel{background:radial-gradient(ellipse at 50% 25%,#827339,#482b16 80%)}
+.auto-sun{background:linear-gradient(#626e47,#354527);border:.2cqw solid #252f1c;box-shadow:inset 0 .2cqw #a1aa73,0 .25cqw #172115;color:#f4ecc7;border-radius:.45cqw}
+.pause-content h2{color:#ffedaf}.pause-content .text-button{color:#e1dbb3}
+.pwa-panel{background:linear-gradient(120deg,#79502b,#482b16);border:6px solid #a6783e;box-shadow:0 0 0 2px #d7b777,0 20px 80px #0008,inset 0 0 0 2px #34200c;color:#f3e2b3;border-radius:14px}.pwa-panel button{background:url('/assets/runtime/original/button.webp') center/100% 100%;border:0;border-radius:0;color:#ffedb8;padding:14px 22px;font-weight:bold}.pwa-panel p{color:#e0cda1}.pwa-panel progress{accent-color:#b6d766}
+@media(prefers-reduced-motion:reduce){.garden-defenders img{animation:none}.mode-button,.wood-button{transition:none}}
+@media(max-width:650px){.game-frame{border-width:3px;border-radius:7px}.page-top{font-size:8px}.page-top span:first-child{font-size:11px}footer{font-size:9px}.page{padding-top:8px}}
+
+.menu-trophy{display:block;flex:none;width:3.8cqw;height:6.5cqw;background:url('/assets/runtime/original/trophy.webp') right center/200% 100% no-repeat;filter:drop-shadow(0 .2cqw .2cqw #1b241c)}
+/* Keep all migrated night/fog cards and the start control within the tray. */
+.night-chooser .seed-options{grid-template-columns:repeat(7,1fr);gap:.6cqw;padding:.8cqw}
+.night-chooser .seed-option>img,.night-chooser .seed-option .packet-art{width:5.5cqw;height:7.4cqw;margin:0 auto}
+.night-chooser .seed-option{font-size:1cqw}.night-chooser .packet-price{font-size:1.2cqw}
+@container(max-width:600px){
+  .paper-panel{max-height:94%;overflow-y:auto;width:92%;padding:12px}
+  .paper-panel h2{font-size:20px}.paper-panel p,.paper-panel .facts,.help-list{font-size:12px;line-height:1.5}.kicker{font-size:9px}
+  .paper-panel .wood-button{font-size:13px;min-height:34px;min-width:110px}.paper-panel .text-button{font-size:12px;padding:7px;margin:6px auto}
+  .level-panel .level-grid{grid-template-columns:repeat(3,1fr);gap:5px}.level-panel .level-card{grid-template-columns:24px 1fr;padding:5px}.level-panel .level-card img{width:24px;height:34px}.level-card b{font-size:12px}.level-panel .level-card strong{font-size:10px}.level-card small{font-size:8px}
+  .chooser-panel .chosen-seed,.chooser-panel .empty-seed{width:36px;height:49px}.chooser-panel .seed-options{grid-template-columns:repeat(4,1fr);gap:8px;padding:8px}.chooser-panel .seed-option>img,.chooser-panel .seed-option .packet-art{width:40px;height:54px;margin:0 auto}.chooser-panel .seed-option{font-size:10px}.chooser-panel .packet-price{font-size:10px}.chooser-panel .seed-option[aria-pressed="true"]:after{font-size:28px;top:12px}
+  .survival-scenes h3{font-size:15px}.survival-scenes img{height:45px}.survival-scenes article{padding:7px}.survival-scenes p{font-size:10px}
+  .almanac-grid{grid-template-columns:1fr}.almanac-grid img{width:48px;max-height:60px}.almanac-grid h3{font-size:15px}.almanac-grid h3 span{font-size:11px}.almanac-grid p{font-size:11px}
+  .mode-button small,.mode-eyebrow,.mode-detail{font-size:8px}.mode-eyebrow{letter-spacing:1px}.menu-tools .wood-button{font-size:12px}.garden-sign span{font-size:7px}.garden-sign b{font-size:11px}.almanac-menu small{font-size:7px}.almanac-menu span{font-size:11px}.garden-note{font-size:8px}
+}
+
+.chooser-actions{display:flex;align-items:center;justify-content:center;gap:2cqw;margin-top:1cqw}.chooser-actions .wood-button.large,.chooser-actions .text-button{margin:0}
+.pause-content{top:23%;left:18%;right:12%;bottom:22%;padding:.8cqw 1cqw;background:linear-gradient(115deg,#535866,#363d48);border:.35cqw solid #252b34;border-radius:.7cqw;box-shadow:inset 0 .25cqw #747b89,0 .25cqw #879092}
+.pause-content h2{font-size:2.6cqw;margin:.6cqw 0}.pause-content p{font-size:1.25cqw;margin:.7cqw 0}.pause-content .wood-button.large{min-width:100%;height:5.3cqw;margin:.6cqw auto}.pause-content .text-button{font-size:1.3cqw;margin:.5cqw auto;padding:.3cqw}

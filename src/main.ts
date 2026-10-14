@@ -1,4 +1,5 @@
 import './style.css';
+import './ui.css';
 import { registerPwa, showPwa } from './platform/pwa';
 void registerPwa();
 import { ZOMBIE_NAMES } from './game/survival';
@@ -32,13 +33,16 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </div>
   <div id="menu" class="main-menu">
     <img class="game-logo" src="${asset('logo.png')}" alt="Plants vs. Zombies"/>
-    <div class="menu-subtitle">冒险，从你的前院开始。</div>
-    <button id="adventure" class="adventure-button" aria-label="开始冒险"><img src="${asset('adventure.png')}" alt="冒险模式"/></button>
-    <button id="levels" class="stone-link levels-link">关卡选择<small>白天、夜晚与泳池 · 1–1 至 3–5</small></button>
-    <button id="almanac" class="stone-link almanac-link">植物图鉴<small>认识你的庭院守护者</small></button>
-    <button id="endless" class="stone-link endless-link">无尽生存<small>四种场景 · 随时续战</small></button>
-    <div class="menu-bottom"><button id="settings">设置</button><button id="help">帮助</button></div>
-    <span class="menu-note">阳光已就绪，草坪等你来守护。</span>
+    <div class="garden-sign"><span>欢迎回到</span><b>疯狂戴夫的庭院</b></div>
+    <div class="garden-defenders" aria-hidden="true"><img class="defender-sunflower" src="${asset('sunflower.png')}" alt=""/><img class="defender-pea" src="${asset('peashooter.png')}" alt=""/><img class="defender-wallnut" src="${asset('wallnut.png')}" alt=""/></div>
+    <nav class="menu-modes" aria-label="游戏模式">
+      <button id="adventure" class="mode-button mode-adventure" aria-label="开始冒险"><span class="mode-eyebrow">守住你的草坪</span><strong>冒险模式</strong><span class="mode-detail">种下第一道防线 <b aria-hidden="true">▶</b></span></button>
+      <button id="levels" class="mode-button mode-levels"><img src="${asset('shovel.png')}" alt=""/><span><strong>关卡选择</strong><small>白天 · 夜晚 · 泳池</small></span></button>
+      <button id="endless" class="mode-button mode-endless"><span class="menu-trophy" aria-hidden="true"></span><span><strong>无尽生存</strong><small>四种庭院，挑战更多旗帜</small></span></button>
+    </nav>
+    <button id="almanac" class="almanac-menu"><img src="${asset('seed-packet.png')}" alt=""/><img class="almanac-portrait" src="${asset('peashooter.png')}" alt=""/><span>植物图鉴<small>认识你的庭院守护者</small></span></button>
+    <div class="menu-tools"><button id="settings" class="wood-button">设置</button><button id="help" class="wood-button">帮助</button></div>
+    <span class="garden-note">准备好了吗？僵尸就要来了！</span>
   </div>
   <div id="overlay" class="overlay"><div class="paper-panel"><h2>正在准备庭院…</h2></div></div>
 </section>
@@ -103,7 +107,7 @@ function seedChooser() {
   panel(`<span class="kicker">${game.scenario === 'endless' ? `${game.config.title} · 第 ${game.survivalStage + 1} 轮` : `冒险模式 ${game.config.label} · ${game.config.title}`}</span><h2>选择你的植物</h2>${game.scenario === 'endless' ? `<p>${game.survivalStage === 0 ? '50 初始阳光 · 每轮 20 波，守住两面旗后重新选卡。' : `已守住 ${game.survivalFlags} 旗 · 防线与 ${game.sun} 阳光保留，开战 6 秒后出怪。`}<br/>本轮：${game.survivalEnemies.map(kind => ZOMBIE_NAMES[kind]).join('、')}</p>` : game.level > 10 ? `<p>${game.config.description}</p>` : ''}<p>带上六张植物卡。点击已选卡片可以放回，按选择顺序进入战斗。</p>
     <div id="chosen-seeds" class="chosen-seeds" aria-label="六个植物槽位"></div>
     <div class="seed-options">${game.config.seeds.map(kind => `<button class="seed-option" data-choice="${kind}" aria-label="选择${PLANTS[kind].name}" aria-pressed="false">${seedImage(kind)}<span>${PLANTS[kind].name}</span></button>`).join('')}</div>
-    <p id="choice-count" role="status"></p><button id="start" class="wood-button large" disabled>一起摇滚吧！</button><button class="text-button back-menu">${backLabel()}</button>`, `paper-panel chooser-panel${game.config.seeds.length > 10 ? ' night-chooser' : ''}`);
+    <p id="choice-count" role="status"></p><div class="chooser-actions"><button id="start" class="wood-button large" disabled>一起摇滚吧！</button><button class="text-button back-menu">${backLabel()}</button></div>`, `paper-panel chooser-panel${game.config.seeds.length > 10 ? ' night-chooser' : ''}`);
   const update = () => {
     $('#chosen-seeds').innerHTML = Array.from({ length: 6 }, (_, index) => {
       const kind = game.seeds[index];
