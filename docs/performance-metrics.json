@@ -1,0 +1,197 @@
+{
+  "baselineCommit": "d23606d",
+  "unit": "bytes",
+  "animationSets": [
+    {
+      "level": 1,
+      "before": {
+        "clips": 7,
+        "pages": 7,
+        "rgbaBytes": 31821824,
+        "downloadBytes": 7568522
+      },
+      "after": {
+        "clips": 7,
+        "pages": 7,
+        "rgbaBytes": 28589344,
+        "downloadBytes": 7485454
+      }
+    },
+    {
+      "level": 29,
+      "before": {
+        "clips": 50,
+        "pages": 51,
+        "rgbaBytes": 301891584,
+        "downloadBytes": 61277872
+      },
+      "after": {
+        "clips": 50,
+        "pages": 51,
+        "rgbaBytes": 274182496,
+        "downloadBytes": 60529086
+      }
+    },
+    {
+      "level": 49,
+      "before": {
+        "clips": 50,
+        "pages": 62,
+        "rgbaBytes": 475477824,
+        "downloadBytes": 103556806
+      },
+      "after": {
+        "clips": 50,
+        "pages": 62,
+        "rgbaBytes": 436830896,
+        "downloadBytes": 102348248
+      }
+    },
+    {
+      "level": 50,
+      "before": {
+        "clips": 81,
+        "pages": 94,
+        "rgbaBytes": 699999040,
+        "downloadBytes": 143688498
+      },
+      "after": {
+        "clips": 81,
+        "pages": 94,
+        "rgbaBytes": 638233184,
+        "downloadBytes": 142076460
+      }
+    }
+  ],
+  "previews": [
+    {
+      "scene": "day",
+      "sourceBytes": 1878120,
+      "previewBytes": 406968,
+      "size": [
+        800,
+        533
+      ]
+    },
+    {
+      "scene": "night",
+      "sourceBytes": 3449528,
+      "previewBytes": 324278,
+      "size": [
+        800,
+        343
+      ]
+    },
+    {
+      "scene": "pool",
+      "sourceBytes": 4226648,
+      "previewBytes": 398166,
+      "size": [
+        800,
+        343
+      ]
+    },
+    {
+      "scene": "fog",
+      "sourceBytes": 3444428,
+      "previewBytes": 324340,
+      "size": [
+        800,
+        343
+      ]
+    },
+    {
+      "scene": "roof",
+      "sourceBytes": 3128630,
+      "previewBytes": 293236,
+      "size": [
+        800,
+        343
+      ]
+    }
+  ],
+  "simulation": {
+    "before": [
+      {
+        "scene": "day",
+        "medianMs": 406.8898750000003,
+        "runs": [
+          496.622459,
+          437.021625,
+          409.944125,
+          406.3459169999999,
+          406.5473330000002,
+          406.8898750000003
+        ],
+        "hash": "0566553a6f2b1f7aad5791d3b67a66480e78fd9b887bee23e8558f4d898a6472"
+      },
+      {
+        "scene": "pool",
+        "medianMs": 489.31325000000015,
+        "runs": [
+          484.69912499999964,
+          487.796875,
+          516.7000410000005,
+          488.8092919999999,
+          489.31325000000015,
+          497.3171660000007
+        ],
+        "hash": "b9b4f53ab54f73290687b86f31a2993060911eb46aa1c562c6145267ea87a907"
+      },
+      {
+        "scene": "roof",
+        "medianMs": 504.2639169999993,
+        "runs": [
+          567.2916249999998,
+          503.0772500000003,
+          504.7387920000001,
+          503.02045799999996,
+          504.2639169999993,
+          504.97429100000045
+        ],
+        "hash": "7a8ec40bb85727bc232c2fb398c7fb66bc8f5d0f6fb3417308426a44bab94d5b"
+      }
+    ],
+    "after": [
+      {
+        "scene": "day",
+        "medianMs": 49.311041999999986,
+        "runs": [
+          144.991292,
+          89.37054200000003,
+          46.663208,
+          49.437666999999976,
+          49.311041999999986,
+          46.491625000000056
+        ],
+        "hash": "0566553a6f2b1f7aad5791d3b67a66480e78fd9b887bee23e8558f4d898a6472"
+      },
+      {
+        "scene": "pool",
+        "medianMs": 52.64829199999997,
+        "runs": [
+          52.334499999999935,
+          52.430000000000064,
+          52.64829199999997,
+          52.073541999999975,
+          53.83937500000002,
+          52.72837500000003
+        ],
+        "hash": "b9b4f53ab54f73290687b86f31a2993060911eb46aa1c562c6145267ea87a907"
+      },
+      {
+        "scene": "roof",
+        "medianMs": 51.267667000000074,
+        "runs": [
+          127.01829199999997,
+          51.602957999999944,
+          51.02679199999989,
+          51.606791999999814,
+          51.176124999999956,
+          51.267667000000074
+        ],
+        "hash": "7a8ec40bb85727bc232c2fb398c7fb66bc8f5d0f6fb3417308426a44bab94d5b"
+      }
+    ]
+  }
+}

@@ -1,3 +1,4 @@
+import { loadInBatches } from '../platform/load-queue';
 import { Assets, Container, Matrix, Sprite, Texture } from 'pixi.js';
 import type { Game } from '../game/model';
 type Pose = [number,number,number,number,number,number,number,number,string];
@@ -6,6 +7,7 @@ type Rig = { root: Container; definition: Definition; parts: Sprite[] };
 // Source transforms are interpolated at the display rate; simulation stays at 100 Hz.
 export class BossArt {
   readonly root = new Container();
+  private matrix = new Matrix();
   private textures: Record<string,Texture> = {};
   private rigs!: Record<'body'|'driver'|'fire'|'ice',Rig>;
   async load(progress: (done:number,total:number)=>void) {
@@ -13,7 +15,7 @@ export class BossArt {
     const definitions = await fetch(base+'tracks.json').then(r=>r.json()) as Record<'body'|'driver'|'fire'|'ice',Definition>;
     const names = [...new Set(Object.values(definitions).flatMap(d=>d.tracks.flatMap(t=>t.poses.map(p=>p[8]))))].filter(Boolean);
     let done=0;progress(done,names.length);
-    await Promise.all(names.map(async name=>{this.textures[name]=await Assets.load<Texture>({src:base+name+'.webp',data:{resolution:2}});progress(++done,names.length);}));
+    await loadInBatches(names,4,async name=>{this.textures[name]=await Assets.load<Texture>({src:base+name+'.webp',data:{resolution:2}});progress(++done,names.length);});
     this.rigs = Object.fromEntries(Object.entries(definitions).map(([key,definition])=>{
       const root = new Container();this.root.addChild(root);
       const parts=definition.tracks.map(()=>{const sprite=new Sprite();root.addChild(sprite);return sprite;});
@@ -27,9 +29,9 @@ export class BossArt {
     if(sprite.visible){
       sprite.texture=this.textures[a[8]];sprite.alpha=lerp(7);
       const sx=lerp(2),sy=lerp(3),kx=lerp(4)*Math.PI/180,ky=lerp(5)*Math.PI/180;
-      sprite.setFromMatrix(new Matrix(Math.cos(kx)*sx,Math.sin(kx)*sx,-Math.sin(ky)*sy,Math.cos(ky)*sy,lerp(0),lerp(1)));
+      sprite.setFromMatrix(this.matrix.set(Math.cos(kx)*sx,Math.sin(kx)*sx,-Math.sin(ky)*sy,Math.cos(ky)*sy,lerp(0),lerp(1)));
     }
-    return [lerp(0),lerp(1),a[6]];
+    if(rig.definition.tracks[index].name==='Boss_head2')return [lerp(0),lerp(1),a[6]];
   }
   private draw(rig: Rig,clip: string,ticks: number,fps: number,loop: boolean) {
     const [start,length]=rig.definition.clips[clip];

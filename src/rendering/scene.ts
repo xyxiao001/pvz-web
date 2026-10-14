@@ -1,3 +1,4 @@
+import { loadInBatches } from '../platform/load-queue';
 import { BossArt } from './boss';
 import 'pixi.js/prepare';
 import { Application, Assets, Container, Graphics, Rectangle, Sprite, Text, Texture } from 'pixi.js';
@@ -19,6 +20,8 @@ export class Scene {
   private actors = new Map<string, Actor>();
   private effects: Effect[] = [];
   private textures: Record<string, Texture> = {};
+  private textureFiles: string[] = [];
+  private resourceWork = Promise.resolve();
   private animationData?: Promise<{ animations: Record<string, ClipData> }>;
   private clips: Record<string, Clip> = {};
   private hover = new Graphics();
@@ -52,8 +55,13 @@ export class Scene {
     this.world.sortableChildren = true;
   }
 
-  async prepareBoard(game: Game, progress: (done: number, total: number) => void) {
-    if(this.bossArt){await this.bossArt.destroy();this.bossArt=undefined;}
+  prepareBoard(game: Game, progress: (done: number, total: number) => void) {
+    this.resourceWork = this.resourceWork.then(() => this.loadBoard(game, progress));
+    return this.resourceWork;
+  }
+
+  private async loadBoard(game: Game, progress: (done: number, total: number) => void) {
+    await this.clearResources();
     const files: Record<string, string> = { mower: 'original/mower.webp' };
     const environment = game.config.environment;
     if (environment === 'day') { files.yard = 'yard.webp'; files.lawn = 'lawn.webp'; }
@@ -78,14 +86,20 @@ export class Scene {
   private async prepareTextures(files: Record<string, string>, progress: (done: number, total: number) => void) {
     const pending = Object.entries(files).filter(([key]) => !this.textures[key]);
     let done = 0; progress(done, pending.length);
-    await Promise.all(pending.map(async ([key, file]) => {
+    await loadInBatches(pending, 4, async ([key, file]) => {
       this.textures[key] = await Assets.load<Texture>({ src: `${import.meta.env.BASE_URL}assets/runtime/${file}`, data: { resolution: 2 } });
+      this.textureFiles.push(`${import.meta.env.BASE_URL}assets/runtime/${file}`);
+      await this.app.renderer.prepare.upload(this.textures[key]);
       progress(++done, pending.length);
-    }));
-    await this.app.renderer.prepare.upload(pending.map(([key]) => this.textures[key]));
+    });
   }
 
-  async prepareActors(game: Game, progress: (done: number, total: number) => void) {
+  prepareActors(game: Game, progress: (done: number, total: number) => void) {
+    this.resourceWork = this.resourceWork.then(() => this.loadActors(game, progress));
+    return this.resourceWork;
+  }
+
+  private async loadActors(game: Game, progress: (done: number, total: number) => void) {
     await this.prepareTextures(combatTextureFiles(game), progress);
     if(game.boss&&!this.bossArt){this.bossArt=new BossArt();await this.bossArt.load(progress);this.bossArt.root.zIndex=590;this.world.addChild(this.bossArt.root);}
     const base = `${import.meta.env.BASE_URL}assets/runtime/`;
@@ -99,23 +113,48 @@ export class Scene {
       delete this.clips[name];
     }
     const names = [...needed].filter(name => !this.clips[name]);
-    let done = 0; progress(done, names.length);
-    await Promise.all(names.map(async name => {
+    const files = [...new Set(names.flatMap(name => animations[name].pages))];
+    const pages = new Map<string, Texture>();
+    let done = 0; progress(done, files.length);
+    await loadInBatches(files, 4, async file => {
+      const texture = await Assets.load<Texture>({ src: base + file, data: { resolution: 2 } });
+      pages.set(file, texture);
+      await this.app.renderer.prepare.upload(texture);
+      progress(++done, files.length);
+    });
+    for (const name of names) {
       const clip = animations[name];
-      const pages = await Promise.all(clip.pages.map(file => Assets.load<Texture>({src:base+file,data:{resolution:2}})));
       let duration = 0;
       this.clips[name] = {
         files: clip.pages.map(file => base + file),
         ends: clip.durations.map(ticks => duration += ticks), duration,
         anchors: clip.frames.map(frame => [(clip.anchor[0]-frame[5])/frame[3], (clip.anchor[1]-frame[6])/frame[4]]),
-        frames: clip.frames.map(([page,x,y,w,h]) => new Texture({source:pages[page].source,frame:new Rectangle(x,y,w,h)})),
+        frames: clip.frames.map(([page,x,y,w,h]) => new Texture({source:pages.get(clip.pages[page])!.source,frame:new Rectangle(x,y,w,h)})),
       };
-      await this.app.renderer.prepare.upload(pages);
-      progress(++done, names.length);
-    }));
+    }
   }
 
-  setLevel(game: Game) {
+  // Discard battle-owned CPU/GPU textures; HTTP/PWA caches still serve revisits.
+  release() {
+    this.app.stop();
+    this.resourceWork = this.resourceWork.then(() => this.clearResources());
+    return this.resourceWork;
+  }
+
+  private async clearResources() {
+    this.clearObjects();
+    if (this.bossArt) { await this.bossArt.destroy(); this.bossArt = undefined; }
+    const files = [...this.textureFiles];
+    for (const clip of Object.values(this.clips)) {
+      clip.frames.forEach(texture => texture.destroy()); files.push(...clip.files);
+    }
+    for (const texture of [...this.lawnTextures, ...this.fogFrames, ...this.vaseFrames]) texture.destroy();
+    this.lawnTextures = []; this.fogFrames = []; this.vaseFrames = [];
+    this.clips = {}; this.textures = {}; this.textureFiles = [];
+    await Assets.unload(files);
+  }
+
+  private clearObjects() {
     for (const child of this.app.stage.removeChildren()) {
       if (child !== this.world && child !== this.hover && child !== this.health && child !== this.fog && child !== this.weather) child.destroy({ children: true });
     }
@@ -123,6 +162,10 @@ export class Scene {
     for (const effect of this.effects) effect.node.destroy({ children: true });
     this.actors.clear(); this.effects = []; this.explosions = []; this.time = 0; this.healthKey = ''; this.hoverKey = '';
     this.hover.clear(); this.health.clear(); this.fog.removeChildren().forEach(child=>child.destroy()); this.fogKey = '';
+  }
+
+  setLevel(game: Game) {
+    this.clearObjects();
     const yard = new Sprite(game.boss ? this.textures.bossBackground : game.config.environment === 'day' ? this.textures.yard : this.textures[game.config.environment]); yard.x = -220;
     this.app.stage.addChild(yard);
     for (const row of game.config.environment === 'day' ? game.config.rows : []) {

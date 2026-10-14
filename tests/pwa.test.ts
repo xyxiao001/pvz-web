@@ -13,7 +13,7 @@ function worker(revision='a',online=true){
  return {
   requests:()=>requests,activated:()=>activated,
   install:async()=>{let pending:Promise<unknown>;callbacks.get('install')!({waitUntil:(p:Promise<unknown>)=>pending=p});await pending!;},
-  fetch:async(url:string,mode='cors')=>{let response:Promise<Response>|undefined;callbacks.get('fetch')!({request:{url,mode,method:'GET'},respondWith:(p:Promise<Response>)=>response=p});return response;},
+  fetch:async(url:string,mode='cors')=>{let response:Promise<Response>|undefined;callbacks.get('fetch')!({request:{url,mode,method:'GET'},waitUntil:(p:Promise<unknown>)=>p,respondWith:(p:Promise<Response>)=>response=p});return response;},
   message:async(action:string)=>{let pending:Promise<unknown>;const messages:any[]=[];callbacks.get('message')!({data:action,ports:[{postMessage:(m:unknown)=>messages.push(m)}],waitUntil:(p:Promise<unknown>)=>pending=p});await pending!;return messages;},
  };
 }
@@ -37,4 +37,15 @@ test('install manifest and HTML icons have their declared dimensions and relativ
  assert.equal(manifest.start_url,'./');assert.equal(manifest.scope,'./');assert.equal(manifest.display,'standalone');
  for(const icon of manifest.icons){const b=readFileSync(new URL(icon.src,root));assert.equal(`${b.readUInt32BE(16)}x${b.readUInt32BE(20)}`,icon.sizes);}
  const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');for(const path of ['icons/icon-16.png','icons/icon-32.png','icons/apple-touch-icon.png','icons/favicon.ico','manifest.webmanifest'])assert.ok(html.includes(path));
+});
+test('foreground resource response is not blocked by the offline-cache write', {timeout:1000}, async()=>{
+ const callbacks=new Map<string,(event:any)=>void>();let finish!:()=>void,background!:Promise<unknown>,response!:Promise<Response>;
+ const pending=new Promise<void>(resolve=>finish=resolve);let written=false;
+ const self={location:{href:'https://example.test/sw.js'},addEventListener:(type:string,fn:(event:any)=>void)=>callbacks.set(type,fn)};
+ const caches={open:async()=>({match:async()=>undefined,put:async()=>{await pending;written=true;}})};
+ runInNewContext(source,{self,caches,URL,ASSETS:{'art.webp':{revision:'a',size:3}},SHELL:[],RELEASE:'a',fetch:async()=>new Response('art')});
+ callbacks.get('fetch')!({request:{url:'https://example.test/art.webp',mode:'cors',method:'GET'},respondWith:(p:Promise<Response>)=>response=p,waitUntil:(p:Promise<unknown>)=>background=p});
+ try { assert.equal(await (await response).text(),'art');assert.equal(written,false); }
+ finally { finish(); }
+ await background;assert.equal(written,true);
 });

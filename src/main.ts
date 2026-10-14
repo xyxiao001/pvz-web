@@ -62,7 +62,7 @@ let lastPhase = ''; let messageUntil = 0;
 const backLabel = () => game.scenario === 'endless' && game.phase !== 'lost' ? '保存退出' : '返回主菜单';
 
 function showMenu() {
-  game.pause(); screen = 'menu'; clock.reset(); scene?.app.stop();
+  game.pause(); screen = 'menu'; clock.reset(); if (scene) void scene.release();
   $('#menu').hidden = false; $('#battle-hud').hidden = true; overlay.hidden = true;
   updateMusic();
 }
@@ -224,7 +224,7 @@ $('#levels').onclick = levelPicker;
 $('#endless').onclick = () => {
   panel(`<span class="kicker">生存 · 无尽</span><h2>选择无尽场景</h2><p>每轮 20 波，轮间重选六张植物卡。<br/>暂停菜单可保存退出；每个场景分别保留一份进度。</p><div class="survival-scenes">${SURVIVAL_SCENES.map(scene => {
     const saved = loadSurvival(scene);
-    return `<article><img loading="lazy" src="${asset(scene === 'day' ? 'menu.png' : `${scene}.png`)}" alt=""/><h3>${SCENE_NAMES[scene]}</h3><p>${scene==='day'?'五行草坪 · 天空阳光':scene==='night'?'五行夜晚 · 墓碑与蘑菇':scene==='pool'?'六行泳池 · 睡莲与水路':scene==='roof'?'五行屋顶 · 花盆与投手':'六行迷雾 · 无天空阳光 · 路灯花照明'}</p>${saved ? `<button class="wood-button" data-continue="${scene}">继续第 ${saved.game.survivalStage+1} 轮</button>` : ''}<button class="text-button" data-survival="${scene}">${saved ? '新开一局（替换此存档）' : '开始挑战'}</button></article>`;
+    return `<article><img loading="lazy" src="${import.meta.env.BASE_URL}assets/runtime/previews/${scene}.webp" alt=""/><h3>${SCENE_NAMES[scene]}</h3><p>${scene==='day'?'五行草坪 · 天空阳光':scene==='night'?'五行夜晚 · 墓碑与蘑菇':scene==='pool'?'六行泳池 · 睡莲与水路':scene==='roof'?'五行屋顶 · 花盆与投手':'六行迷雾 · 无天空阳光 · 路灯花照明'}</p>${saved ? `<button class="wood-button" data-continue="${scene}">继续第 ${saved.game.survivalStage+1} 轮</button>` : ''}<button class="text-button" data-survival="${scene}">${saved ? '新开一局（替换此存档）' : '开始挑战'}</button></article>`;
   }).join('')}</div><p>可使用已接入的后期植物；后续轮次随机加入巨人、投石车、气球等敌人，按场景分配。</p><button id="close" class="wood-button">返回主菜单</button>`, 'paper-panel wide-panel survival-panel');
   document.querySelectorAll<HTMLButtonElement>('[data-survival]').forEach(button => button.onclick = () => { const scene = button.dataset.survival as SurvivalScene; clearSurvival(scene); setLevel(9,'endless',scene); });
   document.querySelectorAll<HTMLButtonElement>('[data-continue]').forEach(button => button.onclick = () => { const saved=loadSurvival(button.dataset.continue as SurvivalScene)!; game=Game.restore(saved.game); clock.speed=saved.speed; mountGame(); });

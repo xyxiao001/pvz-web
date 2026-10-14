@@ -579,9 +579,15 @@ export class Game {
         if (--zombie.biteIn <= 0) { this.damageZombie(rival, 4, true); rival.hitAt = this.ticks; zombie.biteIn = zombie.chillIn > 0 ? 8 : 4; }
         continue;
       }
-      const food = !zombie.hypnotized && [...this.plants].sort((a,b) => Number(b.kind==='pumpkin')-Number(a.kind==='pumpkin') || Number(['lilypad','flowerpot'].includes(a.kind))-Number(['lilypad','flowerpot'].includes(b.kind))).find(plant => plant.kind !== 'tanglekelp' && plant.kind !== 'spikeweed' && plant.health > 0 && plant.row === zombie.row
-        && (zombie.x - cellX(plant.column))*(zombie.backwards?-1:1) < 35 && (zombie.x - cellX(plant.column))*(zombie.backwards?-1:1) > -30
-        && !this.ladders.some(l=>l.column===plant.column&&l.row===plant.row) );
+      // Same stable priority as the former sort: pumpkin, ordinary plant, base.
+      let food: Plant | undefined, foodPriority = 3;
+      if (!zombie.hypnotized) for (const plant of this.plants) {
+        if (plant.kind === 'tanglekelp' || plant.kind === 'spikeweed' || plant.health <= 0 || plant.row !== zombie.row) continue;
+        const distance = (zombie.x - cellX(plant.column)) * (zombie.backwards ? -1 : 1);
+        if (distance >= 35 || distance <= -30 || this.ladders.some(l => l.column === plant.column && l.row === plant.row)) continue;
+        const priority = plant.kind === 'pumpkin' ? 0 : plant.kind === 'lilypad' || plant.kind === 'flowerpot' ? 2 : 1;
+        if (priority < foodPriority) { food = plant; foodPriority = priority; if (priority === 0) break; }
+      }
       zombie.eating = !!food;
       if (food) {
         if(zombie.kind==='ladder'&&zombie.shield>0&&['wallnut','tallnut','pumpkin'].includes(food.kind)){zombie.ladderIn=100;zombie.x=cellX(food.column)+35;continue;}
@@ -614,8 +620,11 @@ export class Game {
         if (torch) { pea.torch = torch.column; if (pea.ice) pea.ice = false; else pea.fire = true; }
       }
       if (pea.puff && !pea.longRange && pea.age >= 75) { pea.x = 1000; continue; }
-      const target = this.zombies.filter(zombie => !zombie.hypnotized && !!pea.high === !!this.flying(zombie) && !this.submerged(zombie) && zombie.health > 0 && zombie.row === pea.row
-        && zombie.vaultIn === 0 && zombie.riseIn === 0 && Math.min(oldX,pea.x) <= zombie.x + 18 && Math.max(oldX,pea.x) >= zombie.x - 18).sort((a, b) => a.x - b.x)[0];
+      let target: Zombie | undefined;
+      const left = Math.min(oldX, pea.x), right = Math.max(oldX, pea.x);
+      for (const zombie of this.zombies) if (!zombie.hypnotized && !!pea.high === !!this.flying(zombie) && !this.submerged(zombie) && zombie.health > 0 && zombie.row === pea.row
+        && zombie.vaultIn === 0 && zombie.riseIn === 0 && left <= zombie.x + 18 && right >= zombie.x - 18
+        && (!target || zombie.x < target.x)) target = zombie;
       if (target) {
         const reachesBody = target.shield < 20;
         if (pea.high && target.flying) { target.flying = false; target.popIn = 50; }
