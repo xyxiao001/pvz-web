@@ -1,0 +1,21 @@
+{
+  "copiedFrom": {
+    "repository": "https://github.com/ruslan831/PlantsVsZombies-decompilation",
+    "commit": "325b2229a7225d73870bb69322eefcda3a45bf8d",
+    "files": {
+      "public/assets/lawn.jpg": "images/background1.jpg",
+      "public/assets/yard.jpg": "images/background1unsodded.jpg",
+      "public/assets/mower.png": "images/Store_LawnMower.png",
+      "public/assets/pea.png": "images/ProjectilePea.png"
+    }
+  },
+  "authoredForThisPrototype": [
+    "public/assets/peashooter.svg",
+    "public/assets/sunflower.svg",
+    "public/assets/zombie.svg",
+    "public/assets/sun.svg"
+  ],
+  "animation": "Original PNG frame atlas playback; see original-assets.json. No Reanim parser.",
+  "audio": "Original MP3 effects plus synthesized shoot/hit cues; no background music.",
+  "note": "Historical first-iteration manifest. The SVG actors and Store_LawnMower sprite below are retained but no longer used by the runtime. Current frame animations, HUD, menu and MP3 provenance are in original-assets.json."
+}

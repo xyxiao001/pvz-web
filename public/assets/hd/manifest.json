@@ -1,0 +1,535 @@
+{
+  "scale": 2,
+  "model": "realesr-animevideov3-x2",
+  "mode": "all",
+  "engineSource": "https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.5.0",
+  "engineSha256": "c1c35d92079085de96b9d547fd7e4464bc8a2e9ccf28d7b8c712d72ade91b7cc",
+  "modelSha256": "548a36f9c3f4ab8da56cd3b13badf23968bee207b396dad14d04b830e5f2ab2d",
+  "sourceAnimationSha256": "b9821a34afb7da24b0980aeef4e2d4e1c930c77bfb75c99f2837767c64b158c1",
+  "sourceAtlasSha256": [
+    "d479dea7851ddf8aa11bc2ce430eefdbe135628d5f6c03f000607a1a1d48abc0",
+    "701a417347c5bbc8e4d8de46cb2ca5d348bc2022be0978bb12386f9c5fdb07d6",
+    "03870dcf7920d9d4c3a785679c91be4491ebe04dda43a5aeaaa80a8e33d025fe",
+    "90b7c972d83e03ba0a031f42def934c6dc89cce46b717fda58c9074cb1a29c51",
+    "baeb7a7b34b5774c768b28bf3d41b99b98784bb665601089c770ec1552a40191",
+    "0229b2a79d7ca53197256e27f1cdec46c10484f4693243bb3ddc535e21a478a7"
+  ],
+  "staticSources": {
+    "original/adventure-hover.png": {
+      "sha256": "c1699b7546b4c83e4f384d6274ee1e21527d97b8e02cb72dee09065b23d0e282",
+      "size": [
+        165,
+        70
+      ]
+    },
+    "original/adventure.png": {
+      "sha256": "9c5fe56e0bb873869700bf454f999a764cb194127adbe234414bc64b4ccbcf9f",
+      "size": [
+        166,
+        70
+      ]
+    },
+    "original/bowling-stripe.png": {
+      "sha256": "517b3250fe22e0fc6ec84371b0b82cb6765220cc57c4389810ebb4fe9b4af44d",
+      "size": [
+        22,
+        502
+      ]
+    },
+    "original/button.png": {
+      "sha256": "c46ba9312cfb6e7d5fd0e673ae665de9670e4bf03f9ee1f90f0985d8f704001d",
+      "size": [
+        112,
+        46
+      ]
+    },
+    "original/card-cherrybomb.png": {
+      "sha256": "80d7d927ac5baf1504313abf2d2839de1752dda26955d77b835ce5969b83320c",
+      "size": [
+        64,
+        90
+      ]
+    },
+    "original/card-chomper.png": {
+      "sha256": "8a3bce5bcb4ba84b25ba73631c22059d70c6ea5604df4c32ca596e1312b77af1",
+      "size": [
+        64,
+        89
+      ]
+    },
+    "original/card-doomshroom.png": {
+      "sha256": "7832c69b82bec05b2652b10deba2fa68967e8024cf61e35cc7f7c1a1b632ce87",
+      "size": [
+        100,
+        120
+      ]
+    },
+    "original/card-hypnoshroom.png": {
+      "sha256": "1803b3f880dc99617febac0b94ee200071c2141df872e0d3dcf7ab395fddadef",
+      "size": [
+        64,
+        89
+      ]
+    },
+    "original/card-iceshroom.png": {
+      "sha256": "f52211ba6e460f0af7f8e4d9fde5643370202098f0c8bfb50e6eb75409a69a4e",
+      "size": [
+        100,
+        120
+      ]
+    },
+    "original/card-lilypad.png": {
+      "sha256": "d6b7a70457b80bdc9f89bb7b3808edc38e5bf8baa9eb782e8b1c563a6698805c",
+      "size": [
+        100,
+        120
+      ]
+    },
+    "original/card-peashooter.png": {
+      "sha256": "efc38f6f6793177138e752523a77bbba93fd43e20b9186451f8c837686584985",
+      "size": [
+        65,
+        90
+      ]
+    },
+    "original/card-plantern.png": {
+      "sha256": "1b2a8ee2425ef3bb0dee058ee6f70f327a0df71ed751a42301edff1481df6a6a",
+      "size": [
+        100,
+        120
+      ]
+    },
+    "original/card-potatomine.png": {
+      "sha256": "63533d7cabf121baddeb8c68fcc0f84d0f673b2d5ced1dc5b211330cc96f0094",
+      "size": [
+        64,
+        89
+      ]
+    },
+    "original/card-puffshroom.png": {
+      "sha256": "5dc0ed9e9d64323762c23b09fa211049a0b7023f1842a4debd4faeb788f1191a",
+      "size": [
+        64,
+        89
+      ]
+    },
+    "original/card-repeater.png": {
+      "sha256": "5f73b99d548acf389d4e95bef9c91a8b9edd6f7ea230d844858aac55ef577269",
+      "size": [
+        64,
+        89
+      ]
+    },
+    "original/card-scaredyshroom.png": {
+      "sha256": "f27b724d90e11c106e5da780f27dcfc7afa0a6cbfe569167caf523d659238008",
+      "size": [
+        64,
+        89
+      ]
+    },
+    "original/card-snowpea.png": {
+      "sha256": "ca03b2fcd755dfd4e52f3e4757572e2aadd000380e6d9f03cef1f2e400f73d2a",
+      "size": [
+        64,
+        90
+      ]
+    },
+    "original/card-squash.png": {
+      "sha256": "96f3a9a6b586f8ce93eca64673d0f067821baea4c7242f1a0006eee97389109e",
+      "size": [
+        100,
+        120
+      ]
+    },
+    "original/card-sunflower.png": {
+      "sha256": "aa48fdb2f65e1ff2f94e61e6f2a063c41935cfeeae574f576754d9b8f9bb7ff9",
+      "size": [
+        64,
+        89
+      ]
+    },
+    "original/card-sunshroom.png": {
+      "sha256": "49a973c93dc1bde3e5e8a8a842a5ea6df9db26d8da87a3167389a5bd280540e0",
+      "size": [
+        64,
+        89
+      ]
+    },
+    "original/card-threepeater.png": {
+      "sha256": "bf7c45e13d8120f551fa3dcc897675db58449b42815da110ea95c43207037538",
+      "size": [
+        100,
+        120
+      ]
+    },
+    "original/card-wallnut.png": {
+      "sha256": "b077eaa1afdc13bb3448b90b0809f1a1bdd75d64de14457099fb3069f6b31ce2",
+      "size": [
+        64,
+        90
+      ]
+    },
+    "original/cherrybomb.png": {
+      "sha256": "e82e85f94383c6406975990cc47bcd75a792061b29b42ff1ab87d9f794d4dd18",
+      "size": [
+        112,
+        81
+      ]
+    },
+    "original/chomper.png": {
+      "sha256": "a7fc6472ec0b00f06a6f056a1d9a313bab45abc0eb9079774cf8b18e485b2d33",
+      "size": [
+        130,
+        114
+      ]
+    },
+    "original/conveyor-back.png": {
+      "sha256": "7ce8f28f45ba83afa463db197c3f7e9b8f81d14a875c4182988a9c5dd42c34a8",
+      "size": [
+        516,
+        86
+      ]
+    },
+    "original/conveyor.png": {
+      "sha256": "b945135bd2a18f301f4c42c6d6724fbf797e087286948b987890c0e5a6724611",
+      "size": [
+        502,
+        96
+      ]
+    },
+    "original/crater.png": {
+      "sha256": "2b5ed9c625f4e42f409f1c3920722d9f9ab853db5523cba6d57f5782b7001d52",
+      "size": [
+        180,
+        61
+      ]
+    },
+    "original/dialog.png": {
+      "sha256": "ca54d9c9ae5004a0dd4010eef8fd9cdce6d9b45218e9c12c049ef21ccebb1084",
+      "size": [
+        412,
+        483
+      ]
+    },
+    "original/doomshroom.png": {
+      "sha256": "f3c0ce3bcb73c367f75fbaa387d22694aaeb2c82dc78a2a066c05dd1f97975e3",
+      "size": [
+        102,
+        91
+      ]
+    },
+    "original/explodenut.png": {
+      "sha256": "1bc6c40ffe578ac3108d1ef10213e700819f3489bf0bed405d0a10d2a3266d5a",
+      "size": [
+        71,
+        71
+      ]
+    },
+    "original/fog-cloud.png": {
+      "sha256": "5e2111751269afc7cafa4edbc37c229f5575234449bb787d57093e77f39a63bf",
+      "size": [
+        1680,
+        190
+      ]
+    },
+    "original/fog.png": {
+      "sha256": "12150b73d1d37e85163bc4c9420dd6583789cfedf99ccc319608b11dc7c094fe",
+      "size": [
+        1400,
+        600
+      ]
+    },
+    "original/fumeshroom.png": {
+      "sha256": "9532f01c147990aca47f86d5bee815ea6ce15ad34cffc1cde0ccc06fc730b1b6",
+      "size": [
+        100,
+        88
+      ]
+    },
+    "original/grave.png": {
+      "sha256": "4255dd04230c48535a2fb9999856891e44059143a0230b7b58507ba827174d61",
+      "size": [
+        88,
+        100
+      ]
+    },
+    "original/gravebuster.png": {
+      "sha256": "11e86a4d8d225e368fd93f3d6242150bdaaa4488a611a3ca4220cdfe1fbe9418",
+      "size": [
+        99,
+        106
+      ]
+    },
+    "original/hammer.png": {
+      "sha256": "d1e03c845a2a50393b299628e92d7212261040e76d2414dc60e91c404f87e5fa",
+      "size": [
+        49,
+        59
+      ]
+    },
+    "original/hypnoshroom.png": {
+      "sha256": "e3dfbf8b3ac8c97cda9b82bcb4786bdbdb4eddf027c9819d50cf57cd5e41aafa",
+      "size": [
+        68,
+        76
+      ]
+    },
+    "original/iceshroom.png": {
+      "sha256": "398ca764e8b58fb6d8d2b40e6fafc2744cb0a24037e81208b136757cb025e1db",
+      "size": [
+        83,
+        75
+      ]
+    },
+    "original/lilypad.png": {
+      "sha256": "e9155689a534c76c3591996f94e1ccedce800440e0e81da35c2e9e043c1ceb5b",
+      "size": [
+        79,
+        58
+      ]
+    },
+    "original/logo.png": {
+      "sha256": "02d7f75a70c4e9487e0262910145d6e23fe672533faf5fcfe963b542c1a8edcb",
+      "size": [
+        700,
+        116
+      ]
+    },
+    "original/menu.png": {
+      "sha256": "5248352ed9f1db6d4b76af27f914b7ce1e4e11d9a8237dc89b07116c7385a8af",
+      "size": [
+        900,
+        600
+      ]
+    },
+    "original/meter-empty.png": {
+      "sha256": "5726c1da4723d3a2f015c7735bfb3850c1c904fcc4a2891403f94f9f5e3a7a68",
+      "size": [
+        158,
+        24
+      ]
+    },
+    "original/meter-flag.png": {
+      "sha256": "98c2353153702114f6cbec7da468f950333903529bceb65c1ca1c89b40acbad3",
+      "size": [
+        20,
+        18
+      ]
+    },
+    "original/meter-full.png": {
+      "sha256": "5990ae0587c6a22526eaf59fbcf35f66f8a6947ec6f71faf9ebd60d44b1e95b8",
+      "size": [
+        158,
+        24
+      ]
+    },
+    "original/meter-head.png": {
+      "sha256": "5046a75c8a1ae190bf5fcee8bcd0942fdb3fafdbc85b56b15e03d91c58e0198b",
+      "size": [
+        24,
+        24
+      ]
+    },
+    "original/mower.png": {
+      "sha256": "7d4247034277ba69809e45a0b40ea662520dc2326c43d5dac1cc257feecd6200",
+      "size": [
+        70,
+        57
+      ]
+    },
+    "original/peashooter.png": {
+      "sha256": "60dac69e72ffba38dcd45bc93bb942062f32852673edca64ec75a2fdb832a22d",
+      "size": [
+        71,
+        71
+      ]
+    },
+    "original/plantern.png": {
+      "sha256": "7e9b98e240cb0b6630c3df68f0d95056e07972bad2d2d4d5a8c8a69dd279806e",
+      "size": [
+        81,
+        88
+      ]
+    },
+    "original/pool-cleaner.png": {
+      "sha256": "80b096a47ca112eff4b901e4de69fc275da28f2199939cef82c144f327ee9ce3",
+      "size": [
+        47,
+        64
+      ]
+    },
+    "original/pool.png": {
+      "sha256": "36f83410328de848d3676556b20a01751356208807969d163dd9e8474cb8d99a",
+      "size": [
+        1400,
+        600
+      ]
+    },
+    "original/potatomine.png": {
+      "sha256": "4d562e90cac467a0cdaf1fec1221916772b3c5e5d2a06e3d3d33d58fa847ea5e",
+      "size": [
+        75,
+        55
+      ]
+    },
+    "original/puff.png": {
+      "sha256": "feb7c6d36c90d68cb1364c9b7d9f9bff27f5f90957bc09902769e5bbddaddf77",
+      "size": [
+        32,
+        27
+      ]
+    },
+    "original/puffshroom.png": {
+      "sha256": "34b942b95e19bd75c13e825be9a56da6ee28be00f22bdef1f98a04b54ab3e7be",
+      "size": [
+        40,
+        66
+      ]
+    },
+    "original/repeater.png": {
+      "sha256": "a79916360aa15d8bbf0fb678f9b01b232a1e1a62601718a95052a1580f282017",
+      "size": [
+        73,
+        71
+      ]
+    },
+    "original/scaredyshroom.png": {
+      "sha256": "6fcc7a14d464ef8dcdf2cebd693b257ab8e0be4e54f5a5ce90e077cca6d1b430",
+      "size": [
+        57,
+        81
+      ]
+    },
+    "original/seed-packet.png": {
+      "sha256": "b7363c278458446477fe2cd68e6da8aec5fc79daac0d99db0053b028cf68675c",
+      "size": [
+        100,
+        140
+      ]
+    },
+    "original/seedbank.png": {
+      "sha256": "6313852cc2b66226a3f112f3077639a75b3714a4f6a6da9c2d4c45a4b55e7fdc",
+      "size": [
+        446,
+        87
+      ]
+    },
+    "original/shovel.png": {
+      "sha256": "42c6b93d91a1d4ace901413c0306d9c22d644ec177a7d9189f420ab94f676700",
+      "size": [
+        80,
+        80
+      ]
+    },
+    "original/shovelbank.png": {
+      "sha256": "b374366cb607966ab11329fddea3debf695eb60bb3f387b67d918b73748f09dd",
+      "size": [
+        70,
+        72
+      ]
+    },
+    "original/snow-pea.png": {
+      "sha256": "634822e425bdc2f71fdfc10f7914a5c841f3d32839242da31995ae149ddce547",
+      "size": [
+        28,
+        28
+      ]
+    },
+    "original/snowpea.png": {
+      "sha256": "7e906e4548de0b06f5f4cfd01cf88f41d14a2d5670c8da8a4fa156918e9298d0",
+      "size": [
+        71,
+        71
+      ]
+    },
+    "original/squash.png": {
+      "sha256": "2d76354b74a6c7969c2ddc4e6641c3d84724953903df150f4e6466b46c104d67",
+      "size": [
+        68,
+        82
+      ]
+    },
+    "original/sun.png": {
+      "sha256": "1cf157c558f7ddb604f409c07db2204750b7c7488c85f8f22fcac03ca8713792",
+      "size": [
+        78,
+        78
+      ]
+    },
+    "original/sunflower.png": {
+      "sha256": "5ef8779615ad5d7d967e9b49d648919c58fab87cf3ce9b947e8374ddfb2b3324",
+      "size": [
+        73,
+        74
+      ]
+    },
+    "original/sunshroom.png": {
+      "sha256": "fd49132b648561c871dff73e170a00ce1f96d395587b0e27292dce7d490b1220",
+      "size": [
+        59,
+        61
+      ]
+    },
+    "original/tanglekelp.png": {
+      "sha256": "0a0719774a2329acb291644f9679bfa082d204d897ad72b48f6382e4cabbf6c3",
+      "size": [
+        90,
+        72
+      ]
+    },
+    "original/threepeater.png": {
+      "sha256": "7e6f26e6083e35cb9cc741690b0df996947eae2c6c0723eba618caea6511d554",
+      "size": [
+        73,
+        80
+      ]
+    },
+    "original/trophy.png": {
+      "sha256": "97261c8f6b50e956f0544a11c84993f5fddb3c3ccc4736955f8916bb86ff88f2",
+      "size": [
+        314,
+        269
+      ]
+    },
+    "original/wallnut.png": {
+      "sha256": "7ec64625662c7841889739a0c9c7417fba478b7a702ca3ea917879de44f69d61",
+      "size": [
+        65,
+        73
+      ]
+    },
+    "yard.png": {
+      "sha256": "a2b6433be7e2b62f152d7413f05ea58d67fe8d182c0015a824754e9b63d8d286",
+      "size": [
+        1400,
+        600
+      ]
+    },
+    "lawn.png": {
+      "sha256": "ad2100045025a71343277d9ab13bbdb69126132f8482e14987ab2c4f4729dbbc",
+      "size": [
+        1400,
+        600
+      ]
+    },
+    "pea.png": {
+      "sha256": "24a9be5e2db62312ba359b15c367b8a8fb6d1764e4af3a221d178622bea7caa9",
+      "size": [
+        28,
+        28
+      ]
+    },
+    "original/night.png": {
+      "sha256": "7eb66feedd21ce9b459a2ac1ef215fcd128dbb53ab35e5d90b1b8d81f758db54",
+      "size": [
+        1400,
+        600
+      ]
+    }
+  },
+  "frames": 2425,
+  "uniqueFrames": 2308,
+  "atlasPages": 6,
+  "atlasBaseRgbaMiB": 384,
+  "outputBytes": 140299057
+}

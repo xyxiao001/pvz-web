@@ -1,0 +1,682 @@
+{
+  "source": {
+    "repository": "https://github.com/wszqkzqk/PvZ-Portable",
+    "commit": "141c1476dd462ac3526f796e303177616f4de6bc",
+    "files": {
+      "src/Lawn/Plant.cpp": "da657e9d1bd0e0424675fa9bed3975e23757c688081bb366a51595a5761aae6f",
+      "src/Lawn/Coin.cpp": "907930052a3b4f91c1f91e930b96ee269c8f8941212e744f3b5e3bf97e8653f1",
+      "src/Lawn/Projectile.cpp": "833b74d3c70bdbe5c722736238410693517c9206f91b0f1e5bdcd8c8d0b585f6",
+      "src/Lawn/Challenge.cpp": "4171495aefd7d00bd992144574850b77e0162e473cd01a468e942a4295c63a1f",
+      "src/Lawn/Challenge.h": "9b8b44507d394e131decb4df7d443b691d955d8c7af35751279f5c4e530365e7",
+      "src/Lawn/Zombie.cpp": "d635226d147116e69d90b1eb8112b4af1ab2e7de82faa32dad471d2f0da7b08b",
+      "src/Lawn/Board.cpp": "466a2f572aec808d15a43ba071a0d7512f57afbfa8b7b62da1ed1454a1cb538a"
+    }
+  },
+  "waveCounts": [
+    4,
+    6,
+    8,
+    10,
+    8,
+    10,
+    20,
+    10,
+    20,
+    20,
+    10,
+    20,
+    10,
+    20,
+    8,
+    10,
+    20,
+    10,
+    20,
+    20,
+    10,
+    20,
+    20,
+    30,
+    20
+  ],
+  "zombies": {
+    "normal": {
+      "value": 1,
+      "startingLevel": 1,
+      "firstAllowedWave": 1,
+      "weight": 4000,
+      "allowedLevels": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "flag": {
+      "value": 1,
+      "startingLevel": 1,
+      "firstAllowedWave": 1,
+      "weight": 0,
+      "allowedLevels": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "cone": {
+      "value": 2,
+      "startingLevel": 3,
+      "firstAllowedWave": 1,
+      "weight": 4000,
+      "allowedLevels": [
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "pole": {
+      "value": 2,
+      "startingLevel": 6,
+      "firstAllowedWave": 5,
+      "weight": 2000,
+      "allowedLevels": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ]
+    },
+    "bucket": {
+      "value": 4,
+      "startingLevel": 8,
+      "firstAllowedWave": 1,
+      "weight": 3000,
+      "allowedLevels": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0
+      ]
+    },
+    "newspaper": {
+      "value": 2,
+      "startingLevel": 11,
+      "firstAllowedWave": 1,
+      "weight": 1000,
+      "allowedLevels": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0
+      ]
+    },
+    "door": {
+      "value": 4,
+      "startingLevel": 13,
+      "firstAllowedWave": 5,
+      "weight": 3500,
+      "allowedLevels": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "football": {
+      "value": 7,
+      "startingLevel": 16,
+      "firstAllowedWave": 5,
+      "weight": 2000,
+      "allowedLevels": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    "dancer": {
+      "value": 5,
+      "startingLevel": 18,
+      "firstAllowedWave": 5,
+      "weight": 1000,
+      "allowedLevels": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "backup": {
+      "value": 1,
+      "startingLevel": 18,
+      "firstAllowedWave": 1,
+      "weight": 0,
+      "allowedLevels": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "ducky": {
+      "value": 1,
+      "startingLevel": 21,
+      "firstAllowedWave": 5,
+      "weight": 0,
+      "allowedLevels": [
+        0
+      ]
+    },
+    "snorkel": {
+      "value": 3,
+      "startingLevel": 23,
+      "firstAllowedWave": 10,
+      "weight": 2000,
+      "allowedLevels": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1
+      ]
+    }
+  },
+  "conveyorTen": [
+    {
+      "kind": "peashooter",
+      "weight": 20
+    },
+    {
+      "kind": "cherrybomb",
+      "weight": 20
+    },
+    {
+      "kind": "wallnut",
+      "weight": 15
+    },
+    {
+      "kind": "repeater",
+      "weight": 20
+    },
+    {
+      "kind": "snowpea",
+      "weight": 10
+    },
+    {
+      "kind": "chomper",
+      "weight": 5
+    },
+    {
+      "kind": "potatomine",
+      "weight": 10
+    }
+  ],
+  "conveyorTwenty": [
+    {
+      "kind": "gravebuster",
+      "weight": 20
+    },
+    {
+      "kind": "iceshroom",
+      "weight": 15
+    },
+    {
+      "kind": "doomshroom",
+      "weight": 15
+    },
+    {
+      "kind": "hypnoshroom",
+      "weight": 10
+    },
+    {
+      "kind": "scaredyshroom",
+      "weight": 15
+    },
+    {
+      "kind": "fumeshroom",
+      "weight": 15
+    },
+    {
+      "kind": "puffshroom",
+      "weight": 10
+    }
+  ],
+  "conveyorTwentyFive": [
+    {
+      "kind": "lilypad",
+      "weight": 25
+    },
+    {
+      "kind": "wallnut",
+      "weight": 15
+    },
+    {
+      "kind": "peashooter",
+      "weight": 25
+    },
+    {
+      "kind": "cherrybomb",
+      "weight": 35
+    }
+  ],
+  "graveColumns": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      [
+        6,
+        1
+      ],
+      [
+        7,
+        1
+      ],
+      [
+        8,
+        2
+      ]
+    ],
+    [
+      [
+        6,
+        1
+      ],
+      [
+        7,
+        1
+      ],
+      [
+        8,
+        2
+      ]
+    ],
+    [
+      [
+        6,
+        1
+      ],
+      [
+        7,
+        1
+      ],
+      [
+        8,
+        2
+      ]
+    ],
+    [
+      [
+        5,
+        1
+      ],
+      [
+        6,
+        1
+      ],
+      [
+        7,
+        2
+      ],
+      [
+        8,
+        3
+      ]
+    ],
+    [],
+    [
+      [
+        5,
+        1
+      ],
+      [
+        6,
+        1
+      ],
+      [
+        7,
+        2
+      ],
+      [
+        8,
+        3
+      ]
+    ],
+    [
+      [
+        4,
+        1
+      ],
+      [
+        5,
+        2
+      ],
+      [
+        6,
+        2
+      ],
+      [
+        7,
+        3
+      ],
+      [
+        8,
+        3
+      ]
+    ],
+    [
+      [
+        4,
+        1
+      ],
+      [
+        5,
+        2
+      ],
+      [
+        6,
+        2
+      ],
+      [
+        7,
+        3
+      ],
+      [
+        8,
+        3
+      ]
+    ],
+    [
+      [
+        4,
+        1
+      ],
+      [
+        5,
+        2
+      ],
+      [
+        6,
+        2
+      ],
+      [
+        7,
+        3
+      ],
+      [
+        8,
+        3
+      ]
+    ],
+    [
+      [
+        3,
+        1
+      ],
+      [
+        4,
+        2
+      ],
+      [
+        5,
+        2
+      ],
+      [
+        6,
+        2
+      ],
+      [
+        7,
+        3
+      ],
+      [
+        8,
+        3
+      ]
+    ],
+    [],
+    [],
+    [],
+    [],
+    []
+  ]
+}
