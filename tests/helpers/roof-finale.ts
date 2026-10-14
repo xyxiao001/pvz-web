@@ -9,7 +9,7 @@ export function playRoofFinale(level:LevelId,seed:number,observe?:(g:Game)=>void
  const place=(kind:PlantKind,c:number,r:number)=>{
   if(['cabbagepult','melonpult','sunflower'].includes(kind)&&g.zombies.some(z=>z.health>0&&z.x<350&&!z.bungee)&&g.sun<200)return false;
   if(kind==='melonpult'&&g.zombies.some(z=>z.kind==='gargantuar'&&z.health>0)&&g.sun<500)return false;
-  if(!g.seeds.includes(kind)||g.cooldowns[kind]>0||occupied(c,r))return false;
+  if(!g.seeds.includes(kind)||g.cooldown(kind)>0||occupied(c,r))return false;
   if(!g.plants.some(p=>p.row===r&&p.column===c&&p.kind==='flowerpot')){if(g.canPlant('flowerpot',c,r)){g.cancelSelection();g.select('flowerpot');g.plant(c,r);}return false;}
   if(!g.canPlant(kind,c,r))return false;g.cancelSelection();g.select(kind);return g.plant(c,r);
  };

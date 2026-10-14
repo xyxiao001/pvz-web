@@ -9,13 +9,20 @@ export function survivalRoster(stage: number, random: () => number, scene: Survi
   if (stage === 0) return ['normal', 'cone', 'bucket'];
   const basic: ZombieKind = random() < .2 ? 'newspaper' : 'cone';
   const roster: ZombieKind[] = ['normal', basic];
-  const migrated: ZombieKind[] = ['cone','pole','bucket','newspaper','door','football','dancer','snorkel','zomboni','dolphin','jack','balloon','digger','pogo','bungee','ladder','catapult','gargantuar'];
+  const migrated: ZombieKind[] = ['cone','pole','bucket','newspaper','door','football','dancer','snorkel','zomboni','dolphin','jack','balloon','digger','pogo','bungee','ladder','catapult','gargantuar','bobsled'];
   const candidates = migrated.filter(kind => kind !== basic
     && (isPool(scene) || !['snorkel','dolphin'].includes(kind))
     && (scene !== 'roof' || !['digger','dancer'].includes(kind))
+    && (kind !== 'bobsled' || stage >= 3 && !['night','roof'].includes(scene))
     && (scene !== 'night' || kind !== 'zomboni'));
-  const count = Math.min(stage + 1, 9);
+  // Web endless broadens the roster from round four; early rounds keep their pacing.
+  const count = Math.min(stage + 1 + (stage >= 3 ? 2 : 0), 9);
   for (let i = 0; i < count; i++) roster.push(candidates.splice(Math.floor(random() * candidates.length), 1)[0]);
+  // A sled stage also includes the ice machine that makes its track.
+  if (roster.includes('bobsled') && !roster.includes('zomboni')) {
+    const replace = roster.findIndex((kind, index) => index >= 2 && kind !== 'bobsled');
+    roster[replace] = 'zomboni';
+  }
   return roster;
 }
 

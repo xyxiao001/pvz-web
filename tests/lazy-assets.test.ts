@@ -1,3 +1,4 @@
+import { hasPlantMotion } from '../src/rendering/plant-motion';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Game } from '../src/game/model';
@@ -50,7 +51,7 @@ test('all adventures and survival rosters include armor loss, death, summon and 
   for (const game of [...LEVEL_IDS.map(l => new Game(l, 1)), ...SURVIVAL_SCENES.map(s => new Game(9, 1, 'endless', s))]) {
     game.seeds = [...game.config.seeds];
     const clips = animationNames(game, names);
-    for (const seed of game.seeds) assert.ok(clips.includes(seed), seed);
+    for (const seed of game.seeds) assert.ok(clips.includes(seed) || hasPlantMotion(seed), seed);
     if (clips.includes('dancer-walk')) assert.ok(clips.includes('backup-walk'));
     if (clips.includes('cone-walk')) assert.ok(clips.includes('zombie-walk'));
     if (game.config.mode === 'whack') assert.ok(clips.includes('bucket-walk'));

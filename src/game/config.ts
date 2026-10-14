@@ -2,7 +2,11 @@ import portable from './data/portable-adventure.json';
 // Behavioral reference: PvZ-Portable 141c1476. Source locations in docs/BASELINE.md.
 export const TICK_MS = 10;
 export const BOARD = { width: 800, height: 600, left: 40, top: 80, cellWidth: 80, cellHeight: 100, columns: 9 };
-export type PlantKind = 'peashooter' | 'sunflower' | 'cherrybomb' | 'wallnut' | 'potatomine' | 'snowpea' | 'explodenut' | 'chomper' | 'repeater' | 'puffshroom' | 'sunshroom' | 'fumeshroom' | 'gravebuster' | 'hypnoshroom' | 'scaredyshroom' | 'iceshroom' | 'doomshroom' | 'lilypad' | 'squash' | 'threepeater' | 'plantern' | 'tanglekelp' | 'jalapeno' | 'spikeweed' | 'torchwood' | 'tallnut' | 'seashroom' | 'cactus' | 'blover' | 'splitpea' | 'starfruit' | 'pumpkin' | 'magnetshroom' | 'cabbagepult' | 'flowerpot' | 'kernelpult' | 'coffeebean' | 'garlic' | 'umbrella' | 'marigold' | 'melonpult';
+export type BasePlantKind = 'peashooter' | 'sunflower' | 'cherrybomb' | 'wallnut' | 'potatomine' | 'snowpea' | 'explodenut' | 'chomper' | 'repeater' | 'puffshroom' | 'sunshroom' | 'fumeshroom' | 'gravebuster' | 'hypnoshroom' | 'scaredyshroom' | 'iceshroom' | 'doomshroom' | 'lilypad' | 'squash' | 'threepeater' | 'plantern' | 'tanglekelp' | 'jalapeno' | 'spikeweed' | 'torchwood' | 'tallnut' | 'seashroom' | 'cactus' | 'blover' | 'splitpea' | 'starfruit' | 'pumpkin' | 'magnetshroom' | 'cabbagepult' | 'flowerpot' | 'kernelpult' | 'coffeebean' | 'garlic' | 'umbrella' | 'marigold' | 'melonpult';
+export const UPGRADES = { gatlingpea: 'repeater', twinsunflower: 'sunflower' } as const;
+export type UpgradeKind = keyof typeof UPGRADES;
+export type PlantKind = BasePlantKind | UpgradeKind;
+export const isUpgrade = (kind: PlantKind): kind is UpgradeKind => kind in UPGRADES;
 export type ZombieKind = 'normal' | 'cone' | 'flag' | 'pole' | 'bucket' | 'newspaper' | 'door' | 'football' | 'dancer' | 'backup' | 'ducky' | 'snorkel' | 'zomboni' | 'bobsled' | 'dolphin' | 'jack' | 'balloon' | 'digger' | 'pogo' | 'bungee' | 'ladder' | 'catapult' | 'gargantuar' | 'imp';
 export type LevelId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50;
 export type SurvivalScene = 'day' | 'night' | 'pool' | 'fog' | 'roof';
@@ -13,6 +17,8 @@ export const isPool = (environment: Environment) => environment === 'pool' || en
 export const isNight = (environment: Environment) => environment === 'night' || environment === 'fog';
 export const MUSHROOMS: readonly PlantKind[] = ['puffshroom','sunshroom','fumeshroom','hypnoshroom','scaredyshroom','iceshroom','doomshroom','seashroom','magnetshroom'];
 export const PLANTS = {
+  gatlingpea: { name: '机枪射手', cost: 250, cooldown: 5000, health: 300, interval: 150 },
+  twinsunflower: { name: '双子向日葵', cost: 150, cooldown: 5000, health: 300, interval: 2500 },
   umbrella: { name: '叶子保护伞', cost: 100, cooldown: 750, health: 300, interval: 0 },
   marigold: { name: '金盏花', cost: 50, cooldown: 3000, health: 300, interval: 2500 },
   melonpult: { name: '西瓜投手', cost: 300, cooldown: 750, health: 300, interval: 300 },
@@ -60,10 +66,10 @@ export interface LevelConfig {
   environment: Environment; label: string; title: string; description: string; rows: readonly number[]; initialSun: number;
   mode: 'lawn' | 'bowling' | 'conveyor' | 'whack' | 'vase'; seeds: readonly PlantKind[]; waveCount: number; reward: PlantKind | null;
 }
-// Day lawn survival, restricted to the eight migrated daytime plants.
+// Original daytime starter cards also seed the adventure progression.
 export const ENDLESS: LevelConfig = {
-  environment: 'day', mode: 'lawn', label: '无尽', title: '白天庭院无尽 · 先行版',
-  description: '每轮 20 波，守住两面旗后重新选择六张卡。植物、阳光与割草机状态保留，僵尸逐轮增多。',
+  environment: 'day', mode: 'lawn', label: '无尽', title: '白天庭院无尽',
+  description: '每轮 20 波，守住两面旗后调整六至十张卡。植物、阳光与割草机状态保留，僵尸逐轮增多。',
   rows: [0, 1, 2, 3, 4], initialSun: 50,
   seeds: ['peashooter', 'sunflower', 'cherrybomb', 'wallnut', 'potatomine', 'snowpea', 'chomper', 'repeater'],
   waveCount: 20, reward: null,
@@ -78,7 +84,7 @@ export function endlessConfig(scene: SurvivalScene): LevelConfig {
     if (scene === 'roof' && ['spikeweed','potatomine'].includes(kind)) return false;
     return true;
   });
-  return { ...ENDLESS, environment: scene, title: `${SCENE_NAMES[scene]}无尽`, seeds,
+  return { ...ENDLESS, environment: scene, title: `${SCENE_NAMES[scene]}无尽`, seeds: [...seeds, 'gatlingpea', 'twinsunflower'],
     rows: isPool(scene) ? [0,1,2,3,4,5] : [0,1,2,3,4] };
 }
 const nightSeeds: PlantKind[] = [...ENDLESS.seeds, 'puffshroom','sunshroom','fumeshroom','gravebuster','hypnoshroom','scaredyshroom'];

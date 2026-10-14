@@ -1,8 +1,8 @@
 import { BOSS_HEALTH } from '../game/boss';
-import { PLANTS, type PlantKind } from '../game/config';
+import { PLANTS, UPGRADES, isUpgrade, type PlantKind } from '../game/config';
 import type { Game } from '../game/model';
 
-type SeedView = { packet: number; kind: PlantKind; button: HTMLButtonElement; cover: HTMLElement; number: HTMLElement };
+type SeedView = { packet: number; kind: PlantKind; button: HTMLButtonElement; cover: HTMLElement; number: HTMLElement; price: HTMLElement | null; shortcut: number };
 
 // Resolve DOM nodes once. Only changed values cross the DOM boundary.
 export class Hud {
@@ -29,9 +29,9 @@ export class Hud {
     this.level = root.querySelector('#level-label')!;
   }
   bindSeeds() {
-    this.seeds = Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-plant]'), button => ({
+    this.seeds = Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-plant]'), (button, index) => ({
       kind: button.dataset.plant as PlantKind, packet: Number(button.dataset.packet), button,
-      cover: button.querySelector('.cooldown-cover')!, number: button.querySelector('.cooldown-number')!,
+      cover: button.querySelector('.cooldown-cover')!, number: button.querySelector('.cooldown-number')!, price: button.querySelector('.packet-price'), shortcut: (index + 1) % 10,
     }));
   }
   private write(node: HTMLElement, key: string, value: string | boolean, apply: () => void) {
@@ -49,14 +49,18 @@ export class Hud {
       const frame = Math.floor(game.ticks / 4) % 6;
       this.write(this.belt, 'frame', String(frame), () => { this.belt.style.backgroundPositionY = `${frame * 20}%`; });
     }
-    for (const { kind, packet, button, cover, number } of this.seeds) {
+    for (const { kind, packet, button, cover, number, price, shortcut } of this.seeds) {
       if (game.hasConveyor) {
         const position = game.conveyor.find(p => p.id === packet)!.x;
         this.write(button, 'position', String(position), () => { button.style.left = `${position / 8}cqw`; });
       }
-      const remaining = game.cooldowns[kind]; const selected = game.hasConveyor ? game.selectedPacket === packet : game.selected === kind;
+      const remaining = game.cooldown(kind); const selected = game.hasConveyor ? game.selectedPacket === packet : game.selected === kind;
+      if (isUpgrade(kind)) {
+        const cost = game.plantCost(kind); this.text(price!, String(cost));
+        this.write(button, 'label', String(cost), () => { button.setAttribute('aria-label', `${PLANTS[kind].name}，${cost} 阳光`); button.title = `${PLANTS[kind].name} · ${cost} 阳光 · 需种在${PLANTS[UPGRADES[kind]].name}上 · 快捷键 ${shortcut}`; });
+      }
       this.class(button, 'selected', selected);
-      this.class(button, 'unavailable', !game.hasConveyor && game.sun < PLANTS[kind].cost);
+      this.class(button, 'unavailable', !game.hasConveyor && game.sun < game.plantCost(kind));
       this.write(button, 'disabled', game.phase !== 'playing', () => { button.disabled = game.phase !== 'playing'; });
       this.write(button, 'pressed', selected, () => button.setAttribute('aria-pressed', String(selected)));
       const height = game.hasConveyor ? '0%' : `${(remaining / PLANTS[kind].cooldown * 100).toFixed(1)}%`;

@@ -1,5 +1,5 @@
 import { createBoss, stepBoss, damageBoss, bossVulnerable, type Boss } from './boss';
-import { BOARD, cellX, endlessConfig, isPool, isNight, MUSHROOMS, LEVELS, PLANTS, type SurvivalScene, type LevelId, type PlantKind, type ZombieKind } from './config';
+import { BOARD, UPGRADES, isUpgrade, type BasePlantKind, cellX, endlessConfig, isPool, isNight, MUSHROOMS, LEVELS, PLANTS, type SurvivalScene, type LevelId, type PlantKind, type ZombieKind } from './config';
 import { generateSurvivalWaves, isSurvivalFlagWave, survivalRoster } from './survival';
 import { generateWaves, isFlagWave } from './waves';
 import { RowPicker } from './row-picker';
@@ -60,7 +60,14 @@ export class Game {
   vases: Vase[] = [];
   seedDrops: SeedDrop[] = [];
   selectedDrop: number | null = null;
-  cooldowns: Record<PlantKind, number> = { umbrella:0, marigold:0, melonpult:0, splitpea:0, starfruit:0, pumpkin:0, magnetshroom:0, cabbagepult:0, flowerpot:0, kernelpult:0, coffeebean:0, garlic:0, jalapeno: 0, spikeweed: 0, torchwood: 0, tallnut: 0, seashroom: 0, cactus: 0, blover: 0, tanglekelp: 0, peashooter: 0, sunflower: 0, cherrybomb: 0, wallnut: 0, potatomine: 0, snowpea: 0, explodenut: 0, chomper: 0, repeater: 0, puffshroom: 0, sunshroom: 0, fumeshroom: 0, gravebuster: 0, hypnoshroom: 0, scaredyshroom: 0, iceshroom: 0, doomshroom: 0, lilypad: 0, squash: 0, threepeater: 0, plantern: 0 };
+  cooldowns: Record<BasePlantKind, number> = { umbrella:0, marigold:0, melonpult:0, splitpea:0, starfruit:0, pumpkin:0, magnetshroom:0, cabbagepult:0, flowerpot:0, kernelpult:0, coffeebean:0, garlic:0, jalapeno: 0, spikeweed: 0, torchwood: 0, tallnut: 0, seashroom: 0, cactus: 0, blover: 0, tanglekelp: 0, peashooter: 0, sunflower: 0, cherrybomb: 0, wallnut: 0, potatomine: 0, snowpea: 0, explodenut: 0, chomper: 0, repeater: 0, puffshroom: 0, sunshroom: 0, fumeshroom: 0, gravebuster: 0, hypnoshroom: 0, scaredyshroom: 0, iceshroom: 0, doomshroom: 0, lilypad: 0, squash: 0, threepeater: 0, plantern: 0 };
+  upgradeCooldowns = { gatlingpea: 0, twinsunflower: 0 };
+  get seedCapacity() { return this.scenario === 'endless' ? 10 : 6; }
+  get canStart() { return !this.needsSeedChoice || this.seeds.length >= 6 && this.seeds.length <= this.seedCapacity; }
+  cooldown(kind: PlantKind) { return isUpgrade(kind) ? this.upgradeCooldowns[kind] : this.cooldowns[kind]; }
+  plantCost(kind: PlantKind) {
+    return PLANTS[kind].cost + (this.scenario === 'endless' && isUpgrade(kind) ? this.plants.filter(p => p.kind === kind).length * 50 : 0);
+  }
   wave = 0;
   kills = 0;
   planted = 0;
@@ -165,10 +172,10 @@ export class Game {
     if (this.phase !== 'ready' || !this.needsSeedChoice || !this.config.seeds.includes(kind)) return;
     const index = this.seeds.indexOf(kind);
     if (index !== -1) this.seeds.splice(index, 1);
-    else if (this.seeds.length < 6) this.seeds.push(kind);
+    else if (this.seeds.length < this.seedCapacity) this.seeds.push(kind);
   }
   start() {
-    if (this.needsSeedChoice && this.seeds.length !== 6) return;
+    if (!this.canStart) return;
     this.phase = 'playing';
   }
   pause() { if (this.phase === 'playing') this.phase = 'paused'; }
@@ -213,7 +220,8 @@ export class Game {
     if ((kind === 'lilypad' || kind === 'tanglekelp' || kind === 'seashroom') && (!this.waterRow(row) || occupants.length > 0)) return false;
     if (this.waterRow(row) && kind !== 'lilypad' && kind !== 'tanglekelp' && kind !== 'seashroom' && (kind === 'potatomine' || kind === 'spikeweed' || !occupants.some(p => p.kind === 'lilypad'))) return false;
     if (this.config.environment === 'roof' && (['spikeweed','potatomine','lilypad','seashroom','tanglekelp','gravebuster'].includes(kind) || kind !== 'flowerpot' && !occupants.some(p => p.kind === 'flowerpot'))) return false;
-    const occupied = kind === 'coffeebean' ? !occupants.some(p => this.sleeping(p)) || occupants.some(p => p.kind === 'coffeebean')
+    const occupied = isUpgrade(kind) ? !occupants.some(p => p.kind === UPGRADES[kind])
+      : kind === 'coffeebean' ? !occupants.some(p => this.sleeping(p)) || occupants.some(p => p.kind === 'coffeebean')
       : kind === 'pumpkin' ? occupants.some(p => p.kind === 'pumpkin')
       : kind === 'flowerpot' ? occupants.length > 0
       : occupants.some(p => kind === 'lilypad' || !['lilypad','flowerpot','pumpkin'].includes(p.kind));
@@ -223,7 +231,7 @@ export class Game {
     if (this.config.mode === 'conveyor') return this.conveyor.some(packet => packet.id === this.selectedPacket && packet.kind === kind)
       && !occupied;
     if (this.config.mode === 'vase') return !occupied && this.seedDrops.some(drop => drop.id === this.selectedDrop && drop.kind === kind);
-    return this.sun >= PLANTS[kind].cost && this.cooldowns[kind] === 0
+    return this.sun >= this.plantCost(kind) && this.cooldown(kind) === 0
       && !occupied;
   }
 
@@ -241,11 +249,13 @@ export class Game {
         this.conveyor.splice(this.conveyor.findIndex(packet => packet.id === this.selectedPacket), 1);
         this.selectedPacket = null;
       } else {
-        this.sun -= PLANTS[kind].cost;
-        this.cooldowns[kind] = PLANTS[kind].cooldown;
+        this.sun -= this.plantCost(kind);
+        if (isUpgrade(kind)) this.upgradeCooldowns[kind] = PLANTS[kind].cooldown;
+        else this.cooldowns[kind] = PLANTS[kind].cooldown;
       }
+      if (isUpgrade(kind)) this.plants = this.plants.filter(p => p.column !== column || p.row !== row || p.kind !== UPGRADES[kind]);
       this.plants.push({ id: ++this.id, kind, column, row, health: PLANTS[kind].health,
-        actionIn: kind === 'sunflower' || kind === 'sunshroom' || kind === 'marigold' ? 300 + Math.floor(this.random() * 951) : kind === 'jalapeno' || kind === 'cherrybomb' || kind === 'iceshroom' || kind === 'doomshroom' ? 100 : kind === 'potatomine' ? 1500 : kind === 'gravebuster' ? 400 : kind === 'coffeebean' ? 100
+        actionIn: kind === 'gatlingpea' ? 100 : kind === 'sunflower' || kind === 'twinsunflower' || kind === 'sunshroom' || kind === 'marigold' ? 300 + Math.floor(this.random() * 951) : kind === 'jalapeno' || kind === 'cherrybomb' || kind === 'iceshroom' || kind === 'doomshroom' ? 100 : kind === 'potatomine' ? 1500 : kind === 'gravebuster' ? 400 : kind === 'coffeebean' ? 100
           : kind === 'peashooter' || kind === 'snowpea' || kind === 'repeater' || kind === 'puffshroom' || kind === 'fumeshroom' || kind === 'scaredyshroom' || kind === 'threepeater' || kind === 'seashroom' || kind === 'cactus' || kind === 'splitpea' || kind === 'starfruit' || kind === 'cabbagepult' || kind === 'kernelpult' || kind === 'melonpult' ? Math.floor(this.random() * 151) : 50,
         born: this.ticks, shotAt: -100, ...(kind === 'chomper' ? { chomp: { phase: 'ready' as const, remaining: 0 } } : {}) });
     }
@@ -373,7 +383,9 @@ export class Game {
     for (const crater of this.craters) crater.remaining--;
     this.craters = this.craters.filter(c => c.remaining > 0);
     if (this.poolFrozenIn > 0) this.poolFrozenIn--;
-    for (const kind of this.seeds) if (this.cooldowns[kind] > 0) this.cooldowns[kind]--;
+    for (const kind of this.seeds) if (this.cooldown(kind) > 0) {
+      if (isUpgrade(kind)) this.upgradeCooldowns[kind]--; else this.cooldowns[kind]--;
+    }
     if (!this.started) return;
 
     if (this.hasConveyor && this.ticks % 4 === 0) {
@@ -425,6 +437,7 @@ export class Game {
       }
       --plant.actionIn;
       // Portable UpdateShooter checks the repeater at 25 and at zero: a 25-tick pair.
+      if (plant.kind === 'gatlingpea' && [68, 51, 35, 18].includes(plant.actionIn)) this.firePea(plant);
       if (plant.kind === 'repeater' && plant.actionIn === 25) this.firePea(plant);
       if (plant.actionIn > 0) continue;
       if (plant.kind === 'blover') {
@@ -482,12 +495,13 @@ export class Game {
         }
         plant.health = 0;
         this.events.push({ kind: 'explode', x: cellX(plant.column), y: this.rowY(plant.row, cellX(plant.column)) - 35 });
-      } else if (plant.kind === 'sunflower' || plant.kind === 'sunshroom') {
+      } else if (plant.kind === 'sunflower' || plant.kind === 'twinsunflower' || plant.kind === 'sunshroom') {
         this.addSun(cellX(plant.column) + 12, this.rowY(plant.row, cellX(plant.column)) - 55, this.rowY(plant.row, cellX(plant.column)) - 15, plant.kind === 'sunshroom' && this.ticks - plant.born < 12000 ? 15 : 25);
+        if (plant.kind === 'twinsunflower') this.addSun(cellX(plant.column) - 12, this.rowY(plant.row, cellX(plant.column)) - 55, this.rowY(plant.row, cellX(plant.column)) - 15, 25);
         plant.actionIn = PLANTS.sunflower.interval - 150 + Math.floor(this.random() * 151);
       } else {
         plant.actionIn = PLANTS.peashooter.interval - Math.floor(this.random() * 15);
-        this.firePea(plant);
+        if (plant.kind !== 'gatlingpea') this.firePea(plant);
       }
     }
 

@@ -7,7 +7,7 @@ import portable from '../game/data/portable-adventure.json';
 export function combatTextureFiles(game: Game) {
   const plants = new Set([...game.seeds, ...game.plants.map(plant => plant.kind)]);
   const files: Record<string, string> = {};
-  if (plants.has('splitpea') || plants.has('peashooter') || plants.has('repeater') || plants.has('threepeater') || game.peas.some(pea => !pea.ice && !pea.puff)) files.pea = 'pea.webp';
+  if (plants.has('splitpea') || plants.has('gatlingpea') || plants.has('peashooter') || plants.has('repeater') || plants.has('threepeater') || game.peas.some(pea => !pea.ice && !pea.puff)) files.pea = 'pea.webp';
   if (plants.has('snowpea') || game.peas.some(pea => pea.ice)) files.ice = 'original/snow-pea.webp';
   if (plants.has('puffshroom') || plants.has('scaredyshroom') || plants.has('seashroom') || game.peas.some(pea => pea.puff)) files.puff = 'original/puff.webp';
   if(plants.has('starfruit'))files.star='original/star.webp';

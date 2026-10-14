@@ -1,4 +1,4 @@
-"""Export interpolated idle Reanim tracks and 2x part atlases for three common plants.
+"""Export interpolated idle Reanim tracks and 2x part atlases for common and upgrade plants.
 Usage: python3 tools/import-plant-motion.py RUSLAN_REPO
 Preserves the existing Web idle cycle duration; never changes combat timing.
 """
@@ -14,7 +14,7 @@ inputs.mkdir(parents=True, exist_ok=True); results.mkdir(parents=True, exist_ok=
 images = {p.stem.upper(): p for p in directory.glob('*.png')}
 sources = {}; definitions = {}; fields = ['x','y','sx','sy','kx','ky','f','a','i']
 def record(path): sources[str(path.relative_to(repo))] = hashlib.sha256(path.read_bytes()).hexdigest()
-for key, name, layer, duration in [('peashooter','PeaShooter','anim_full_idle',100),('sunflower','SunFlower','anim_idle',100),('threepeater','ThreePeater','anim_idle',144)]:
+for key, name, layer, duration in [('peashooter','PeaShooter','anim_full_idle',100),('sunflower','SunFlower','anim_idle',100),('threepeater','ThreePeater','anim_idle',144),('gatlingpea','GatlingPea','anim_idle',144),('twinsunflower','TwinSunflower','anim_idle',144)]:
     path = directory / (name+'.reanim'); record(path)
     xml = ET.fromstring('<root>'+path.read_text()+'</root>'); tracks = {}
     for track in xml.findall('track'):
@@ -36,6 +36,7 @@ for key, name, layer, duration in [('peashooter','PeaShooter','anim_full_idle',1
             result['attachment']=tracks[attachment][body[0]:body[-1]+1]
         return result
     groups=[group(layer)]
+    if key=='gatlingpea': groups.append(group('anim_head_idle','anim_idle'))
     if key=='threepeater': groups += [group('anim_head_idle'+i,'anim_head'+i) for i in ['1','3','2']]
     used=sorted({p[8] for g in groups for t in g['tracks'] for p in t['poses'] if p[8]})
     definitions[key]={'duration':duration,'origin':[-40,-74 if key!='threepeater' else -80],'groups':groups,'images':used}
@@ -55,5 +56,19 @@ for key,definition in definitions.items():
     atlas.save(output/(key+'.webp'),lossless=True,method=6,exact=True)
     definition['frames']=rects
     (output/(key+'.json')).write_text(json.dumps(definition,separators=(',',':')))
+    if key in ['gatlingpea','twinsunflower']:
+        portrait=Image.new('RGBA',(320,320))
+        for g in definition['groups']:
+            for t in g['tracks']:
+                x,y,sx,sy,kx,ky,f,alpha,name=t['poses'][0]
+                if not name or f<0 or alpha<=0: continue
+                im=Image.open(results/(name+'.png')).convert('RGBA')
+                a=math.cos(math.radians(kx))*sx;b=-math.sin(math.radians(ky))*sy
+                c=math.sin(math.radians(kx))*sx;d=math.cos(math.radians(ky))*sy
+                det=a*d-b*c;x=x*2+60;y=y*2+80
+                if det==0: continue
+                part=im.transform(portrait.size,Image.Transform.AFFINE,(d/det,-b/det,(b*y-d*x)/det,-c/det,a/det,(c*x-a*y)/det),Image.Resampling.BICUBIC)
+                portrait.alpha_composite(part)
+        portrait.crop(portrait.getbbox()).save(root/'public/assets/runtime/original'/(key+'.webp'),lossless=True,method=6)
     print(key,atlas.size,len(rects),'parts',len(definition['groups']),'groups')
 (root/'docs/plant-motion-assets.json').write_text(json.dumps({'repository':'https://github.com/ruslan831/PlantsVsZombies-decompilation','commit':subprocess.check_output(['git','-C',str(repo),'rev-parse','HEAD'],text=True).strip(),'sources':sources,'scaling':'Real-ESRGAN animevideov3 2x per source part; packed without resampling'},indent=2)+'\n')

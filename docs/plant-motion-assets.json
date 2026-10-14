@@ -49,7 +49,18 @@
     "SexyAppFramework/reanim/ThreePeater_mouth.png": "ce829b5bc5a9fc5c4306a7583e28317b8624aaf982a710d82c91787205f8a493",
     "SexyAppFramework/reanim/ThreePeater_stem1.png": "421ec3bf2c3b51e1506d87dbf8784983c4f6ed083690201aacb208d1a956fb37",
     "SexyAppFramework/reanim/ThreePeater_stem2.png": "4ca1fec97d12b5b2d4dcb07e5a8baa2842a712cbfa42172133eff35e8e08ebaf",
-    "SexyAppFramework/reanim/ThreePeater_stem3.png": "e4e37120bf7105d652f37e2f854e8870d43e62b67f313056169b8d7f970e204d"
+    "SexyAppFramework/reanim/ThreePeater_stem3.png": "e4e37120bf7105d652f37e2f854e8870d43e62b67f313056169b8d7f970e204d",
+    "SexyAppFramework/reanim/GatlingPea.reanim": "0ff524b4c83b279c3f9eecbafcde8e4da9889d70117b329334260499b14775fc",
+    "SexyAppFramework/reanim/GatlingPea_barrel.png": "fe6af04966f7a5a78745ec1aeb96a4d805dbbda4c7037b8aba55b569671b5209",
+    "SexyAppFramework/reanim/GatlingPea_head.png": "3b5f997fe21a198f7f262f16f3c22436a074e57a95e62404c1306f686b0ea7df",
+    "SexyAppFramework/reanim/GatlingPea_helmet.png": "daeacb00c34e0f8d0ec50406c15d44a3abb64fc31c56a9e1c9fd84ac55151e25",
+    "SexyAppFramework/reanim/GatlingPea_mouth.png": "fe00a660fdce84dc6732ff827a88d77b760d24ad774623033ff4fc2d0c78cdb6",
+    "SexyAppFramework/reanim/GatlingPea_mouth_overlay.png": "95f773e5ea191c4252637053a7460034c7a99d935a4101f3b50a3fc722b5bc61",
+    "SexyAppFramework/reanim/TwinSunflower.reanim": "b1f04ac0c3d50adb5308d90ff01d1330a689571e9e8505f977dcbe8402924eb0",
+    "SexyAppFramework/reanim/SunFlower_double_petals.png": "ccc2a0ce6c919b6bfc5ded136c8dacf7fd97938a2f1a6bbff7c3f23fa96d3121",
+    "SexyAppFramework/reanim/TwinSunflower_leaf.png": "7953adcd57917ad2b102b1ebd59df0d30fdc545ca4f677e7f0e7313301060ea7",
+    "SexyAppFramework/reanim/TwinSunflower_stem1.png": "e9f41c63c7d59beef54db41b9ca974d274ce3f071bd4b7ab6ea6cd872f955b24",
+    "SexyAppFramework/reanim/TwinSunflower_stem2.png": "16dce1b2a960069cff6da5c4b1e9add3d79180dbecbbd6d4bc1e70e7613c82c7"
   },
   "scaling": "Real-ESRGAN animevideov3 2x per source part; packed without resampling"
 }

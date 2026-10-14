@@ -1,7 +1,7 @@
 import { Assets, Container, Matrix, Rectangle, Sprite, Texture } from 'pixi.js';
 import { loadInBatches } from '../platform/load-queue';
 
-export const MOTION_PLANTS = ['peashooter', 'sunflower', 'threepeater'] as const;
+export const MOTION_PLANTS = ['peashooter', 'sunflower', 'threepeater', 'gatlingpea', 'twinsunflower'] as const;
 export type MotionPlant = typeof MOTION_PLANTS[number];
 export const hasPlantMotion = (name: string): name is MotionPlant => (MOTION_PLANTS as readonly string[]).includes(name);
 export type Pose = [number, number, number, number, number, number, number, number, string];

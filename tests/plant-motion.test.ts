@@ -6,9 +6,11 @@ import { renderResolution } from '../src/rendering/resolution';
 import pea from '../public/assets/runtime/plant-motion/peashooter.json';
 import sunflower from '../public/assets/runtime/plant-motion/sunflower.json';
 import threepeater from '../public/assets/runtime/plant-motion/threepeater.json';
+import gatling from '../public/assets/runtime/plant-motion/gatlingpea.json';
+import twin from '../public/assets/runtime/plant-motion/twinsunflower.json';
 
 test('native plant motion interpolates between poses without changing cycle duration at 1x/2x/4x', () => {
-  for (const definition of [pea, sunflower, threepeater]) {
+  for (const definition of [pea, sunflower, threepeater, gatling, twin]) {
     for (const speed of [1, 2, 4]) {
       const duration = definition.duration, length = definition.groups[0].length;
       assert.deepEqual(motionFrame(duration, duration, length), { frame: 0, next: 1, fraction: 0 });
@@ -37,7 +39,7 @@ test('interpolated parts and attachment bind pose follow original affine transfo
   }
 });
 test('every plant image track resolves to its own atlas and complete pose sequence', () => {
-  for (const definition of [pea, sunflower, threepeater]) {
+  for (const definition of [pea, sunflower, threepeater, gatling, twin]) {
     for (const group of definition.groups) for (const track of group.tracks) {
       assert.equal(track.poses.length, group.length);
       for (const pose of track.poses) if (pose[8]) assert.ok(pose[8] as string in definition.frames);

@@ -114,3 +114,22 @@ footer{color:#8d9d76;font-size:11px}
 .page.in-battle:fullscreen{width:100%;height:100%;padding:0}
 .page.in-battle:fullscreen .game-frame{width:min(calc(100dvw - 8px),calc((100dvh - 8px)*800/687))}
 @media(max-width:650px){.page.in-battle{width:100%}}
+
+/* Endless keeps ten visible packets in the same HUD strip, with controls stacked beside it. */
+.endless-game .seed-bank{width:76%}
+.endless-game #seed-cards{gap:.3cqw}
+.endless-game .seed-card{width:5.9cqw}
+.endless-game .seed-chooser .chosen-seeds{left:14.17%;gap:.3cqw;top:1.16%}
+.endless-game .seed-chooser .chosen-seed,.endless-game .seed-chooser .empty-seed{width:5.9cqw;height:8.9cqw}
+.endless-game .shovel-button{left:78%;width:6%;height:7.5cqw}
+.endless-game .battle-controls{width:15%;display:grid;grid-template-columns:5cqw 9cqw;gap:.4cqw}
+.endless-game .auto-sun{grid-column:1 / -1;height:3.8cqw;padding:0 .3cqw;font-size:1.1cqw;justify-content:center}
+.endless-game .battle-controls #speed{width:5cqw;min-width:0;height:5cqw;font-size:1.8cqw}
+.endless-game .battle-controls #pause{width:9cqw;min-width:0;height:5cqw;font-size:1.8cqw}
+.seed-chooser .seed-options{max-height:46cqw}
+.seed-chooser .chooser-footer{gap:.3cqw;bottom:1.4cqw}
+.seed-chooser #clear-seeds{font-size:1.2cqw;margin:0;padding:.3cqw 1cqw;color:#f3daa2}
+.seed-chooser #clear-seeds:disabled{opacity:.45}
+.chooser-details{top:18%;max-height:52cqw;overflow-y:auto;scrollbar-width:thin}
+.plant-detail{border-top:1px solid #9caa7777;margin-top:1cqw;padding-top:1cqw;text-align:left}
+.plant-detail h4{font-size:1.5cqw;margin:0;color:#ffe08f}.plant-detail p{font-size:1.3cqw;margin:.5cqw 0}.plant-detail small{font-size:1.1cqw;color:#bcd08a}
