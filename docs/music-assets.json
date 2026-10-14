@@ -115,6 +115,17 @@
       "loopOrder": 213,
       "bytes": 2155670,
       "sha256": "2b162ef57e10f28785b44f5de46ff5d818b832c380eaaecae2831a0a61109cb7"
+    },
+    "boss": {
+      "title": "Brainiac Maniac",
+      "file": "boss.mp3",
+      "loopStart": 0.0,
+      "duration": 99.99092970521542,
+      "subsong": 8,
+      "startOrder": 158,
+      "loopOrder": 158,
+      "bytes": 1873796,
+      "sha256": "8ad3a4435c63480c30e276dba0ef59716306cc02ccbe473a59db9dc0086346d6"
     }
   }
 }

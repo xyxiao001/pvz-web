@@ -35,6 +35,10 @@
     "file": "puzzle.mp3",
     "loopStart": 0.0
   },
+  "boss": {
+    "file": "boss.mp3",
+    "loopStart": 0.0
+  },
   "conveyor": {
     "file": "conveyor.mp3",
     "loopStart": 16.0

@@ -1,3 +1,4 @@
+import { BOSS_HEALTH } from '../game/boss';
 import { PLANTS, type PlantKind } from '../game/config';
 import type { Game } from '../game/model';
 
@@ -68,8 +69,8 @@ export class Hud {
     this.write(shovel, 'disabled', game.phase !== 'playing', () => { shovel.disabled = game.phase !== 'playing'; });
     const disabled = game.phase !== 'playing' && game.phase !== 'paused';
     this.write(this.pause, 'disabled', disabled, () => { this.pause.disabled = disabled; });
-    this.text(this.wave, game.config.mode === 'vase' ? `第 ${game.vaseStage + 1} / 3 轮 · 剩余 ${game.vases.length} 罐` : game.wave === 0 ? '准备种植' : `第 ${game.wave} / ${game.config.waveCount} 波`);
-    const progress = game.wave / game.config.waveCount;
+    this.text(this.wave, game.boss ? `僵王生命 ${Math.ceil(game.boss.health / BOSS_HEALTH * 100)}%` : game.config.mode === 'vase' ? `第 ${game.vaseStage + 1} / 3 轮 · 剩余 ${game.vases.length} 罐` : game.wave === 0 ? '准备种植' : `第 ${game.wave} / ${game.config.waveCount} 波`);
+    const progress = game.boss ? 1-game.boss.health/BOSS_HEALTH : game.wave / game.config.waveCount;
     this.write(this.fill, 'width', String(progress), () => { this.fill.style.width = `${progress * 100}%`; });
     this.write(this.head, 'right', String(progress), () => { this.head.style.right = `${progress * 84}%`; });
     this.text(this.advice, advice); this.class(this.advice, 'visible', !!advice);

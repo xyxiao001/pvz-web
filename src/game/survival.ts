@@ -3,15 +3,18 @@ import { isPool, type SurvivalScene, type ZombieKind } from './config';
 
 export const isSurvivalFlagWave = (wave: number) => wave % 10 === 9;
 
-// Challenge::InitZombieWaves + InitZombieWavesSurvival. Later stages draw only
-// from the migrated land roster; this is intentionally a limited first release.
+// Challenge::InitZombieWavesSurvival: two basic types + at most nine
+// sampled types, excluding spawned-only units and terrain-incompatible enemies.
 export function survivalRoster(stage: number, random: () => number, scene: SurvivalScene = 'day'): ZombieKind[] {
   if (stage === 0) return ['normal', 'cone', 'bucket'];
   const basic: ZombieKind = random() < .2 ? 'newspaper' : 'cone';
   const roster: ZombieKind[] = ['normal', basic];
-  const migrated: ZombieKind[] = ['cone', 'pole', 'bucket', 'newspaper', 'door', 'football', 'dancer', ...(isPool(scene) ? ['snorkel' as const] : [])];
-  const candidates = migrated.filter(kind => kind !== basic);
-  const count = Math.min(stage + 1, candidates.length);
+  const migrated: ZombieKind[] = ['cone','pole','bucket','newspaper','door','football','dancer','snorkel','zomboni','dolphin','jack','balloon','digger','pogo','bungee','ladder','catapult','gargantuar'];
+  const candidates = migrated.filter(kind => kind !== basic
+    && (isPool(scene) || !['snorkel','dolphin'].includes(kind))
+    && (scene !== 'roof' || !['digger','dancer'].includes(kind))
+    && (scene !== 'night' || kind !== 'zomboni'));
+  const count = Math.min(stage + 1, 9);
   for (let i = 0; i < count; i++) roster.push(candidates.splice(Math.floor(random() * candidates.length), 1)[0]);
   return roster;
 }

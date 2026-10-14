@@ -8,8 +8,9 @@ export function isFlagWave(level: LevelId, wave: number) {
 }
 
 // Board::PickZombieWaves / PutInMissingZombies / PickZombieType.
-// Scope: first-time adventure 1–1 … 5–9. The supplied RNG is this port's RNG.
+// Scope: first-time adventure 1–1 … 5–10. The supplied RNG is this port's RNG.
 export function generateWaves(level: LevelId, random: () => number): ZombieKind[][] {
+  if (level === 50) return []; // The boss summons enemies; ordinary waves are disabled.
   const count = data.waveCounts[level - 1];
   // Whack spawns timed groups from graves, not this adventure wave list.
   if (level === 15 || level === 35) return Array.from({ length: level === 35 ? 3 : count }, () => []);

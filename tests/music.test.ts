@@ -60,8 +60,8 @@ test('music follows the scene and Portable special-level choices',()=>{
   for(const level of [5,15,25] as const)assert.equal(battleMusic(new Game(level,1)),'minigame');
   for(const level of [10,20] as const)assert.equal(battleMusic(new Game(level,1)),'conveyor');
 });
-test('all ten committed tunes have reproducible hashes and valid loop markers',()=>{
-  assert.equal(Object.keys(tracks).length,10);
+test('all eleven committed tunes have reproducible hashes and valid loop markers',()=>{
+  assert.equal(Object.keys(tracks).length,11);
   for(const [name,track] of Object.entries(tracks)){
     const metadata=manifest.tracks[name as keyof typeof manifest.tracks];
     const body=readFileSync(new URL('../public/assets/music/'+track.file,import.meta.url));
@@ -70,3 +70,5 @@ test('all ten committed tunes have reproducible hashes and valid loop markers',(
     assert.ok(metadata.duration>20);
   }
 });
+
+test('boss finale plays Brainiac Maniac while roof survival keeps roof music',()=>{assert.equal(battleMusic(new Game(50,1)),'boss');assert.equal(battleMusic(new Game(9,1,'endless','roof')),'roof');});

@@ -14,12 +14,12 @@ function begin(seed = 12) {
 }
 const step = (game: Game, count: number) => { for (let i = 0; i < count; i++) { game.step(); game.drainEvents(); } };
 
-test('endless uses five rows, 50 sun, ten day plants and six selected slots without adventure unlocks', () => {
+test('endless uses five rows, 50 sun, all migrated day plants and six selected slots without adventure unlocks', () => {
   const game = new Game(1, 12, 'endless');
   assert.equal(game.sun, 50); assert.deepEqual(game.config.rows, [0,1,2,3,4]);
-  assert.equal(game.config.seeds.length, 10); assert.equal(game.config.reward, null);
+  assert.equal(game.config.seeds.length, 34); assert.equal(game.config.reward, null);
   game.start(); assert.equal(game.phase, 'ready');
-  game.chooseSeed('puffshroom'); assert.equal(game.seeds.length, 0);
+  game.chooseSeed('lilypad'); assert.equal(game.seeds.length, 0);
   for (const kind of loadout) game.chooseSeed(kind);
   game.start(); game.toggleShovel(); assert.equal(game.digging, true);
   step(game, 400); assert.equal(game.suns.length, 1); // starts even without a first plant
@@ -38,7 +38,7 @@ test('survival roster matches initial types, then samples the explicitly migrate
       const roster = survivalRoster(stage, () => random);
       assert.equal(roster[0], 'normal'); assert.equal(roster[1], random < .2 ? 'newspaper' : 'cone');
       assert.equal(new Set(roster).size, roster.length);
-      assert.equal(roster.length, 2 + Math.min(stage + 1, 6));
+      assert.equal(roster.length, 2 + Math.min(stage + 1, 9));
     }
   }
 });
@@ -80,11 +80,10 @@ test('final survivors must die before repick; plants, sun, health, timers, coold
   const sun = game.sun, cooldown = game.cooldowns.wallnut, ticks = game.ticks;
   game.nextSurvivalStage();
   assert.equal(game.phase, 'ready'); assert.equal(game.survivalStage, 1);
-  assert.equal(game.wave, 0); assert.equal(game.survivalFlags, 2); assert.deepEqual(game.seeds, []);
+  assert.equal(game.wave, 0); assert.equal(game.survivalFlags, 2); assert.deepEqual(game.seeds, loadout);
   assert.deepEqual(game.plants, plants); assert.deepEqual(game.mowers, mowers);
   assert.equal(game.sun, sun); assert.equal(game.cooldowns.wallnut, cooldown); assert.equal(game.ticks, ticks);
   const ready = JSON.stringify(game); step(game, 100); assert.equal(JSON.stringify(game), ready);
-  for (const kind of loadout) game.chooseSeed(kind);
   game.start(); step(game, 599); assert.equal(game.wave, 0);
   assert.equal(game.cooldowns.wallnut, cooldown - 599);
   step(game, 1); assert.equal(game.wave, 1);
@@ -101,7 +100,6 @@ test('continuous stage transitions have no final win and keep cumulative flag co
     assert.equal(game.phase, 'intermission'); assert.equal(game.survivalFlags, stage*2+2);
     assert.ok(game.drainEvents().every(event => event.kind !== 'win'));
     game.nextSurvivalStage();
-    for (const kind of loadout) game.chooseSeed(kind);
     game.start();
   }
 });
@@ -123,23 +121,27 @@ test('survival stays identical at 30/60/120 Hz and 1x/2x/4x, pauses, and stops t
   assert.equal(reference.ticks, ticks + 1); assert.equal(clock.alpha, 0);
 });
 
-test('three random seeds survive six flags using only normal plant commands and collected sun', () => {
+test('starter loadouts establish two flags; adaptive cards reach six against late enemies', () => {
 const choices: PlantKind[] = ['sunflower','potatomine','snowpea','repeater','wallnut','cherrybomb'];
 const plant = (g: Game, kind: PlantKind, column: number, row: number) => {
   if (!g.canPlant(kind,column,row)) return false;
   g.select(kind); return g.plant(column,row);
 };
-for (const seed of [1,23,123456]) {
+for (const [seed, finalStage] of [[1,2],[23,0],[123456,0]]) {
  const g = new Game(9,seed,'endless'); g.autoCollectSun=true;
  for (const kind of choices) g.chooseSeed(kind); g.start();
  for(let frame=0;frame<200000 && g.phase!=='lost';frame++) {
+  if(g.seeds.includes('blover')&&g.zombies.some(z=>z.flying&&z.x<650))for(const row of g.config.rows)for(let col=2;col<9;col++)plant(g,'blover',col,row);
+  if(g.seeds.includes('splitpea'))for(const row of g.config.rows)if(!g.plants.some(p=>p.row===row&&p.kind==='splitpea')){const old=g.plants.find(p=>p.column===2&&p.row===row);if(old&&g.sun>=125&&g.cooldowns.splitpea===0){g.cancelSelection();g.toggleShovel();g.dig(2,row);}plant(g,'splitpea',2,row);}
+  if(g.seeds.includes('jalapeno')&&g.cooldowns.jalapeno===0&&g.sun>=125){const danger=g.zombies.filter(z=>!z.hypnotized&&!z.underground&&z.x<350).sort((a,b)=>a.x-b.x)[0];if(danger){let placed=false;for(let col=0;col<9;col++)if(plant(g,'jalapeno',col,danger.row)){placed=true;break;}if(!placed){g.cancelSelection();g.toggleShovel();g.dig(0,danger.row);plant(g,'jalapeno',0,danger.row);}}}
+  if(g.seeds.includes('tallnut'))for(const row of g.config.rows){const old=g.plants.find(p=>p.column===7&&p.row===row&&p.kind==='wallnut');if(old&&g.sun>=125&&g.cooldowns.tallnut===0){g.cancelSelection();g.toggleShovel();g.dig(7,row);}plant(g,'tallnut',7,row);}
   const threats=g.zombies.filter(z=>z.health>=(z.kind==='pole'?167:90)).sort((a,b)=>a.x-b.x);
   if(g.plants.filter(p=>p.kind==='sunflower').length<10) {
    for(const col of [0,1]) for(const row of g.config.rows) plant(g,'sunflower',col,row);
   }
   for(const z of threats) {
    if(z.kind!=='pole'&&z.x>600&&!g.plants.some(p=>p.row===z.row&&(p.kind==='potatomine'||p.kind==='snowpea')))plant(g,'potatomine',4,z.row);
-   if(z.x<400 || (z.x<630&&threats.filter(o=>Math.abs(o.row-z.row)<=1&&Math.abs(o.x-z.x)<100).length>=5)) {
+   if(z.kind==='jack'&&z.x<650 || z.x<400 || (z.x<630&&threats.filter(o=>Math.abs(o.row-z.row)<=1&&Math.abs(o.x-z.x)<100).length>=5)) {
     for(const row of g.config.rows) for(let col=2;col<9;col++) if(Math.abs(row-z.row)<=1&&Math.abs(cellX(col)-z.x)<100){
      if(g.sun>=150&&g.cooldowns.cherrybomb===0&&g.plants.some(p=>p.column===col&&p.row===row)){g.cancelSelection();g.toggleShovel();g.dig(col,row);}
      plant(g,'cherrybomb',col,row);
@@ -161,11 +163,18 @@ for (const seed of [1,23,123456]) {
   if(g.phase==='intermission') {
    assert.equal(g.survivalFlags, (g.survivalStage + 1) * 2);
    assert.ok(g.plants.length > 0);
-   if(g.survivalStage===2)break;
-   g.nextSurvivalStage();for(const kind of choices)g.chooseSeed(kind);g.start();
+   if(g.survivalStage===finalStage)break;
+   g.nextSurvivalStage();
+   const next:PlantKind[]=[...choices];next[4]='jalapeno';
+   if(g.survivalEnemies.includes('pogo'))next[0]='tallnut';
+   if(g.survivalEnemies.includes('digger'))next[1]='splitpea';
+   if(g.survivalEnemies.includes('balloon'))next[4]='blover';
+   for(const kind of [...g.seeds])if(!next.includes(kind))g.chooseSeed(kind);
+   for(const kind of next)if(!g.seeds.includes(kind))g.chooseSeed(kind);
+   g.start();
   }
  }
- assert.equal(g.phase, 'intermission', `seed ${seed}: stage ${g.survivalStage}, wave ${g.wave}`);
- assert.equal(g.survivalStage, 2);
+ assert.equal(g.phase, 'intermission', `seed ${seed}: stage ${g.survivalStage}, wave ${g.wave}, enemies ${g.survivalEnemies}, survivors ${g.zombies.filter(z=>z.x<100).map(z=>z.kind)}`);
+ assert.equal(g.survivalStage, finalStage);
 }
 });

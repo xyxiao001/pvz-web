@@ -20,7 +20,7 @@ for kind, name in types.items():
     allowed = re.search(r'\{ ' + name + r',\s*\{(.*?)\}', challenge, re.S)[1]
     definitions[kind] = {key: int(re.search(r'\.' + field + r' = (\d+)', definition)[1]) for key, field in
                         [('value', 'mZombieValue'), ('startingLevel', 'mStartingLevel'), ('firstAllowedWave', 'mFirstAllowedWave'), ('weight', 'mPickWeight')]}
-    definitions[kind]['allowedLevels'] = [int(n) for n in allowed.replace(',', ' ').split()][:49]
+    definitions[kind]['allowedLevels'] = [int(n) for n in allowed.replace(',', ' ').split()][:50]
 conveyor_source = (repo / 'src/Lawn/Challenge.cpp').read_text()
 conveyor_ten = re.search(r'if \(mBoard->mLevel == 10\)\s*\{(.*?)\n\t\}', conveyor_source, re.S)[1]
 seed_names = {'PEASHOOTER': 'peashooter', 'CHERRYBOMB': 'cherrybomb', 'WALLNUT': 'wallnut', 'REPEATER': 'repeater', 'SNOWPEA': 'snowpea', 'CHOMPER': 'chomper', 'POTATOMINE': 'potatomine'}
@@ -35,12 +35,14 @@ conveyor_thirty = re.search(r'else if \(mBoard->mLevel == 30\)\s*\{(.*?)\n\t\}',
 pool_names = {name.upper(): name for name in ['lilypad','squash','threepeater','tanglekelp','jalapeno','spikeweed','torchwood','tallnut']}
 conveyor30 = [{'kind':pool_names[name], 'weight':int(weight)} for name,weight in re.findall(r'mItem = SEED_(\w+);\s*aSeedPickArray\[\d+\].mWeight = (\d+);', conveyor_thirty)]
 late_names = {name.upper():name for name in ['lilypad','seashroom','magnetshroom','blover','cactus','starfruit','splitpea','flowerpot','chomper','cherrybomb']}
+late_names.update({name.upper():name for name in ['melonpult','jalapeno','cabbagepult','kernelpult','iceshroom']})
 late_names['PUMPKINSHELL'] = 'pumpkin'
 def conveyor_block(pattern):
     block = re.search(pattern + r'\s*\{(.*?)\n\t\}', conveyor_source, re.S)[1]
     return [{'kind':late_names[name], 'weight':int(weight)} for name,weight in re.findall(r'mItem = SEED_(\w+);\s*aSeedPickArray\[\d+\].mWeight = (\d+);', block)]
 conveyor40 = conveyor_block(r'else if \(mBoard->mLevel == 40\)')
 conveyor45 = conveyor_block(r'else if \(mApp->IsBungeeBlitzLevel\(\)\)')
+conveyor50 = conveyor_block(r'else if \(mApp->IsFinalBossLevel\(\)\)')
 vase_source = conveyor_source.split('if (mApp->IsAdventureMode() && mBoard->mLevel == 35)', 1)[1].split('\n\telse', 1)[0]
 vases = []
 for stage in range(3):
@@ -52,12 +54,12 @@ for stage in range(3):
     green = re.search(r'ScaryPotterChangePotType\(GRIDITEM_STATE_SCARY_POT_LEAF, (\d+)\)', block)
     vases.append({'firstColumn':max(map(int,re.findall(r'ScaryPotterDontPlaceInCol\((\d+)',block)))+1, 'green':int(green[1]) if green else 0, 'contents':contents})
 board = (repo / 'src/Lawn/Board.cpp').read_text()
-graves = [[] for _ in range(49)]
+graves = [[] for _ in range(50)]
 for levels in ['mLevel == 11 || mLevel == 12 || mLevel == 13', 'mLevel == 14 || mLevel == 16', 'mLevel == 17 || mLevel == 18 || mLevel == 19']:
     block = re.search(r'else if \(' + re.escape(levels) + r'\)\s*\{(.*?)\}', board, re.S)[1]
     columns = [[int(column), int(count)] for column, count in re.findall(r'AddGraveStones\((\d+), (\d+), aLevelRNG\)', block)]
     for level in map(int, re.findall(r'mLevel == (\d+)', levels)):
-        if level <= 49: graves[level - 1] = columns
+        if level <= 50: graves[level - 1] = columns
 block20 = re.search(r'else if \(mLevel >= 20\)\s*\{(.*?)\}', board, re.S)[1]
 graves[19] = [[int(c), int(n)] for c,n in re.findall(r'AddGraveStones\((\d+), (\d+), aLevelRNG\)', block20)]
 counts[14] = 8  # Board::PickZombieWaves overrides the adventure table for Whack-a-Zombie.
@@ -65,7 +67,7 @@ paths = ['src/Lawn/Plant.cpp', 'src/Lawn/CutScene.cpp', 'src/Lawn/System/Music.c
 data = {'source': {'repository': 'https://github.com/wszqkzqk/PvZ-Portable',
                    'commit': subprocess.check_output(['git', '-C', str(repo), 'rev-parse', 'HEAD'], text=True).strip(),
                    'files': {p: hashlib.sha256((repo / p).read_bytes()).hexdigest() for p in paths}},
-        'waveCounts': counts[:49], 'zombies': definitions, 'conveyorTen': conveyor, 'conveyorTwenty': conveyor20, 'conveyorTwentyFive': conveyor25, 'conveyorThirty': conveyor30, 'conveyorForty':conveyor40, 'conveyorFortyFive':conveyor45, 'vaseStages': vases, 'graveColumns': graves}
+        'waveCounts': counts[:50], 'zombies': definitions, 'conveyorTen': conveyor, 'conveyorTwenty': conveyor20, 'conveyorTwentyFive': conveyor25, 'conveyorThirty': conveyor30, 'conveyorForty':conveyor40, 'conveyorFortyFive':conveyor45, 'conveyorFifty':conveyor50, 'vaseStages': vases, 'graveColumns': graves}
 output = Path(__file__).resolve().parents[1] / 'src/game/data/portable-adventure.json'
 output.write_text(json.dumps(data, indent=2) + '\n')
 print(output)

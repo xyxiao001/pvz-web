@@ -1,3 +1,4 @@
+import { BossArt } from './boss';
 import 'pixi.js/prepare';
 import { Application, Assets, Container, Graphics, Rectangle, Sprite, Text, Texture } from 'pixi.js';
 import { BOARD, cellX, PLANTS, isPool } from '../game/config';
@@ -14,6 +15,7 @@ type Effect = { node: Container; born: number; duration: number; actor?: Actor }
 export class Scene {
   readonly app = new Application();
   private world = new Container();
+  private bossArt?: BossArt;
   private actors = new Map<string, Actor>();
   private effects: Effect[] = [];
   private textures: Record<string, Texture> = {};
@@ -51,10 +53,12 @@ export class Scene {
   }
 
   async prepareBoard(game: Game, progress: (done: number, total: number) => void) {
+    if(this.bossArt){await this.bossArt.destroy();this.bossArt=undefined;}
     const files: Record<string, string> = { mower: 'original/mower.webp' };
     const environment = game.config.environment;
     if (environment === 'day') { files.yard = 'yard.webp'; files.lawn = 'lawn.webp'; }
     else files[environment] = `original/${environment}.webp`;
+    if(game.boss)files.bossBackground='boss/background.webp';
     if (environment === 'roof') files.flowerpot = 'original/flowerpot.webp';
     if (environment === 'night') files.grave = 'original/grave.webp';
     if (isPool(environment)) files.poolCleaner = 'original/pool-cleaner.webp';
@@ -83,6 +87,7 @@ export class Scene {
 
   async prepareActors(game: Game, progress: (done: number, total: number) => void) {
     await this.prepareTextures(combatTextureFiles(game), progress);
+    if(game.boss&&!this.bossArt){this.bossArt=new BossArt();await this.bossArt.load(progress);this.bossArt.root.zIndex=590;this.world.addChild(this.bossArt.root);}
     const base = `${import.meta.env.BASE_URL}assets/runtime/`;
     this.animationData ??= fetch(base + 'animations.json').then(response => response.json());
     const { animations } = await this.animationData;
@@ -118,7 +123,7 @@ export class Scene {
     for (const effect of this.effects) effect.node.destroy({ children: true });
     this.actors.clear(); this.effects = []; this.explosions = []; this.time = 0; this.healthKey = ''; this.hoverKey = '';
     this.hover.clear(); this.health.clear(); this.fog.removeChildren().forEach(child=>child.destroy()); this.fogKey = '';
-    const yard = new Sprite(game.config.environment === 'day' ? this.textures.yard : this.textures[game.config.environment]); yard.x = -220;
+    const yard = new Sprite(game.boss ? this.textures.bossBackground : game.config.environment === 'day' ? this.textures.yard : this.textures[game.config.environment]); yard.x = -220;
     this.app.stage.addChild(yard);
     for (const row of game.config.environment === 'day' ? game.config.rows : []) {
       const lawn = new Sprite(this.lawnTextures[row]);
@@ -226,6 +231,7 @@ export class Scene {
     if (game.phase === 'playing') this.time = game.ticks + alpha;
     else if (game.phase === 'won' || game.phase === 'lost') this.time += elapsed / 10;
     this.stamp++;
+    if(game.boss)this.bossArt?.render(game,alpha);
     for (const ice of game.iceTrails) {
       const actor = this.actor(`ice${ice.row}`, ice.row * 100 + 1);
       actor.art.texture = this.textures.iceTrail; actor.art.width = 800 - ice.x; actor.art.height = 70;

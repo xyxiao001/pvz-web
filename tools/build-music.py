@@ -41,6 +41,7 @@ tracks = {
     'fog': (6, 0x7D, 0x7E, 'Rigor Mormist'),
     'minigame': (9, 0xA6, 0xA6, 'Loonboon'),
     'puzzle': (10, 0xB1, 0xB1, 'Cerebrawl'),
+    'boss': (8, 0x9E, 0x9E, 'Brainiac Maniac'),
     'conveyor': (12, 0xD4, 0xD5, 'Ultimate Battle'),
 }
 data = source.read_bytes()

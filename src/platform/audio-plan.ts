@@ -13,7 +13,7 @@ export function soundFiles(game: Game) {
   if (plants.has('iceshroom')) files.freeze = 'frozen.ogg';
   if (plants.has('blover')) files.blover = 'blover.ogg';
   if (plants.has('jalapeno')) files.fire = 'cherrybomb.mp3';
-  if (game.waves.flat().includes('jack') || game.config.mode === 'vase') files.explode = 'cherrybomb.mp3';
+  if (game.boss || game.waves.flat().includes('jack') || game.config.mode === 'vase') files.explode = 'cherrybomb.mp3';
   if (game.config.mode === 'vase') files.vase = 'vase_breaking.ogg';
   if (game.config.mode === 'whack') files.whack = 'bonk.ogg';
   if(game.level===40&&game.scenario==='adventure')files.thunder='thunder.ogg';

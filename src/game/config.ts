@@ -4,10 +4,10 @@ export const TICK_MS = 10;
 export const BOARD = { width: 800, height: 600, left: 40, top: 80, cellWidth: 80, cellHeight: 100, columns: 9 };
 export type PlantKind = 'peashooter' | 'sunflower' | 'cherrybomb' | 'wallnut' | 'potatomine' | 'snowpea' | 'explodenut' | 'chomper' | 'repeater' | 'puffshroom' | 'sunshroom' | 'fumeshroom' | 'gravebuster' | 'hypnoshroom' | 'scaredyshroom' | 'iceshroom' | 'doomshroom' | 'lilypad' | 'squash' | 'threepeater' | 'plantern' | 'tanglekelp' | 'jalapeno' | 'spikeweed' | 'torchwood' | 'tallnut' | 'seashroom' | 'cactus' | 'blover' | 'splitpea' | 'starfruit' | 'pumpkin' | 'magnetshroom' | 'cabbagepult' | 'flowerpot' | 'kernelpult' | 'coffeebean' | 'garlic' | 'umbrella' | 'marigold' | 'melonpult';
 export type ZombieKind = 'normal' | 'cone' | 'flag' | 'pole' | 'bucket' | 'newspaper' | 'door' | 'football' | 'dancer' | 'backup' | 'ducky' | 'snorkel' | 'zomboni' | 'bobsled' | 'dolphin' | 'jack' | 'balloon' | 'digger' | 'pogo' | 'bungee' | 'ladder' | 'catapult' | 'gargantuar' | 'imp';
-export type LevelId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49;
-export type SurvivalScene = 'day' | 'night' | 'pool' | 'fog';
-export const SCENE_NAMES: Record<SurvivalScene, string> = { day: '白天庭院', night: '夜晚庭院', pool: '泳池', fog: '迷雾泳池' };
-export const SURVIVAL_SCENES: SurvivalScene[] = ['day', 'night', 'pool', 'fog'];
+export type LevelId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50;
+export type SurvivalScene = 'day' | 'night' | 'pool' | 'fog' | 'roof';
+export const SCENE_NAMES: Record<SurvivalScene, string> = { day: '白天庭院', night: '夜晚庭院', pool: '泳池', fog: '迷雾泳池', roof: '屋顶' };
+export const SURVIVAL_SCENES: SurvivalScene[] = ['day', 'night', 'pool', 'fog', 'roof'];
 export type Environment = SurvivalScene | 'roof';
 export const isPool = (environment: Environment) => environment === 'pool' || environment === 'fog';
 export const isNight = (environment: Environment) => environment === 'night' || environment === 'fog';
@@ -69,11 +69,15 @@ export const ENDLESS: LevelConfig = {
   waveCount: 20, reward: null,
 };
 export function endlessConfig(scene: SurvivalScene): LevelConfig {
-  const daytime: PlantKind[] = [...ENDLESS.seeds, 'squash', 'threepeater'];
-  const seeds: PlantKind[] = isNight(scene) ? [...daytime, ...MUSHROOMS.filter(kind => kind !== 'seashroom' && kind !== 'magnetshroom')] : daytime;
-  if (scene === 'night') seeds.push('gravebuster');
-  if (isPool(scene)) seeds.push('lilypad','tanglekelp');
-  if (scene === 'fog') seeds.push('plantern');
+  const seeds = [...new Set(Object.values(LEVELS).flatMap(level => level.seeds))].filter(kind => {
+    if (kind === 'explodenut') return false;
+    if (['lilypad','tanglekelp','seashroom'].includes(kind)) return isPool(scene);
+    if (kind === 'gravebuster') return scene === 'night';
+    if (kind === 'plantern') return scene === 'fog';
+    if (kind === 'flowerpot') return scene === 'roof';
+    if (scene === 'roof' && ['spikeweed','potatomine'].includes(kind)) return false;
+    return true;
+  });
   return { ...ENDLESS, environment: scene, title: `${SCENE_NAMES[scene]}无尽`, seeds,
     rows: isPool(scene) ? [0,1,2,3,4,5] : [0,1,2,3,4] };
 }
@@ -134,7 +138,8 @@ export const LEVELS: Record<LevelId, LevelConfig> = {
   47: { environment: 'roof', mode: 'lawn', label: '5–7', title: '屋顶的金币', description: '金盏花定期产出钱币。守住投石车和扶梯僵尸的进攻，收集本局金币。', rows: [0,1,2,3,4], initialSun: 50, seeds: [...lateRoofSeeds,'marigold'], waveCount: portable.waveCounts[46], reward: 'melonpult' },
   48: { environment: 'roof', mode: 'lawn', label: '5–8', title: '巨人的脚步', description: '巨人会砸毁植物，受伤后抛出小鬼！西瓜的溅射火力与爆炸植物可以阻挡它。', rows: [0,1,2,3,4], initialSun: 50, seeds: [...lateRoofSeeds,'marigold','melonpult'], waveCount: portable.waveCounts[47], reward: null },
   49: { environment: 'roof', mode: 'lawn', label: '5–9', title: '屋顶最后防线', description: '三面旗帜的屋顶大战。用保护伞守护后方，集中西瓜与爆炸火力迎战巨人。', rows: [0,1,2,3,4], initialSun: 50, seeds: [...lateRoofSeeds,'marigold','melonpult'], waveCount: portable.waveCounts[48], reward: null },
+  50: { environment: 'roof', mode: 'conveyor', label: '5–10', title: '僵王博士的复仇', description: '传送带供应六种植物。僵王低头时集中攻击；寒冰菇消除火球，火爆辣椒消除同排冰球。小心蹦极、踩踏和飞来的房车！', rows: [0,1,2,3,4], initialSun: 0, seeds: ['flowerpot','melonpult','jalapeno','cabbagepult','kernelpult','iceshroom'], waveCount: 0, reward: null },
 };
-export const LEVEL_IDS: LevelId[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49];
+export const LEVEL_IDS: LevelId[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50];
 export const cellX = (column: number) => BOARD.left + column * BOARD.cellWidth + 40;
 export const rowY = (row: number) => BOARD.top + row * BOARD.cellHeight + 78;

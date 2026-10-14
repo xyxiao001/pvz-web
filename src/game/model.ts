@@ -1,3 +1,4 @@
+import { createBoss, stepBoss, damageBoss, bossVulnerable, type Boss } from './boss';
 import { BOARD, cellX, endlessConfig, isPool, isNight, MUSHROOMS, LEVELS, PLANTS, type SurvivalScene, type LevelId, type PlantKind, type ZombieKind } from './config';
 import { generateSurvivalWaves, isSurvivalFlagWave, survivalRoster } from './survival';
 import { generateWaves, isFlagWave } from './waves';
@@ -79,10 +80,12 @@ export class Game {
   private rowPicker: RowPicker;
   readonly config;
   waves: ZombieKind[][];
+  boss: Boss | null = null;
   survivalStage = 0;
   survivalEnemies: ZombieKind[] = [];
 
   constructor(readonly level: LevelId, seed: number, readonly scenario: 'adventure' | 'endless' = 'adventure', readonly survivalScene: SurvivalScene = 'day') {
+    if (scenario === 'adventure' && level === 50) this.boss = createBoss();
     this.config = scenario === 'endless' ? endlessConfig(survivalScene) : LEVELS[level];
     this.needsSeedChoice = scenario === 'endless' || this.config.mode === 'lawn' && level > 7;
     this.seeds = this.needsSeedChoice ? [] : [...this.config.seeds];
@@ -127,7 +130,7 @@ export class Game {
   slope(x: number) { return this.config.environment === 'roof' ? Math.max(0,440-x)*.25 : 0; }
   rowAt(y: number, x = 440) { return Math.floor((y - BOARD.top - this.slope(x) + (this.config.environment === 'roof' ? 10 : 0)) / this.cellHeight); }
   waterRow(row: number) { return isPool(this.config.environment) && (row === 2 || row === 3); }
-  sleeping(plant: Plant) { return !plant.awake && !isNight(this.config.environment) && MUSHROOMS.includes(plant.kind); }
+  sleeping(plant: Plant) { return !this.boss && !plant.awake && !isNight(this.config.environment) && MUSHROOMS.includes(plant.kind); }
   flying(z: Zombie) { return z.kind === 'balloon' && (z.flying || (z.popIn !== undefined && z.popIn > 0)); }
   submerged(z: Zombie) { return !!z.flight || !!z.landingIn || !!z.underground || !!z.emergingIn || !!z.bungee && z.bungee.phase !== 'wait' || z.kind === 'snorkel' && this.waterRow(z.row) && z.x > 100 && z.x < 770 && !z.eating; }
 
@@ -153,7 +156,8 @@ export class Game {
     this.waves = generateSurvivalWaves(this.survivalStage, this.survivalEnemies, () => this.random());
     this.wave = 0; this.waveIn = 600; this.waveElapsed = 0; this.waveThreshold = 0; this.flagWarningIn = 0;
     this.rowPicker.beginSurvivalStage();
-    this.cancelSelection(); this.seeds = [];
+    this.cancelSelection();
+    for (const plant of this.plants) if (plant.kind === 'marigold') delete plant.productionEnding;
     this.phase = 'ready';
   }
 
@@ -202,7 +206,7 @@ export class Game {
 
   canPlant(kind: PlantKind, column: number, row: number) {
     if (this.phase !== 'playing' || !this.seeds.includes(kind)
-      || !this.config.rows.includes(row) || !(column >= 0 && column < BOARD.columns)) return false;
+      || !this.config.rows.includes(row) || !(column >= 0 && column < (this.boss ? 8 : BOARD.columns))) return false;
     if (this.vases.some(v => v.column === column && v.row === row) || this.iceTrails.some(ice => ice.row === row && cellX(column) + 30 >= ice.x)) return false;
     if (this.craters.some(c => c.column === column && c.row === row)) return false;
     const occupants = this.plants.filter(p => p.column === column && p.row === row);
@@ -377,7 +381,7 @@ export class Game {
     }
     if (this.hasConveyor && --this.conveyorIn === 0) {
       const count = this.conveyor.length;
-      this.conveyorIn = count > 8 ? 1000 : count > 6 ? 500 : count > 4 ? 425 : 400;
+      this.conveyorIn = Math.trunc((count > 8 ? 1000 : count > 6 ? 500 : count > 4 ? 425 : 400) * (this.boss ? .875 : 1));
       if (count < 10) this.conveyor.push({ id: ++this.id, kind: this.nextConveyorSeed(),
         x: count === 0 ? 500 : Math.max(500, this.conveyor[count - 1].x + 50) });
     }
@@ -432,6 +436,7 @@ export class Game {
         continue;
       }
       if (plant.kind === 'jalapeno') {
+        if (this.boss) { damageBoss(this.boss,1800,this.ticks);this.boss.frozenIn=0;this.boss.chillIn=0;if(this.boss.ball?.kind==='ice'&&this.boss.ball.row===plant.row)this.boss.ball=null; }
         this.ladders=this.ladders.filter(l=>l.row!==plant.row);
         for (const z of this.zombies) if (!z.hypnotized && z.row === plant.row) { this.damageZombie(z, 1800, true); z.chillIn = 0; z.frozenIn = 0; }
         for (const ice of this.iceTrails) if (ice.row === plant.row) ice.remaining = 20;
@@ -439,6 +444,7 @@ export class Game {
         this.events.push({ kind: 'fire', x: 0, y: this.rowY(plant.row, cellX(plant.column)), row: plant.row }); continue;
       }
       if (plant.kind === 'iceshroom') {
+        if (this.boss) { if(this.boss.ball?.kind==='fire')this.boss.ball=null;if(bossVulnerable(this.boss)){damageBoss(this.boss,20,this.ticks);this.boss.frozenIn=this.boss.chillIn>0?300+Math.floor(this.random()*101):400+Math.floor(this.random()*201);this.boss.chillIn=2000;} }
         for (const z of this.zombies) if (!z.hypnotized && z.health > 0 && z.kind !== 'zomboni' && z.kind !== 'catapult' && !z.sled) {
           const cold = z.chillIn > 0 || (z.frozenIn !== undefined && z.frozenIn > 0);
           z.frozenIn = this.waterRow(z.row) ? 300 : cold ? 300 + Math.floor(this.random()*101) : 400 + Math.floor(this.random()*201);
@@ -675,6 +681,7 @@ export class Game {
       const max = this.sun > 500 ? 2800 : this.sun > 350 ? 3100 : this.sun > 200 ? 3700 : 5000;
       if (hit >= 2500 * factor && hit <= max * factor) for (let i = 0; i < 3; i++) this.addSun(zombie.x - i * 20, this.rowY(zombie.row) - 60, this.rowY(zombie.row) - 15, 25);
     }
+    if(this.boss?.health===0)this.zombies=[]; // BossDie clears the remaining attackers.
     this.kills += this.zombies.filter(zombie => !zombie.hypnotized && zombie.health <= 0).length;
     this.zombies = this.zombies.filter(zombie => zombie.health > 0 && !((zombie.hypnotized || zombie.backwards) && zombie.x > 900));
     if (this.zombies.some(zombie => !zombie.hypnotized && !zombie.underground && !zombie.backwards && zombie.x < -35)) {
@@ -691,6 +698,7 @@ export class Game {
     }
     if (this.autoCollectSun) for (const sun of [...this.suns]) if (sun.y >= sun.targetY) this.collectSun(sun.id);
 
+    if (this.boss) { this.updateBoss(); return; }
     if (this.config.mode === 'vase') {
       if (this.vases.length === 0 && !this.zombies.some(z => !z.hypnotized)) {
         this.cancelSelection(); this.phase = this.vaseStage === 2 ? 'won' : 'intermission';
@@ -743,16 +751,41 @@ export class Game {
     }
   }
 
+  private updateBoss() {
+    const boss = this.boss!;
+    const rows = [0,1,2,3].filter(row=>this.plants.some(p=>p.row>=row&&p.row<=row+1&&p.column>=5));
+    for (const action of stepBoss(boss,()=>this.random(),rows,!this.zombies.some(z=>z.bungee&&z.bungee.phase!=='up'))) {
+      if(action.kind==='spawn')this.spawnZombie(action.zombie,action.row,630,0);
+      else if(action.kind==='bungee')for(let i=0;i<3;i++){
+        const column=action.column+i, targets=this.plants.filter(p=>p.column===column);
+        const row=targets.length?targets[Math.floor(this.random()*targets.length)].row:Math.floor(this.random()*5);
+        const z=this.spawnZombie('bungee',row,cellX(column),0);z.row=row;z.x=cellX(column);z.bungee={phase:'down',remaining:100,column};
+      } else if(action.kind==='crush') {
+        this.plants=this.plants.filter(p=>!(p.row>=action.row&&p.row<=action.row+1&&p.column>=action.column&&p.column<action.column+action.columns));
+        this.events.push({kind:'hit',x:cellX(action.column),y:this.rowY(action.row)});
+      } else if(action.kind==='won') { this.phase='won';this.zombies=[];this.peas=[];this.events.push({kind:'win',x:400,y:300}); }
+    }
+    if(boss.ball && boss.ball.age>100){
+      const ball=boss.ball;
+      this.plants=this.plants.filter(p=>p.row!==ball.row||Math.abs(cellX(p.column)-ball.x)>35);
+    }
+  }
+
   private nextConveyorSeed(): PlantKind {
     if (this.config.mode === 'bowling') return this.random() < .85 ? 'wallnut' : 'explodenut';
     // Challenge::UpdateConveyor: reduce repeats and cards piling up on the belt.
-    const choices = (this.level === 45 ? portable.conveyorFortyFive : this.level === 40 ? portable.conveyorForty : this.level === 30 ? portable.conveyorThirty : this.level === 25 ? portable.conveyorTwentyFive : this.level === 20 ? portable.conveyorTwenty : portable.conveyorTen).map(({ kind, weight }) => {
+    const choices = (this.boss ? portable.conveyorFifty : this.level === 45 ? portable.conveyorFortyFive : this.level === 40 ? portable.conveyorForty : this.level === 30 ? portable.conveyorThirty : this.level === 25 ? portable.conveyorTwentyFive : this.level === 20 ? portable.conveyorTwenty : portable.conveyorTen).map(({ kind, weight }) => {
       const count = this.conveyor.filter(packet => packet.kind === kind).length;
       // Challenge.cpp:1630–1636: fewer bases once the new special boards are filled.
-      if (this.level === 45 && kind === 'flowerpot' || this.level === 40 && kind === 'lilypad') {
+      if ((this.boss || this.level === 45) && kind === 'flowerpot' || this.level === 40 && kind === 'lilypad') {
         const total = count + this.plants.filter(p => p.kind === kind).length;
         weight = Math.trunc(weight + (1 - weight) * Math.min(1, total / (kind === 'flowerpot' ? 35 : 18)));
       }
+      if (this.boss && ['melonpult','kernelpult','cabbagepult'].includes(kind)) {
+        const empty = this.plants.filter(p=>p.kind==='flowerpot'&&!this.plants.some(top=>top!==p&&top.column===p.column&&top.row===p.row)).length;
+        if(empty<=5)weight=Math.trunc(weight/(empty<=2?5:3));
+      }
+      if (this.boss?.phase==='rv' && kind==='flowerpot')weight=500;
       return { kind: kind as PlantKind, weight: count >= 4 ? 1 : count >= 3 ? 5 : kind === this.lastConveyorSeed ? Math.trunc(weight / 2) : weight };
     });
     let pick = Math.floor(this.random() * choices.reduce((sum, choice) => sum + choice.weight, 0));
@@ -1042,10 +1075,10 @@ export class Game {
   }
   private fireLob(plant: Plant) {
     const x=cellX(plant.column), target=this.zombies.filter(z=>!z.hypnotized&&!this.flying(z)&&!z.flight&&!z.landingIn&&!z.underground&&!z.emergingIn&&(!z.bungee||z.bungee.phase==='wait')&&z.health>0&&z.row===plant.row&&z.x>x-10&&z.x<825).sort((a,b)=>a.x-b.x)[0];
-    if(!target)return;
+    if(!target && !(this.boss && bossVulnerable(this.boss)))return;
     const kind=plant.kind==='melonpult'?'melon':plant.kind==='cabbagepult'?'cabbage':this.random()<.25?'butter':'kernel';
-    const duration=100,endX=target.x-(target.eating||target.bungee||target.giant&&target.giant.phase!=='walk'||target.catapult&&target.catapult.phase!=='walk'?0:walkingSpeed(target)*duration);
-    this.peas.push({id:++this.id,row:plant.row,x,y:this.rowY(plant.row,x)-60,age:0,ice:false,puff:false,lob:{kind,target:target.id,startX:x,endX,startY:this.rowY(plant.row,x)-60,endY:this.rowY(plant.row,endX)-55,duration}});
+    const duration=100,endX=target ? target.x-(target.eating||target.bungee||target.giant&&target.giant.phase!=='walk'||target.catapult&&target.catapult.phase!=='walk'?0:walkingSpeed(target)*duration) : 740;
+    this.peas.push({id:++this.id,row:plant.row,x,y:this.rowY(plant.row,x)-60,age:0,ice:false,puff:false,lob:{kind,target:target ? target.id : -1,startX:x,endX,startY:this.rowY(plant.row,x)-60,endY:this.rowY(plant.row,endX)-55,duration}});
     plant.shotAt=this.ticks;this.events.push({kind:'shoot',x,y:this.rowY(plant.row,x)-60});
   }
   private updateLob(pea: Pea) {
@@ -1057,6 +1090,7 @@ export class Game {
       if(victim){const umbrella=this.findUmbrella(victim.column,victim.row);if(umbrella)umbrella.shotAt=this.ticks;else victim.health-=75;}
       pea.x=1000;return;
     }
+    if(shot.target===-1 && this.boss){damageBoss(this.boss,shot.kind==='melon'?80:shot.kind==='kernel'?20:40,this.ticks);pea.x=1000;return;}
     const target=this.zombies.find(z=>z.id===shot.target&&z.health>0&&!z.underground&&(!z.bungee||z.bungee.phase==='wait')&&Math.abs(z.x-shot.endX)<65);
     if(target){
       if(shot.kind==='melon'){

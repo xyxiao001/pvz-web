@@ -1,0 +1,94 @@
+{
+  "anim_enter": [
+    0,
+    40
+  ],
+  "anim_idle": [
+    40,
+    15
+  ],
+  "anim_spawn_5": [
+    55,
+    21
+  ],
+  "anim_spawn_4": [
+    76,
+    21
+  ],
+  "anim_spawn_3": [
+    97,
+    21
+  ],
+  "anim_spawn_2": [
+    118,
+    21
+  ],
+  "anim_spawn_1": [
+    139,
+    22
+  ],
+  "anim_bungee_1_enter": [
+    161,
+    25
+  ],
+  "anim_bungee_1_leave": [
+    186,
+    18
+  ],
+  "anim_stomp_1": [
+    205,
+    31
+  ],
+  "anim_stomp_2": [
+    236,
+    31
+  ],
+  "anim_stomp_3": [
+    267,
+    29
+  ],
+  "anim_stomp_4": [
+    296,
+    29
+  ],
+  "anim_head_enter": [
+    325,
+    57
+  ],
+  "anim_head_idle": [
+    382,
+    17
+  ],
+  "anim_head_attack_1": [
+    399,
+    40
+  ],
+  "anim_head_attack_2": [
+    439,
+    40
+  ],
+  "anim_head_attack_3": [
+    479,
+    40
+  ],
+  "anim_head_attack_4": [
+    519,
+    40
+  ],
+  "anim_head_attack_5": [
+    559,
+    43
+  ],
+  "anim_head_leave": [
+    602,
+    45
+  ],
+  "anim_death": [
+    647,
+    107
+  ],
+  "anim_RV_1": [
+    754,
+    38
+  ]
+}

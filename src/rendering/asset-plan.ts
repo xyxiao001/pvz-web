@@ -1,3 +1,4 @@
+import { BOSS_ENEMIES } from '../game/boss';
 import { isPool } from '../game/config';
 import type { Game } from '../game/model';
 import portable from '../game/data/portable-adventure.json';
@@ -15,7 +16,10 @@ export function combatTextureFiles(game: Game) {
   if(game.waves.flat().includes('catapult'))files.basketball='original/basketball.webp';
   if(plants.has('cabbagepult'))files.cabbage='original/cabbage.webp';
   if(plants.has('kernelpult')){files.kernel='original/kernel.webp';files.butter='original/butter.webp';}
-  if(game.config.environment==='roof'){files.ladder='original/ladder.webp';files.bungeeTarget='original/bungee-target.webp';files.bungeeCord='original/bungee-cord.webp';}
+  if(game.boss||game.waves.flat().includes('catapult'))files.basketball='original/basketball.webp';
+  if(game.boss)files.iceTrail='original/ice-trail.webp';
+  if(game.config.environment==='roof'||game.waves.flat().includes('ladder')||game.ladders.length)files.ladder='original/ladder.webp';
+  if(game.config.environment==='roof'||game.waves.flat().includes('bungee')||game.zombies.some(z=>z.kind==='bungee')){files.ladder='original/ladder.webp';files.bungeeTarget='original/bungee-target.webp';files.bungeeCord='original/bungee-cord.webp';}
   if (plants.has('cactus')) files.spike = 'original/spike.webp';
   if (plants.has('torchwood')) files.pea = 'pea.webp';
   if (game.waves.flat().includes('zomboni')) files.iceTrail = 'original/ice-trail.webp';
@@ -34,6 +38,7 @@ export function animationNames(game: Game, available: string[]) {
     if (content.type === 'zombie') enemies.add(content.kind as Game['zombies'][number]['kind']);
     else roots.add(content.kind);
   }
+  if(game.boss)for(const kind of BOSS_ENEMIES)enemies.add(kind);
   if(game.config.environment==='roof'){enemies.add('bungee');enemies.add('normal');enemies.add('cone');}
   if (game.config.mode === 'whack') for (const kind of ['normal','cone','bucket'] as const) enemies.add(kind);
   if (game.config.environment === 'night' || isPool(game.config.environment)) { enemies.add('normal'); enemies.add('cone'); }
