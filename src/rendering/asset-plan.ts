@@ -1,6 +1,17 @@
 import { isPool } from '../game/config';
 import type { Game } from '../game/model';
 
+// Combat-only images wait for card selection; retained shots and craters also need them on resume.
+export function combatTextureFiles(game: Game) {
+  const plants = new Set([...game.seeds, ...game.plants.map(plant => plant.kind)]);
+  const files: Record<string, string> = {};
+  if (plants.has('peashooter') || plants.has('repeater') || plants.has('threepeater') || game.peas.some(pea => !pea.ice && !pea.puff)) files.pea = 'pea.webp';
+  if (plants.has('snowpea') || game.peas.some(pea => pea.ice)) files.ice = 'original/snow-pea.webp';
+  if (plants.has('puffshroom') || plants.has('scaredyshroom') || game.peas.some(pea => pea.puff)) files.puff = 'original/puff.webp';
+  if (plants.has('doomshroom') || game.craters.length) files.crater = 'original/crater.webp';
+  return files;
+}
+
 // Include selected cards, retained defenses, wave enemies and their spawned forms.
 export function animationNames(game: Game, available: string[]) {
   const roots = new Set<string>(['sun', 'zombie']);

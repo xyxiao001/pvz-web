@@ -4,7 +4,7 @@ import { BOARD, cellX, PLANTS, isPool } from '../game/config';
 import { headless, type Game, type GameEvent } from '../game/model';
 import { walkingCycleTicks } from '../game/zombie-motion';
 
-import { animationNames, animationFrame } from './asset-plan';
+import { animationNames, animationFrame, combatTextureFiles } from './asset-plan';
 
 type ClipData = { frames: number[][]; durations: number[]; anchor: number[]; pages: string[] };
 type Clip = { files: string[]; frames: Texture[]; ends: number[]; duration: number; anchors: number[][] };
@@ -49,7 +49,7 @@ export class Scene {
   }
 
   async prepareBoard(game: Game, progress: (done: number, total: number) => void) {
-    const files: Record<string, string> = { mower: 'original/mower.webp', pea: 'pea.webp', ice: 'original/snow-pea.webp', puff: 'original/puff.webp', crater: 'original/crater.webp' };
+    const files: Record<string, string> = { mower: 'original/mower.webp' };
     const environment = game.config.environment;
     if (environment === 'day') { files.yard = 'yard.webp'; files.lawn = 'lawn.webp'; }
     else files[environment] = `original/${environment}.webp`;
@@ -58,6 +58,12 @@ export class Scene {
     if (environment === 'fog') files.fogCloud = 'original/fog-cloud.webp';
     if (game.config.mode === 'bowling') files.stripe = 'original/bowling-stripe.webp';
     if (game.config.mode === 'whack') files.hammer = 'original/hammer.webp';
+    await this.prepareTextures(files, progress);
+    if (environment === 'fog' && this.fogFrames.length === 0) this.fogFrames = Array.from({length:8}, (_,i) => new Texture({source:this.textures.fogCloud.source,frame:new Rectangle(i*210,0,210,190)}));
+    if (environment === 'day' && this.lawnTextures.length === 0) this.lawnTextures = Array.from({length:5}, (_,row) => new Texture({source:this.textures.lawn.source,frame:new Rectangle(220,BOARD.top+row*100,800,100)}));
+  }
+
+  private async prepareTextures(files: Record<string, string>, progress: (done: number, total: number) => void) {
     const pending = Object.entries(files).filter(([key]) => !this.textures[key]);
     let done = 0; progress(done, pending.length);
     await Promise.all(pending.map(async ([key, file]) => {
@@ -65,11 +71,10 @@ export class Scene {
       progress(++done, pending.length);
     }));
     await this.app.renderer.prepare.upload(pending.map(([key]) => this.textures[key]));
-    if (environment === 'fog' && this.fogFrames.length === 0) this.fogFrames = Array.from({length:8}, (_,i) => new Texture({source:this.textures.fogCloud.source,frame:new Rectangle(i*210,0,210,190)}));
-    if (environment === 'day' && this.lawnTextures.length === 0) this.lawnTextures = Array.from({length:5}, (_,row) => new Texture({source:this.textures.lawn.source,frame:new Rectangle(220,BOARD.top+row*100,800,100)}));
   }
 
   async prepareActors(game: Game, progress: (done: number, total: number) => void) {
+    await this.prepareTextures(combatTextureFiles(game), progress);
     const base = `${import.meta.env.BASE_URL}assets/runtime/`;
     this.animationData ??= fetch(base + 'animations.json').then(response => response.json());
     const { animations } = await this.animationData;

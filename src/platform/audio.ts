@@ -1,11 +1,10 @@
-import type { GameEvent } from '../game/model';
+import type { Game, GameEvent } from '../game/model';
+import { soundFiles } from './audio-plan';
 
-const files = { plant: 'plant_water', sun: 'points', mower: 'lawnmower', wave: 'finalwave', flag: 'hugewave',
-  win: 'winmusic', lose: 'losemusic', explode: 'cherrybomb', swallow: 'chomp', fume: 'fume', whack: 'bonk', hypnotize: 'mindcontrolled', freeze: 'frozen' } as const;
 export class GameAudio {
   private context: AudioContext | null = null;
   private buffers = new Map<string, AudioBuffer>();
-  private loading: Promise<void> | null = null;
+  private loading = new Map<string, Promise<void>>();
   private output: GainNode | null = null;
   private isMuted = false;
   get muted() { return this.isMuted; }
@@ -14,7 +13,7 @@ export class GameAudio {
     if (this.output) this.output.gain.value = value ? 0 : 1;
   }
 
-  async unlock() {
+  async unlock(game: Game) {
     this.context ??= new AudioContext();
     if (!this.output) {
       this.output = this.context.createGain();
@@ -22,11 +21,13 @@ export class GameAudio {
       this.output.connect(this.context.destination);
     }
     await this.context.resume();
-    this.loading ??= Promise.all(Object.entries(files).map(async ([key, file]) => {
-      const data = await (await fetch(`${import.meta.env.BASE_URL}assets/original/${file}.${['fume', 'whack', 'hypnotize', 'freeze'].includes(key) ? 'ogg' : 'mp3'}`)).arrayBuffer();
-      this.buffers.set(key, await this.context!.decodeAudioData(data));
-    })).then(() => {});
-    await this.loading;
+    await Promise.all(Object.entries(soundFiles(game)).map(([key, file]) => {
+      if (!this.loading.has(key)) this.loading.set(key, (async () => {
+        const data = await (await fetch(`${import.meta.env.BASE_URL}assets/original/${file}`)).arrayBuffer();
+        this.buffers.set(key, await this.context!.decodeAudioData(data));
+      })());
+      return this.loading.get(key)!;
+    }));
   }
 
   play(kind: GameEvent['kind']) {

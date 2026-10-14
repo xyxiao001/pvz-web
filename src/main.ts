@@ -81,7 +81,7 @@ async function mountGame() {
   await ensureScene();
   await scene.prepareBoard(game, progress);
   scene.setLevel(game);
-  if (game.phase !== 'ready' || game.plants.length || game.zombies.length || game.suns.length || game.rollers.length) await scene.prepareActors(game, progress);
+  if (game.phase !== 'ready' || game.plants.length || game.zombies.length || game.suns.length || game.rollers.length || game.peas.length || game.craters.length) await scene.prepareActors(game, progress);
   screen = 'battle'; $('#menu').hidden = true; $('#battle-hud').hidden = false;
   clock.reset(); messageUntil = 0; lastPhase = '';
   $<HTMLInputElement>('#auto-sun').checked = game.autoCollectSun;
@@ -145,10 +145,10 @@ function phasePanel() {
   if (game.phase === 'ready') {
     if (game.needsSeedChoice) seedChooser();
     else panel(`<span class="kicker">冒险模式 ${game.config.label}</span><img loading="lazy" class="intro-plant" src="${asset(`${game.config.seeds.at(-1)}.png`)}" alt=""/><h2>${game.config.title}</h2><p>${game.config.description}</p><div class="facts">${game.config.rows.length} 条草坪　·　${game.config.waveCount} 波僵尸　·　${game.hasConveyor ? '传送带供应 · 无需阳光' : `${game.config.initialSun} 初始阳光`}</div><button id="start" class="wood-button large">${game.config.mode === 'whack' ? '拿起木槌' : game.config.mode === 'bowling' ? '开始保龄球' : game.config.mode === 'conveyor' ? '开始传送带决战' : '开始种植'}</button><button class="text-button back-menu">${backLabel()}</button>`);
-    $('#start').onclick = async () => { $<HTMLButtonElement>('#start').disabled = true; $('#start').textContent = '准备角色…'; await Promise.all([audio.unlock(), scene.prepareActors(game, (done,total) => { $('#start').textContent = `准备角色 ${done} / ${total}`; })]); game.start(); updateHud(); };
+    $('#start').onclick = async () => { $<HTMLButtonElement>('#start').disabled = true; $('#start').textContent = '准备角色…'; await Promise.all([audio.unlock(game), scene.prepareActors(game, (done,total) => { $('#start').textContent = `准备角色 ${done} / ${total}`; })]); game.start(); updateHud(); };
   } else if (game.phase === 'paused') {
     panel(`<div class="pause-content"><h2>庭院休息中</h2><p>准备好了，就继续守护草坪。</p><button id="resume" class="wood-button large">继续游戏</button><button id="restart" class="wood-button large">重新开始</button><button class="wood-button large back-menu">${game.scenario === 'endless' ? '保存退出' : '返回主菜单'}</button><button id="pause-sound" class="text-button">音效：${audio.muted ? '关闭' : '开启'}</button></div>`, 'pause-panel');
-    $('#resume').onclick = async () => { await audio.unlock(); game.resume(); updateHud(); }; $('#restart').onclick = () => { if(game.scenario==='endless')clearSurvival(game.survivalScene); setLevel(game.level, game.scenario, game.survivalScene); };
+    $('#resume').onclick = async () => { await audio.unlock(game); game.resume(); updateHud(); }; $('#restart').onclick = () => { if(game.scenario==='endless')clearSurvival(game.survivalScene); setLevel(game.level, game.scenario, game.survivalScene); };
     $('#pause-sound').onclick = () => { audio.muted = !audio.muted; $('#pause-sound').textContent = `音效：${audio.muted ? '关闭' : '开启'}`; };
   } else if (game.phase === 'intermission') {
     panel(`<span class="kicker">${game.config.title} · 第 ${game.survivalStage + 1} 轮完成</span><h2>已守住 ${game.survivalFlags} 面旗帜！</h2><p>下一轮僵尸更多，重新挑选六张植物卡。<br/>场上植物、剩余阳光、卡片冷却和割草机状态保留。</p><div class="facts">累计击败 ${game.kills} 只僵尸 · 剩余 ${game.sun} 阳光</div><button id="repick" class="wood-button large">继续守护 · 重新选卡</button><button class="text-button back-menu">保存退出</button>`);
