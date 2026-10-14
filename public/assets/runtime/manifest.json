@@ -1,9 +1,9 @@
 {
-  "sourceAnimationSha256": "f51918aec40e97a0835bab9370c6461b3a1da12d293e6d36089497cf1462cdcb",
+  "sourceAnimationSha256": "a5733919c6d0b311624d63c32de411b42c45d978bb953ddcd44fed48027a7ae0",
   "encoding": "lossless WebP",
-  "frames": 3161,
-  "clips": 127,
-  "staticImages": 84,
-  "outputBytes": 146354128,
-  "atlasRgbaBytes": 597888832
+  "frames": 3993,
+  "clips": 160,
+  "staticImages": 101,
+  "outputBytes": 179321366,
+  "atlasRgbaBytes": 729600832
 }

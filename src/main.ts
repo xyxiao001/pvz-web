@@ -15,7 +15,7 @@ import { clearSurvival, loadSurvival, saveSurvival, completeLevel, completedLeve
 const asset = (file: string) => `${import.meta.env.BASE_URL}assets/runtime/original/${file.replace(/\.png$/, ".webp")}`;
 const lastLevel = LEVEL_IDS[LEVEL_IDS.length - 1];
 // Composed packets use the original empty packet and plant portrait; prices stay crisp in the DOM.
-const composedPacket = (kind: PlantKind) => ['fumeshroom','gravebuster','iceshroom','doomshroom','lilypad','squash','threepeater','plantern','tanglekelp','jalapeno','spikeweed','torchwood','tallnut','seashroom','cactus','blover'].includes(kind);
+const composedPacket = (kind: PlantKind) => ['fumeshroom','gravebuster','iceshroom','doomshroom','lilypad','squash','threepeater','plantern','tanglekelp','jalapeno','spikeweed','torchwood','tallnut','seashroom','cactus','blover','splitpea','starfruit','pumpkin','magnetshroom','cabbagepult','flowerpot','kernelpult','coffeebean','garlic'].includes(kind);
 const seedImage = (kind: PlantKind) => composedPacket(kind)
   ? `<span class="packet-art"><img loading="lazy" src="${asset('seed-packet.png')}" alt=""/><img loading="lazy" class="packet-portrait" src="${asset(`${kind}.png`)}" alt=""/><b class="packet-price">${PLANTS[kind].cost}</b></span>`
   : `<img loading="lazy" src="${asset(`card-${kind}.png`)}" alt=""/>`;
@@ -38,7 +38,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <div class="garden-defenders" aria-hidden="true"><img class="defender-sunflower" src="${asset('sunflower.png')}" alt=""/><img class="defender-pea" src="${asset('peashooter.png')}" alt=""/><img class="defender-wallnut" src="${asset('wallnut.png')}" alt=""/></div>
     <nav class="menu-modes" aria-label="游戏模式">
       <button id="adventure" class="mode-button mode-adventure" aria-label="开始冒险"><span class="mode-eyebrow">守住你的草坪</span><strong>冒险模式</strong><span class="mode-detail">种下第一道防线 <b aria-hidden="true">▶</b></span></button>
-      <button id="levels" class="mode-button mode-levels"><img src="${asset('shovel.png')}" alt=""/><span><strong>关卡选择</strong><small>白天 · 夜晚 · 泳池 · 迷雾</small></span></button>
+      <button id="levels" class="mode-button mode-levels"><img src="${asset('shovel.png')}" alt=""/><span><strong>关卡选择</strong><small>白天 · 夜晚 · 泳池 · 迷雾 · 屋顶</small></span></button>
       <button id="endless" class="mode-button mode-endless"><span class="menu-trophy" aria-hidden="true"></span><span><strong>无尽生存</strong><small>四种庭院，挑战更多旗帜</small></span></button>
     </nav>
     <button id="almanac" class="almanac-menu"><img src="${asset('seed-packet.png')}" alt=""/><img class="almanac-portrait" src="${asset('peashooter.png')}" alt=""/><span>植物图鉴<small>认识你的庭院守护者</small></span></button>
@@ -75,7 +75,7 @@ function panel(content: string, className = 'paper-panel') {
 }
 function closeMenuPanel() { overlay.hidden = true; }
 function levelPicker() {
-  panel(`<span class="kicker">冒险模式</span><h2>选择你的庭院</h2><p>35 关已全部开放，可直接选择。通关记录保存在当前浏览器。</p>
+  panel(`<span class="kicker">冒险模式</span><h2>选择你的庭院</h2><p>45 关已全部开放，可直接选择。通关记录保存在当前浏览器。</p>
     <div class="level-grid">${LEVEL_IDS.map(level => `<button class="level-card" data-level="${level}"><b>${LEVELS[level].label}</b><img loading="lazy" src="${asset(`${LEVELS[level].seeds.at(-1)}.png`)}" alt=""/><strong>${LEVELS[level].title}</strong><small>${level === 35 ? '三轮砸罐子' : `${LEVELS[level].rows.length} 条草坪 · ${LEVELS[level].waveCount} 波`}</small></button>`).join('')}</div><button id="close" class="wood-button">返回主菜单</button>`, 'paper-panel wide-panel level-panel');
   document.querySelectorAll<HTMLButtonElement>('[data-level]').forEach(button => button.onclick = () => setLevel(Number(button.dataset.level) as LevelId));
   $('#close').onclick = closeMenuPanel;
@@ -172,8 +172,8 @@ function phasePanel() {
   } else if (game.phase === 'won') {
     const reward = game.config.reward;
     const shovel = game.level === 4;
-    const name = shovel ? '铲子' : reward ? PLANTS[reward].name : game.level === 24 ? '小僵尸来袭' : game.level === 9 || game.level === 19 ? '最后的挑战' : game.level === 14 ? '木槌准备好了' : game.level === 29 ? '泳池最终挑战' : game.level === 34 ? '砸罐子时间' : '当前冒险阶段完成';
-    const description = shovel ? '可以铲除植物、重新布置防线。下一关来玩坚果保龄球！' : reward ? `${PLANTS[reward].cost} 阳光 · 下一关可以使用` : game.level === 24 ? '下一关使用四种传送带植物，迎战成群的小僵尸！' : game.level === 9 || game.level === 19 ? '下一关由传送带供应植物，迎战本场景最后两面旗帜！' : game.level === 14 ? '接下来是打僵尸！点击僵尸挥动木槌，辅助植物可以帮助清场。' : game.level === 29 ? '下一关使用八种传送带植物，守住三面旗帜！' : game.level === 34 ? '下一关连续破解三组罐子，拾取掉落的植物卡布置防线。' : '已完成当前 35 关，也可以挑战四种场景的无尽生存。';
+    const name = shovel ? '铲子' : reward ? PLANTS[reward].name : game.level === 24 ? '小僵尸来袭' : game.level === 9 || game.level === 19 ? '最后的挑战' : game.level === 14 ? '木槌准备好了' : game.level === 29 ? '泳池最终挑战' : game.level === 39 ? '雷雨将至' : game.level === 34 ? '砸罐子时间' : '当前冒险阶段完成';
+    const description = shovel ? '可以铲除植物、重新布置防线。下一关来玩坚果保龄球！' : reward ? `${PLANTS[reward].cost} 阳光 · ${game.level===44?'已收录图鉴；下一关是蹦极突袭':'下一关可以使用'}` : game.level === 24 ? '下一关使用四种传送带植物，迎战成群的小僵尸！' : game.level === 9 || game.level === 19 ? '下一关由传送带供应植物，迎战本场景最后两面旗帜！' : game.level === 14 ? '接下来是打僵尸！点击僵尸挥动木槌，辅助植物可以帮助清场。' : game.level === 29 ? '下一关使用八种传送带植物，守住三面旗帜！' : game.level === 39 ? '接下来迎战雷雨之夜：闪电照亮庭院，传送带提供八种植物。' : game.level === 34 ? '下一关连续破解三组罐子，拾取掉落的植物卡布置防线。' : '已完成当前 45 关，也可以挑战四种场景的无尽生存。';
     panel(`<span class="kicker">${shovel ? '你获得了新工具！' : reward ? '你获得了一株新植物！' : '庭院守住了！'}</span><img loading="lazy" class="reward-image" src="${asset(shovel ? 'shovel.png' : reward ? composedPacket(reward) ? `${reward}.png` : `card-${reward}.png` : 'trophy.png')}" alt="${name}"/><h2>${name}</h2><p>${description}</p><div class="facts">击败 ${game.kills} 只僵尸　·　使用 ${game.planted} 张植物卡</div><button id="next" class="wood-button large">${game.level < lastLevel ? '下一关' : '返回主菜单'}</button><button id="replay" class="text-button">重玩本关</button>`, 'paper-panel reward-panel');
     $('#next').onclick = () => game.level < lastLevel ? setLevel((game.level + 1) as LevelId) : showMenu();
     $('#replay').onclick = () => setLevel(game.level);
@@ -230,7 +230,7 @@ $('#endless').onclick = () => {
   $('#close').onclick = closeMenuPanel;
 };
 $('#almanac').onclick = () => {
-  const descriptions = { jalapeno:'烧毁整排僵尸，造成 1800 伤害，并清除这一排的冰道。', spikeweed:'每秒对踩到它的地面僵尸造成 20 伤害，不会被啃食；扎破冰车后消失。', torchwood:'普通豌豆经过时变成 40 伤害火球；冰豌豆先融化成普通豌豆。', tallnut:'8000 生命，可以阻挡撑杆和海豚骑士的跳跃。', seashroom:'免费水生蘑菇，可直接种在空水面，短程孢子造成 20 伤害。白天睡眠。', cactus:'向地面发射尖刺；气球出现时伸长并扎破气球。', blover:'吹走飞行中的气球僵尸，吹散迷雾 40 秒。', tanglekelp:'直接种在空水面，缠住并拖走一只附近的水路僵尸，包括潜水僵尸。', iceshroom:'冻结全场僵尸并造成 20 伤害，解冻后继续减速。白天睡眠。', doomshroom:'大范围爆炸造成 1800 伤害，留下持续三分钟的弹坑。白天睡眠。', lilypad:'种在泳池水路上，承载一株陆生植物。', squash:'发现近处僵尸后跳起压下，对落点周围造成 1800 伤害。', threepeater:'同时守住本行和相邻两行，每颗豌豆 20 伤害。', plantern:'照亮周围迷雾，种在水上需要睡莲。', hypnoshroom: '被吃下后让僵尸转向，攻击其他僵尸；保留它的剩余护甲和生命。', scaredyshroom: '25 阳光，向整排发射 20 伤害的孢子。附近有敌人时缩起并停止攻击。', puffshroom: '免费，向前喷射短程孢子，每次造成 20 点伤害。', sunshroom: '初产 15 点阳光，约两分钟后长大产 25 点阳光。', fumeshroom: '向前喷出烟雾，对同排范围内多个僵尸造成 20 点伤害，穿透门盾与报纸。', gravebuster: '种在墓碑上，啃食 4 秒后与墓碑一起消失。', chomper: '吞下同排靠近的僵尸，消化需要 40 秒。消化时请保护它。', repeater: '每轮发射两颗豌豆，每颗造成 20 点伤害。', potatomine: '埋下 15 秒后武装，对同排靠近的僵尸造成 1800 点伤害。', snowpea: '发射冰豌豆造成 20 点伤害，并减缓僵尸 10 秒。', explodenut: '保龄球专用。碰到僵尸后爆炸，攻击附近三排。', peashooter: '向同一排的僵尸发射豌豆，每次造成 20 点伤害。', sunflower: '定期生产 25 点阳光，让你种下更多植物。', cherrybomb: '种下约 1 秒后爆炸，对附近三排造成 1800 点伤害。', wallnut: '拥有 4000 点生命，为身后的射手争取时间。' };
+  const descriptions = { splitpea:'前方单发、后方双发，防御矿工反向进攻。',starfruit:'向后、上下及右侧两个斜向发射五颗星星，每颗 20 伤害。',pumpkin:'4000 生命，套在同格植物外侧保护它；铲子优先移除外壳。',magnetshroom:'吸走附近金属装备，充能 15 秒；白天需要咖啡豆唤醒。',cabbagepult:'抛出卷心菜造成 40 伤害，能够越过屋顶坡面和门盾。',flowerpot:'屋顶种植的基础，可承载一株植物和南瓜头。',kernelpult:'玉米粒造成 20 伤害；四分之一概率投出 40 伤害黄油并定身 4 秒。',coffeebean:'放在睡眠中的蘑菇上，唤醒它。',garlic:'400 生命，被啃咬后使僵尸转向相邻陆路。', jalapeno:'烧毁整排僵尸，造成 1800 伤害，并清除这一排的冰道。', spikeweed:'每秒对踩到它的地面僵尸造成 20 伤害，不会被啃食；扎破冰车后消失。', torchwood:'普通豌豆经过时变成 40 伤害火球；冰豌豆先融化成普通豌豆。', tallnut:'8000 生命，可以阻挡撑杆和海豚骑士的跳跃。', seashroom:'免费水生蘑菇，可直接种在空水面，短程孢子造成 20 伤害。白天睡眠。', cactus:'向地面发射尖刺；气球出现时伸长并扎破气球。', blover:'吹走飞行中的气球僵尸，吹散迷雾 40 秒。', tanglekelp:'直接种在空水面，缠住并拖走一只附近的水路僵尸，包括潜水僵尸。', iceshroom:'冻结全场僵尸并造成 20 伤害，解冻后继续减速。白天睡眠。', doomshroom:'大范围爆炸造成 1800 伤害，留下持续三分钟的弹坑。白天睡眠。', lilypad:'种在泳池水路上，承载一株陆生植物。', squash:'发现近处僵尸后跳起压下，对落点周围造成 1800 伤害。', threepeater:'同时守住本行和相邻两行，每颗豌豆 20 伤害。', plantern:'照亮周围迷雾，种在水上需要睡莲。', hypnoshroom: '被吃下后让僵尸转向，攻击其他僵尸；保留它的剩余护甲和生命。', scaredyshroom: '25 阳光，向整排发射 20 伤害的孢子。附近有敌人时缩起并停止攻击。', puffshroom: '免费，向前喷射短程孢子，每次造成 20 点伤害。', sunshroom: '初产 15 点阳光，约两分钟后长大产 25 点阳光。', fumeshroom: '向前喷出烟雾，对同排范围内多个僵尸造成 20 点伤害，穿透门盾与报纸。', gravebuster: '种在墓碑上，啃食 4 秒后与墓碑一起消失。', chomper: '吞下同排靠近的僵尸，消化需要 40 秒。消化时请保护它。', repeater: '每轮发射两颗豌豆，每颗造成 20 点伤害。', potatomine: '埋下 15 秒后武装，对同排靠近的僵尸造成 1800 点伤害。', snowpea: '发射冰豌豆造成 20 点伤害，并减缓僵尸 10 秒。', explodenut: '保龄球专用。碰到僵尸后爆炸，攻击附近三排。', peashooter: '向同一排的僵尸发射豌豆，每次造成 20 点伤害。', sunflower: '定期生产 25 点阳光，让你种下更多植物。', cherrybomb: '种下约 1 秒后爆炸，对附近三排造成 1800 点伤害。', wallnut: '拥有 4000 点生命，为身后的射手争取时间。' };
   panel(`<span class="kicker">植物图鉴</span><h2>认识你的守护者</h2><div class="almanac-grid">${(Object.keys(PLANTS) as PlantKind[]).map(kind => `<article><img loading="lazy" src="${asset(`${kind}.png`)}" alt=""/><div><h3>${PLANTS[kind].name}<span>${kind === 'explodenut' ? '传送带专用' : `${PLANTS[kind].cost} 阳光`}</span></h3><p>${descriptions[kind]}</p></div></article>`).join('')}</div><button id="close" class="wood-button">返回主菜单</button>`, 'paper-panel wide-panel'); $('#close').onclick = closeMenuPanel;
 };
 $('#settings').onclick = () => {
@@ -274,12 +274,12 @@ async function ensureScene() {
     canvas.addEventListener('pointerdown', event => {
       if (screen !== 'battle' || game.phase !== 'playing' || event.button !== 0) return;
       const { x, y } = point(event); const sun = [...game.suns].reverse().find(sun => Math.hypot(sun.x - x, sun.y - y) <= 35);
-      const column = Math.floor((x - BOARD.left) / BOARD.cellWidth), row = game.rowAt(y);
+      const column = Math.floor((x - BOARD.left) / BOARD.cellWidth), row = game.rowAt(y,x);
       const drop = game.seedDrops.find(d => Math.abs(x - (BOARD.left + d.column * 80 + 40)) < 27 && Math.abs(y - (game.rowY(d.row) - 40)) < 38);
       if (sun) game.collectSun(sun.id);
       else if (game.config.mode === 'vase' && !game.selected && drop) game.selectDrop(drop.id);
       else if (game.config.mode === 'vase' && !game.selected && game.vases.some(v => v.column === column && v.row === row)) game.openVase(column,row);
-      else if (game.config.mode === 'whack' && !game.selected && !game.digging) game.whack(x, y); else if (game.digging) game.dig(Math.floor((x - BOARD.left) / BOARD.cellWidth), game.rowAt(y)); else game.plant(Math.floor((x - BOARD.left) / BOARD.cellWidth), game.rowAt(y));
+      else if (game.config.mode === 'whack' && !game.selected && !game.digging) game.whack(x, y); else if (game.digging) game.dig(Math.floor((x - BOARD.left) / BOARD.cellWidth), game.rowAt(y,x)); else game.plant(Math.floor((x - BOARD.left) / BOARD.cellWidth), game.rowAt(y,x));
       updateHud();
     });
     canvas.addEventListener('contextmenu', event => { event.preventDefault(); game.cancelSelection(); updateHud(); });

@@ -468,3 +468,30 @@ PWA 参考 KR 的 `tools/build/pwa.ts`、`packages/asset-runtime/src/pwa-worker.
 3161 动画帧和 84 静态图经 `tools/check-runtime-assets.py` 核对，WebP 与 2× PNG 的 RGBA 逐像素相同。浏览器验证全部 35 个入口开放、砸罐 / 拾卡 / 免费种植，以及泳池和迷雾新增角色固定阵容；固定阵容只用于视觉检查，不作为通关证据。
 
 保留的简化：冰车减速、雪橇队散队 / 碰撞、海豚入水及跳跃轨迹、仙人掌升降时序仍非原版逐帧复刻；部分受损 / 死亡动作复用现有角色动作，火豌豆使用染色弹丸，雾仍非完整原版漂移 / 渐隐。砸罐没有戴夫对话、摆罐过场、完整碎片粒子，也尚未发放供 4–6 使用的裂荚射手。4–6 及后续未开放，不能将本次新增角色视为完整无尽内容。
+
+## 新增十关：4–6 至 5–5
+
+范围：第一轮冒险第 36–45 关，总计 45 关直接开放。波数依次为 **10 / 20 / 10 / 20 / 20 / 10 / 20 / 20 / 30 / 20**。本批没有增加屋顶无尽、商店、巨人或 Boss，也没有改变已有四种无尽的敌人池。
+
+所有下列 Portable 引用固定在 `141c1476dd462ac3526f796e303177616f4de6bc` 的实际检出源码。数据生成器追加第 36–45 关，并记录 CutScene 和 Music 的源文件哈希。
+
+| 行为 | 已阅读的 Portable 源码证据 |
+| --- | --- |
+| 波数、敌人首次关卡、权重与资格表 | [Zombie.cpp:98](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Zombie.cpp#L98)；[Board.cpp:1137](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Board.cpp#L1137) 采用冒险资格表，4–10 不走独立 StormyNight 的 InitZombieWaves 名单 |
+| 4–10 预算三倍，5–5 两倍；矿工第七波及末波固定出现；5–5 非末旗帜波只有五只偷取型蹦极 | [Board.cpp:624–714](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Board.cpp#L624) |
+| 新植物价格与冷却；裂荚 / 杨桃 150 tick、投手 300 tick 发射周期 | [Plant.cpp:77–85](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Plant.cpp#L77)；南瓜 4000、大蒜 400 生命见初始化 |
+| 卷心菜 40、玉米 20、黄油 40 伤害；投射黄油概率与定身 | [Projectile.cpp:44](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Projectile.cpp#L44)；Plant.cpp:804；Zombie.cpp 的 ApplyButter |
+| 磁力菇吸装备与 1500 tick 再充能；咖啡唤醒 | [Plant.cpp:1855](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Plant.cpp#L1855)、2050–2100、4387 |
+| 矿工、跳跳、蹦极、梯子生命与初始状态 | [Zombie.cpp:289](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Zombie.cpp#L289)、303、353；移动参数见 1165 起，出土见 2695，跳跳见 1430，放梯见 4067 |
+| 屋顶五行、85 像素行距、坡面坐标与 25 / 20 / 15 预置花盆 | [Board.cpp:8863](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Board.cpp#L8863)；[CutScene.cpp:1055](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/CutScene.cpp#L1055) |
+| 屋顶末波空投、5–5 用蹦极运送波次敌人 | [Board.cpp:4770](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Board.cpp#L4770)、4794、4898、4943；蹦极下降、等待、偷取优先级见 Zombie.cpp:1280–1370 |
+| 4–10 八种、5–5 四种传送带；睡莲/花盆随已用数量降低权重 | [Challenge.cpp:1466](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Challenge.cpp#L1466)、1552、1630–1636 |
+| 雷雨与音乐 | [Challenge.cpp:1710](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/Challenge.cpp#L1710)；[Music.cpp:591](https://github.com/wszqkzqk/PvZ-Portable/blob/141c1476dd462ac3526f796e303177616f4de6bc/src/Lawn/System/Music.cpp#L591) 雷雨夜停止音乐、屋顶 Graze the Roof、蹦极突袭 Loonboon |
+
+实现边界：保留固定 10 ms 模拟，渲染不驱动移速。新投手使用固定一秒的预测落点弧线与近距离命中判定，不是原版弹道求解器；黄油定身 400 tick。杨桃使用五方向二维弹丸与矩形碰撞。跳跳用连续位移加周期抬升表现跳跃，高坚果及磁力菇解除跳跃；并非完整逐格跳跃状态机。矿工左侧出土采用 230 tick、被吸镐采用 330 tick 过渡；部分后续步态复用现有地面均速换算。梯子放置采用 100 tick，普通僵尸经过带梯格跳过啃食，未还原攀爬轨道。蹦极保留下降 / 偷取等待 / 上升与保护层关系，死亡使用现有姿态；偷取目标、空投位置和末波种类选择仍为本移植的简化采样。屋顶没有购买式屋顶清扫车。咖啡豆用 100 tick 完成唤醒与消耗；雷雨用暗场、150 tick 亮场渐变和雨线表现，未实现原版全部随机闪电状态与雨粒子。
+
+素材继续使用现有仓库资产：裂荚、杨桃、南瓜、花盆、咖啡豆、大蒜取源 GIF；卷心菜 / 玉米 / 磁力菇和四种新僵尸从 ruslan 的 Reanim 图片及仿射轨道离线采样。屋顶必须使用 ruslan `images/background5.jpg`；JavaScript 素材仓库的同名文件实际是水族馆，不能按文件名直接对应。各文件路径和 SHA-256 见 `original-assets.json`。新增音乐由原 MO3 的 0xB8 开始、0xB9 循环位置生成，循环起点实际测得为 4 秒，见 `music-assets.json`。
+
+资源现为 160 组 / 3993 帧、101 张静态图。2× PNG 母图共十页；客户端仍按所选植物及本关敌人加载独立 WebP 动作包，首关不会加载屋顶、矿工、跳跳或投手动作。每一帧和静态图片均通过 HD 与无损 WebP 的 RGBA 逐像素比较。新关沿用六槽选卡、倍速、自动阳光落地后收集、暂停与返回菜单。
+
+验证：169 项测试覆盖旧关回归、新十关正常操作完整通关、来源数据、保护层、出土反击、五向弹丸、吸铁、屋顶坡面、黄油、咖啡、放梯、蹦极偷取与空投；30 / 60 / 144 Hz 下新战斗与天气状态一致。正常操作脚本没有修改阳光、冷却、僵尸生命、波次或胜负状态；只证明所测固定种子可通关，不代表所有策略或种子都能通关。浏览器另检查屋顶六槽选卡、预置花盆、HUD、三种新场景切换与资源加载。

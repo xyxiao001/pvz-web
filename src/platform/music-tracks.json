@@ -15,6 +15,10 @@
     "file": "night.mp3",
     "loopStart": 0.0
   },
+  "roof": {
+    "file": "roof.mp3",
+    "loopStart": 4.0
+  },
   "pool": {
     "file": "pool.mp3",
     "loopStart": 0.0

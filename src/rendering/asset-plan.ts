@@ -6,9 +6,13 @@ import portable from '../game/data/portable-adventure.json';
 export function combatTextureFiles(game: Game) {
   const plants = new Set([...game.seeds, ...game.plants.map(plant => plant.kind)]);
   const files: Record<string, string> = {};
-  if (plants.has('peashooter') || plants.has('repeater') || plants.has('threepeater') || game.peas.some(pea => !pea.ice && !pea.puff)) files.pea = 'pea.webp';
+  if (plants.has('splitpea') || plants.has('peashooter') || plants.has('repeater') || plants.has('threepeater') || game.peas.some(pea => !pea.ice && !pea.puff)) files.pea = 'pea.webp';
   if (plants.has('snowpea') || game.peas.some(pea => pea.ice)) files.ice = 'original/snow-pea.webp';
   if (plants.has('puffshroom') || plants.has('scaredyshroom') || plants.has('seashroom') || game.peas.some(pea => pea.puff)) files.puff = 'original/puff.webp';
+  if(plants.has('starfruit'))files.star='original/star.webp';
+  if(plants.has('cabbagepult'))files.cabbage='original/cabbage.webp';
+  if(plants.has('kernelpult')){files.kernel='original/kernel.webp';files.butter='original/butter.webp';}
+  if(game.config.environment==='roof'){files.ladder='original/ladder.webp';files.bungeeTarget='original/bungee-target.webp';files.bungeeCord='original/bungee-cord.webp';}
   if (plants.has('cactus')) files.spike = 'original/spike.webp';
   if (plants.has('torchwood')) files.pea = 'pea.webp';
   if (game.waves.flat().includes('zomboni')) files.iceTrail = 'original/ice-trail.webp';
@@ -27,6 +31,7 @@ export function animationNames(game: Game, available: string[]) {
     if (content.type === 'zombie') enemies.add(content.kind as Game['zombies'][number]['kind']);
     else roots.add(content.kind);
   }
+  if(game.config.environment==='roof'){enemies.add('bungee');enemies.add('normal');enemies.add('cone');}
   if (game.config.mode === 'whack') for (const kind of ['normal','cone','bucket'] as const) enemies.add(kind);
   if (game.config.environment === 'night' || isPool(game.config.environment)) { enemies.add('normal'); enemies.add('cone'); }
   for (const kind of enemies) {

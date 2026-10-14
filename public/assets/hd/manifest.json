@@ -5,16 +5,18 @@
   "engineSource": "https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.5.0",
   "engineSha256": "c1c35d92079085de96b9d547fd7e4464bc8a2e9ccf28d7b8c712d72ade91b7cc",
   "modelSha256": "548a36f9c3f4ab8da56cd3b13badf23968bee207b396dad14d04b830e5f2ab2d",
-  "sourceAnimationSha256": "86678371cac1f777f8bc6d8ec0cf4bd742a9f612f9f3efe9ddf2077de973d71d",
+  "sourceAnimationSha256": "bfccb0969a5a83aa777bc2862c451cb69888d9657f6f09357bf98ab48e95bbf5",
   "sourceAtlasSha256": [
-    "c8aa71bcfc9cc15839fdb31643fdc72d9b99521e4a82ab9c29f02b59deec4142",
-    "efb0d2d9a5130776ece6b0c894d0abf720595194dc8fe706af41bb419c960a0f",
-    "e9aebe6d51b83f70ad7289bd13e78b2f1d1cb3e731463c24bef113e7ed78876b",
-    "af8eef6068676be460034236a9e450e8956f372abe5d1a6e57f7b7aa63cf7232",
-    "1f72b217bb39b3c1f29af3afe9315f0765c008e8911370f05eecbda708b09aac",
-    "aa0a1a9c1dacf282bf2cae634b866cf7d0392b4178b9e953759e6b8dd575d524",
-    "03786880433315f9c3557012925b940246cf072118e75467bb61a63ea64a79b1",
-    "fd3e55f6dd469d5a9438613896e5b37c06dc61eb5cc6ff919ad3568d1b59987a"
+    "b8b31215e9964734a055ba047bbcbc1e7921c09c378de8c83093c9ca46f39636",
+    "df55e0f97e2d11a92a8428e9c4623deea7704c6d8f57f9da5f242e328218f2e4",
+    "cf6a17c3a03ea5d1fc8e48d1521b3abb7ceae6e925b82c0d876acabcedcefcd0",
+    "82bf2277a9cded541d23a884119b3db09d81c4cf45c8652949aa08b77bac774b",
+    "9b10aa47f6d14657c1b8b9b5e03a91f0d0172d3f61aec7e5a5dc69c026450aa9",
+    "4000351ee5b9878e5a88b991a2326672ae91cb270fc7ac37006d8484f6e2272c",
+    "8e670b6fa6cae6586e16734a39bfb8a06a06ea38623beace83e0b1d67a0ed65d",
+    "1c931284f4e70001de9d721d53f036afb1263766c73fd875a92be4cfd157a894",
+    "5b1a52656a8078b92a70936e7a6491159bcd9ef976d6e2ad5e45507e6d02e3fc",
+    "356e6fb5a7e88a4f4ffd0585e53ce81acc1cefc53711bda3756c960b76f589ee"
   ],
   "staticSources": {
     "original/adventure-hover.png": {
@@ -45,11 +47,46 @@
         502
       ]
     },
+    "original/bungee-cord.png": {
+      "sha256": "13462eb73d6a8c2ae55bcbdc7846b537bf1f570de8871284c90c42db9544093e",
+      "size": [
+        8,
+        64
+      ]
+    },
+    "original/bungee-target.png": {
+      "sha256": "0a512547e125168d8056e416788ce66282b16eaef14ddf668b785809e856d8e0",
+      "size": [
+        71,
+        76
+      ]
+    },
+    "original/butter.png": {
+      "sha256": "52f13e903858e40965a236d406fde79f745d672f4ce4a4353a8c0ea0b7ee23b2",
+      "size": [
+        49,
+        50
+      ]
+    },
     "original/button.png": {
       "sha256": "c46ba9312cfb6e7d5fd0e673ae665de9670e4bf03f9ee1f90f0985d8f704001d",
       "size": [
         112,
         46
+      ]
+    },
+    "original/cabbage.png": {
+      "sha256": "00c52b18f2f7d9673ed586792ba7cc9f89afe881957116a2b234ff3aec49f06b",
+      "size": [
+        30,
+        27
+      ]
+    },
+    "original/cabbagepult.png": {
+      "sha256": "297b5f4a6de0d0312e8515b74f2f3f2d766ae5430900de7a1ef5fbb3d54b4bbc",
+      "size": [
+        87,
+        72
       ]
     },
     "original/cactus.png": {
@@ -199,6 +236,13 @@
         114
       ]
     },
+    "original/coffeebean.png": {
+      "sha256": "f80bc38de60f78d25f6fb69ac964ed0ed15fddefaaa90b2ebee078b5a2d70d83",
+      "size": [
+        39,
+        97
+      ]
+    },
     "original/conveyor-back.png": {
       "sha256": "7ce8f28f45ba83afa463db197c3f7e9b8f81d14a875c4182988a9c5dd42c34a8",
       "size": [
@@ -241,6 +285,13 @@
         71
       ]
     },
+    "original/flowerpot.png": {
+      "sha256": "5fe72ccabaf96d815625d0f7811bb0060f770916097f77cc4cc08051472acc28",
+      "size": [
+        72,
+        68
+      ]
+    },
     "original/fog-cloud.png": {
       "sha256": "5e2111751269afc7cafa4edbc37c229f5575234449bb787d57093e77f39a63bf",
       "size": [
@@ -260,6 +311,13 @@
       "size": [
         100,
         88
+      ]
+    },
+    "original/garlic.png": {
+      "sha256": "08054a6985f3bd857240883477bdf7b77da434b20d5f27442a38fef24c6559be",
+      "size": [
+        60,
+        59
       ]
     },
     "original/grave.png": {
@@ -311,6 +369,27 @@
         89
       ]
     },
+    "original/kernel.png": {
+      "sha256": "281370d7a387e3740682a811f8f783644b75246a18117019fc9a0b1148ba6087",
+      "size": [
+        21,
+        22
+      ]
+    },
+    "original/kernelpult.png": {
+      "sha256": "ff6d8cfa04b8b0dd886e5d8e7fec0d68312eec3f0ef2d35f0cf0761e96e7b09c",
+      "size": [
+        102,
+        95
+      ]
+    },
+    "original/ladder.png": {
+      "sha256": "349de391af1d5f483d5e7b1c4252e372512194ec2c2f75b87e0f97e53c0c51fe",
+      "size": [
+        77,
+        121
+      ]
+    },
     "original/lilypad.png": {
       "sha256": "e9155689a534c76c3591996f94e1ccedce800440e0e81da35c2e9e043c1ceb5b",
       "size": [
@@ -323,6 +402,13 @@
       "size": [
         700,
         116
+      ]
+    },
+    "original/magnetshroom.png": {
+      "sha256": "a5cb846fc93edbae6a1e056c327aa7ae6702a9260b1ad4fe17e6afa48d5e365c",
+      "size": [
+        54,
+        72
       ]
     },
     "original/menu.png": {
@@ -416,11 +502,25 @@
         66
       ]
     },
+    "original/pumpkin.png": {
+      "sha256": "f25328d80b8c2ac6e375822ad3b14383802fb45dfa57f3353472d0c9bb14ed06",
+      "size": [
+        97,
+        67
+      ]
+    },
     "original/repeater.png": {
       "sha256": "a79916360aa15d8bbf0fb678f9b01b232a1e1a62601718a95052a1580f282017",
       "size": [
         73,
         71
+      ]
+    },
+    "original/roof.png": {
+      "sha256": "0ed13c4cf3a9c038647eda5853a8696a940cc16a8062b152579bed09e416d104",
+      "size": [
+        1400,
+        600
       ]
     },
     "original/scaredyshroom.png": {
@@ -500,11 +600,32 @@
         35
       ]
     },
+    "original/splitpea.png": {
+      "sha256": "e7472e46df6c42381dc0f27dc31b3e86605896c69acde2393a7561ca78b14b94",
+      "size": [
+        92,
+        72
+      ]
+    },
     "original/squash.png": {
       "sha256": "2d76354b74a6c7969c2ddc4e6641c3d84724953903df150f4e6466b46c104d67",
       "size": [
         68,
         82
+      ]
+    },
+    "original/star.png": {
+      "sha256": "f9c68edc425e9347074c70320b5c03c3e3e55fff29fc2f890bc440acf57a2e1c",
+      "size": [
+        30,
+        30
+      ]
+    },
+    "original/starfruit.png": {
+      "sha256": "afa375ced3db53ff7d0bc63e9226378597943112281a6e06cb8af9b36f7f0075",
+      "size": [
+        77,
+        70
       ]
     },
     "original/sun.png": {
@@ -606,9 +727,9 @@
       ]
     }
   },
-  "frames": 3161,
-  "uniqueFrames": 3005,
-  "atlasPages": 8,
-  "atlasBaseRgbaMiB": 512,
-  "outputBytes": 174522902
+  "frames": 3993,
+  "uniqueFrames": 3765,
+  "atlasPages": 10,
+  "atlasBaseRgbaMiB": 640,
+  "outputBytes": 215603101
 }

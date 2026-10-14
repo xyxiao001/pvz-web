@@ -10,6 +10,7 @@ const loadouts:Record<number,PlantKind[]>={
  32:['sunshroom','puffshroom','fumeshroom','seashroom','lilypad','doomshroom'],
  33:['sunshroom','puffshroom','cactus','seashroom','lilypad','doomshroom'],
  34:['sunshroom','puffshroom','fumeshroom','blover','lilypad','seashroom'],
+ 39:['sunshroom','puffshroom','fumeshroom','blover','lilypad','seashroom'],
 };
 export function playLate(level:LevelId,seed:number,observe?: (g:Game)=>void){
  const g=new Game(level,seed);if(g.needsSeedChoice)for(const kind of loadouts[level])g.chooseSeed(kind);g.start();g.autoCollectSun=true;
@@ -24,6 +25,7 @@ export function playLate(level:LevelId,seed:number,observe?: (g:Game)=>void){
   if(t%10===0){
    const enemies=g.zombies.filter(z=>!z.hypnotized&&!headless(z)).sort((a,b)=>a.x-b.x);
    const land=g.config.rows.filter(r=>!g.waterRow(r));
+   if(level===39)land.sort((a,b)=>{const score=(r:number)=>g.plants.filter(p=>p.row===r&&p.kind==='puffshroom').length*500+(enemies.find(z=>z.row===r)?.x??1000);return score(a)-score(b);});
    const rows=[...g.config.rows].sort((a,b)=>{
     const score=(r:number)=>g.plants.filter(p=>p.row===r&&['peashooter','repeater','fumeshroom','cactus','threepeater'].includes(p.kind)).length*800+(enemies.find(z=>z.row===r)?.x??1000);return score(a)-score(b);
    });
@@ -58,19 +60,19 @@ export function playLate(level:LevelId,seed:number,observe?: (g:Game)=>void){
     }
     for(const z of enemies)if(z.x<330||enemies.filter(e=>Math.abs(e.row-z.row)<=1&&Math.abs(e.x-z.x)<100).length>5)for(let c=1;c<8;c++)if(Math.abs(cellX(c)-z.x)<110&&place('cherrybomb',c,z.row))break;
    }else{
-    if(level===34&&enemies.some(z=>z.flying&&z.x<760))for(const row of land)if(place('blover',8,row))break;
+    if((level===34||level===39)&&enemies.some(z=>z.flying&&z.x<760))for(const row of land)if(place('blover',8,row))break;
     if(level===33)for(const z of enemies.filter(z=>z.flying))if(!g.plants.some(p=>p.kind==='cactus'&&p.row===z.row))place('cactus',2,z.row);
-    for(const row of land)for(const col of level===34?[6,5,7,4]:[6,5,7,4,8])if(place('puffshroom',col,row))break;
-    for(const row of [2,3])for(const col of [7,6,5,4,8])if(place('seashroom',col,row))break;
+    for(const row of land)for(const col of (level===34||level===39)?[6,5,7,4]:[6,5,7,4,8])if(place('puffshroom',col,row))break;
+    for(const row of [2,3])for(const col of level===39?[7,6,8]:[7,6,5,4,8])if(place('seashroom',col,row))break;
     const producer='sunshroom';
     if(level!==33||!enemies.some(z=>z.flying&&!g.plants.some(p=>p.kind==='cactus'&&p.row===z.row))||g.sun>=175)for(const col of [0,1])for(const row of land)if(place(producer,col,row))break;
     if(g.plants.filter(p=>p.kind===producer).length>=4){
 
-     if(level===34)for(const row of [2,3])if(!g.plants.some(p=>p.row===row&&p.kind==='fumeshroom'))place('fumeshroom',3,row);
-     for(const row of rows)if(level!==34||g.sun>=175)for(const col of [3,2,4])if(place('fumeshroom',col,row))break;
+     if((level===34||level===39))for(const row of [2,3])if(!g.plants.some(p=>p.row===row&&p.kind==='fumeshroom'))place('fumeshroom',3,row);
+     for(const row of rows)if((level!==34&&level!==39)||g.sun>=175)for(const col of level===39&&g.waterRow(row)?[4,3,2,5]:[3,2,4])if(place('fumeshroom',col,row))break;
     }
-    if(level===34&&enemies.some(z=>z.flying&&z.x<650))for(const row of land)if(place('blover',8,row))break;
-    if(level===34)for(const z of enemies)if(g.waterRow(z.row)&&z.x<700&&z.x>180)for(let c=8;c>=1;c--)if(Math.abs(cellX(c)-z.x)<55&&place('tanglekelp',c,z.row))break;
+    if((level===34||level===39)&&enemies.some(z=>z.flying&&z.x<650))for(const row of land)if(place('blover',8,row))break;
+    if((level===34||level===39))for(const z of enemies)if(g.waterRow(z.row)&&z.x<700&&z.x>180)for(let c=8;c>=1;c--)if(Math.abs(cellX(c)-z.x)<55&&place('tanglekelp',c,z.row))break;
     for(const z of enemies)if((level!==33||!enemies.some(o=>o.flying&&!g.plants.some(p=>p.kind==='cactus'&&p.row===o.row)))&&(z.x<320||enemies.filter(o=>Math.abs(o.row-z.row)<=2&&Math.abs(o.x-z.x)<150).length>8))for(let c=1;c<9;c++)if(Math.abs(cellX(c)-z.x)<180&&place('doomshroom',c,z.row))break;
    }
   }

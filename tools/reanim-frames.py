@@ -1,4 +1,4 @@
-"""Offline sampling of the Blover and Bobsled image tracks used by this batch.
+"""Offline sampling of source Reanim image tracks used by the migrated actors.
 Uses inherited XML transforms and layer visibility from Portable Reanimator.cpp.
 No runtime Reanim parser or generated replacement artwork.
 """

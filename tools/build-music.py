@@ -36,6 +36,7 @@ tracks = {
     'choose': (5, 0x7A, 0x7B, 'Choose Your Seeds'),
     'day': (0, 0, 12, 'Grasswalk'),
     'night': (1, 0x30, 0x30, 'Moongrains'),
+    'roof': (11, 0xB8, 0xB9, 'Graze the Roof'),
     'pool': (4, 0x5E, 0x5E, 'Watery Graves'),
     'fog': (6, 0x7D, 0x7E, 'Rigor Mormist'),
     'minigame': (9, 0xA6, 0xA6, 'Loonboon'),

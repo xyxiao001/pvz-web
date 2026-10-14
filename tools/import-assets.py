@@ -79,6 +79,16 @@ data['potatomine-unarmed'] = pack([Image.open(static_path).convert('RGBA')], [8]
 sources['Plants/PotatoMine/PotatoMineNotReady.gif'] = record(static_path)
 
 gifs = {
+    'splitpea': ('Plants/SplitPea/SplitPea.gif', [46, 70]),
+    'starfruit': ('Plants/Starfruit/Starfruit.gif', [38, 68]),
+    'pumpkin': ('Plants/PumpkinHead/PumpkinHead.gif', [48, 55]),
+    'pumpkin-cracked1': ('Plants/PumpkinHead/pumpkin_damage1.gif', [48, 55]),
+    'pumpkin-cracked2': ('Plants/PumpkinHead/Pumpkin_damage2.gif', [48, 55]),
+    'garlic': ('Plants/Garlic/Garlic.gif', [30, 58]),
+    'garlic-cracked1': ('Plants/Garlic/Garlic_body2.gif', [30, 58]),
+    'garlic-cracked2': ('Plants/Garlic/Garlic_body3.gif', [30, 58]),
+    'flowerpot': ('Plants/FlowerPot/FlowerPot.gif', [36, 56]),
+    'coffeebean': ('Plants/CoffeeBean/CoffeeBeanEat.gif', [20, 90]),
     'jalapeno': ('Plants/Jalapeno/Jalapeno.gif', [34,89]),
     'jalapeno-fire': ('Plants/Jalapeno/JalapenoAttack.gif', [0,126]),
     'spikeweed': ('Plants/Spikeweed/Spikeweed.gif', [42,35]),
@@ -163,7 +173,7 @@ for key, (relative, anchor) in gifs.items():
         durations.append(frame.info['duration'] / 10)
     data[key] = pack(frames, durations, anchor)
     sources[relative] = record(path)
-    if key in ['explodenut', 'potatomine', 'chomper', 'repeater', 'puffshroom', 'sunshroom', 'fumeshroom', 'gravebuster', 'hypnoshroom', 'scaredyshroom', 'iceshroom','doomshroom','lilypad','squash','threepeater','plantern','tanglekelp','jalapeno','spikeweed','torchwood','tallnut','seashroom','cactus']:
+    if key in ['splitpea','starfruit','pumpkin','garlic','flowerpot','coffeebean','explodenut', 'potatomine', 'chomper', 'repeater', 'puffshroom', 'sunshroom', 'fumeshroom', 'gravebuster', 'hypnoshroom', 'scaredyshroom', 'iceshroom','doomshroom','lilypad','squash','threepeater','plantern','tanglekelp','jalapeno','spikeweed','torchwood','tallnut','seashroom','cactus']:
         portrait = frames[0].crop(frames[0].getbbox()) if key in ['squash','plantern','cactus'] else frames[0]
         portrait.save(output / (key + '.png'))
 for key, relative, anchor in [('tanglekelp-grab', 'Plants/TangleKlep/Grab.png', [30,55]), ('fumeshroom-attack', 'Plants/FumeShroom/FumeShroomAttack.gif', [50, 88])]:
@@ -174,11 +184,34 @@ path = js_repo / 'images/Plants/FumeShroom/FumeShroomBullet.gif'
 sheet = Image.open(path).convert('RGBA')
 data['fume-cloud'] = pack([sheet.crop((0, i * 62, 343, (i + 1) * 62)) for i in range(8)], [4] * 8, [0, 31])
 sources['Plants/FumeShroom/FumeShroomBullet.gif'] = record(path)
-# Two missing GIF actors use source Reanim transforms baked offline.
+# Actors missing standalone GIFs use source Reanim transforms baked offline.
 render_clip = runpy.run_path(str(root / 'tools/reanim-frames.py'))['render_clip']
 reanim = ruslan_repo / 'SexyAppFramework/reanim'
 def record_reanim(path): sources[str(path.relative_to(ruslan_repo))] = record(path)
 for key, name, layer, size, offset, anchor in [
+    ('cabbagepult', 'Cabbagepult', 'anim_idle', (170, 160), (35, 40), (75, 113)),
+    ('cabbagepult-attack', 'Cabbagepult', 'anim_shooting', (170, 160), (35, 40), (75, 113)),
+    ('kernelpult', 'Cornpult', 'anim_idle', (170, 160), (35, 40), (75, 113)),
+    ('kernelpult-attack', 'Cornpult', 'anim_shooting', (170, 160), (35, 40), (75, 113)),
+    ('magnetshroom', 'Magnetshroom', 'anim_idle', (170, 160), (35, 40), (75, 113)),
+    ('magnetshroom-attack', 'Magnetshroom', 'anim_shooting', (170, 160), (35, 40), (75, 113)),
+    ('digger-walk', 'Zombie_digger', 'anim_walk', (230, 270), (60, 30), (110, 160)),
+    ('digger-eat', 'Zombie_digger', 'anim_eat', (230, 270), (60, 30), (110, 160)),
+    ('digger-die', 'Zombie_digger', 'anim_death', (230, 270), (60, 30), (110, 160)),
+    ('digger-dig', 'Zombie_digger', 'anim_dig', (230, 270), (60, 30), (110, 160)),
+    ('digger-rise', 'Zombie_digger', 'anim_drill', (230, 270), (60, 30), (110, 160)),
+    ('pogo-walk', 'Zombie_pogo', 'anim_walk', (230, 270), (60, 30), (110, 160)),
+    ('pogo-eat', 'Zombie_pogo', 'anim_eat', (230, 270), (60, 30), (110, 160)),
+    ('pogo-die', 'Zombie_pogo', 'anim_death', (230, 270), (60, 30), (110, 160)),
+    ('pogo-bounce', 'Zombie_pogo', 'anim_pogo', (230, 270), (60, 30), (110, 160)),
+    ('ladder-walk', 'Zombie_ladder', 'anim_ladderwalk', (230, 270), (60, 30), (110, 160)),
+    ('ladder-eat', 'Zombie_ladder', 'anim_laddereat', (230, 270), (60, 30), (110, 160)),
+    ('ladder-bare', 'Zombie_ladder', 'anim_walk', (230, 270), (60, 30), (110, 160)),
+    ('ladder-die', 'Zombie_ladder', 'anim_death', (230, 270), (60, 30), (110, 160)),
+    ('ladder-place', 'Zombie_ladder', 'anim_placeladder', (230, 270), (60, 30), (110, 160)),
+    ('bungee-idle', 'Zombie_bungi', 'anim_idle', (240, 320), (70, 40), (120, 135)),
+    ('bungee-drop', 'Zombie_bungi', 'anim_drop', (240, 320), (70, 40), (120, 135)),
+    ('bungee-die', 'Zombie_bungi', 'anim_hold', (240, 320), (70, 40), (120, 135)),
     ('blover','Blover','anim_blow',(140,130),(20,30),(60,110)),
     ('blover-loop','Blover','anim_loop',(140,130),(20,30),(60,110)),
     ('bobsled-walk','Zombie_bobsled','anim_walk',(220,210),(50,20),(100,180)),
@@ -187,11 +220,17 @@ for key, name, layer, size, offset, anchor in [
 ]:
     frames = render_clip(reanim,name,layer,size,offset,record_reanim)
     data[key] = pack(frames,[5 if name=='Blover' else 10]*len(frames),list(anchor))
-    if key=='blover': frames[0].crop(frames[0].getbbox()).save(output/'blover.png')
+    if key in ['blover','cabbagepult','kernelpult','magnetshroom']: frames[0].crop(frames[0].getbbox()).save(output/(key+'.png'))
 for name in ['Zombie_bobsled1.png','Scary_Pot.png']:
     copy(ruslan_repo/'images'/name, 'sled.png' if name.startswith('Zombie') else 'vases.png')
 copy(js_repo/'images/Zombies/Zomboni/ice.png','ice-trail.png')
 copy(js_repo/'images/Plants/Cactus/Projectile32.png','spike.png')
+Image.open(ruslan_repo/'images/background5.jpg').convert('RGBA').save(output/'roof.png')
+sources['roof.png']=record(ruslan_repo/'images/background5.jpg')
+for source,target in [('BungeeTarget.png','bungee-target.png'),('BungeeCord.png','bungee-cord.png')]: copy(ruslan_repo/'images'/source,target)
+for source,target in [('Cabbagepult_cabbage.png','cabbage.png'),('Cornpult_kernal.png','kernel.png'),('Cornpult_butter.png','butter.png'),('Zombie_ladder_1.png','ladder.png')]: copy(reanim/source,target)
+Image.open(js_repo/'images/Plants/Starfruit/Star.gif').convert('RGBA').save(output/'star.png')
+sources['star.png']=record(js_repo/'images/Plants/Starfruit/Star.gif')
 build_atlases()
 for index, page in enumerate(pages):
     page.save(output / f'actors-{index}.png', optimize=True)
@@ -251,7 +290,7 @@ logo.save(output / 'logo.png')
 sources['logo.png'] = [record(ruslan_repo / f'images/{name}') for name in ['PvZ_Logo.jpg', 'PvZ_Logo_.png']]
 for sound in ['plant_water', 'points', 'lawnmower', 'hugewave', 'finalwave', 'winmusic', 'losemusic', 'cherrybomb', 'buttonclick', 'chomp']:
     copy(js_repo / f'audio/{sound}.mp3', sound + '.mp3')
-for sound in ['fume', 'mindcontrolled', 'bonk', 'frozen', 'blover', 'vase_breaking']:
+for sound in ['fume', 'mindcontrolled', 'bonk', 'frozen', 'blover', 'vase_breaking', 'thunder', 'bungee_scream', 'coffee']:
     copy(ruslan_repo / f'SexyAppFramework/sounds/{sound}.ogg', sound + '.ogg')
 fog = Image.open(ruslan_repo / 'images/fog.jpg').convert('RGBA')
 fog.putalpha(Image.open(ruslan_repo / 'images/fog_.jpg').convert('L'))
@@ -263,7 +302,7 @@ manifest = {
         ('javascript', js_repo, 'https://github.com/jiangnangame/New-Plants-vs-Zombies-JavaScript'),
         ('ruslan', ruslan_repo, 'https://github.com/ruslan831/PlantsVsZombies-decompilation')]},
     'files': sources,
-    'processing': 'PNG and composited GIF frames packed without resampling; GIF frame durations retained; original RGB logo combined with its alpha plane. Only sun and zombie-burn still use port-configured PNG timing; other animated clips preserve source GIF timing. Night fume attack is a static source pose; the eight-frame fume cloud sheet uses four ticks per frame for the port effect. Blover and bobsled clips are sampled offline from original Reanim affine tracks with tools/reanim-frames.py; other GIF clips retain their source timing. This is not a complete runtime Reanim implementation.'
+    'processing': 'PNG and composited GIF frames packed without resampling; GIF frame durations retained; original RGB logo combined with its alpha plane. Only sun and zombie-burn still use port-configured PNG timing; other animated clips preserve source GIF timing. Night fume attack is a static source pose; the eight-frame fume cloud sheet uses four ticks per frame for the port effect. Blover, bobsled, cabbagepult, kernelpult, magnetshroom, digger, pogo, bungee and ladder clips are sampled offline from original Reanim affine tracks with tools/reanim-frames.py; other GIF clips retain their source timing. This is not a complete runtime Reanim implementation.'
 }
 (root / 'docs/original-assets.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(data)} animations, {sum(len(a["frames"]) for a in data.values())} frames, {len(pages)} atlases')

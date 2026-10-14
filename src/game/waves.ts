@@ -1,14 +1,14 @@
 import data from './data/portable-adventure.json';
 import type { LevelId, ZombieKind } from './config';
 
-const kinds: ZombieKind[] = ['normal', 'flag', 'cone', 'pole', 'bucket', 'newspaper', 'door', 'football', 'dancer', 'backup', 'ducky', 'snorkel', 'zomboni', 'bobsled', 'dolphin', 'jack', 'balloon'];
+const kinds: ZombieKind[] = ['normal', 'flag', 'cone', 'pole', 'bucket', 'newspaper', 'door', 'football', 'dancer', 'backup', 'ducky', 'snorkel', 'zomboni', 'bobsled', 'dolphin', 'jack', 'balloon', 'digger', 'pogo', 'bungee', 'ladder'];
 export function isFlagWave(level: LevelId, wave: number) {
   const perFlag = Math.min(data.waveCounts[level - 1], 10);
   return level !== 1 && wave % perFlag === perFlag - 1;
 }
 
 // Board::PickZombieWaves / PutInMissingZombies / PickZombieType.
-// Scope: first-time adventure 1–1 … 4–5. The supplied RNG is this port's RNG.
+// Scope: first-time adventure 1–1 … 5–5. The supplied RNG is this port's RNG.
 export function generateWaves(level: LevelId, random: () => number): ZombieKind[][] {
   const count = data.waveCounts[level - 1];
   // Whack spawns timed groups from graves, not this adventure wave list.
@@ -20,6 +20,11 @@ export function generateWaves(level: LevelId, random: () => number): ZombieKind[
   const introduced = level === 1 ? undefined : kinds.find(kind => data.zombies[kind].startingLevel === level);
   return Array.from({ length: count }, (_, index) => {
     const wave: ZombieKind[] = [];
+    // Board.cpp:624: Bungee Blitz flag waves include five stealing bungees.
+    if (level === 45 && isFlagWave(level, index)) {
+      wave.push('bungee','bungee','bungee','bungee','bungee');
+      if (index !== count - 1) return wave;
+    }
     let points = Math.floor(index / 3) + 1;
     const put = (kind: ZombieKind) => { wave.push(kind); points -= data.zombies[kind].value; };
     if (isFlagWave(level, index)) {
@@ -29,8 +34,9 @@ export function generateWaves(level: LevelId, random: () => number): ZombieKind[
       put('flag');
     }
     if (level === 5 || level === 25) points *= 4;
-    if (level === 10 || level === 20 || level === 30) points *= 3;
-    if (introduced && (index === Math.floor(count / 2) || index === count - 1)) put(introduced);
+    if (level === 10 || level === 20 || level === 30 || level === 40) points *= 3;
+    if (level === 45) points *= 2;
+    if (introduced && (index === (introduced === 'digger' ? 6 : Math.floor(count / 2)) || index === count - 1)) put(introduced);
     if (index === count - 1) for (const kind of allowed) if (!wave.includes(kind)) put(kind);
     while (points > 0) {
       const choices = allowed.filter(kind => data.zombies[kind].value <= points && data.zombies[kind].firstAllowedWave <= index + 1);

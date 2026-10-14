@@ -50,6 +50,17 @@
       "bytes": 1516628,
       "sha256": "888e175dd9d3a1b99e80688981c09cb58f7cc576b99197ef9ebe414288898bb9"
     },
+    "roof": {
+      "title": "Graze the Roof",
+      "file": "roof.mp3",
+      "loopStart": 4.0,
+      "duration": 107.99020408163265,
+      "subsong": 11,
+      "startOrder": 184,
+      "loopOrder": 185,
+      "bytes": 2149690,
+      "sha256": "d63a8634bbe4c1e4333807e6d9a1f0f3de10e8de87e00c816e85c15b773e5b58"
+    },
     "pool": {
       "title": "Watery Graves",
       "file": "pool.mp3",

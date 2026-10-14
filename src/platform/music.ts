@@ -2,9 +2,10 @@ import type { Game } from '../game/model';
 import tracks from './music-tracks.json';
 
 export type MusicTrack = keyof typeof tracks;
-export function battleMusic(game: Game): MusicTrack {
+export function battleMusic(game: Game): MusicTrack | null {
+  if (game.scenario === 'adventure' && game.level === 40) return null;
   if (game.config.mode === 'vase') return 'puzzle';
-  if (game.config.mode === 'bowling' || game.config.mode === 'whack' || game.level === 25 && game.scenario === 'adventure') return 'minigame';
+  if (game.scenario==='adventure' && game.level===45 || game.config.mode === 'bowling' || game.config.mode === 'whack' || game.level === 25 && game.scenario === 'adventure') return 'minigame';
   if (game.config.mode === 'conveyor') return 'conveyor';
   return game.config.environment;
 }

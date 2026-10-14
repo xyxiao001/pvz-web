@@ -15,7 +15,7 @@ function plant(g:Game,kind:PlantKind,column:number,row:number) {g.select(kind);a
 const pool:PlantKind[]=['sunflower','peashooter','lilypad','jalapeno','spikeweed','tallnut'];
 
 test('ten consecutive adventures use extracted waves, eligibility and 3–10 packet weights',()=>{
- assert.equal(LEVEL_IDS.length,35); assert.deepEqual(LEVEL_IDS.slice(25),[26,27,28,29,30,31,32,33,34,35]);
+ assert.equal(LEVEL_IDS.length,45); assert.deepEqual(LEVEL_IDS.slice(25,35),[26,27,28,29,30,31,32,33,34,35]);
  assert.deepEqual(data.waveCounts.slice(25,35),[20,30,20,30,30,10,20,10,20,20]);
  assert.deepEqual(data.conveyorThirty.map(p=>[p.kind,p.weight]),[['lilypad',25],['squash',5],['threepeater',25],['tanglekelp',5],['jalapeno',10],['spikeweed',10],['torchwood',10],['tallnut',10]]);
  for(const level of LEVEL_IDS.slice(25,34)){
