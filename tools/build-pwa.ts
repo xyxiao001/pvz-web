@@ -24,7 +24,7 @@ export function pwa(): Plugin {
       const files = (await readdir(out, { recursive: true, withFileTypes: true }))
         .filter(e => e.isFile()).map(e => relative(out, resolve(e.parentPath, e.name)).replaceAll('\\', '/'))
         .filter(p => p === 'index.html' || p === 'manifest.webmanifest' || p.startsWith('icons/') && p !== 'icons/icon-master.png'
-          || /^assets\/[^/]+\.(js|css)$/.test(p) || p.startsWith('assets/runtime/') || (/^assets\/original\/[^/]+\.(mp3|ogg)$/.test(p))).sort();
+          || /^assets\/[^/]+\.(js|css)$/.test(p) || p.startsWith('assets/runtime/') || (/^assets\/(original|music)\/[^/]+\.(mp3|ogg)$/.test(p))).sort();
       const assets: Record<string, { revision: string; size: number }> = {};
       for (const path of files) { const body = await readFile(resolve(out, path)); assets[path] = { revision: createHash('sha256').update(body).digest('hex'), size: body.length }; }
       const shell = files.filter(p => p === 'index.html' || p === 'manifest.webmanifest' || p.startsWith('icons/') || p.endsWith('.css') || startup.has(p));

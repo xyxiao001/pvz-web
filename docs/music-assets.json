@@ -1,0 +1,98 @@
+{
+  "repository": "https://github.com/ruslan831/PlantsVsZombies-decompilation",
+  "commit": "325b2229a7225d73870bb69322eefcda3a45bf8d",
+  "source": "SexyAppFramework/sounds/mainmusic.mo3",
+  "sourceSha256": "afbd1a0cd7fd9e641a425355b6560eb9bf25bf901e99f163ab3bb1c37db49f59",
+  "reference": "PvZ-Portable 141c1476: src/Lawn/System/Music.cpp",
+  "renderer": "libopenmpt, 44100 Hz stereo; main music layer only (no dynamic drum/hihat layering)",
+  "tracks": {
+    "menu": {
+      "title": "Crazy Dave",
+      "file": "menu.mp3",
+      "loopStart": 0.0,
+      "duration": 87.36507936507937,
+      "subsong": 7,
+      "startOrder": 152,
+      "loopOrder": 152,
+      "bytes": 1286253,
+      "sha256": "00fe1006c95102fa04e4784996fb12217961fa504070a2f1df2556e6302a10f2"
+    },
+    "choose": {
+      "title": "Choose Your Seeds",
+      "file": "choose.mp3",
+      "loopStart": 3.6,
+      "duration": 21.590204081632653,
+      "subsong": 5,
+      "startOrder": 122,
+      "loopOrder": 123,
+      "bytes": 320782,
+      "sha256": "36d6301657086e719690f93338174045e43ae01afef4c392c2a6af681895c2cd"
+    },
+    "day": {
+      "title": "Grasswalk",
+      "file": "day.mp3",
+      "loopStart": 50.064,
+      "duration": 189.7752380952381,
+      "subsong": 0,
+      "startOrder": 0,
+      "loopOrder": 12,
+      "bytes": 3796452,
+      "sha256": "f289b5526f00a330bc51e613751cf0949147cbc8fae7c9bb4b71be87100dc94a"
+    },
+    "night": {
+      "title": "Moongrains",
+      "file": "night.mp3",
+      "loopStart": 0.0,
+      "duration": 111.90857142857143,
+      "subsong": 1,
+      "startOrder": 48,
+      "loopOrder": 48,
+      "bytes": 1516628,
+      "sha256": "888e175dd9d3a1b99e80688981c09cb58f7cc576b99197ef9ebe414288898bb9"
+    },
+    "pool": {
+      "title": "Watery Graves",
+      "file": "pool.mp3",
+      "loopStart": 0.0,
+      "duration": 101.35510204081632,
+      "subsong": 4,
+      "startOrder": 94,
+      "loopOrder": 94,
+      "bytes": 1937360,
+      "sha256": "72a446adc44db81846e88a8718d6f2ef872583989b963d46b40644a518e159bc"
+    },
+    "fog": {
+      "title": "Rigor Mormist",
+      "file": "fog.mp3",
+      "loopStart": 2.183333,
+      "duration": 111.39047619047619,
+      "subsong": 6,
+      "startOrder": 125,
+      "loopOrder": 126,
+      "bytes": 2227990,
+      "sha256": "283722fde61726b94451978d3513af28614c0f06e3fa599f486bba93af7b2f1b"
+    },
+    "minigame": {
+      "title": "Loonboon",
+      "file": "minigame.mp3",
+      "loopStart": 0.0,
+      "duration": 106.49034013605443,
+      "subsong": 9,
+      "startOrder": 166,
+      "loopOrder": 166,
+      "bytes": 1708333,
+      "sha256": "8d56cc31963845e82a7a4c278e2c6cb31abc6f5107781616b8ede459c45b11d3"
+    },
+    "conveyor": {
+      "title": "Ultimate Battle",
+      "file": "conveyor.mp3",
+      "loopStart": 16.0,
+      "duration": 119.9891156462585,
+      "subsong": 12,
+      "startOrder": 212,
+      "loopOrder": 213,
+      "bytes": 2155670,
+      "sha256": "2b162ef57e10f28785b44f5de46ff5d818b832c380eaaecae2831a0a61109cb7"
+    }
+  }
+}

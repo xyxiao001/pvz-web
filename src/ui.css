@@ -63,3 +63,5 @@ footer{color:#8d9d76;font-size:11px}
 .chooser-actions{display:flex;align-items:center;justify-content:center;gap:2cqw;margin-top:1cqw}.chooser-actions .wood-button.large,.chooser-actions .text-button{margin:0}
 .pause-content{top:23%;left:18%;right:12%;bottom:22%;padding:.8cqw 1cqw;background:linear-gradient(115deg,#535866,#363d48);border:.35cqw solid #252b34;border-radius:.7cqw;box-shadow:inset 0 .25cqw #747b89,0 .25cqw #879092}
 .pause-content h2{font-size:2.6cqw;margin:.6cqw 0}.pause-content p{font-size:1.25cqw;margin:.7cqw 0}.pause-content .wood-button.large{min-width:100%;height:5.3cqw;margin:.6cqw auto}.pause-content .text-button{font-size:1.3cqw;margin:.5cqw auto;padding:.3cqw}
+
+.pause-audio{display:flex;justify-content:center;gap:1.5cqw}

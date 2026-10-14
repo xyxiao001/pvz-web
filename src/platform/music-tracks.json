@@ -1,0 +1,34 @@
+{
+  "menu": {
+    "file": "menu.mp3",
+    "loopStart": 0.0
+  },
+  "choose": {
+    "file": "choose.mp3",
+    "loopStart": 3.6
+  },
+  "day": {
+    "file": "day.mp3",
+    "loopStart": 50.064
+  },
+  "night": {
+    "file": "night.mp3",
+    "loopStart": 0.0
+  },
+  "pool": {
+    "file": "pool.mp3",
+    "loopStart": 0.0
+  },
+  "fog": {
+    "file": "fog.mp3",
+    "loopStart": 2.183333
+  },
+  "minigame": {
+    "file": "minigame.mp3",
+    "loopStart": 0.0
+  },
+  "conveyor": {
+    "file": "conveyor.mp3",
+    "loopStart": 16.0
+  }
+}

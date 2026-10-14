@@ -9,6 +9,7 @@ import type { Scene } from './rendering/scene';
 import { BOARD, SURVIVAL_SCENES, SCENE_NAMES, isNight, type SurvivalScene, LEVEL_IDS, LEVELS, PLANTS, type LevelId, type PlantKind } from './game/config';
 import { Game } from './game/model';
 import { GameAudio } from './platform/audio';
+import { GameMusic, battleMusic } from './platform/music';
 import { clearSurvival, loadSurvival, saveSurvival, completeLevel, completedLevel } from './platform/storage';
 
 const asset = (file: string) => `${import.meta.env.BASE_URL}assets/runtime/original/${file.replace(/\.png$/, ".webp")}`;
@@ -48,7 +49,9 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 </section>
 <footer><span>点击选卡、种植与收集阳光</span><span><kbd>1</kbd>–<kbd>6</kbd> 选卡　<kbd>Esc</kbd> 取消 / 暂停</span></footer>
 </main>`;
-const overlay = $('#overlay'); const audio = new GameAudio(); let scene: Scene;
+const overlay = $('#overlay'); const audio = new GameAudio();
+const music = new GameMusic(import.meta.env.BASE_URL);
+let scene: Scene;
 let sceneLoading: Promise<void> | undefined;
 let game = new Game(1, Date.now());
 let screen: 'menu' | 'loading' | 'battle' = 'menu';
@@ -62,6 +65,11 @@ const unlocked = (level: LevelId) => level <= completedLevel() + 1;
 function showMenu() {
   game.pause(); screen = 'menu'; clock.reset(); scene?.app.stop();
   $('#menu').hidden = false; $('#battle-hud').hidden = true; overlay.hidden = true;
+  updateMusic();
+}
+function updateMusic() {
+  music.setTrack(screen === 'menu' ? 'menu' : screen === 'loading' || game.phase === 'ready' || game.phase === 'intermission' ? 'choose' : game.phase === 'won' || game.phase === 'lost' ? null : battleMusic(game));
+  music.setPaused(document.hidden || screen === 'battle' && game.phase === 'paused');
 }
 function panel(content: string, className = 'paper-panel') {
   overlay.hidden = false; overlay.innerHTML = `<div class="${className}">${content}</div>`;
@@ -79,7 +87,7 @@ function setLevel(level: LevelId, scenario: Game['scenario'] = 'adventure', surv
   mountGame();
 }
 async function mountGame() {
-  screen = 'loading'; scene?.app.stop(); $('#battle-hud').hidden = true;
+  screen = 'loading'; scene?.app.stop(); $('#battle-hud').hidden = true; updateMusic();
   panel('<h2>正在准备庭院…</h2><p id="loading-status" role="status">准备画面</p>');
   const progress = (done: number, total: number) => { $('#loading-status').textContent = `加载资源 ${done} / ${total}`; };
   await ensureScene();
@@ -145,14 +153,16 @@ function updateConveyor() {
   hud.bindSeeds();
 }
 function phasePanel() {
+  updateMusic();
   if (game.phase === 'playing') { overlay.hidden = true; return; }
   if (game.phase === 'ready') {
     if (game.needsSeedChoice) seedChooser();
     else panel(`<span class="kicker">冒险模式 ${game.config.label}</span><img loading="lazy" class="intro-plant" src="${asset(`${game.config.seeds.at(-1)}.png`)}" alt=""/><h2>${game.config.title}</h2><p>${game.config.description}</p><div class="facts">${game.config.rows.length} 条草坪　·　${game.config.waveCount} 波僵尸　·　${game.hasConveyor ? '传送带供应 · 无需阳光' : `${game.config.initialSun} 初始阳光`}</div><button id="start" class="wood-button large">${game.config.mode === 'whack' ? '拿起木槌' : game.config.mode === 'bowling' ? '开始保龄球' : game.config.mode === 'conveyor' ? '开始传送带决战' : '开始种植'}</button><button class="text-button back-menu">${backLabel()}</button>`);
     $('#start').onclick = async () => { $<HTMLButtonElement>('#start').disabled = true; $('#start').textContent = '准备角色…'; await Promise.all([audio.unlock(game), scene.prepareActors(game, (done,total) => { $('#start').textContent = `准备角色 ${done} / ${total}`; })]); game.start(); updateHud(); };
   } else if (game.phase === 'paused') {
-    panel(`<div class="pause-content"><h2>庭院休息中</h2><p>准备好了，就继续守护草坪。</p><button id="resume" class="wood-button large">继续游戏</button><button id="restart" class="wood-button large">重新开始</button><button class="wood-button large back-menu">${game.scenario === 'endless' ? '保存退出' : '返回主菜单'}</button><button id="pause-sound" class="text-button">音效：${audio.muted ? '关闭' : '开启'}</button></div>`, 'pause-panel');
+    panel(`<div class="pause-content"><h2>庭院休息中</h2><p>准备好了，就继续守护草坪。</p><button id="resume" class="wood-button large">继续游戏</button><button id="restart" class="wood-button large">重新开始</button><button class="wood-button large back-menu">${game.scenario === 'endless' ? '保存退出' : '返回主菜单'}</button><div class="pause-audio"><button id="pause-sound" class="text-button">音效：${audio.muted ? '关闭' : '开启'}</button><button id="pause-music" class="text-button">音乐：${music.enabled ? '开启' : '关闭'}</button></div></div>`, 'pause-panel');
     $('#resume').onclick = async () => { await audio.unlock(game); game.resume(); updateHud(); }; $('#restart').onclick = () => { if(game.scenario==='endless')clearSurvival(game.survivalScene); setLevel(game.level, game.scenario, game.survivalScene); };
+    $('#pause-music').onclick = () => { music.enabled = !music.enabled; $('#pause-music').textContent = `音乐：${music.enabled ? '开启' : '关闭'}`; };
     $('#pause-sound').onclick = () => { audio.muted = !audio.muted; $('#pause-sound').textContent = `音效：${audio.muted ? '关闭' : '开启'}`; };
   } else if (game.phase === 'intermission') {
     panel(`<span class="kicker">${game.config.title} · 第 ${game.survivalStage + 1} 轮完成</span><h2>已守住 ${game.survivalFlags} 面旗帜！</h2><p>下一轮僵尸更多，重新挑选六张植物卡。<br/>场上植物、剩余阳光、卡片冷却和割草机状态保留。</p><div class="facts">累计击败 ${game.kills} 只僵尸 · 剩余 ${game.sun} 阳光</div><button id="repick" class="wood-button large">继续守护 · 重新选卡</button><button class="text-button back-menu">保存退出</button>`);
@@ -221,8 +231,9 @@ $('#almanac').onclick = () => {
   panel(`<span class="kicker">植物图鉴</span><h2>认识你的守护者</h2><div class="almanac-grid">${(Object.keys(PLANTS) as PlantKind[]).map(kind => `<article><img loading="lazy" src="${asset(`${kind}.png`)}" alt=""/><div><h3>${PLANTS[kind].name}<span>${kind === 'explodenut' ? '传送带专用' : `${PLANTS[kind].cost} 阳光`}</span></h3><p>${descriptions[kind]}</p></div></article>`).join('')}</div><button id="close" class="wood-button">返回主菜单</button>`, 'paper-panel wide-panel'); $('#close').onclick = closeMenuPanel;
 };
 $('#settings').onclick = () => {
-  panel(`<span class="kicker">庭院设置</span><h2>准备好出发</h2><button id="sound" class="wood-button large">音效：${audio.muted ? '关闭' : '开启'}</button><button id="fullscreen" class="wood-button large">切换全屏</button><button id="pwa" class="wood-button large">安装与离线</button><button id="close" class="text-button">返回主菜单</button>`);
+  panel(`<span class="kicker">庭院设置</span><h2>准备好出发</h2><button id="sound" class="wood-button large">音效：${audio.muted ? '关闭' : '开启'}</button><button id="music" class="wood-button large">背景音乐：${music.enabled ? '开启' : '关闭'}</button><button id="fullscreen" class="wood-button large">切换全屏</button><button id="pwa" class="wood-button large">安装与离线</button><button id="close" class="text-button">返回主菜单</button>`);
   $('#pwa').onclick = showPwa;
+  $('#music').onclick = () => { music.enabled = !music.enabled; $('#music').textContent = `背景音乐：${music.enabled ? '开启' : '关闭'}`; };
   $('#sound').onclick = () => { audio.muted = !audio.muted; $('#sound').textContent = `音效：${audio.muted ? '关闭' : '开启'}`; };
   $('#fullscreen').onclick = () => { if (document.fullscreenElement) void document.exitFullscreen(); else void $('.page').requestFullscreen(); };
   $('#close').onclick = closeMenuPanel;
@@ -241,7 +252,14 @@ window.addEventListener('keydown', event => {
     const kind = game.seeds[Number(event.key) - 1]; if (kind) { game.select(kind); updateHud(); }
   }
 });
-document.addEventListener('visibilitychange', () => { if (document.hidden && game.phase === 'playing') { game.pause(); clock.reset(); updateHud(); } });
+document.addEventListener('visibilitychange', () => { if (document.hidden && game.phase === 'playing') { game.pause(); clock.reset(); updateHud(); } updateMusic(); });
+const activateMusic = () => {
+  window.removeEventListener('pointerdown', activateMusic, true);
+  window.removeEventListener('keydown', activateMusic, true);
+  void music.activate();
+};
+window.addEventListener('pointerdown', activateMusic, true);
+window.addEventListener('keydown', activateMusic, true);
 async function ensureScene() {
   sceneLoading ??= (async () => {
     const { Scene } = await import('./rendering/scene');

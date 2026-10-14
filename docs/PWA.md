@@ -58,3 +58,11 @@
 音效也按选卡和模式准备：首次进入 1–1 只下载 7 项通用音效，原先为全部 13 项；选择食人花、大喷菇、魅惑菇、寒冰菇、爆炸植物或进入打僵尸模式时补载对应音效。已经下载、解码的音效在暂停恢复和切关时复用。完整离线下载的内容不变。
 
 验证：111 项测试及生产构建通过，未运行 lint。浏览器实测首页没有战斗画布、角色图集或音效请求；1–1 开战后出现 7 项音效请求，暂停恢复后切到迷雾无尽并选取特殊植物，只新增 5 项对应音效，没有重复音效请求或控制台错误。存档恢复时保留弹丸、弹坑和旧植物的资源依赖由测试覆盖。
+
+## 背景音乐
+
+新增 8 首原版主音乐层：Crazy Dave（首页）、Choose Your Seeds（战前/选卡）、Grasswalk、Moongrains、Watery Graves、Rigor Mormist、Loonboon（1–5 / 2–5 / 3–5）和 Ultimate Battle（1–10 / 2–10）。无尽模式按庭院场景选择音乐。来源与 SHA-256、原版 order 位置、循环点记录于 `music-assets.json`；`tools/build-music.py` 使用 libopenmpt 和 ffmpeg 从 Ruslan 仓库的 `mainmusic.mo3` 导出。参考 Portable `Music.cpp::PlayMusic`、`StartGameMusic`，当前未实现原版随战况动态混合的鼓点/踩镲层。
+
+首次点击或按键激活 Web Audio，之前不请求音乐。浏览器限制未交互页面的有声自动播放，参见 [MDN 自动播放说明](https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Autoplay)。设置和暂停面板分别提供音乐、音效开关；音乐使用独立音量通道，播放速度不随游戏倍速变化。暂停和隐藏页面时停止音乐，恢复时从原位置继续；胜负结算停止背景音乐，保留结算音效。
+
+只下载并解码当前曲目，换曲释放上一首播放器引用，循环按原曲 loop order 对应的时间点播放。播放器使用的定位与导出接口见 [libopenmpt 文档](https://lib.openmpt.org/doc/group__libopenmpt__c.html)。完整离线包更新为约 126.8 MiB / 211 项，8 个音乐文件不进入启动预缓存清单。
