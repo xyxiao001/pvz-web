@@ -65,3 +65,42 @@ footer{color:#8d9d76;font-size:11px}
 .pause-content h2{font-size:2.6cqw;margin:.6cqw 0}.pause-content p{font-size:1.25cqw;margin:.7cqw 0}.pause-content .wood-button.large{min-width:100%;height:5.3cqw;margin:.6cqw auto}.pause-content .text-button{font-size:1.3cqw;margin:.5cqw auto;padding:.3cqw}
 
 .pause-audio{display:flex;justify-content:center;gap:1.5cqw}
+
+/* Original chooser: 465 px card catalogue at (0,87) in the 800×600 board. */
+.overlay.chooser-overlay{background:transparent;display:block}
+.seed-chooser{position:absolute;inset:0;color:#fff0bb;text-shadow:0 .2cqw .15cqw #28190e}
+.choosing #seed-cards,.choosing .battle-controls,.choosing #shovel,.choosing .wave-hud,.choosing .level-caption,.choosing .advice{visibility:hidden}
+.seed-chooser .chosen-seeds{position:absolute;left:10.725%;top:1.16%;height:9cqw;display:flex;justify-content:flex-start;gap:.4cqw;padding:0;margin:0;background:none;border:0;box-shadow:none;border-radius:0}
+.seed-chooser .chosen-seed,.seed-chooser .empty-seed{width:6.5cqw;height:9cqw;border:0;border-radius:0;box-shadow:none;background:none}
+.seed-chooser .empty-seed{background:#301c0d66;box-shadow:inset 0 0 0 .15cqw #a7793677}
+.seed-chooser .packet-art{margin:0}
+.seed-chooser .chooser-catalog{position:absolute;left:0;top:14.5%;width:58.125%;height:85.5%;background:url('/assets/runtime/ui/seed-chooser.webp') center/100% 100% no-repeat}
+.chooser-catalog h2{height:4cqw;margin:.2cqw 0 .6cqw;display:grid;place-items:center;font-size:2.2cqw;letter-spacing:.2cqw;color:#f5d785}
+.seed-chooser .seed-options{display:grid;grid-template-columns:repeat(8,6.25cqw);grid-auto-rows:8.8cqw;align-content:start;gap:.325cqw .375cqw;padding:0;margin:0 2.75cqw;max-height:47cqw;overflow-y:auto;border-radius:0;background:none;box-shadow:none;scrollbar-width:thin}
+.seed-chooser .seed-option{width:6.25cqw;height:8.8cqw;padding:0;font-size:1cqw;transition:filter .12s}
+.seed-chooser .seed-option>img,.seed-chooser .seed-option .packet-art{width:100%;height:100%;margin:0}
+.seed-chooser .seed-option .packet-portrait{height:58%;width:76%}
+.seed-chooser .packet-price{font-size:1.4cqw}
+.seed-chooser .seed-option[aria-pressed="true"]:after{content:none}
+.seed-chooser .seed-option[aria-pressed="true"]{filter:brightness(.42) saturate(.6)}
+.seed-chooser .seed-option[aria-pressed="true"] img{filter:none}
+.seed-chooser .seed-option:disabled{opacity:1}
+.seed-chooser .seed-option:hover:not(:disabled){transform:none;outline:.2cqw solid #ffe472;outline-offset:-.2cqw}
+.seed-chooser .chooser-footer{position:absolute;bottom:2cqw;left:0;right:0;display:flex;align-items:center;flex-direction:column;gap:.6cqw}
+.seed-chooser #choice-count{font-size:1.35cqw;color:#f1d48f}
+.seed-start{background:url('/assets/runtime/ui/seed-start.webp') center/100% 100%;width:19.5cqw;height:5.25cqw;border:0;padding:0;color:#ffe6b1;font-weight:bold;font-size:1.9cqw;text-shadow:0 .2cqw #42210a}
+.seed-start:disabled{background-image:url('/assets/runtime/ui/seed-start-disabled.webp');color:#9d967a;text-shadow:none}
+.seed-start:hover:not(:disabled){filter:brightness(1.2)}
+.chooser-details{position:absolute;left:65%;right:4%;top:23%;padding:1.5cqw;background:#1c2b19d9;border:.25cqw solid #b0ae76;border-radius:.5cqw;box-shadow:0 .5cqw 1.5cqw #10200e66;text-align:center}
+.chooser-details h3{font-size:2.2cqw;margin:1cqw 0}.chooser-details p{font-size:1.4cqw;line-height:1.7;margin:.6cqw 0;color:#e1dbaf}.chooser-details .kicker{font-size:1.15cqw;letter-spacing:.1cqw;padding:.3cqw}
+.chooser-enemies{border-top:1px solid #9caa7777;border-bottom:1px solid #9caa7777;margin:1.5cqw 0;padding:1cqw 0}.chooser-enemies h4{font-size:1.5cqw;margin:0;color:#e3c878}.chooser-details .chooser-tip{font-size:1.25cqw;color:#c2d28f}
+.chooser-back{position:absolute;right:1%;top:0;min-width:15cqw}
+.menu-tools .wood-button{min-width:10cqw}
+.all-levels-toggle{display:inline-flex;align-items:center;gap:.6cqw;font-size:1.6cqw;color:#e3edaa;cursor:pointer}.all-levels-toggle input{width:1.8cqw;height:1.8cqw;accent-color:#839f38}.level-panel #level-access{font-size:1.15cqw;margin:.5cqw 0}
+.achievements-panel{width:64%}.achievement-list{display:grid;gap:1cqw;margin:2cqw 0;text-align:left}.achievement-list article{display:flex;align-items:center;gap:1.6cqw;padding:1.2cqw;border:.2cqw solid #83683c;background:#2e201799;border-radius:.5cqw}.achievement-list article.earned{border-color:#d0b856;background:#4b4525}
+.achievement-medal{font-size:5cqw;color:#897a56}.earned .achievement-medal{color:#f6d05a}.achievement-list h3{font-size:1.8cqw;margin:0;color:#f3dd9a}.achievement-list small{display:block;font-size:1.1cqw;color:#c6ba90;margin-top:.25cqw}.achievement-list p{font-size:1.25cqw;margin:.5cqw 0}.achievement-list article div>span{font-size:1.1cqw;color:#b1c784}
+.achievement-toast{position:absolute;right:2%;top:17%;max-width:40%;padding:1.5cqw 2cqw;z-index:20;border:.3cqw solid #d6bd69;border-radius:.6cqw;background:#344721f2;color:#ffedb6;box-shadow:0 .5cqw 2cqw #0007;font-weight:bold;font-size:1.7cqw;pointer-events:none}
+@container(max-width:600px){.achievements-panel{width:90%}.achievement-list h3{font-size:14px}.achievement-list small,.achievement-list p,.achievement-list article div>span{font-size:10px}.all-levels-toggle{font-size:12px}.all-levels-toggle input{width:16px;height:16px}.level-panel #level-access{font-size:10px}.menu-tools .wood-button{min-width:11cqw;font-size:10px}}
+.seed-silhouette{width:6.25cqw;height:8.8cqw;background:url('/assets/runtime/ui/seed-silhouette.webp') center/100% 100%;opacity:.55}
+.seed-chooser .seed-option,.seed-chooser .chosen-seed{transform-origin:top left}
+.seed-chooser .chosen-seeds{z-index:1}

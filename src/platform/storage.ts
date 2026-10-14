@@ -10,6 +10,11 @@ export function completeLevel(level: LevelId) {
   localStorage.setItem(KEY, `1-${Math.max(level, completedLevel())}-complete`);
 }
 
+const ALL_LEVELS_KEY = 'pvz-web:all-levels';
+// Existing players keep all 50 levels open until they choose progression in the picker.
+export function allLevelsEnabled() { return localStorage.getItem(ALL_LEVELS_KEY) !== 'false'; }
+export function setAllLevelsEnabled(enabled: boolean) { localStorage.setItem(ALL_LEVELS_KEY, String(enabled)); }
+
 import { Game } from '../game/model';
 import type { SurvivalScene } from '../game/config';
 import type { GameSpeed } from '../game/clock';
