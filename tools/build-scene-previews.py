@@ -2,12 +2,19 @@
 from pathlib import Path
 from PIL import Image
 import json
+import shutil
 root = Path(__file__).resolve().parents[1] / 'public/assets/runtime'
 out = root / 'previews'
 out.mkdir(exist_ok=True)
 report = []
 for scene in ['day','night','pool','fog','roof']:
-    source = root / 'original' / ('menu.webp' if scene == 'day' else scene+'.webp')
+    if scene == 'day':
+        source = root.parent / 'lawn.jpg'
+        target = out / 'day.jpg'
+        shutil.copyfile(source, target)
+        report.append({'scene':scene,'sourceBytes':source.stat().st_size,'previewBytes':target.stat().st_size,'size':Image.open(source).size})
+        continue
+    source = root / 'original' / (scene+'.webp')
     image = Image.open(source)
     image.thumbnail((800,800), Image.Resampling.LANCZOS)
     target = out / (scene+'.webp')
