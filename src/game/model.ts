@@ -1,3 +1,4 @@
+import { campaignConfig, daveSeeds, type CampaignRules } from './campaign';
 import { createBoss, stepBoss, damageBoss, bossVulnerable, type Boss } from './boss';
 import { BOARD, UPGRADES, isUpgrade, type BasePlantKind, cellX, survivalConfig, isPool, isNight, MUSHROOMS, LEVELS, PLANTS, type SurvivalMode, type SurvivalScene, type LevelId, type PlantKind, type ZombieKind } from './config';
 import { generateSurvivalWaves, isSurvivalFlagWave, survivalRoster } from './survival';
@@ -7,17 +8,17 @@ import { walkingSpeed } from './zombie-motion';
 import portable from './data/portable-adventure.json';
 
 export type Phase = 'ready' | 'playing' | 'paused' | 'intermission' | 'won' | 'lost';
-export interface Plant { id: number; kind: PlantKind; row: number; column: number; health: number; actionIn: number; born: number; shotAt: number; awake?: boolean; winterLaunchIn?: number; rearIn?: number; productionEnding?: number; scared?: boolean; tall?: boolean; kelp?: { target: number; remaining: number }; squash?: { remaining: number; x: number; target: number };
+export interface Plant { id: number; kind: PlantKind; row: number; column: number; health: number; actionIn: number; born: number; shotAt: number; awake?: boolean; burstIn?: number; imitated?: boolean; morphTarget?: PlantKind; winterLaunchIn?: number; rearIn?: number; productionEnding?: number; scared?: boolean; tall?: boolean; kelp?: { target: number; remaining: number }; squash?: { remaining: number; x: number; target: number };
   chomp?: { phase: 'ready' | 'bite' | 'digest' | 'recover'; remaining: number } }
-export const headless = (zombie: Zombie) => !['zomboni','catapult','gargantuar'].includes(zombie.kind) && zombie.health < Math.trunc((['pole','dancer','dolphin','jack','ladder'].includes(zombie.kind) ? 500 : 270) / (zombie.mini ? 4 : 1)) / 3;
+export const headless = (zombie: Zombie) => !['zomboni','catapult','gargantuar'].includes(zombie.kind) && zombie.health < Math.trunc((zombie.kind==='yeti'?1350:['pole','dancer','dolphin','jack','ladder'].includes(zombie.kind) ? 500 : 270) / (zombie.mini ? 4 : 1)) / 3;
 export interface Roller { id: number; kind: 'wallnut' | 'explodenut'; row: number; x: number; y: number; direction: number; hit: number[] }
 export interface Packet { id: number; kind: PlantKind; x: number }
-export interface Zombie { id: number; kind: ZombieKind; armor: number; row: number; x: number; health: number; speed: number; biteIn: number; eating: boolean; wave: number; hitAt: number; chillIn: number; hasPole: boolean; vaultIn: number; animationTime: number; shield: number; rageIn: number; riseIn: number; hypnotized?: boolean; mini?: boolean; frozenIn?: number; summonIn?: number; dancePhase?: 'intro' | 'point' | 'hold' | 'dance'; danceIn?: number; leader?: number; slot?: number; flying?: boolean; popIn?: number; dolphin?: boolean; jackIn?: number; jackOpening?: boolean; sled?: number; sledLeader?: number; crashIn?: number; blownIn?: number; underground?: boolean; emergingIn?: number; backwards?: boolean; metalRemoved?: boolean; pogo?: boolean; butterIn?: number; ladderIn?: number; garlicIn?: number; garlicRow?: number; catapult?: { ammo: number; remaining: number; phase: 'walk' | 'shoot' | 'reload' }; giant?: { thrown: boolean; phase: 'walk' | 'smash' | 'throw'; remaining: number }; flight?: { remaining: number; duration: number; startX: number; endX: number }; landingIn?: number; bungee?: { phase: 'down' | 'wait' | 'up'; remaining: number; column: number; drop?: ZombieKind } }
-export interface Pea { id: number; row: number; x: number; ice: boolean; puff: boolean; age: number; longRange?: boolean; fire?: boolean; torch?: number; spike?: boolean; high?: boolean; vx?: number; vy?: number; y?: number; originY?: number; star?: boolean; lob?: { kind: 'cabbage' | 'kernel' | 'butter' | 'melon' | 'wintermelon' | 'basketball'; target: number; startX: number; endX: number; startY: number; endY: number; duration: number } }
+export interface Zombie { id: number; kind: ZombieKind; armor: number; row: number; x: number; health: number; speed: number; biteIn: number; eating: boolean; wave: number; hitAt: number; chillIn: number; hasPole: boolean; vaultIn: number; animationTime: number; shield: number; rageIn: number; riseIn: number; hypnotized?: boolean; mini?: boolean; yetiIn?: number; frozenIn?: number; summonIn?: number; dancePhase?: 'intro' | 'point' | 'hold' | 'dance'; danceIn?: number; leader?: number; slot?: number; flying?: boolean; popIn?: number; dolphin?: boolean; jackIn?: number; jackOpening?: boolean; sled?: number; sledLeader?: number; crashIn?: number; blownIn?: number; underground?: boolean; emergingIn?: number; backwards?: boolean; metalRemoved?: boolean; pogo?: boolean; butterIn?: number; ladderIn?: number; garlicIn?: number; garlicRow?: number; catapult?: { ammo: number; remaining: number; phase: 'walk' | 'shoot' | 'reload' }; giant?: { thrown: boolean; phase: 'walk' | 'smash' | 'throw'; remaining: number }; flight?: { remaining: number; duration: number; startX: number; endX: number }; landingIn?: number; bungee?: { phase: 'down' | 'wait' | 'up'; remaining: number; column: number; drop?: ZombieKind } }
+export interface Pea { id: number; row: number; x: number; ice: boolean; puff: boolean; age: number; homing?: number; cannon?: {x:number;y:number;remaining:number}; longRange?: boolean; fire?: boolean; torch?: number; spike?: boolean; high?: boolean; vx?: number; vy?: number; y?: number; originY?: number; star?: boolean; lob?: { kind: 'cabbage' | 'kernel' | 'butter' | 'melon' | 'wintermelon' | 'basketball'; target: number; startX: number; endX: number; startY: number; endY: number; duration: number } }
 export interface Vase { id: number; row: number; column: number; green: boolean; content: { type: 'seed'; kind: PlantKind } | { type: 'zombie'; kind: ZombieKind } }
 export interface SeedDrop { id: number; kind: PlantKind; row: number; column: number; remaining: number; timesDropped: number }
 export interface Sun { id: number; x: number; y: number; targetY: number; expiresIn: number; born: number; value: number }
-export interface Coin { id: number; x: number; y: number; targetY: number; born: number; expiresIn: number; value: number }
+export interface Coin { id: number; x: number; y: number; targetY: number; magnet?: number; born: number; expiresIn: number; value: number }
 export interface Mower { row: number; x: number; state: 'ready' | 'moving' | 'spent' }
 export type GameEvent = { kind: 'plant' | 'shoot' | 'hit' | 'mower' | 'wave' | 'win' | 'lose' | 'explode' | 'flag' | 'whack' | 'hypnotize' | 'freeze' | 'blover' | 'vase' | 'thunder' | 'bungee' | 'coffee'; x: number; y: number }
   | { kind: 'fire'; x: number; y: number; row: number }
@@ -47,6 +48,12 @@ export class Game {
   suns: Sun[] = [];
   coins: Coin[] = [];
   money = 0;
+  bankedMoney = 0;
+  tutorial: 'off' | 'pea' | 'sunflower' | 'more-sun' | 'shovel' | 'shovel-done' = 'off';
+  tutorialFinished = false;
+  readonly davePicks: PlantKind[] = [];
+  private firstCoinDropped = false;
+  rake: {row:number;column:number;age:number;attracting:boolean}|null=null;
   mowers: Mower[];
   graves: { id: number; row: number; column: number }[] = [];
   private graveWaveIn = 0;
@@ -61,13 +68,16 @@ export class Game {
   vases: Vase[] = [];
   seedDrops: SeedDrop[] = [];
   selectedDrop: number | null = null;
-  cooldowns: Record<BasePlantKind, number> = { umbrella:0, marigold:0, melonpult:0, splitpea:0, starfruit:0, pumpkin:0, magnetshroom:0, cabbagepult:0, flowerpot:0, kernelpult:0, coffeebean:0, garlic:0, jalapeno: 0, spikeweed: 0, torchwood: 0, tallnut: 0, seashroom: 0, cactus: 0, blover: 0, tanglekelp: 0, peashooter: 0, sunflower: 0, cherrybomb: 0, wallnut: 0, potatomine: 0, snowpea: 0, explodenut: 0, chomper: 0, repeater: 0, puffshroom: 0, sunshroom: 0, fumeshroom: 0, gravebuster: 0, hypnoshroom: 0, scaredyshroom: 0, iceshroom: 0, doomshroom: 0, lilypad: 0, squash: 0, threepeater: 0, plantern: 0 };
+  cooldowns: Record<BasePlantKind, number> = { imitater:0, umbrella:0, marigold:0, melonpult:0, splitpea:0, starfruit:0, pumpkin:0, magnetshroom:0, cabbagepult:0, flowerpot:0, kernelpult:0, coffeebean:0, garlic:0, jalapeno: 0, spikeweed: 0, torchwood: 0, tallnut: 0, seashroom: 0, cactus: 0, blover: 0, tanglekelp: 0, peashooter: 0, sunflower: 0, cherrybomb: 0, wallnut: 0, potatomine: 0, snowpea: 0, explodenut: 0, chomper: 0, repeater: 0, puffshroom: 0, sunshroom: 0, fumeshroom: 0, gravebuster: 0, hypnoshroom: 0, scaredyshroom: 0, iceshroom: 0, doomshroom: 0, lilypad: 0, squash: 0, threepeater: 0, plantern: 0 };
   wintermelonCooldown = 0;
-  upgradeCooldowns = { gatlingpea: 0, twinsunflower: 0 };
-  get seedCapacity() { return this.isSurvival ? 10 : 6; }
-  get canStart() { return !this.needsSeedChoice || this.seeds.length >= 6 && this.seeds.length <= this.seedCapacity; }
+  upgradeCooldowns = { gatlingpea: 0, twinsunflower: 0, gloomshroom:0, cattail:0, goldmagnet:0, spikerock:0, cobcannon:0 };
+  get seedCapacity() { return this.isSurvival ? 10 : this.campaign ? this.campaign.slots : 6; }
+  get canStart() { return !this.needsSeedChoice || this.seeds.length >= (this.campaign ? this.seedCapacity : 6) && this.seeds.length <= this.seedCapacity && (!this.seeds.includes('imitater') || this.imitaterTarget!==null); }
   cooldown(kind: PlantKind) { return kind === 'wintermelon' ? this.wintermelonCooldown : isUpgrade(kind) ? this.upgradeCooldowns[kind] : this.cooldowns[kind]; }
+  imitaterTarget: PlantKind | null = null;
+  cannonTarget: number | null = null;
   plantCost(kind: PlantKind) {
+    if (kind==='imitater' && this.imitaterTarget) return PLANTS[this.imitaterTarget].cost;
     return PLANTS[kind].cost + (this.scenario === 'endless' && isUpgrade(kind) ? this.plants.filter(p => p.kind === kind).length * 50 : 0);
   }
   wave = 0;
@@ -93,17 +103,22 @@ export class Game {
   survivalStage = 0;
   survivalEnemies: ZombieKind[] = [];
 
-  constructor(readonly level: LevelId, seed: number, readonly scenario: 'adventure' | SurvivalMode = 'adventure', readonly survivalScene: SurvivalScene = 'day') {
+  constructor(readonly level: LevelId, seed: number, readonly scenario: 'adventure' | SurvivalMode = 'adventure', readonly survivalScene: SurvivalScene = 'day', readonly campaign: CampaignRules | null = null) {
     if (scenario === 'adventure' && level === 40) this.stormIn = 400;
     if (scenario === 'adventure' && level === 50) this.boss = createBoss();
-    this.config = scenario !== 'adventure' ? survivalConfig(survivalScene, scenario) : LEVELS[level];
-    this.needsSeedChoice = scenario !== 'adventure' || this.config.mode === 'lawn' && level > 7;
+    this.config = scenario !== 'adventure' ? survivalConfig(survivalScene, scenario) : campaign ? campaignConfig(level,campaign) : LEVELS[level];
+    this.needsSeedChoice = scenario !== 'adventure' || this.config.mode === 'lawn' && (level > 7 || this.repeatAdventure);
     this.seeds = this.needsSeedChoice ? [] : [...this.config.seeds];
     this.sun = this.config.initialSun;
     this.randomState = seed >>> 0;
     if (scenario !== 'adventure') this.survivalEnemies = survivalRoster(0, () => this.random(), survivalScene, scenario);
-    this.waves = scenario !== 'adventure' ? generateSurvivalWaves(0, this.survivalEnemies, () => this.random(), scenario) : generateWaves(level, () => this.random());
-    if (scenario !== 'adventure') this.started = true;
+    this.waves = scenario !== 'adventure' ? generateSurvivalWaves(0, this.survivalEnemies, () => this.random(), scenario) : generateWaves(level, () => this.random(), this.repeatAdventure, !!campaign && (campaign.run>2 || campaign.run>1 && level>=40), campaign?.sawYeti);
+    if (this.repeatAdventure && this.needsSeedChoice) {
+      let state = seed >>> 0;
+      this.davePicks.push(...daveSeeds(level,this.config.seeds,this.waves.flat(),()=>{state=(Math.imul(state,1664525)+1013904223)>>>0;return state/0x100000000;}));
+      this.seeds.push(...this.davePicks);
+    }
+    if (scenario !== 'adventure' || this.repeatAdventure) this.started = true;
     this.rowPicker = new RowPicker(this.config.rows);
     if (this.config.mode === 'bowling') {
       this.conveyor.push({ id: ++this.id, kind: 'wallnut', x: 0 });
@@ -122,19 +137,30 @@ export class Game {
     }
     if (this.config.mode === 'vase') { this.started = true; this.populateVases(); }
     if (this.config.environment === 'roof') for (let column=0;column<(level===41?5:level===42?4:3);column++) for (const row of this.config.rows) this.plants.push({id:++this.id,kind:'flowerpot',column,row,health:300,actionIn:0,born:0,shotAt:-100});
-    this.mowers = this.config.mode === 'vase' || this.config.environment === 'roof' ? [] : this.config.rows.map(row => ({ row, x: 20, state: 'ready' }));
+    this.mowers = this.config.mode === 'vase' || this.config.environment === 'roof' && !campaign?.roofCleaner ? [] : this.config.rows.map(row => ({ row, x: 20, state: 'ready' }));
   }
 
+  applyPurchases(rules: CampaignRules) {
+    Object.assign(this.campaign!,rules);
+    this.config.seeds=campaignConfig(this.level,rules).seeds;
+    if(this.config.environment==='roof'&&rules.roofCleaner&&this.mowers.length===0)this.mowers=this.config.rows.map(row=>({row,x:20,state:'ready'}));
+  }
+  placeRake() {
+    if(!this.campaign?.rake || this.boss || this.config.mode==='whack')return;
+    const rows=this.config.rows.filter(row=>row!==5&&!this.waterRow(row));
+    this.rake={row:rows[Math.floor(this.random()*rows.length)],column:this.config.mode==='vase'?Math.min(...this.vases.map(v=>v.column))-1:7,age:-1,attracting:true};
+  }
   snapshot() {
     const { config, rowPicker, ...state } = this;
     return structuredClone({ ...state, rowPicker: rowPicker.snapshot() });
   }
   static restore(snapshot: ReturnType<Game['snapshot']>) {
-    const game = new Game(snapshot.level, 0, snapshot.scenario, snapshot.survivalScene);
+    const game = new Game(snapshot.level, 0, snapshot.scenario, snapshot.survivalScene, snapshot.campaign);
     Object.assign(game, structuredClone(snapshot));
     game.rowPicker = RowPicker.restore(snapshot.rowPicker);
     return game;
   }
+  get repeatAdventure() { return this.scenario === 'adventure' && this.campaign !== null && this.campaign.run > 1; }
   get cellHeight() { return isPool(this.config.environment) || this.config.environment === 'roof' ? 85 : 100; }
   rowY(row: number, x = 440) { return BOARD.top + row * this.cellHeight + (this.config.environment === 'roof' ? 58 + this.slope(x) : isPool(this.config.environment) ? 68 : 78); }
   slope(x: number) { return this.config.environment === 'roof' ? Math.max(0,440-x)*.25 : 0; }
@@ -154,7 +180,7 @@ export class Game {
   get isSurvival() { return this.scenario !== 'adventure'; }
   get survivalGoal() { return this.scenario === 'survival-normal' ? 5 : this.scenario === 'survival-hard' ? 10 : null; }
 
-  isFlagWave(wave: number) { return this.isSurvival ? isSurvivalFlagWave(wave) : isFlagWave(this.level, wave); }
+  isFlagWave(wave: number) { return this.isSurvival ? isSurvivalFlagWave(wave) : isFlagWave(this.level, wave, this.repeatAdventure); }
 
   get survivalFlags() {
     // Board::GetSurvivalFlagsCompleted: a flag in progress is not yet a cleared flag.
@@ -175,7 +201,7 @@ export class Game {
   }
 
   chooseSeed(kind: PlantKind) {
-    if (this.phase !== 'ready' || !this.needsSeedChoice || !this.config.seeds.includes(kind)) return;
+    if (this.phase !== 'ready' || !this.needsSeedChoice || !this.config.seeds.includes(kind) || this.davePicks.includes(kind)) return;
     const index = this.seeds.indexOf(kind);
     if (index !== -1) this.seeds.splice(index, 1);
     else if (this.seeds.length < this.seedCapacity) this.seeds.push(kind);
@@ -183,13 +209,22 @@ export class Game {
   start() {
     if (!this.canStart) return;
     this.phase = 'playing';
+    this.placeRake();
+    if (this.campaign?.tutorial && !this.tutorialFinished && this.scenario === 'adventure') {
+      if (this.level === 1) this.tutorial = 'pea';
+      if (this.level === 2) { this.tutorial = 'sunflower'; this.waveIn=5000; }
+    }
+  }
+  beginShovelLesson() {
+    this.plants = [[5,1],[7,2],[6,3]].map(([column,row])=>({id:++this.id,kind:'peashooter',column,row,health:300,actionIn:0,born:0,shotAt:-100}));
+    this.tutorial='shovel'; this.phase='playing';
   }
   pause() { if (this.phase === 'playing') this.phase = 'paused'; }
   resume() { if (this.phase === 'paused') this.phase = 'playing'; }
 
   select(kind: PlantKind) {
     if (this.phase !== 'playing' || this.hasConveyor || this.config.mode === 'vase' || !this.seeds.includes(kind)) return;
-    this.digging = false;
+    this.digging = false; this.cannonTarget=null;
     this.selected = this.selected === kind ? null : kind;
   }
 
@@ -210,32 +245,40 @@ export class Game {
       drop.timesDropped++;
     }
   }
-  cancelSelection() { this.releaseSeedDrop(); this.selected = null; this.selectedPacket = null; this.selectedDrop = null; this.digging = false; }
+  cancelSelection() { this.releaseSeedDrop(); this.selected = null; this.selectedPacket = null; this.selectedDrop = null; this.digging = false; this.cannonTarget=null; }
   toggleShovel() {
-    if (this.phase !== 'playing' || this.scenario === 'adventure' && this.level < 6) return;
+    if (this.phase !== 'playing' || this.scenario === 'adventure' && this.level < 5 && !this.repeatAdventure) return;
     this.releaseSeedDrop();
+    this.cannonTarget=null;
     this.digging = !this.digging; this.selected = null; this.selectedPacket = null; this.selectedDrop = null;
   }
   dig(column: number, row: number) {
     if (this.phase !== 'playing' || !this.digging) return;
-    const occupants = this.plants.filter(plant => plant.column === column && plant.row === row);
+    const occupants = this.plants.filter(plant => (plant.column === column || plant.kind==='cobcannon'&&plant.column+1===column) && plant.row === row);
     const target = occupants.find(p => p.kind === 'pumpkin') || occupants.find(plant => !['lilypad','flowerpot'].includes(plant.kind)) || occupants[0];
     if (target) this.ladders = this.ladders.filter(l => l.column !== column || l.row !== row);
     if (target?.kelp) { const caught = this.zombies.find(z => z.id === target.kelp!.target); if (caught) caught.health = 0; }
     this.plants = this.plants.filter(plant => plant !== target);
     this.digging = false;
+    if (this.tutorial === 'shovel' && this.plants.length === 0) { this.tutorial = 'shovel-done'; this.phase='ready'; }
   }
 
   canPlant(kind: PlantKind, column: number, row: number) {
-    if (this.phase !== 'playing' || !this.seeds.includes(kind)
+    const card=kind;
+    if (kind==='imitater') { if(this.imitaterTarget===null)return false; kind=this.imitaterTarget; }
+    if (this.phase !== 'playing' || this.tutorial === 'shovel' || !this.seeds.includes(card)
       || !this.config.rows.includes(row) || !(column >= 0 && column < (this.boss ? 8 : BOARD.columns))) return false;
     if (this.vases.some(v => v.column === column && v.row === row) || this.iceTrails.some(ice => ice.row === row && cellX(column) + 30 >= ice.x)) return false;
     if (this.craters.some(c => c.column === column && c.row === row)) return false;
     const occupants = this.plants.filter(p => p.column === column && p.row === row);
     if ((kind === 'lilypad' || kind === 'tanglekelp' || kind === 'seashroom') && (!this.waterRow(row) || occupants.length > 0)) return false;
-    if (this.waterRow(row) && kind !== 'lilypad' && kind !== 'tanglekelp' && kind !== 'seashroom' && (kind === 'potatomine' || kind === 'spikeweed' || !occupants.some(p => p.kind === 'lilypad'))) return false;
-    if (this.config.environment === 'roof' && (['spikeweed','lilypad','seashroom','tanglekelp','gravebuster'].includes(kind) || kind !== 'flowerpot' && !occupants.some(p => p.kind === 'flowerpot'))) return false;
-    const occupied = isUpgrade(kind) ? !occupants.some(p => p.kind === UPGRADES[kind])
+    if (this.waterRow(row) && kind !== 'lilypad' && kind !== 'tanglekelp' && kind !== 'seashroom' && (kind === 'potatomine' || kind === 'spikeweed' || kind==='spikerock' || !occupants.some(p => p.kind === 'lilypad' || p.kind==='cattail'))) return false;
+    if (this.config.environment === 'roof' && (['spikeweed','spikerock','lilypad','seashroom','tanglekelp','gravebuster'].includes(kind) || kind !== 'flowerpot' && !occupants.some(p => p.kind === 'flowerpot'))) return false;
+    if (kind==='cattail' && occupants.some(p=>!['lilypad','pumpkin'].includes(p.kind))) return false;
+    if (kind==='cobcannon' && (column>=7 && this.boss || column>=8 || !this.plants.some(p=>p.kind==='kernelpult' && p.column===column+1 && p.row===row) || occupants.some(p=>p.kind==='pumpkin') || this.plants.some(p=>p.column===column+1 && p.row===row && p.kind==='pumpkin'))) return false;
+    if (this.plants.some(p=>p.kind==='cobcannon'&&p.row===row&&(p.column===column||p.column+1===column))) return false;
+    const repair = this.campaign?.firstAid && ['wallnut','tallnut','pumpkin'].includes(kind) && occupants.some(p=>p.kind===kind && p.health < PLANTS[kind].health*2/3);
+    const occupied = repair ? false : isUpgrade(kind) ? !occupants.some(p => p.kind === UPGRADES[kind])
       : kind === 'coffeebean' ? !occupants.some(p => this.sleeping(p)) || occupants.some(p => p.kind === 'coffeebean')
       : kind === 'pumpkin' ? occupants.some(p => p.kind === 'pumpkin')
       : kind === 'flowerpot' ? occupants.length > 0
@@ -246,7 +289,7 @@ export class Game {
     if (this.config.mode === 'conveyor') return this.conveyor.some(packet => packet.id === this.selectedPacket && packet.kind === kind)
       && !occupied;
     if (this.config.mode === 'vase') return !occupied && this.seedDrops.some(drop => drop.id === this.selectedDrop && drop.kind === kind);
-    return this.sun >= this.plantCost(kind) && this.cooldown(kind) === 0
+    return this.sun >= this.plantCost(card) && this.cooldown(card) === 0
       && !occupied;
   }
 
@@ -267,17 +310,23 @@ export class Game {
         this.sun -= this.plantCost(kind);
         if (kind === 'wintermelon') this.wintermelonCooldown = PLANTS[kind].cooldown;
         else if (isUpgrade(kind)) this.upgradeCooldowns[kind] = PLANTS[kind].cooldown;
-        else this.cooldowns[kind] = PLANTS[kind].cooldown;
+        else this.cooldowns[kind] = PLANTS[kind==='imitater'?this.imitaterTarget!:kind].cooldown;
       }
+      const plantedKind=kind==='imitater'?this.imitaterTarget!:kind;
+      if (this.campaign?.firstAid && ['wallnut','tallnut','pumpkin'].includes(plantedKind)) this.plants=this.plants.filter(p=>p.column!==column||p.row!==row||p.kind!==plantedKind);
+      const basePlant = isUpgrade(kind) ? this.plants.find(p=>p.column===column&&p.row===row&&p.kind===UPGRADES[kind]) : undefined;
+      if (kind==='cobcannon') this.plants=this.plants.filter(p=>p.column!==column+1||p.row!==row||p.kind!=='kernelpult');
       if (isUpgrade(kind)) this.plants = this.plants.filter(p => p.column !== column || p.row !== row || p.kind !== UPGRADES[kind]);
       this.plants.push({ id: ++this.id, kind, column, row, health: PLANTS[kind].health,
-        actionIn: kind === 'gatlingpea' ? 100 : kind === 'sunflower' || kind === 'twinsunflower' || kind === 'sunshroom' || kind === 'marigold' ? 300 + Math.floor(this.random() * 951) : kind === 'jalapeno' || kind === 'cherrybomb' || kind === 'iceshroom' || kind === 'doomshroom' ? 100 : kind === 'potatomine' ? 1500 : kind === 'gravebuster' ? 400 : kind === 'coffeebean' ? 100
+        actionIn: kind==='imitater'?319:kind==='cobcannon'?625:kind === 'gatlingpea' ? 100 : kind === 'sunflower' || kind === 'twinsunflower' || kind === 'sunshroom' || kind === 'marigold' ? 300 + Math.floor(this.random() * 951) : kind === 'jalapeno' || kind === 'cherrybomb' || kind === 'iceshroom' || kind === 'doomshroom' ? 100 : kind === 'potatomine' ? 1500 : kind === 'gravebuster' ? 400 : kind === 'coffeebean' ? 100
           : kind === 'peashooter' || kind === 'snowpea' || kind === 'repeater' || kind === 'puffshroom' || kind === 'fumeshroom' || kind === 'scaredyshroom' || kind === 'threepeater' || kind === 'seashroom' || kind === 'cactus' || kind === 'splitpea' || kind === 'starfruit' || kind === 'cabbagepult' || kind === 'kernelpult' || kind === 'melonpult' || kind === 'wintermelon' ? Math.floor(this.random() * 151) : 50,
-        born: this.ticks, shotAt: -100, ...(kind === 'chomper' ? { chomp: { phase: 'ready' as const, remaining: 0 } } : {}) });
+        born: this.ticks, shotAt: -100, ...(basePlant?.awake!==undefined?{awake:basePlant.awake}:{}), ...(kind==='imitater'?{morphTarget:this.imitaterTarget!}:{}), ...(kind === 'chomper' ? { chomp: { phase: 'ready' as const, remaining: 0 } } : {}) });
     }
     this.selected = null;
     this.started = true;
     this.planted++;
+    if (this.tutorial === 'pea' && this.plants.length >= 2) { this.tutorial='off'; this.tutorialFinished=true; this.waveIn=99; }
+    if ((this.tutorial==='sunflower'||this.tutorial==='more-sun') && this.plants.filter(p=>p.kind==='sunflower').length>=3) { if (this.tutorial==='sunflower' && this.wave===0) this.waveIn=999; this.tutorial='off'; this.tutorialFinished=true; }
     this.events.push({ kind: 'plant', x: cellX(column), y: this.rowY(row) });
     return true;
   }
@@ -328,9 +377,12 @@ export class Game {
   }
 
   private spawnZombie(kind: ZombieKind, row: number, x: number, wave: number) {
+    if(this.rake?.attracting&&x>=780&&!['bungee','snorkel','dolphin','ducky'].includes(kind)){row=this.rake.row;this.rake.attracting=false;}
+    if(kind==='yeti'&&this.campaign)this.campaign.sawYeti=true;
     const zombie: Zombie = { id: ++this.id, kind, armor: kind === 'digger' ? 100 : kind === 'football' ? 1400 : kind === 'cone' ? 370 : kind === 'bucket' ? 1100 : 0,
       shield: kind === 'ladder' ? 500 : kind === 'newspaper' ? 150 : kind === 'door' ? 1100 : 0, rageIn: 0, riseIn: 0, row, x,
-      health: kind === 'gargantuar' ? 3000 : kind === 'catapult' ? 850 : kind === 'bungee' ? 450 : kind === 'zomboni' ? 1350 : ['pole','dancer','dolphin','jack','ladder'].includes(kind) ? 500 : 270, speed: kind === 'pogo' ? .45 : kind === 'ladder' ? .79 + this.random() * .02 : kind === 'digger' ? .66 + this.random()*.02 : kind === 'dolphin' ? .89 + this.random() * .02 : kind === 'bobsled' ? .6 : ['pole','football','snorkel','jack'].includes(kind) ? .66 + this.random() * .02 : kind === 'dancer' || kind === 'backup' || kind === 'flag' ? .45 : .23 + this.random() * .14,
+      ...(kind==='yeti'?{yetiIn:1500+Math.floor(this.random()*501)}:{}),
+      health: kind==='yeti'?1350:kind === 'gargantuar' ? 3000 : kind === 'catapult' ? 850 : kind === 'bungee' ? 450 : kind === 'zomboni' ? 1350 : ['pole','dancer','dolphin','jack','ladder'].includes(kind) ? 500 : 270, speed: kind==='yeti'?.4:kind === 'pogo' ? .45 : kind === 'ladder' ? .79 + this.random() * .02 : kind === 'digger' ? .66 + this.random()*.02 : kind === 'dolphin' ? .89 + this.random() * .02 : kind === 'bobsled' ? .6 : ['pole','football','snorkel','jack'].includes(kind) ? .66 + this.random() * .02 : kind === 'dancer' || kind === 'backup' || kind === 'flag' ? .45 : .23 + this.random() * .14,
       biteIn: 4, eating: false, wave, hitAt: -100, chillIn: 0, hasPole: kind === 'pole', vaultIn: 0, animationTime: 0 };
     if (this.scenario === 'adventure' && this.level === 25) { zombie.mini = true; zombie.health = Math.trunc(zombie.health / 4); zombie.armor = Math.trunc(zombie.armor / 4); zombie.shield = Math.trunc(zombie.shield / 4); }
     if (kind === 'dancer') { zombie.summonIn = 0; zombie.dancePhase = 'intro'; zombie.danceIn = 300 + Math.floor(this.random() * 12); }
@@ -389,8 +441,9 @@ export class Game {
   }
 
   step() {
-    if (this.phase !== 'playing') return;
+    if (this.phase !== 'playing' || this.tutorial==='shovel') return;
     this.ticks++;
+    if (this.campaign?.tutorial && !this.tutorialFinished && this.level>=3 && this.level<=7 && this.level!==5 && this.wave>=5 && this.cooldown('sunflower')===0 && this.sun>=50 && this.plants.filter(p=>p.kind==='sunflower').length<3) this.tutorial='more-sun';
     if (this.level === 40 && this.scenario === 'adventure') {
       this.stormIn--;
       if ((this.stormIn === 300 && this.stormFlash !== 3) || (this.stormIn === 150 && this.stormFlash !== 2)) this.events.push({ kind: 'thunder', x: 400, y: 300 });
@@ -423,8 +476,15 @@ export class Game {
         x: count === 0 ? 500 : Math.max(500, this.conveyor[count - 1].x + 50) });
     }
 
+    if(this.rake) {
+      const rake=this.rake;
+      const target=()=>this.zombies.find(z=>z.row===rake.row&&!z.hypnotized&&!headless(z)&&!this.flying(z)&&!this.submerged(z)&&!z.sled&&Math.abs(z.x-cellX(rake.column))<40);
+      if(rake.age<0&&target())rake.age=0;
+      else if(rake.age>=0){rake.age++;if(rake.age===28){const z=target();if(z)this.damageZombie(z,1800);}if(rake.age===200)this.rake=null;}
+    }
     // Match Board::UpdateGameObjects ordering: plants, zombies, projectiles, suns, mowers.
     for (const plant of this.plants) {
+      if (this.updateShopPlant(plant)) continue;
       if(plant.kind==='marigold'&&this.wave===this.config.waveCount&&plant.productionEnding===undefined)plant.productionEnding=this.ticks+6000;
       if (plant.kind === 'tanglekelp') { this.updateKelp(plant); continue; }
       if (plant.health <= 0 || this.sleeping(plant) || ['wallnut','tallnut','torchwood','hypnoshroom','lilypad','flowerpot','pumpkin','garlic','plantern','umbrella'].includes(plant.kind)) continue;
@@ -574,6 +634,7 @@ export class Game {
         if (zombie.rageIn === 0) zombie.speed = .89 + this.random() * .02;
         continue;
       }
+      if (zombie.kind==='yeti' && zombie.yetiIn!>0 && !zombie.hypnotized && !headless(zombie)) { zombie.yetiIn!--; if(zombie.yetiIn===0){zombie.backwards=true;zombie.speed=.8;} }
       // Zombie::UpdateDamageStates / UpdatePlaying: below 1/3 health a normal
       // zombie can no longer eat, loses health over time, and cannot enter the house.
       if (headless(zombie)) {
@@ -601,7 +662,7 @@ export class Game {
       }
       if (zombie.kind === 'dancer' && this.updateDancer(zombie)) continue;
       if (!zombie.hypnotized && zombie.hasPole) {
-        const barrier = this.plants.find(p => p.health > 0 && p.row === zombie.row && p.kind !== 'spikeweed'
+        const barrier = this.plants.find(p => p.health > 0 && p.row === zombie.row && p.kind !== 'spikeweed' && p.kind!=='spikerock'
           && !(p.kind === 'potatomine' && p.actionIn > 0) && zombie.x - cellX(p.column) < 95 && zombie.x - cellX(p.column) > 0);
         if (barrier) {
           zombie.hasPole = false; zombie.eating = false;
@@ -625,8 +686,8 @@ export class Game {
       // Same stable priority as the former sort: pumpkin, ordinary plant, base.
       let food: Plant | undefined, foodPriority = 3;
       if (!zombie.hypnotized) for (const plant of this.plants) {
-        if (plant.kind === 'tanglekelp' || plant.kind === 'spikeweed' || plant.health <= 0 || plant.row !== zombie.row) continue;
-        const distance = (zombie.x - cellX(plant.column)) * (zombie.backwards ? -1 : 1);
+        if (plant.kind === 'tanglekelp' || plant.kind === 'spikeweed' || plant.kind==='spikerock' || plant.health <= 0 || plant.row !== zombie.row) continue;
+        const distance = (zombie.x - cellX(plant.column+(plant.kind==='cobcannon'&&!zombie.backwards?1:0))) * (zombie.backwards ? -1 : 1);
         if (distance >= 35 || distance <= -30 || this.ladders.some(l => l.column === plant.column && l.row === plant.row)) continue;
         const priority = plant.kind === 'pumpkin' ? 0 : plant.kind === 'lilypad' || plant.kind === 'flowerpot' ? 2 : 1;
         if (priority < foodPriority) { food = plant; foodPriority = priority; if (priority === 0) break; }
@@ -653,6 +714,8 @@ export class Game {
     this.plants = this.plants.filter(plant => plant.health > 0);
 
     for (const pea of this.peas) {
+      if(pea.cannon){this.updateCannonShot(pea);continue;}
+      if(pea.homing!==undefined){this.updateHomingShot(pea);continue;}
       if(pea.lob){this.updateLob(pea);continue;}
       if(pea.star){this.updateStar(pea);continue;}
       const oldX = pea.x;
@@ -682,7 +745,7 @@ export class Game {
         pea.x = 1000;
       }
     }
-    this.peas = this.peas.filter(pea => pea.x < 850 && pea.x > -60 && (pea.y===undefined || pea.y>-80&&pea.y<650));
+    this.peas = this.peas.filter(pea => pea.x < 850 && pea.x > -60 && (pea.cannon!==undefined || pea.y===undefined || pea.y>-80&&pea.y<650));
 
     for (const nut of this.rollers) {
       nut.x += 3.3;
@@ -714,7 +777,14 @@ export class Game {
     }
     this.suns = this.suns.filter(sun => sun.expiresIn > 0);
 
-    for(const coin of this.coins){coin.y=Math.min(coin.targetY,coin.y+1.5);if(coin.y===coin.targetY)coin.expiresIn--;}
+    for(const coin of [...this.coins]){
+      if (coin.magnet!==undefined) {
+        const plant=this.plants.find(p=>p.id===coin.magnet);
+        if (plant) { const x=cellX(plant.column),y=this.rowY(plant.row)-40; coin.x+=(x-coin.x)*.04;coin.y+=(y-coin.y)*.04; if(Math.hypot(x-coin.x,y-coin.y)<20)this.collectCoin(coin.id); continue; }
+        delete coin.magnet;
+      }
+      coin.y=Math.min(coin.targetY,coin.y+1.5);if(coin.y===coin.targetY)coin.expiresIn--;
+    }
     this.coins=this.coins.filter(coin=>coin.expiresIn>0);
     for (const mower of this.mowers) {
       if (mower.state === 'ready' && this.zombies.some(zombie => !zombie.hypnotized && !this.flying(zombie) && !zombie.underground && !zombie.bungee && zombie.health > 0 && zombie.row === mower.row && zombie.x < 28)) {
@@ -725,7 +795,7 @@ export class Game {
       if (mower.state === 'moving') {
         mower.x += 3.5;
         for (const zombie of this.zombies) if (!zombie.hypnotized && !this.flying(zombie) && !zombie.underground && !zombie.bungee && zombie.row === mower.row && Math.abs(zombie.x - mower.x) < 45) zombie.health = 0;
-        if (mower.x > 890) mower.state = 'spent';
+        if (mower.x > 890 || this.campaign && !this.campaign.poolCleaner && this.waterRow(mower.row) && mower.x>70) mower.state = 'spent';
       }
     }
     if (this.config.mode === 'whack') for (const zombie of this.zombies) if (zombie.health <= 0) {
@@ -734,6 +804,15 @@ export class Game {
       if (hit >= 2500 * factor && hit <= max * factor) for (let i = 0; i < 3; i++) this.addSun(zombie.x - i * 20, this.rowY(zombie.row) - 60, this.rowY(zombie.row) - 15, 25);
     }
     if(this.boss?.health===0)this.zombies=[]; // BossDie clears the remaining attackers.
+    if (this.campaign && (this.repeatAdventure || this.level >= 11) && this.config.mode !== 'bowling') for (const z of this.zombies) if (!z.hypnotized && z.health<=0) {
+      if(z.kind==='yeti'){for(let i=0;i<4;i++)this.coins.push({id:++this.id,x:z.x-i*14,y:this.rowY(z.row)-60,targetY:this.rowY(z.row)-15,born:this.ticks,expiresIn:1500,value:1000});continue;}
+      const hit = this.level===11 && !this.repeatAdventure && !this.firstCoinDropped && this.wave>5 ? 1000 : Math.floor(this.random()*30000);
+      const factor=portable.zombies[z.kind].value;
+      if (hit < 2500*factor) {
+        this.coins.push({id:++this.id,x:z.x,y:this.rowY(z.row)-60,targetY:this.rowY(z.row)-15,born:this.ticks,expiresIn:1500,value:hit<14*factor && this.campaign.slots>6?1000:hit<250*factor?50:10});
+        this.firstCoinDropped=true;
+      }
+    }
     this.kills += this.zombies.filter(zombie => !zombie.hypnotized && zombie.health <= 0).length;
     this.zombies = this.zombies.filter(zombie => zombie.health > 0 && !((zombie.hypnotized || zombie.backwards) && zombie.x > 900));
     if (this.zombies.some(zombie => !zombie.hypnotized && !zombie.underground && !zombie.backwards && zombie.x < -35)) {
@@ -780,6 +859,7 @@ export class Game {
       if (this.whackFinalSpawned && this.zombies.length === 0) { this.phase = 'won'; this.events.push({ kind: 'win', x: 400, y: 300 }); }
       return;
     }
+    if (this.tutorial==='pea') return;
     if (this.wave < this.config.waveCount) {
       this.waveElapsed++;
       const remaining = this.zombies.filter(zombie => !zombie.hypnotized && zombie.wave === this.wave - 1 && !headless(zombie)).reduce((sum, zombie) => sum + zombie.health + zombie.armor + zombie.shield, 0);
@@ -801,6 +881,80 @@ export class Game {
         this.events.push({ kind: 'win', x: 400, y: 300 });
       }
     }
+  }
+
+  chooseImitater(kind: PlantKind) {
+    if (this.phase!=='ready' || !this.config.seeds.includes('imitater') || isUpgrade(kind) || kind==='imitater' || kind==='explodenut' || !this.config.seeds.includes(kind)) return;
+    this.imitaterTarget=kind;
+    if (!this.seeds.includes('imitater')) this.chooseSeed('imitater');
+  }
+  aimCannon(column: number,row: number) {
+    const plant=this.plants.find(p=>p.kind==='cobcannon'&&p.row===row&&(p.column===column||p.column+1===column));
+    if (this.phase!=='playing'||!plant||plant.actionIn>0)return false;
+    this.cancelSelection();this.cannonTarget=plant.id;return true;
+  }
+  fireCannon(x: number,y: number) {
+    const plant=this.plants.find(p=>p.id===this.cannonTarget);
+    if (this.phase!=='playing'||!plant||plant.actionIn>0)return;
+    plant.actionIn=3475;plant.shotAt=this.ticks;this.cannonTarget=null;
+    this.peas.push({id:++this.id,row:plant.row,x:cellX(plant.column)+40,y:this.rowY(plant.row)-65,age:0,ice:false,puff:false,cannon:{x,y,remaining:380}});
+  }
+  private updateCannonShot(pea: Pea) {
+    const shot=pea.cannon!;pea.age++;shot.remaining--;
+    if(pea.age<206)return;
+    if(pea.age<294) { pea.y!-=8; }
+    else { pea.x=shot.x;pea.y=shot.y-shot.remaining*8; }
+    if(shot.remaining===0) {
+      for(const z of this.zombies)if(!z.hypnotized&&!this.flying(z)&&!z.underground&&Math.abs(this.rowY(z.row,z.x)-shot.y)<115&&Math.abs(z.x-shot.x)<115)this.damageZombie(z,1800,true);
+      if(this.boss && Math.abs(700-shot.x)<115 && Math.abs(this.rowY(this.boss.row)-shot.y)<115)damageBoss(this.boss,1800,this.ticks);
+      this.events.push({kind:'explode',x:shot.x,y:shot.y});pea.x=1000;
+    }
+  }
+  private cattailTarget(plant: Plant) {
+    return this.zombies.filter(z=>!z.hypnotized&&z.health>0&&!headless(z)&&!this.submerged(z)&&!z.riseIn&&z.x<825)
+      .sort((a,b)=>Number(!!this.flying(b))-Number(!!this.flying(a)) || Math.hypot(a.x-cellX(plant.column),(a.row-plant.row)*this.cellHeight)-Math.hypot(b.x-cellX(plant.column),(b.row-plant.row)*this.cellHeight))[0];
+  }
+  private cattailFire(plant: Plant) {
+    const target=this.cattailTarget(plant);if(!target)return;
+    this.peas.push({id:++this.id,row:plant.row,x:cellX(plant.column),y:this.rowY(plant.row)-65,age:0,ice:false,puff:false,spike:true,homing:target.id});
+    this.events.push({kind:'shoot',x:cellX(plant.column),y:this.rowY(plant.row)-65});
+  }
+  private updateHomingShot(pea: Pea) {
+    const target=this.zombies.find(z=>z.id===pea.homing&&z.health>0&&!z.hypnotized&&!this.submerged(z));
+    if(!target){pea.x+=3.33;pea.age++;return;}
+    const x=target.x,y=this.rowY(target.row,target.x)-(this.flying(target)?95:45),dx=x-pea.x,dy=y-pea.y!,d=Math.hypot(dx,dy);
+    pea.vx=d===0?0:dx/d*3.33;pea.vy=d===0?0:dy/d*3.33;pea.x+=pea.vx;pea.y!+=pea.vy;pea.age++;
+    if(d<15){if(target.flying){target.flying=false;target.popIn=50;}this.damageZombie(target,20);pea.x=1000;}
+  }
+  private updateShopPlant(plant: Plant) {
+    if(plant.kind==='imitater') {
+      if(--plant.actionIn===0) { plant.kind=plant.morphTarget!;delete plant.morphTarget;plant.imitated=true;plant.born=this.ticks;plant.health=PLANTS[plant.kind].health;plant.actionIn=plant.kind==='potatomine'?1500:['cherrybomb','jalapeno','iceshroom','doomshroom','coffeebean'].includes(plant.kind)?100:plant.kind==='gravebuster'?400:['sunflower','sunshroom','marigold'].includes(plant.kind)?300+Math.floor(this.random()*951):50;if(plant.kind==='chomper')plant.chomp={phase:'ready',remaining:0}; }
+      return true;
+    }
+    if(plant.kind==='cobcannon'){if(plant.actionIn>0)plant.actionIn--;return true;}
+    if(!['gloomshroom','cattail','goldmagnet','spikerock'].includes(plant.kind))return false;
+    if(plant.health<=0||this.sleeping(plant))return true;
+    const x=cellX(plant.column);
+    if(plant.kind==='goldmagnet') {
+      if(plant.actionIn>0){plant.actionIn--;return true;}
+      const coins=this.coins.filter(c=>c.magnet===undefined&&c.y===c.targetY).slice(0,5);
+      if(coins.length){for(const coin of coins)coin.magnet=plant.id;plant.shotAt=this.ticks;plant.actionIn=200+Math.floor(this.random()*101);}
+      return true;
+    }
+    if(plant.kind==='spikerock') {
+      const targets=this.zombies.filter(z=>!z.hypnotized&&!this.flying(z)&&!this.submerged(z)&&z.health>0&&z.row===plant.row&&Math.abs(z.x-x)<45);
+      if(plant.actionIn>0)plant.actionIn--;
+      if((plant.actionIn===70||plant.actionIn===32))for(const z of targets){const vehicle=z.kind==='zomboni'||z.kind==='catapult';this.damageZombie(z,vehicle?1800:20,true);if(vehicle)plant.health-=50;}
+      if(plant.actionIn===0&&targets.length){plant.actionIn=100;plant.shotAt=this.ticks;}
+      return true;
+    }
+    if(plant.burstIn){plant.burstIn--;if(plant.kind==='gloomshroom'&&[126,98,70,42].includes(plant.burstIn))for(const z of this.zombies)if(!z.hypnotized&&!this.flying(z)&&!z.underground&&!z.flight&&!z.landingIn&&z.health>0&&Math.abs(z.row-plant.row)<=1&&Math.abs(z.x-x)<120)this.damageZombie(z,20,true);if(plant.kind==='cattail'&&[19,1].includes(plant.burstIn))this.cattailFire(plant);}
+    if(plant.actionIn>0)plant.actionIn--;
+    if(plant.actionIn===0&&!plant.burstIn) {
+      const target=plant.kind==='cattail'?this.cattailTarget(plant):this.zombies.find(z=>!z.hypnotized&&!this.flying(z)&&!this.submerged(z)&&z.health>0&&Math.abs(z.row-plant.row)<=1&&Math.abs(z.x-x)<120);
+      if(target){plant.burstIn=plant.kind==='gloomshroom'?200:50;plant.actionIn=PLANTS[plant.kind].interval;plant.shotAt=this.ticks;}
+    }
+    return true;
   }
 
   private updateBoss() {
@@ -918,6 +1072,7 @@ export class Game {
       else this.iceTrails.push({ row: z.row, x, remaining: 3000 });
     }
     for (const plant of this.plants) if (plant.health > 0 && plant.row === z.row && Math.abs(cellX(plant.column) - z.x) < 55) {
+      if(plant.kind==='spikerock'){plant.health-=50;z.health=0;break;}
       plant.health = 0;
       if (plant.kind === 'spikeweed') { z.health = 0; this.events.push({ kind: 'hit', x: z.x, y: this.rowY(z.row) }); break; }
     }
@@ -934,6 +1089,7 @@ export class Game {
     if (!leader || !ice || leader.x < ice.x || leader.armor === 0) { this.crashSled(z.sled!); return; }
     z.x -= .6; ice.remaining = Math.max(ice.remaining, 500);
     for (const plant of this.plants) if (plant.health > 0 && plant.row === z.row && Math.abs(cellX(plant.column) - z.x) < 45) {
+      if(plant.kind==='spikerock'){plant.health-=50;this.crashSled(z.sled!);break;}
       plant.health = 0;
       if (plant.kind === 'spikeweed') { this.crashSled(z.sled!); break; }
     }
@@ -1095,7 +1251,7 @@ export class Game {
     }
     const before=state.remaining;state.remaining=Math.max(0,state.remaining-speedFactor);
     if(state.phase==='smash'&&before>48&&state.remaining<=48){
-      const p=food();if(p)for(const victim of this.plants)if(victim.column===p.column&&victim.row===p.row)victim.health=0;
+      const p=food();if(p)for(const victim of this.plants)if(victim.column===p.column&&victim.row===p.row)victim.health=victim.kind==='spikerock'?victim.health-50:0;
       this.events.push({kind:'hit',x:z.x,y:this.rowY(z.row,z.x)});
     }
     if(state.phase==='throw'&&before>36&&state.remaining<=36){

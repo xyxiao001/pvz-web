@@ -24,9 +24,14 @@ for (const [scene, hash] of Object.entries({
   roof:'7a8ec40bb85727bc232c2fb398c7fb66bc8f5d0f6fb3417308426a44bab94d5b',
 }) as [Parameters<typeof denseGame>[0],string][]) test(`dense ${scene} simulation preserves the pre-optimization result`,()=>{
   const game=denseGame(scene);for(let i=0;i<1000;i++){game.step();game.drainEvents();}
-  const { wintermelonCooldown, upgradeCooldowns, stormFlash, ...originalState } = game.snapshot();
+  const { wintermelonCooldown, upgradeCooldowns, stormFlash, bankedMoney, tutorial, tutorialFinished, davePicks, campaign, imitaterTarget, cannonTarget, rake, cooldowns } = game.snapshot();
   assert.equal(stormFlash, 1);
   assert.equal(wintermelonCooldown,0);
-  assert.deepEqual(upgradeCooldowns, { gatlingpea: 0, twinsunflower: 0 });
+  assert.ok(Object.values(upgradeCooldowns).every(value=>value===0));
+  assert.deepEqual([bankedMoney,tutorial,tutorialFinished,davePicks,campaign,imitaterTarget,cannonTarget,rake],[0,'off',false,[],null,null,null,null]);
+  const {imitater,...oldCooldowns}=cooldowns;assert.equal(imitater,0);
+  const originalState=game.snapshot() as Record<string,unknown>;
+  for(const key of ['wintermelonCooldown','upgradeCooldowns','stormFlash','bankedMoney','tutorial','tutorialFinished','davePicks','firstCoinDropped','campaign','imitaterTarget','cannonTarget','rake'])delete originalState[key];
+  originalState.cooldowns=oldCooldowns;
   assert.equal(createHash('sha256').update(JSON.stringify(originalState)).digest('hex'),hash);
 });

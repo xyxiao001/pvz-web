@@ -1,3 +1,6 @@
+import { PlayerProfile, SHOP, type ShopItem } from './platform/profile';
+import { DIALOGUE, adventureDialogue, tutorialHint } from './game/dialogue';
+import './campaign.css';
 import { PLANT_DESCRIPTIONS } from './game/plant-descriptions';
 import './style.css';
 import './ui.css';
@@ -9,18 +12,18 @@ import { ZOMBIE_NAMES } from './game/survival';
 import { GameClock, type GameSpeed } from './game/clock';
 import { Hud } from './rendering/hud';
 import type { Scene } from './rendering/scene';
-import { BOARD, SURVIVAL_MODES, SURVIVAL_MODE_NAMES, type SurvivalMode, SURVIVAL_SCENES, SCENE_NAMES, isNight, type SurvivalScene, LEVEL_IDS, LEVELS, PLANTS, type LevelId, type PlantKind } from './game/config';
+import { isUpgrade, BOARD, SURVIVAL_MODES, SURVIVAL_MODE_NAMES, type SurvivalMode, SURVIVAL_SCENES, SCENE_NAMES, isNight, type SurvivalScene, LEVEL_IDS, LEVELS, PLANTS, type LevelId, type PlantKind } from './game/config';
 import { Game } from './game/model';
 import { GameAudio } from './platform/audio';
 import { GameMusic, battleMusic } from './platform/music';
-import { clearSurvival, loadSurvival, saveSurvival, completeLevel, completedLevel, allLevelsEnabled, setAllLevelsEnabled } from './platform/storage';
+import { clearSurvival, loadSurvival, saveSurvival, completeLevel, allLevelsEnabled, setAllLevelsEnabled } from './platform/storage';
 
 import { ACHIEVEMENTS, Achievements } from './platform/achievements';
 
 const asset = (file: string) => `${import.meta.env.BASE_URL}assets/runtime/original/${file.replace(/\.png$/, ".webp")}`;
 const lastLevel = LEVEL_IDS[LEVEL_IDS.length - 1];
 // Composed packets use the original empty packet and plant portrait; prices stay crisp in the DOM.
-const composedPacket = (kind: PlantKind) => ['wintermelon','gatlingpea','twinsunflower','fumeshroom','gravebuster','iceshroom','doomshroom','lilypad','squash','threepeater','plantern','tanglekelp','jalapeno','spikeweed','torchwood','tallnut','seashroom','cactus','blover','splitpea','starfruit','pumpkin','magnetshroom','cabbagepult','flowerpot','kernelpult','coffeebean','garlic','umbrella','marigold','melonpult'].includes(kind);
+const composedPacket = (kind: PlantKind) => isUpgrade(kind) || kind==='imitater' || ['wintermelon','gatlingpea','twinsunflower','fumeshroom','gravebuster','iceshroom','doomshroom','lilypad','squash','threepeater','plantern','tanglekelp','jalapeno','spikeweed','torchwood','tallnut','seashroom','cactus','blover','splitpea','starfruit','pumpkin','magnetshroom','cabbagepult','flowerpot','kernelpult','coffeebean','garlic','umbrella','marigold','melonpult'].includes(kind);
 const seedImage = (kind: PlantKind, cost: number = PLANTS[kind].cost) => composedPacket(kind)
   ? `<span class="packet-art"><img loading="lazy" src="${asset('seed-packet.png')}" alt=""/><img loading="lazy" class="packet-portrait" src="${asset(`${kind}.png`)}" alt=""/><b class="packet-price">${cost}</b></span>`
   : `<img loading="lazy" src="${asset(`card-${kind}.png`)}" alt=""/>`;
@@ -65,7 +68,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
       <button id="endless" class="mode-button mode-endless"><span class="menu-trophy" aria-hidden="true"></span><span><strong>生存模式</strong><small>普通 · 困难 · 无尽挑战</small></span></button>
     </nav>
     <button id="almanac" class="almanac-menu"><img src="${asset('seed-packet.png')}" alt=""/><img class="almanac-portrait" src="${asset('peashooter.png')}" alt=""/><span>植物图鉴<small>认识你的庭院守护者</small></span></button>
-    <div class="menu-tools"><button id="achievements" class="wood-button">成就</button><button id="settings" class="wood-button">设置</button><button id="help" class="wood-button">帮助</button></div>
+    <div class="menu-tools"><button id="shop" class="wood-button">戴夫商店</button><button id="achievements" class="wood-button">成就</button><button id="settings" class="wood-button">设置</button><button id="help" class="wood-button">帮助</button></div>
     <span class="garden-note">准备好了吗？僵尸就要来了！</span>
   </div>
   <div id="achievement-toast" class="achievement-toast" role="status" hidden></div>
@@ -75,6 +78,10 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 </main>`;
 const overlay = $('#overlay'); const audio = new GameAudio();
 const achievements = new Achievements(localStorage);
+const profile = new PlayerProfile(localStorage);
+let dialogueAdvance: (() => void) | null = null;
+let introShown = false;
+let tutorialTarget: string | null = null;
 let achievementToastTimer: ReturnType<typeof setTimeout>;
 const music = new GameMusic(import.meta.env.BASE_URL);
 let scene: Scene;
@@ -90,8 +97,9 @@ const backLabel = () => game.isSurvival && game.phase !== 'lost' && game.phase !
 
 function showMenu() {
   $('.page').classList.remove('in-battle', 'endless-game');
-  game.pause(); screen = 'menu'; clock.reset(); if (scene) void scene.release();
+  bankCoins(); dialogueAdvance=null; game.pause(); screen = 'menu'; clock.reset(); if (scene) void scene.release();
   $('#menu').hidden = false; $('#battle-hud').hidden = true; overlay.hidden = true;
+  $('#adventure .mode-detail').textContent = `第 ${profile.data.run} 周目 · ${LEVELS[profile.data.nextLevel].label} 继续冒险 ▶`;
   updateMusic();
 }
 function updateMusic() {
@@ -104,12 +112,12 @@ function panel(content: string, className = 'paper-panel') {
 }
 function closeMenuPanel() { overlay.hidden = true; }
 function levelPicker() {
-  panel(`<span class="kicker">冒险模式</span><h2>选择你的庭院</h2><p>共 50 关 · 通关记录保存在当前浏览器。</p><label class="all-levels-toggle"><input id="all-levels" type="checkbox" ${allLevelsEnabled() ? 'checked' : ''}/>开启全部关卡</label><p id="level-access"></p>
+  panel(`<span class="kicker">冒险模式 · 第 ${profile.data.run} 周目</span><h2>选择你的庭院</h2><p>共 50 关 · 通关记录保存在当前浏览器。</p><label class="all-levels-toggle"><input id="all-levels" type="checkbox" ${allLevelsEnabled() ? 'checked' : ''}/>开启全部关卡</label><p id="level-access"></p>
     <div class="level-grid">${LEVEL_IDS.map(level => `<button class="level-card" data-level="${level}"><b>${LEVELS[level].label}</b><img loading="lazy" src="${asset(`${LEVELS[level].seeds.at(-1)}.png`)}" alt=""/><strong>${LEVELS[level].title}</strong><small>${level === 50 ? '僵王博士 · 传送带决战' : level === 35 ? '三轮砸罐子' : `${LEVELS[level].rows.length} 条草坪 · ${LEVELS[level].waveCount} 波`}</small></button>`).join('')}</div><button id="close" class="wood-button">返回主菜单</button>`, 'paper-panel wide-panel level-panel');
   document.querySelectorAll<HTMLButtonElement>('[data-level]').forEach(button => button.onclick = () => setLevel(Number(button.dataset.level) as LevelId));
   const updateAccess = () => {
     const all = allLevelsEnabled();
-    const nextLevel = completedLevel() + 1;
+    const nextLevel = profile.data.nextLevel;
     document.querySelectorAll<HTMLButtonElement>('[data-level]').forEach(button => {
       button.disabled = !all && Number(button.dataset.level) > nextLevel;
     });
@@ -119,14 +127,60 @@ function levelPicker() {
   updateAccess();
   $('#close').onclick = closeMenuPanel;
 }
+function bankCoins() {
+  if(game.campaign?.sawYeti&&!profile.data.sawYeti){profile.data.sawYeti=true;profile.save();}
+  const amount=game.money-game.bankedMoney;
+  if (amount!==0) { profile.addMoney(amount); game.bankedMoney=game.money; }
+}
+function showDialogue(start: number, complete: () => void) {
+  let index=start;
+  const show = () => {
+    const line=DIALOGUE[String(index)];
+    const text=line.text.replaceAll('{PLAYER_NAME}','邻居').replaceAll('{MONEY}',`$${profile.data.money}`).replaceAll('{UPGRADE_COST}',`$${profile.price('slots')}`);
+    const offer=index===1503||index===1553;
+    panel(`<img class="dave-portrait" src="${asset('crazy-dave.webp')}" alt="疯狂戴夫"/><div class="dave-speech"><h2>疯狂戴夫</h2><p id="dave-line"></p>${offer?'<button id="offer-buy" class="wood-button">购买卡槽</button><button id="offer-no" class="wood-button">下次再说</button>':'<button id="dialogue-next" class="wood-button">继续 ▶</button>'}</div>`, 'dave-dialogue');
+    $('#dave-line').textContent=text;
+    const next=()=>{
+      dialogueAdvance=null;
+      if(index===2406) { game.beginShovelLesson(); void scene.prepareActors(game,()=>{}).then(()=>{lastPhase='';updateHud();}); return; }
+      index++;
+      if(index===603&&!profile.data.tacoReceived){profile.addMoney(1000);profile.data.tacoReceived=true;profile.data.tacoPending=false;profile.save();}
+      if(DIALOGUE[String(index)]) show(); else { overlay.hidden=true; complete(); }
+    };
+    if(offer) {
+      dialogueAdvance=null;
+      $('#offer-buy').onclick=()=>{ profile.buy('slots',true); game.campaign!.slots=6+profile.data.purchases.slots;$('.page').classList.add('endless-game'); index=index===1503?1510:1560; show(); };
+      $('#offer-no').onclick=()=>{profile.data.declinedSlots++;profile.save();index=index===1503?1520:1570;show();};
+    } else { dialogueAdvance=next; $('#dialogue-next').onclick=next; }
+  };
+  show();
+}
+function shopPanel(close: () => void) {
+  dialogueAdvance=null;
+  if(profile.storeOpen&&!profile.data.storeIntroduced){showDialogue(301,()=>{profile.data.storeIntroduced=true;profile.save();shopPanel(close);});return;}
+  if(profile.data.tacoPending){showDialogue(601,()=>shopPanel(close));return;}
+  let page=0;
+  const render=()=>{
+    panel(`<header class="shop-heading"><h2>疯狂戴夫的小商店</h2><b>金币 $${profile.data.money.toLocaleString()}</b></header><p class="shop-message">${profile.storeOpen?'欢迎光临！点击商品查看说明，再决定购买。':'完成 3–4、取得车钥匙后，商店正式营业。'}</p><div class="shop-shelves">${SHOP.slice(page*8,page*8+8).map(item=>{const sold=profile.soldOut(item.id), unlocked=profile.available(item.id);return `<button class="shop-item" data-shop="${item.id}" ${!unlocked||sold?'disabled':''}><img loading="lazy" src="${asset(item.icon+'.webp')}" alt=""/><strong>${item.id==='slots'?`${Math.min(10,7+profile.data.purchases.slots)} 格种子卡槽`:item.name}</strong><span>${sold?'已购买':!unlocked?item.level===51?'通关冒险后开放':`${LEVELS[item.level as LevelId].label} 开放`:`$${profile.price(item.id).toLocaleString()}`}</span></button>`;}).join('')}</div><div id="shop-detail" class="shop-detail">${profile.storeOpen?'种好植物、守住庭院，把赚到的金币花在需要的装备上。':'可以先在冒险中收集金币。'}</div><footer class="shop-footer"><button id="shop-page" class="wood-button">${page===0?'下一页 ▶':'◀ 上一页'}</button><button id="shop-close" class="wood-button">返回</button></footer>`, 'shop-panel');
+    $('#shop-close').onclick=close;
+    $('#shop-page').onclick=()=>{page=1-page;render();};
+    document.querySelectorAll<HTMLButtonElement>('[data-shop]').forEach(button=>button.onclick=()=>{
+      const id=button.dataset.shop as ShopItem,item=SHOP.find(item=>item.id===id)!,cost=profile.price(id);
+      $('#shop-detail').innerHTML=`<h3>${item.name} · $${cost.toLocaleString()}</h3><p>${item.description}</p><button id="buy-item" class="wood-button" ${profile.data.money<cost?'disabled':''}>${profile.data.money<cost?'金币不足':'确认购买'}</button><button id="cancel-buy" class="wood-button">再看看</button>`;
+      $('#buy-item').onclick=()=>{profile.buy(id);render();}; $('#cancel-buy').onclick=render;
+    });
+  };
+  render();
+}
 function setLevel(level: LevelId, scenario: Game['scenario'] = 'adventure', survivalScene: SurvivalScene = 'day') {
-  game = new Game(level, Date.now(), scenario, survivalScene);
+  game = new Game(level, Date.now(), scenario, survivalScene, scenario === 'adventure' ? profile.rules() : null);
+  introShown=false;
   game.autoCollectSun = $<HTMLInputElement>('#auto-sun').checked;
   mountGame();
 }
 async function mountGame() {
   $('.page').classList.remove('in-battle');
-  $('.page').classList.toggle('endless-game', game.isSurvival);
+  $('.page').classList.toggle('endless-game', game.isSurvival || game.seedCapacity>6);
   screen = 'loading'; scene?.app.stop(); $('#battle-hud').hidden = true; updateMusic();
   panel('<h2>正在准备庭院…</h2><p id="loading-status" role="status">准备画面</p>');
   const progress = (done: number, total: number) => { $('#loading-status').textContent = `加载资源 ${done} / ${total}`; };
@@ -141,7 +195,7 @@ async function mountGame() {
   $('#canvas-host').classList.toggle('whack-field', game.config.mode === 'whack' || game.config.mode === 'vase');
   $('.seed-bank').classList.toggle('conveyor-bank', game.hasConveyor);
   $('footer').innerHTML = game.isSurvival ? '点击选卡、种植与收集阳光 <span><kbd>1</kbd>–<kbd>9</kbd> / <kbd>0</kbd> 选卡　<kbd>Esc</kbd> 取消 / 暂停</span>' : '点击选卡、种植与收集阳光 <span><kbd>1</kbd>–<kbd>6</kbd> 选卡　<kbd>Esc</kbd> 取消 / 暂停</span>';
-  $('#shovel').hidden = game.scenario === 'adventure' && game.level < 6;
+  $('#shovel').hidden = game.scenario === 'adventure' && game.level < 5 && !game.repeatAdventure;
   document.querySelectorAll('.meter-flag').forEach(flag => flag.remove());
   $('.wave-meter').insertAdjacentHTML('beforeend', game.waves.map((_, index) => game.isFlagWave(index) ? `<img loading="lazy" class="meter-flag" style="left:${(1 - (index + 1) / game.config.waveCount) * 84}%" src="${asset('meter-flag.png')}" alt="第 ${index + 1} 波旗帜"/>` : '').join(''));
   packetKey = '';
@@ -150,17 +204,18 @@ async function mountGame() {
 function renderSeedBank() {
   $('#seed-cards').innerHTML = (!game.hasConveyor && game.config.mode !== 'vase' ? game.seeds : []).map((kind, index) => `<button class="seed-card" data-plant="${kind}" title="${PLANTS[kind].name} · ${game.plantCost(kind)} 阳光 · 快捷键 ${(index + 1) % 10}" aria-label="${PLANTS[kind].name}，${game.plantCost(kind)} 阳光">${seedImage(kind, game.plantCost(kind))}<span class="cooldown-cover"></span><span class="cooldown-number"></span></button>`).join('');
   document.querySelectorAll<HTMLButtonElement>('#seed-cards [data-plant]').forEach(button => button.onclick = () => { game.select(button.dataset.plant as PlantKind); updateHud(); });
-  hud.bindSeeds();
+  hud.bindSeeds(); tutorialTarget=null;
 }
 function seedChooser() {
   const enemies = [...new Set(game.isSurvival ? game.survivalEnemies : game.waves.flat())];
   panel(`<div id="chosen-seeds" class="chosen-seeds" aria-label="${game.seedCapacity} 个植物槽位"></div>
     <section class="chooser-catalog" aria-label="植物卡册"><h2>选择你的植物</h2>
-      <div class="seed-options">${game.config.seeds.map(kind => `<button class="seed-option" data-choice="${kind}" title="${PLANTS[kind].name} · ${game.plantCost(kind)} 阳光" aria-label="选择${PLANTS[kind].name}" aria-pressed="false">${seedImage(kind, game.plantCost(kind))}</button>`).join('')}${Array.from({ length: 40 - game.config.seeds.length }, () => '<span class="seed-silhouette" aria-hidden="true"></span>').join('')}</div>
+      <div class="seed-options">${game.config.seeds.map(kind => `<button class="seed-option" data-choice="${kind}" title="${PLANTS[kind].name} · ${game.plantCost(kind)} 阳光" aria-label="选择${PLANTS[kind].name}" aria-pressed="false">${seedImage(kind, game.plantCost(kind))}</button>`).join('')}${Array.from({ length: Math.max(0, 48 - game.config.seeds.length) }, () => '<span class="seed-silhouette" aria-hidden="true"></span>').join('')}</div>
       <div class="chooser-footer"><button id="clear-seeds" class="text-button">清空选卡</button><span id="choice-count" role="status"></span><button id="start" class="seed-start" disabled>一起摇滚吧！</button></div>
     </section>
-    <aside class="chooser-details"><span class="kicker">${game.isSurvival ? `生存 · ${SURVIVAL_MODE_NAMES[game.scenario as SurvivalMode]} · 第 ${game.survivalStage + 1} 轮` : `冒险模式 ${game.config.label}`}</span><h3>${game.config.title}</h3><p>${game.isSurvival ? `已守住 ${game.survivalFlags} 旗 · ${game.sun} 阳光` : SCENE_NAMES[game.config.environment]}</p><div class="chooser-enemies"><h4>${game.isSurvival ? '本轮僵尸' : '本关僵尸'}</h4><p>${enemies.map(kind => ZOMBIE_NAMES[kind]).join(' · ')}</p></div><p class="chooser-tip">${game.isSurvival ? '可携带 6–10 张植物卡' : '选满六张卡片后出发'}<br/>点击上方卡片可放回</p><div id="plant-detail" class="plant-detail"><h4>了解你的植物</h4><p>悬停或聚焦卡片，查看用途与种植条件。</p></div></aside>
+    <aside class="chooser-details"><span class="kicker">${game.isSurvival ? `生存 · ${SURVIVAL_MODE_NAMES[game.scenario as SurvivalMode]} · 第 ${game.survivalStage + 1} 轮` : `冒险模式 ${game.config.label}`}</span><h3>${game.config.title}</h3><p>${game.isSurvival ? `已守住 ${game.survivalFlags} 旗 · ${game.sun} 阳光` : SCENE_NAMES[game.config.environment]}</p><div class="chooser-enemies"><h4>${game.isSurvival ? '本轮僵尸' : '本关僵尸'}</h4><p>${enemies.map(kind => ZOMBIE_NAMES[kind]).join(' · ')}</p></div><p class="chooser-tip">${game.isSurvival ? '可携带 6–10 张植物卡' : `可携带 ${game.seedCapacity} 张植物卡${game.repeatAdventure?' · 戴夫指定三张':''}`}<br/>点击上方卡片可放回</p>${game.campaign&&profile.storeOpen?'<button id="chooser-shop" class="wood-button">戴夫商店</button>':''}<div id="plant-detail" class="plant-detail"><h4>了解你的植物</h4><p>悬停或聚焦卡片，查看用途与种植条件。</p></div></aside>
     <button class="wood-button chooser-back back-menu">${backLabel()}</button>`, 'seed-chooser');
+  if(game.campaign&&profile.storeOpen)$('#chooser-shop').onclick=()=>shopPanel(()=>{game.applyPurchases(profile.rules());$('.page').classList.toggle('endless-game',game.seedCapacity>6);phasePanel();});
   overlay.classList.add('chooser-overlay'); $('#battle-hud').classList.add('choosing');
   const chosen = $('#chosen-seeds');
   const chosenCards = new Map<PlantKind, HTMLButtonElement>();
@@ -180,9 +235,12 @@ function seedChooser() {
       if (!card) {
         card = document.createElement('button'); card.className = 'chosen-seed';
         card.dataset.remove = kind; card.setAttribute('aria-label', `放回${PLANTS[kind].name}`);
-        card.innerHTML = seedImage(kind, game.plantCost(kind));
+        card.innerHTML = seedImage(kind==='imitater'?game.imitaterTarget!:kind, game.plantCost(kind));
+        if(kind==='imitater')card.classList.add('imitater-card');
         // Selected cards are visible immediately and may fly from below the viewport.
         card.querySelectorAll('img').forEach(image => { image.loading = 'eager'; });
+        card.disabled=game.davePicks.includes(kind);
+        if (card.disabled) { card.classList.add('dave-picked'); card.title='戴夫为你选择的植物，不能放回'; }
         card.onclick = () => choose(kind); chosenCards.set(kind, card);
       }
       return card;
@@ -194,14 +252,18 @@ function seedChooser() {
     document.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach(button => {
       const selected = game.seeds.includes(button.dataset.choice as PlantKind);
       button.setAttribute('aria-pressed', String(selected));
-      button.disabled = game.seeds.length === game.seedCapacity && !selected;
+      button.disabled = game.davePicks.includes(button.dataset.choice as PlantKind) || game.seeds.length === game.seedCapacity && !selected;
     });
-    $('#choice-count').textContent = game.canStart ? `准备出发！已选 ${game.seeds.length} / ${game.seedCapacity}` : `选择植物 ${game.seeds.length} / ${game.seedCapacity} · 至少 6 张`;
-    $<HTMLButtonElement>('#clear-seeds').disabled = game.seeds.length === 0;
+    $('#choice-count').textContent = game.canStart ? `准备出发！已选 ${game.seeds.length} / ${game.seedCapacity}` : `选择植物 ${game.seeds.length} / ${game.seedCapacity} · ${game.campaign?'请填满卡槽':'至少 6 张'}`;
+    $<HTMLButtonElement>('#clear-seeds').disabled = game.seeds.length === game.davePicks.length;
     $<HTMLButtonElement>('#start').disabled = !game.canStart;
     renderSeedBank(); hud.update(game, '');
   };
   const choose = (kind: PlantKind) => {
+    if(kind==='imitater'&&!game.seeds.includes(kind)){
+      $('#plant-detail').innerHTML=`<h4>模仿哪一种植物？</h4><div class=imitater-options>${game.config.seeds.filter(k=>!isUpgrade(k)&&k!=='imitater').map(k=>`<button class=text-button data-imitate="${k}">${PLANTS[k].name}</button>`).join('')}</div>`;
+      document.querySelectorAll<HTMLButtonElement>('[data-imitate]').forEach(b=>b.onclick=()=>{game.chooseImitater(b.dataset.imitate as PlantKind);update();$('#plant-detail').innerHTML=`<h4>模仿者 · ${PLANTS[game.imitaterTarget!].name}</h4><p>独立冷却，种下后变身。</p>`;});return;
+    }
     const removing = game.seeds.includes(kind);
     const from = $(removing ? `[data-remove="${kind}"]` : `[data-choice="${kind}"]`).getBoundingClientRect();
     game.chooseSeed(kind); update();
@@ -243,9 +305,14 @@ function phasePanel() {
   updateMusic();
   if (game.phase === 'playing') { overlay.hidden = true; overlay.classList.remove('chooser-overlay'); $('#battle-hud').classList.remove('choosing'); return; }
   if (game.phase === 'ready') {
+    if (game.tutorial==='shovel-done') { game.tutorial='off'; showDialogue(2410,phasePanel); return; }
+    if (!introShown) {
+      introShown=true; const start=adventureDialogue(game,profile.data);
+      if (start!==null) { showDialogue(start,phasePanel); return; }
+    }
     if (game.needsSeedChoice) seedChooser();
     else panel(`<span class="kicker">冒险模式 ${game.config.label}</span><img loading="lazy" class="intro-plant" src="${asset(`${game.config.seeds.at(-1)}.png`)}" alt=""/><h2>${game.config.title}</h2><p>${game.config.description}</p><div class="facts">${game.config.rows.length} 条草坪　·　${game.boss ? '僵王博士' : game.config.mode === 'vase' ? '三轮砸罐子' : `${game.config.waveCount} 波僵尸`}　·　${game.hasConveyor ? '传送带供应 · 无需阳光' : `${game.config.initialSun} 初始阳光`}</div><button id="start" class="wood-button large">${game.config.mode === 'vase' ? '开始砸罐子' : game.config.mode === 'whack' ? '拿起木槌' : game.config.mode === 'bowling' ? '开始保龄球' : game.config.mode === 'conveyor' ? '开始传送带决战' : '开始种植'}</button><button class="text-button back-menu">${backLabel()}</button>`);
-    $('#start').onclick = async () => { $<HTMLButtonElement>('#start').disabled = true; $('#start').textContent = '准备角色…'; await Promise.all([audio.unlock(game), scene.prepareActors(game, (done,total) => { $('#start').textContent = `准备角色 ${done} / ${total}`; })]); game.start(); updateHud(); };
+    $('#start').onclick = async () => { $<HTMLButtonElement>('#start').disabled = true; $('#start').textContent = '准备角色…'; await Promise.all([audio.unlock(game), scene.prepareActors(game, (done,total) => { $('#start').textContent = `准备角色 ${done} / ${total}`; })]); game.start(); if(game.rake){profile.data.purchases.rake--;profile.save();} updateHud(); };
   } else if (game.phase === 'paused') {
     panel(`<div class="pause-content"><h2>庭院休息中</h2><p>准备好了，就继续守护草坪。</p><button id="resume" class="wood-button large">继续游戏</button><button id="restart" class="wood-button large">重新开始</button><button class="wood-button large back-menu">${game.isSurvival ? '保存退出' : '返回主菜单'}</button><div class="pause-audio"><button id="pause-zombie-health" class="text-button">僵尸血条：${showZombieHealth ? '开启' : '关闭'}</button><button id="pause-fullscreen" class="text-button">${fullscreenLabel()}</button><button id="pause-sound" class="text-button">音效：${audio.muted ? '关闭' : '开启'}</button><button id="pause-music" class="text-button">音乐：${music.enabled ? '开启' : '关闭'}</button></div></div>`, 'pause-panel');
     $('#resume').onclick = async () => { await audio.unlock(game); game.resume(); updateHud(); }; $('#restart').onclick = () => { if(game.isSurvival)clearSurvival(game.survivalScene, game.scenario); setLevel(game.level, game.scenario, game.survivalScene); };
@@ -255,7 +322,7 @@ function phasePanel() {
     $('#pause-sound').onclick = () => { audio.muted = !audio.muted; $('#pause-sound').textContent = `音效：${audio.muted ? '关闭' : '开启'}`; };
   } else if (game.phase === 'intermission' && game.config.mode === 'vase') {
     panel(`<span class="kicker">砸罐子 · 第 ${game.vaseStage + 1} 轮完成</span><h2>这组罐子清理完了！</h2><p>下一轮重新布置罐子，场上的植物与掉落卡片会清空。</p><button id="vase-next" class="wood-button large">下一组罐子</button><button class="text-button back-menu">返回主菜单</button>`);
-    $('#vase-next').onclick = () => { game.nextVaseStage(); clock.reset(); updateHud(); };
+    $('#vase-next').onclick = () => showDialogue(game.vaseStage===0?2700:2800,()=>{ game.nextVaseStage(); clock.reset(); updateHud(); });
   } else if (game.phase === 'intermission') {
     panel(`<span class="kicker">${game.config.title} · 第 ${game.survivalStage + 1} 轮完成</span><h2>已守住 ${game.survivalFlags} 面旗帜！</h2><p>下一轮保留上轮所选卡片，可直接开战，也可以调整阵容。<br/>场上植物、剩余阳光、卡片冷却和割草机状态保留。</p><div class="facts">累计击败 ${game.kills} 只僵尸 · 剩余 ${game.sun} 阳光</div><button id="repick" class="wood-button large">继续守护 · 查看阵容</button><button class="text-button back-menu">保存退出</button>`);
     $('#repick').onclick = () => { game.nextSurvivalStage(); clock.reset(); messageUntil = 0; updateHud(); };
@@ -264,11 +331,16 @@ function phasePanel() {
     $('#survival-again').onclick = () => setLevel(game.level, game.scenario, game.survivalScene);
   } else if (game.phase === 'won') {
     const reward = game.config.reward;
-    const shovel = game.level === 4;
-    const name = shovel ? '铲子' : reward ? PLANTS[reward].name : game.level === 24 ? '小僵尸来袭' : game.level === 9 || game.level === 19 ? '最后的挑战' : game.level === 14 ? '木槌准备好了' : game.level === 29 ? '泳池最终挑战' : game.level === 39 ? '雷雨将至' : game.level === 34 ? '砸罐子时间' : game.level === 44 ? '蹦极突袭' : '当前冒险阶段完成';
-    const description = shovel ? '可以铲除植物、重新布置防线。下一关来玩坚果保龄球！' : reward ? `${PLANTS[reward].cost} 阳光 · 下一关可以使用` : game.level === 24 ? '下一关使用四种传送带植物，迎战成群的小僵尸！' : game.level === 9 || game.level === 19 ? '下一关由传送带供应植物，迎战本场景最后两面旗帜！' : game.level === 14 ? '接下来是打僵尸！点击僵尸挥动木槌，辅助植物可以帮助清场。' : game.level === 29 ? '下一关使用八种传送带植物，守住三面旗帜！' : game.level === 39 ? '接下来迎战雷雨之夜：闪电照亮庭院，传送带提供八种植物。' : game.level === 34 ? '下一关连续破解三组罐子，拾取掉落的植物卡布置防线。' : game.level===44 ? '接下来是蹦极突袭：使用传送带植物，守住从天而降的僵尸。' : game.level===49 ? '接下来迎战僵王博士，准备好寒冰菇和火爆辣椒！' : game.level===48 ? '下一关迎战三面旗帜的屋顶防线。' : '已完成冒险模式 50 关，也可以挑战五种场景的无尽生存。';
-    panel(`<span class="kicker">${shovel ? '你获得了新工具！' : reward ? '你获得了一株新植物！' : '庭院守住了！'}</span><img loading="lazy" class="reward-image" src="${asset(shovel ? 'shovel.png' : reward ? composedPacket(reward) ? `${reward}.png` : `card-${reward}.png` : 'trophy.png')}" alt="${name}"/><h2>${name}</h2><p>${description}</p><div class="facts">击败 ${game.kills} 只僵尸　·　使用 ${game.planted} 张植物卡</div><button id="next" class="wood-button large">${game.level < lastLevel ? '下一关' : '返回主菜单'}</button><button id="replay" class="text-button">重玩本关</button>`, 'paper-panel reward-panel');
-    $('#next').onclick = () => game.level < lastLevel ? setLevel((game.level + 1) as LevelId) : showMenu();
+    const shovel = !game.repeatAdventure && game.level === 4;
+    const name = game.repeatAdventure ? '庭院守住了！' : shovel ? '铲子' : reward ? PLANTS[reward].name : game.level === 24 ? '小僵尸来袭' : game.level === 9 || game.level === 19 ? '最后的挑战' : game.level === 14 ? '木槌准备好了' : game.level === 29 ? '泳池最终挑战' : game.level === 39 ? '雷雨将至' : game.level === 34 ? '砸罐子时间' : game.level === 44 ? '蹦极突袭' : '当前冒险阶段完成';
+    const description = game.repeatAdventure ? `第 ${game.campaign!.run} 周目 ${game.config.label} 完成，金币已存入钱包。` : shovel ? '可以铲除植物、重新布置防线。下一关来玩坚果保龄球！' : reward ? `${PLANTS[reward].cost} 阳光 · 下一关可以使用` : game.level === 24 ? '下一关使用四种传送带植物，迎战成群的小僵尸！' : game.level === 9 || game.level === 19 ? '下一关由传送带供应植物，迎战本场景最后两面旗帜！' : game.level === 14 ? '接下来是打僵尸！点击僵尸挥动木槌，辅助植物可以帮助清场。' : game.level === 29 ? '下一关使用八种传送带植物，守住三面旗帜！' : game.level === 39 ? '接下来迎战雷雨之夜：闪电照亮庭院，传送带提供八种植物。' : game.level === 34 ? '下一关连续破解三组罐子，拾取掉落的植物卡布置防线。' : game.level===44 ? '接下来是蹦极突袭：使用传送带植物，守住从天而降的僵尸。' : game.level===49 ? '接下来迎战僵王博士，准备好寒冰菇和火爆辣椒！' : game.level===48 ? '下一关迎战三面旗帜的屋顶防线。' : '已完成冒险模式 50 关，也可以挑战五种场景的无尽生存。';
+    panel(`<span class="kicker">${shovel ? '你获得了新工具！' : reward ? '你获得了一株新植物！' : '庭院守住了！'}</span><img loading="lazy" class="reward-image" src="${asset(shovel ? 'shovel.png' : reward ? composedPacket(reward) ? `${reward}.png` : `card-${reward}.png` : 'trophy.png')}" alt="${name}"/><h2>${name}</h2><p>${description}</p><div class="facts">击败 ${game.kills} 只僵尸　·　使用 ${game.planted} 张植物卡</div><button id="next" class="wood-button large">${game.level < lastLevel ? '下一关' : '开始下一周目'}</button><button id="replay" class="text-button">重玩本关</button>`, 'paper-panel reward-panel');
+    $('#next').onclick = () => {
+      const next=()=>game.level<lastLevel?setLevel((game.level+1) as LevelId):setLevel(1);
+      if (game.campaign?.run===1 && game.level===24) { shopPanel(next); return; }
+      if (game.campaign?.run===1 && game.level===34) { shopPanel(next); return; }
+      next();
+    };
     $('#replay').onclick = () => setLevel(game.level);
   } else {
     panel(`<span class="kicker">僵尸入侵</span><h2>僵尸吃掉了你的脑子！</h2>${game.isSurvival ? `<p>本次守住 ${game.survivalFlags} 面旗帜 · 累计击败 ${game.kills} 只僵尸</p>` : ''}<p>${game.config.mode === 'whack' ? '先敲最靠近房子的僵尸，<br/>路障需要两锤，铁桶需要三锤。' : game.config.mode === 'bowling' ? '把坚果滚向最靠近房子的僵尸，<br/>留下爆炸坚果应对密集队伍。' : game.boss ? '僵王低头时集中攻击，<br/>留好寒冰菇与火爆辣椒反制冰火球。' : game.config.mode === 'conveyor' ? '及时使用传送带植物，<br/>留下樱桃炸弹应对密集队伍。' : '试着先种向日葵积攒阳光，<br/>再把射手放在靠左的位置。'}</p><button id="retry" class="wood-button large">重新开始</button><button class="text-button back-menu">${backLabel()}</button>`);
@@ -278,6 +350,7 @@ function phasePanel() {
 }
 function updateHud() {
   if (screen !== 'battle') return;
+  bankCoins();
   const newlyEarned = achievements.update(game);
   if (newlyEarned.length) {
     const toast = $('#achievement-toast');
@@ -287,7 +360,8 @@ function updateHud() {
   }
   let advice = '';
   if (game.phase === 'playing') {
-    if (game.flagWarningIn > 0) advice = '一大波僵尸即将来袭！';
+    if(game.cannonTarget!==null)advice='点击庭院中的目标位置，发射玉米加农炮 · 右键取消';
+    else if (game.flagWarningIn > 0) advice = '一大波僵尸即将来袭！';
     else if (game.digging) advice = '点击要铲除的植物，右键取消';
     else if (game.config.mode === 'bowling' && (game.selected || game.planted === 0)) advice = '选择传送带上的坚果，在红线左侧滚出';
     else if (game.boss) advice = game.boss.ball ? (game.boss.ball.kind==='fire'?'火球来袭！使用寒冰菇消除':'冰球来袭！在同排使用火爆辣椒') : ['headBefore','spit','headAfter'].includes(game.boss.phase)?'僵王低头了！集中攻击，寒冰菇可以延长攻击时间':'传送带供应植物 · 保留寒冰菇与辣椒应对冰火球';
@@ -302,7 +376,10 @@ function updateHud() {
     else if (game.ticks < messageUntil) advice = game.wave === game.config.waveCount ? game.isSurvival ? '本轮最后一波！' : '最后一波！' : '僵尸来了！';
     else if (game.selected) advice = `把${PLANTS[game.selected].name}种在草地上`;
   }
+  advice=tutorialHint(game)||(game.cannonTarget!==null?'点击战场选择炮击位置 · Esc 取消':advice);
   updateConveyor(); hud.update(game, advice);
+  const target=game.tutorial==='shovel'&&!game.digging?'#shovel':game.tutorial==='pea'&&!game.selected?'[data-plant=peashooter]':(game.tutorial==='sunflower'||game.tutorial==='more-sun')&&!game.selected?'[data-plant=sunflower]':null;
+  if(target!==tutorialTarget){document.querySelector('.tutorial-target')?.classList.remove('tutorial-target');if(target)document.querySelector(target)?.classList.add('tutorial-target');tutorialTarget=target;}
   if (lastPhase !== game.phase) {
     lastPhase = game.phase; phasePanel();
     if (game.phase === 'playing' || game.phase === 'won' || game.phase === 'lost') scene.app.start();
@@ -322,7 +399,8 @@ $('#speed').onclick = () => {
   $('#speed').textContent = `${clock.speed}×`;
   $('#speed').setAttribute('aria-label', `游戏速度 ${clock.speed} 倍`);
 };
-$('#adventure').onclick = () => setLevel(Math.min(lastLevel, completedLevel() + 1) as LevelId);
+$('#adventure').onclick = () => setLevel(profile.data.nextLevel);
+$('#shop').onclick = () => shopPanel(closeMenuPanel);
 $('#levels').onclick = levelPicker;
 function survivalPicker(mode: SurvivalMode) {
   const goal = mode === 'survival-normal' ? 5 : 10;
@@ -370,8 +448,9 @@ $('#help').onclick = () => {
   panel('<span class="kicker">庭院指南</span><h2>种下你的第一道防线</h2><ol class="help-list"><li>点击植物卡片，再点击草地种植。</li><li>点击阳光收集，也可勾选右上角“自动收集阳光”；植物需要阳光和冷却时间。</li><li>向日葵放后方，坚果挡前方；樱桃应对密集僵尸。</li><li>保龄球关从传送带取卡，在红线左侧滚出坚果。</li><li>1–8 起在战前选择六张植物卡；1–10 从传送带取卡种植，无需阳光。</li><li>2–5 点击僵尸挥动木槌，路障两次、铁桶三次。选取辅助植物时切换到种植，右键回到木槌。</li><li>夜晚没有天空阳光；小喷菇射程短，大喷菇能穿门盾，墓碑吞噬者只能种在墓碑上。</li><li>每排割草机只能使用一次。消灭所有波次即可通关。</li></ol><p>数字 1–6 选卡（无尽可用 1–9、0，传送带可用 1–8） · 右键取消选卡 · Esc 暂停</p><button id="close" class="wood-button">返回主菜单</button>'); $('#close').onclick = closeMenuPanel;
 };
 window.addEventListener('keydown', event => {
+  if (dialogueAdvance && ['Enter',' '].includes(event.key)) { event.preventDefault(); dialogueAdvance(); return; }
   if (event.repeat || screen === 'loading') return;
-  if (event.key === 'Escape') { if (screen === 'menu') closeMenuPanel(); else if (game.selected || game.digging) { game.cancelSelection(); updateHud(); } else pause(); }
+  if (event.key === 'Escape') { if (screen === 'menu') closeMenuPanel(); else if (game.selected || game.digging || game.cannonTarget!==null) { game.cancelSelection(); updateHud(); } else pause(); }
   if (screen === 'battle' && ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].includes(event.key)) {
     if (game.hasConveyor) {
       const packet = game.conveyor[Number(event.key) - 1]; if (packet) { game.selectPacket(packet.id); updateHud(); }
@@ -405,6 +484,8 @@ async function ensureScene() {
       const coin=[...game.coins].reverse().find(coin=>Math.hypot(coin.x-x,coin.y-y)<=22);
       if (sun) game.collectSun(sun.id);
       else if(coin)game.collectCoin(coin.id);
+      else if(game.cannonTarget!==null)game.fireCannon(x,y);
+      else if(!game.selected&&!game.digging&&game.aimCannon(column,row)){}
       else if (game.config.mode === 'vase' && !game.selected && drop) game.selectDrop(drop.id);
       else if (game.config.mode === 'vase' && !game.selected && game.vases.some(v => v.column === column && v.row === row)) game.openVase(column,row);
       else if (game.config.mode === 'whack' && !game.selected && !game.digging) game.whack(x, y); else if (game.digging) game.dig(Math.floor((x - BOARD.left) / BOARD.cellWidth), game.rowAt(y,x)); else game.plant(Math.floor((x - BOARD.left) / BOARD.cellWidth), game.rowAt(y,x));
@@ -417,7 +498,13 @@ async function ensureScene() {
         if (event.kind !== 'wave' || game.wave === game.config.waveCount) audio.play(event.kind);
         scene.event(event);
         if (event.kind === 'wave') messageUntil = game.ticks + 280;
-        if (event.kind === 'win') { if (game.scenario === 'adventure') completeLevel(game.level); else clearSurvival(game.survivalScene, game.scenario); }
+        if (event.kind === 'win') { if (game.scenario === 'adventure') {
+          completeLevel(game.level);
+          if (game.campaign) {
+            game.money += (game.repeatAdventure||game.level>=11?game.mowers.filter(m=>m.state==='ready').length*50:0) + (game.level===50?3000:game.repeatAdventure?game.level===35?100:250:0);
+            bankCoins(); profile.finish(game.level,game.campaign.run);
+          }
+        } else clearSurvival(game.survivalScene, game.scenario); }
         if (event.kind === 'lose' && game.isSurvival) clearSurvival(game.survivalScene, game.scenario);
       }
       if (screen === 'battle') { scene.render(game, ticker.deltaMS * clock.speed, clock.alpha); updateHud(); }

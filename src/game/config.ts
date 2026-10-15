@@ -2,12 +2,12 @@ import portable from './data/portable-adventure.json';
 // Behavioral reference: PvZ-Portable 141c1476. Source locations in docs/BASELINE.md.
 export const TICK_MS = 10;
 export const BOARD = { width: 800, height: 600, left: 40, top: 80, cellWidth: 80, cellHeight: 100, columns: 9 };
-export type BasePlantKind = 'peashooter' | 'sunflower' | 'cherrybomb' | 'wallnut' | 'potatomine' | 'snowpea' | 'explodenut' | 'chomper' | 'repeater' | 'puffshroom' | 'sunshroom' | 'fumeshroom' | 'gravebuster' | 'hypnoshroom' | 'scaredyshroom' | 'iceshroom' | 'doomshroom' | 'lilypad' | 'squash' | 'threepeater' | 'plantern' | 'tanglekelp' | 'jalapeno' | 'spikeweed' | 'torchwood' | 'tallnut' | 'seashroom' | 'cactus' | 'blover' | 'splitpea' | 'starfruit' | 'pumpkin' | 'magnetshroom' | 'cabbagepult' | 'flowerpot' | 'kernelpult' | 'coffeebean' | 'garlic' | 'umbrella' | 'marigold' | 'melonpult';
-export const UPGRADES = { gatlingpea: 'repeater', twinsunflower: 'sunflower', wintermelon: 'melonpult' } as const;
+export type BasePlantKind = 'peashooter' | 'sunflower' | 'cherrybomb' | 'wallnut' | 'potatomine' | 'snowpea' | 'explodenut' | 'chomper' | 'repeater' | 'puffshroom' | 'sunshroom' | 'fumeshroom' | 'gravebuster' | 'hypnoshroom' | 'scaredyshroom' | 'iceshroom' | 'doomshroom' | 'lilypad' | 'squash' | 'threepeater' | 'plantern' | 'tanglekelp' | 'jalapeno' | 'spikeweed' | 'torchwood' | 'tallnut' | 'seashroom' | 'cactus' | 'blover' | 'splitpea' | 'starfruit' | 'pumpkin' | 'magnetshroom' | 'cabbagepult' | 'flowerpot' | 'kernelpult' | 'coffeebean' | 'garlic' | 'umbrella' | 'marigold' | 'melonpult' | 'imitater';
+export const UPGRADES = { gatlingpea: 'repeater', twinsunflower: 'sunflower', wintermelon: 'melonpult', gloomshroom:'fumeshroom', cattail:'lilypad', goldmagnet:'magnetshroom', spikerock:'spikeweed', cobcannon:'kernelpult' } as const;
 export type UpgradeKind = keyof typeof UPGRADES;
 export type PlantKind = BasePlantKind | UpgradeKind;
 export const isUpgrade = (kind: PlantKind): kind is UpgradeKind => kind in UPGRADES;
-export type ZombieKind = 'normal' | 'cone' | 'flag' | 'pole' | 'bucket' | 'newspaper' | 'door' | 'football' | 'dancer' | 'backup' | 'ducky' | 'snorkel' | 'zomboni' | 'bobsled' | 'dolphin' | 'jack' | 'balloon' | 'digger' | 'pogo' | 'bungee' | 'ladder' | 'catapult' | 'gargantuar' | 'imp';
+export type ZombieKind = 'normal' | 'cone' | 'flag' | 'pole' | 'bucket' | 'newspaper' | 'door' | 'football' | 'dancer' | 'backup' | 'ducky' | 'snorkel' | 'zomboni' | 'bobsled' | 'dolphin' | 'jack' | 'balloon' | 'digger' | 'pogo' | 'bungee' | 'ladder' | 'catapult' | 'gargantuar' | 'imp' | 'yeti';
 export type LevelId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50;
 export type SurvivalMode = 'endless' | 'survival-normal' | 'survival-hard';
 export const SURVIVAL_MODES: SurvivalMode[] = ['survival-normal', 'survival-hard', 'endless'];
@@ -18,8 +18,14 @@ export const SURVIVAL_SCENES: SurvivalScene[] = ['day', 'night', 'pool', 'fog', 
 export type Environment = SurvivalScene | 'roof';
 export const isPool = (environment: Environment) => environment === 'pool' || environment === 'fog';
 export const isNight = (environment: Environment) => environment === 'night' || environment === 'fog';
-export const MUSHROOMS: readonly PlantKind[] = ['puffshroom','sunshroom','fumeshroom','hypnoshroom','scaredyshroom','iceshroom','doomshroom','seashroom','magnetshroom'];
+export const MUSHROOMS: readonly PlantKind[] = ['puffshroom','sunshroom','fumeshroom','hypnoshroom','scaredyshroom','iceshroom','doomshroom','seashroom','magnetshroom','gloomshroom'];
 export const PLANTS = {
+  gloomshroom:{name:'忧郁菇',cost:150,cooldown:5000,health:300,interval:200},
+  cattail:{name:'香蒲',cost:225,cooldown:5000,health:300,interval:150},
+  goldmagnet:{name:'吸金磁',cost:50,cooldown:5000,health:300,interval:250},
+  spikerock:{name:'地刺王',cost:125,cooldown:5000,health:450,interval:100},
+  cobcannon:{name:'玉米加农炮',cost:500,cooldown:5000,health:300,interval:3475},
+  imitater:{name:'模仿者',cost:0,cooldown:750,health:300,interval:0},
   wintermelon: { name: '冰西瓜', cost: 200, cooldown: 5000, health: 300, interval: 300 },
   gatlingpea: { name: '机枪射手', cost: 250, cooldown: 5000, health: 300, interval: 150 },
   twinsunflower: { name: '双子向日葵', cost: 150, cooldown: 5000, health: 300, interval: 2500 },

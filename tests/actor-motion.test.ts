@@ -14,7 +14,9 @@ const definitions = Object.fromEntries([...new Set(Object.values(ACTOR_MOTION))]
 test('all migrated actor states keep existing cycle durations and resolvable source parts', () => {
   for (const [name,family] of Object.entries(ACTOR_MOTION)) {
     const d = definitions[family], clip = d.clips[name];
-    assert.equal(clip.duration, animations.animations[name as keyof typeof animations.animations].durations.reduce((a,b)=>a+b,0), name);
+    const baked=animations.animations[name as keyof typeof animations.animations];
+    if(baked)assert.equal(clip.duration,baked.durations.reduce((a,b)=>a+b,0),name);
+    else { const fps=family==='cattail'?15:family==='cobcannon'||family==='zombie_yeti'?12:family==='imitater'?26:14; assert.equal(clip.duration,clip.groups[0].length/fps*100,name); }
     assert.ok(clip.groups.length && Number.isFinite(clip.scale) && clip.scale > 0, name);
     for (const group of clip.groups) for (const track of group.tracks) {
       assert.equal(track.poses.length,group.length,name);

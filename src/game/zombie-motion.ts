@@ -13,7 +13,7 @@ const SNORKEL = { frames: 37, distance: 59.9 };
 const PAPER = { frames: 47, distance: 57.8 };
 const GIANT = { frames: 49, distance: 124.1 };
 const IMP = { frames: 33, distance: 62.9 };
-const track = (zombie: Walker) => zombie.kind === 'gargantuar' ? GIANT : zombie.kind === 'imp' ? IMP : zombie.kind === 'dancer' || zombie.kind === 'backup' ? DANCER : zombie.kind === 'snorkel' ? SNORKEL : zombie.kind === 'football' ? FOOTBALL : zombie.kind === 'newspaper' ? PAPER : zombie.kind === 'pole' ? zombie.hasPole ? POLE_RUN : POLE_WALK : NORMAL;
+const track = (zombie: Walker) => zombie.kind === 'yeti' ? {frames:34,distance:115.6} : zombie.kind === 'gargantuar' ? GIANT : zombie.kind === 'imp' ? IMP : zombie.kind === 'dancer' || zombie.kind === 'backup' ? DANCER : zombie.kind === 'snorkel' ? SNORKEL : zombie.kind === 'football' ? FOOTBALL : zombie.kind === 'newspaper' ? PAPER : zombie.kind === 'pole' ? zombie.hasPole ? POLE_RUN : POLE_WALK : NORMAL;
 
 export function walkingCycleTicks(zombie: Walker) {
   return track(zombie).distance / (zombie.speed * .47) * (zombie.mini ? .5 : 1);

@@ -63,7 +63,7 @@ export class Hud {
       this.class(button, 'unavailable', !game.hasConveyor && game.sun < game.plantCost(kind));
       this.write(button, 'disabled', game.phase !== 'playing', () => { button.disabled = game.phase !== 'playing'; });
       this.write(button, 'pressed', selected, () => button.setAttribute('aria-pressed', String(selected)));
-      const height = game.hasConveyor ? '0%' : `${(remaining / PLANTS[kind].cooldown * 100).toFixed(1)}%`;
+      const height = game.hasConveyor ? '0%' : `${(remaining / PLANTS[kind==='imitater'?game.imitaterTarget!:kind].cooldown * 100).toFixed(1)}%`;
       this.write(cover, 'height', height, () => { cover.style.height = height; });
       this.text(number, remaining > 0 ? String(Math.ceil(remaining / 100)) : '');
     }

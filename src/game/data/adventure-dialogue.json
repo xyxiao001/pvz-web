@@ -1,0 +1,402 @@
+{
+  "201": {
+    "text": "晚上好， {PLAYER_NAME}。",
+    "original": "Evening, {PLAYER_NAME}."
+  },
+  "202": {
+    "text": "那些僵尸不会减弱攻势吧？",
+    "original": "Those zombies just won't let up, will they?"
+  },
+  "203": {
+    "text": "你会注意到和僵尸作战在夜间不同于白天之处。",
+    "original": "You'll notice that fighting zombies at night is different than in the day."
+  },
+  "204": {
+    "text": "首先，你不能从天上得到阳光。",
+    "original": "For one, you won't get any sun falling from the sky."
+  },
+  "205": {
+    "text": "但你仍可以通过向日葵来获得阳光。",
+    "original": "You can still get sun from sunflowers, though."
+  },
+  "206": {
+    "text": "并且你很幸运，你得到了小喷菇。",
+    "original": "And lucky for you, you got yourself some puff-shrooms."
+  },
+  "207": {
+    "text": "尽可能多地种植这些蘑菇吧，你会挺过去的。",
+    "original": "Plant as many of those as you can and you'll be A-O-GOOD."
+  },
+  "301": {
+    "text": "嘿，你找到了我的车钥匙！",
+    "original": "Hey, you found my car key!"
+  },
+  "302": {
+    "text": "你知道这意味着……",
+    "original": "You know what that means..."
+  },
+  "303": {
+    "text": "疯狂戴夫的“花哨小玩意”正式营业了！",
+    "original": "Crazy Dave's Twiddydinkies is open for business! {MOUTH_SMALL_SMILE}"
+  },
+  "304": {
+    "text": "瞧一瞧！你是否找到了一些你喜欢的东西！",
+    "original": "Have a look! See if you can't find something you like! {MOUTH_SMALL_SMILE}"
+  },
+  "401": {
+    "text": "玩过“敲击僵尸”的游戏吗？",
+    "original": "Ever play a game called Whack-a-Zombie?"
+  },
+  "402": {
+    "text": "这就像是玩敲地鼠。",
+    "original": "It's just like huntin' squirbos."
+  },
+  "403": {
+    "text": "你看，那些毛茸茸的小老鼠是在你的草坪里打洞吗？",
+    "original": "You know, those furry little rodents that dig holes in your lawn?"
+  },
+  "404": {
+    "text": "耶，就像那样，但不是鼹鼠，而是僵尸。",
+    "original": "Yeah, just like that, but instead of squirbos, it's zombies."
+  },
+  "405": {
+    "text": "并且不是铁锹，是短槌。",
+    "original": "{SHOW_HAMMER}And instead of a shovel, it's a mallet."
+  },
+  "406": {
+    "text": "当然不是我，是你！",
+    "original": "And instead of ME, it's YOU! {MOUTH_BIG_SMILE} {SCREAM}"
+  },
+  "501": {
+    "text": "看来僵尸们要放弃进攻你的前院了。",
+    "original": "Looks like the zombies gave up attacking your front yard."
+  },
+  "502": {
+    "text": "现在他们想试试你的后院。",
+    "original": "Now they're trying your backyard."
+  },
+  "503": {
+    "text": "但最重要的是你不能使用你的蘑菇了！",
+    "original": "And to top it all off, you can't even use your mushrooms!"
+  },
+  "504": {
+    "text": "因为他们白天时要睡觉！",
+    "original": "'cause they'll fall asleep during the day!"
+  },
+  "505": {
+    "text": "这难道不是花花公子的作风吗？",
+    "original": "Well isn't that just dandy!"
+  },
+  "701": {
+    "text": "僵尸的进攻计划其实是件有趣的事情。有时他们会来的很少。",
+    "original": "Funny thing about the zombie process. Sometimes it makes 'em come out real little."
+  },
+  "702": {
+    "text": "很少但很划算！",
+    "original": "Real little and REAL MEAN!"
+  },
+  "703": {
+    "text": "防守好你的小腿吧！",
+    "original": "Defend your shins! {SCREAM}"
+  },
+  "801": {
+    "text": "你知道，他们曾叫我“迷雾男”。",
+    "original": "You know, they used to call me \"Fog Man\""
+  },
+  "802": {
+    "text": "因为我曾停留在雾中并突然从人群中跳出！",
+    "original": "'cause I would hang out in the fog and JUMP OUT AT PEOPLE! {MOUTH_BIG_SMILE}"
+  },
+  "803": {
+    "text": "噢，那都是过去的事了。",
+    "original": "Ah, those were the days. {MOUTH_SMALL_SMILE}"
+  },
+  "1101": {
+    "text": "怎么突然间变得这么暗了？",
+    "original": "Why'd it get so dark all of a sudden?"
+  },
+  "1102": {
+    "text": "噢，这可不是什么好预兆啊。",
+    "original": "This can't be good."
+  },
+  "1103": {
+    "text": "嗯，好吧，希望你能活过今晚！",
+    "original": "Oh well, hope you survive the night!"
+  },
+  "1201": {
+    "text": "哇——！他们甚至在你的屋顶上找到条路！",
+    "original": "Whoa! They even found a way onto your roof!"
+  },
+  "1202": {
+    "text": "真是些有毅力的僵尸。",
+    "original": "Those are some persistent zombies, dude."
+  },
+  "1203": {
+    "text": "考虑到你屋顶的角度，你会需要用到卷心菜的。",
+    "original": "You'll need to use cabbage-pults here due to your roof's angle."
+  },
+  "1204": {
+    "text": "记住这点，你会平安无事的！",
+    "original": "Remember that, and you're good to go!"
+  },
+  "1304": {
+    "text": "我不得不警告你……",
+    "original": "I have to warn you..."
+  },
+  "1305": {
+    "text": "你会讨厌下一关的。",
+    "original": "You are going to hate this next level."
+  },
+  "1306": {
+    "text": "为什么？ 因为接下来是一个接一个的蹦极僵尸。",
+    "original": "Why?  Because it's non-stop bungee zombie after bungee zombie."
+  },
+  "1307": {
+    "text": "我讨厌这些困惑的蹦极僵尸!!!",
+    "original": "I hate those confounded bungees!!! {SCREAM2}"
+  },
+  "1308": {
+    "text": "我讨厌他们！",
+    "original": "I hate them!!"
+  },
+  "1309": {
+    "text": "讨厌他们有着那种激情！",
+    "original": "Hate them with a passion!"
+  },
+  "1310": {
+    "text": "还有复仇的野心！",
+    "original": "And a vengeance!"
+  },
+  "1311": {
+    "text": "哇—靠——！他们中的精英来了！",
+    "original": "A-Whoop-a-dee-doo! Here come those idiots now!"
+  },
+  "1401": {
+    "text": "嘿，你目前已经收集了 {MONEY} 枚金币！",
+    "original": "Hey, you've collected {MONEY} in coins so far!"
+  },
+  "1402": {
+    "text": "当你收集到 {UPGRADE_COST}时， 我会卖给你一些实用的东西哦！",
+    "original": "When you collect {UPGRADE_COST}, I'll sell you something really neat-o!"
+  },
+  "1501": {
+    "text": "嘿！想增加一个额外的植物槽吗？",
+    "original": "Hey! Wanna buy an extra seed slot?"
+  },
+  "1502": {
+    "text": "这将花费你 {UPGRADE_COST}，但你每关能选7种植物而不是6种！",
+    "original": "It'll cost you {UPGRADE_COST}, but you'll be able to choose 7 seeds per level instead of 6!"
+  },
+  "1503": {
+    "text": "听起来怎么样？",
+    "original": "{NO_CLICK}How's that sound?"
+  },
+  "1510": {
+    "text": "太好了！然后当你攒到{UPGRADE_COST}，我将给你升级到8个植物槽！",
+    "original": "All right! And hey, when you save up to {UPGRADE_COST}, I'll sell you the 8-seed slot upgrade!"
+  },
+  "1511": {
+    "text": "稍等啊…",
+    "original": "Check you later!"
+  },
+  "1520": {
+    "text": "真扫兴啊，邻居！",
+    "original": "Bummer, dude!"
+  },
+  "1551": {
+    "text": "嘿！想增加个额外的植物槽吗？",
+    "original": "Hey! Wanna buy an extra seed slot?"
+  },
+  "1552": {
+    "text": "这将花费你{UPGRADE_COST}，但是你每关能选8种植物而不是7种！",
+    "original": "It'll cost you {UPGRADE_COST}, but you'll be able to choose 8 seeds per level instead of 7!"
+  },
+  "1553": {
+    "text": "听起来怎么样？",
+    "original": "{NO_CLICK}How's that sound?"
+  },
+  "1560": {
+    "text": "好的！",
+    "original": "All right!"
+  },
+  "1570": {
+    "text": "真扫兴啊，邻居！",
+    "original": "Bummer, dude!"
+  },
+  "1601": {
+    "text": "伙计，那些僵尸还在源源不断的来袭啊！",
+    "original": "Man, those zombies just keep a-comin'!"
+  },
+  "1602": {
+    "text": "这次，我想替你挑些植物！",
+    "original": "This time around, I wanna pick some seeds for you!"
+  },
+  "1603": {
+    "text": "我选……这三种！",
+    "original": "I choose... these three!"
+  },
+  "2300": {
+    "text": "喔 喔，他在这里。",
+    "original": "Uh oh, he's here."
+  },
+  "2301": {
+    "text": "你最好做好准备。",
+    "original": "Better get ready."
+  },
+  "2302": {
+    "text": "这将会是一场大战役！",
+    "original": "It's gonna be one heckuva fight!"
+  },
+  "2303": {
+    "text": "听好，那么，我知道他的弱点是：",
+    "original": "Listen, though, I know what his weakness is:"
+  },
+  "2304": {
+    "text": "你必须攻击他的胰腺！",
+    "original": "You have to hit him in the pancreas!"
+  },
+  "2305": {
+    "text": "噢，不，那是不同的一只……",
+    "original": "No, that was a different guy..."
+  },
+  "2306": {
+    "text": "你必须……呃……踢他的……",
+    "original": "You have to... um... kick him in the..."
+  },
+  "2307": {
+    "text": "唔……",
+    "original": "Hmm..."
+  },
+  "2308": {
+    "text": "你必须按 上上下下左右……",
+    "original": "You have to press up up down down left right..."
+  },
+  "2309": {
+    "text": "呃……",
+    "original": "er..."
+  },
+  "2310": {
+    "text": "等等，我想起来了！它是……",
+    "original": "Wait, I remember! It's... {MOUTH_SMALL_OH}"
+  },
+  "2400": {
+    "text": "你好，我的邻居！",
+    "original": "Greetings, neighbor!"
+  },
+  "2401": {
+    "text": "我的名字叫疯狂的戴夫。",
+    "original": "The name's Crazy Dave."
+  },
+  "2402": {
+    "text": "但你叫我疯狂的戴夫就行了。",
+    "original": "But you can just call me Crazy Dave."
+  },
+  "2403": {
+    "text": "听好，我有个惊喜要给你。",
+    "original": "Listen, I've got a surprise for you."
+  },
+  "2404": {
+    "text": "但是首先，你必须清理下你的草坪。",
+    "original": "But first, I'll need you to clear your lawn."
+  },
+  "2405": {
+    "text": "用你的铲子挖出那些植物！",
+    "original": "Use your shovel and dig up those plants!"
+  },
+  "2406": {
+    "text": "开始挖吧！",
+    "original": "LET THE DIGGING COMMENCE!{MOUTH_SMALL_OH} {SCREAM}"
+  },
+  "2410": {
+    "text": "好的，干得不错，现在给你个惊喜……",
+    "original": "Ok goody, now for the surprise..."
+  },
+  "2411": {
+    "text": "我们去玩保龄球！",
+    "original": "We're going BOWLING!{MOUTH_SMALL_SMILE}"
+  },
+  "2412": {
+    "text": "嘿，拿好这个坚果墙！",
+    "original": "{SHOW_WALLNUT}HERE, TAKE THIS WALL-NUT!!"
+  },
+  "2413": {
+    "text": "为什么我要给你坚果墙？",
+    "original": "Why'd I put a wall-nut in your hand?{MOUTH_SMALL_OH}"
+  },
+  "2414": {
+    "text": "因为我发~~~疯了！！！！！",
+    "original": "{SHAKE}Because I'm CRAAAZY!!!!!{MOUTH_BIG_SMILE}"
+  },
+  "2415": {
+    "text": "现在出发！给我赢个冠军回来！",
+    "original": "NOW GO! BOWL ME A WINNER!{MOUTH_BIG_SMILE} {SCREAM}"
+  },
+  "2500": {
+    "text": "我和我的哥们，弗莱科斯卡斯特?哈维，以前在无聊的时候就打花瓶。",
+    "original": "Me and my buddy Harvey Flaxcaster used to break vases when we were bored."
+  },
+  "2501": {
+    "text": "那么哈维不在镇上，正好你来和我一起吧，哈维二号！",
+    "original": "Well Harvey's outta town, so you're coming with me, Harvey #2!"
+  },
+  "2502": {
+    "text": "就按照你的意愿去打破它吧，哈维！",
+    "original": "BREAK IT LIKE YOU MEAN IT, HARVEY! {SCREAM}"
+  },
+  "2700": {
+    "text": "哥们，你把这些花瓶都打破了，干得漂亮！",
+    "original": "Man, you broke those vases nice and good!"
+  },
+  "2701": {
+    "text": "用那些垃圾罐，像我砸我后面的铲子时，砸他们吧！",
+    "original": "Broke 'em like the time I broke my back digging through those trash cans!"
+  },
+  "2702": {
+    "text": "来，我会给你更多花瓶的。",
+    "original": "Here, I brought you some more vases."
+  },
+  "2703": {
+    "text": "小心点，别砸的太快了。",
+    "original": "Gotta be careful about breaking them too fast, though."
+  },
+  "2704": {
+    "text": "僵尸的数量太多了，你处理不了这么多的，哈哈。",
+    "original": "You don't wanna end up with more zombies than you can handle, huh huh."
+  },
+  "2800": {
+    "text": "不错！",
+    "original": "All right!"
+  },
+  "2801": {
+    "text": "这应该他们最后一波了。",
+    "original": "This should be the last of 'em."
+  },
+  "2802": {
+    "text": "把他们砸掉，然后你的工作就完成了！",
+    "original": "Break these, and you'll be all done!"
+  },
+  "601": {
+    "text": "你找到了我的魔法玉米卷！",
+    "original": "YOU FOUND MY MAGIC TACO!! {SCREAM2}"
+  },
+  "602": {
+    "text": "我一定要得到它！我出 $1000！",
+    "original": "{SHOW_MONEYBAG}I must have it! I'll give you $1000!"
+  },
+  "603": {
+    "text": "太好了！玉米卷归我啦！",
+    "original": "YES!  THE TACO IS MINE! {SCREAM}"
+  },
+  "604": {
+    "text": "为什么我要花这么多钱买一个玉米卷？",
+    "original": "Why'd I give you so much money for a taco?"
+  },
+  "605": {
+    "text": "因为我疯——狂——啊！",
+    "original": "{SHAKE}BECAUSE I'M CRAAAAZY!!!! {MOUTH_BIG_SMILE}"
+  },
+  "606": {
+    "text": "看看我的小店吧！我又进了一些新货！",
+    "original": "Take a look around my shop! You'll notice I got some new items in stock!"
+  }
+}

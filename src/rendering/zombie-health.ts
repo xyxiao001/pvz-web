@@ -5,7 +5,7 @@ import type { Zombie } from '../game/model';
 // Mini-zombie pools are rounded separately, matching Game.spawnZombie.
 export function zombieHealthFraction(zombie: Pick<Zombie, 'kind' | 'mini' | 'health' | 'armor' | 'shield'>) {
   const kind = zombie.kind;
-  const body = kind === 'gargantuar' ? 3000 : kind === 'catapult' ? 850 : kind === 'bungee' ? 450 : kind === 'zomboni' ? 1350 : ['pole', 'dancer', 'dolphin', 'jack', 'ladder'].includes(kind) ? 500 : 270;
+  const body = kind === 'gargantuar' ? 3000 : kind === 'catapult' ? 850 : kind === 'bungee' ? 450 : kind === 'zomboni' || kind==='yeti' ? 1350 : ['pole', 'dancer', 'dolphin', 'jack', 'ladder'].includes(kind) ? 500 : 270;
   const armor = kind === 'digger' ? 100 : kind === 'football' ? 1400 : kind === 'cone' ? 370 : kind === 'bucket' ? 1100 : 0;
   const shield = kind === 'ladder' ? 500 : kind === 'newspaper' ? 150 : kind === 'door' ? 1100 : 0;
   const maximum = zombie.mini ? Math.trunc(body / 4) + Math.trunc(armor / 4) + Math.trunc(shield / 4) : body + armor + shield;

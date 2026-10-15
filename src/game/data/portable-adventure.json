@@ -1409,6 +1409,15 @@
         1,
         1
       ]
+    },
+    "yeti": {
+      "value": 4,
+      "startingLevel": 40,
+      "firstAllowedWave": 1,
+      "weight": 1,
+      "allowedLevels": [
+        0
+      ]
     }
   },
   "conveyorTen": [
