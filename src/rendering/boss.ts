@@ -1,13 +1,15 @@
 import { applyPose } from './plant-motion';
 import { loadInBatches } from '../platform/load-queue';
 import { Assets, Container, Sprite, Texture } from 'pixi.js';
+import type { BattleViewport } from './viewport';
 import type { Game } from '../game/model';
 type Pose = [number,number,number,number,number,number,number,number,string];
 type Definition = { clips: Record<string, [number,number]>; tracks: { name: string; poses: Pose[] }[] };
-type Rig = { root: Container; definition: Definition; parts: Sprite[] };
+type Rig = { root: Container; visual: Container; definition: Definition; parts: Sprite[] };
 // Source transforms are interpolated at the display rate; simulation stays at 100 Hz.
 export class BossArt {
   readonly root = new Container();
+  private body = new Container();
   private textures: Record<string,Texture> = {};
   private rigs!: Record<'body'|'driver'|'fire'|'ice',Rig>;
   async load(progress: (done:number,total:number)=>void) {
@@ -16,11 +18,19 @@ export class BossArt {
     const names = [...new Set(Object.values(definitions).flatMap(d=>d.tracks.flatMap(t=>t.poses.map(p=>p[8]))))].filter(Boolean);
     let done=0;progress(done,names.length);
     await loadInBatches(names,4,async name=>{this.textures[name]=await Assets.load<Texture>({src:base+name+'.webp',data:{resolution:2}});progress(++done,names.length);});
+    this.root.addChild(this.body);
+    this.body.pivot.set(800, 0); this.body.position.set(800, 0);
     this.rigs = Object.fromEntries(Object.entries(definitions).map(([key,definition])=>{
-      const root = new Container();this.root.addChild(root);
-      const parts=definition.tracks.map(()=>{const sprite=new Sprite();root.addChild(sprite);return sprite;});
-      return [key,{root,definition,parts}];
+      const root = new Container(), visual = new Container();root.addChild(visual);
+      (key==='body'||key==='driver'?this.body:this.root).addChild(root);
+      if(key==='fire'||key==='ice')visual.pivot.set(75,120);
+      const parts=definition.tracks.map(()=>{const sprite=new Sprite();visual.addChild(sprite);return sprite;});
+      return [key,{root,visual,definition,parts}];
     })) as typeof this.rigs;
+  }
+  setViewport(view: BattleViewport) {
+    this.body.scale.set(view.artScaleX, view.artScaleY);
+    for (const kind of ['fire', 'ice'] as const) this.rigs[kind].visual.scale.set(view.artScaleX, view.artScaleY);
   }
   private pose(rig: Rig,index: number,frame: number,next: number,t: number) {
     const a=rig.definition.tracks[index].poses[frame],b=rig.definition.tracks[index].poses[next];
@@ -49,8 +59,8 @@ export class BossArt {
     this.rigs.body.definition.tracks.forEach((track,i)=>{
       if(track.name.startsWith('Boss_innerarm')||track.name.startsWith('Boss_RV')){
         const part=this.rigs.body.parts[i];
-        if(b.phase==='rv'){part.x+=b.column*80;part.y+=(b.row-1)*85-b.column*20;}
-        else if(['bungee','bungeeWait','bungeeLeave'].includes(b.phase))part.x+=b.column*80-23;
+        if(b.phase==='rv'){part.x+=(160-800)*(1/this.body.scale.x-1)+b.column*80/this.body.scale.x;part.y+=((b.row-1)*85-b.column*20)/this.body.scale.y;}
+        else if(['bungee','bungeeWait','bungeeLeave'].includes(b.phase))part.x+=(b.column*80-23)/this.body.scale.x;
       }
     });
     this.rigs.body.root.tint=b.frozenIn>0?0x8dcfff:0xffffff;
@@ -61,7 +71,7 @@ export class BossArt {
     for(const kind of ['fire','ice'] as const){
       const rig=this.rigs[kind],ball=b.ball;rig.root.visible=ball?.kind===kind;
       if(ball&&ball.kind===kind){
-        rig.root.position.set(ball.x-75,game.rowY(ball.row,ball.x)-120);
+        rig.root.position.set(ball.x,game.rowY(ball.row,ball.x));
         this.draw(rig,ball.age<100?'anim_form':'anim_role',ball.age<100?ball.age:ball.age-100,ball.age<100?16:2,ball.age>=100);
       }
     }

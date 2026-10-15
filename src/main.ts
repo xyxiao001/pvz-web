@@ -16,6 +16,7 @@ import { ZOMBIE_NAMES } from './game/survival';
 import { GameClock, type GameSpeed } from './game/clock';
 import { Hud } from './rendering/hud';
 import type { Scene } from './rendering/scene';
+import type { BattleDisplayMode } from './rendering/viewport';
 import { isUpgrade, BOARD, SURVIVAL_MODES, SURVIVAL_MODE_NAMES, type SurvivalMode, SURVIVAL_SCENES, SCENE_NAMES, isNight, type SurvivalScene, LEVEL_IDS, LEVELS, PLANTS, type LevelId, type PlantKind } from './game/config';
 import { Game } from './game/model';
 import { GameAudio } from './platform/audio';
@@ -90,6 +91,8 @@ let achievementToastTimer: ReturnType<typeof setTimeout>;
 const music = new GameMusic(import.meta.env.BASE_URL);
 let scene: Scene;
 let showZombieHealth = false;
+let battleDisplayMode: BattleDisplayMode = localStorage.getItem('pvz-battle-display') === 'fill' ? 'fill' : 'contain';
+$('.page').classList.toggle('battle-fill', battleDisplayMode === 'fill');
 let sceneLoading: Promise<void> | undefined;
 let game = new Game(1, Date.now());
 let screen: 'menu' | 'loading' | 'battle' = 'menu';
@@ -347,9 +350,10 @@ function phasePanel() {
     else panel(`<span class="kicker">冒险模式 ${game.config.label}</span><img loading="lazy" class="intro-plant" src="${asset(`${game.config.seeds.at(-1)}.png`)}" alt=""/><h2>${game.config.title}</h2><p>${game.config.description}</p><div class="facts">${game.config.rows.length} 条草坪　·　${game.boss ? '僵王博士' : game.config.mode === 'vase' ? '三轮砸罐子' : `${game.config.waveCount} 波僵尸`}　·　${game.hasConveyor ? '传送带供应 · 无需阳光' : `${game.config.initialSun} 初始阳光`}</div><button id="start" class="wood-button large">${game.config.mode === 'vase' ? '开始砸罐子' : game.config.mode === 'whack' ? '拿起木槌' : game.config.mode === 'bowling' ? '开始保龄球' : game.config.mode === 'conveyor' ? '开始传送带决战' : '开始种植'}</button><button class="text-button back-menu">${backLabel()}</button>`);
     $('#start').onclick = async () => { $<HTMLButtonElement>('#start').disabled = true; $('#start').textContent = '准备角色…'; await Promise.all([audio.unlock(game), scene.prepareActors(game, (done,total) => { $('#start').textContent = `准备角色 ${done} / ${total}`; })]); game.start(); if(game.rake){profile.data.purchases.rake--;profile.save();} updateHud(); };
   } else if (game.phase === 'paused') {
-    panel(`<div class="pause-content"><h2>庭院休息中</h2><p>准备好了，就继续守护草坪。</p><button id="resume" class="wood-button large">继续游戏</button><button id="restart" class="wood-button large">重新开始</button><button class="wood-button large back-menu">${game.isSurvival ? '保存退出' : '返回主菜单'}</button><div class="pause-audio"><button id="pause-zombie-health" class="text-button">僵尸血条：${showZombieHealth ? '开启' : '关闭'}</button><button id="pause-fullscreen" class="text-button">${fullscreenLabel()}</button><button id="pause-sound" class="text-button">音效：${audio.muted ? '关闭' : '开启'}</button><button id="pause-music" class="text-button">音乐：${music.enabled ? '开启' : '关闭'}</button></div></div>`, 'pause-panel');
+    panel(`<div class="pause-content"><h2>庭院休息中</h2><p>准备好了，就继续守护草坪。</p><button id="resume" class="wood-button large">继续游戏</button><button id="restart" class="wood-button large">重新开始</button><button class="wood-button large back-menu">${game.isSurvival ? '保存退出' : '返回主菜单'}</button><div class="pause-audio"><button id="pause-display" class="text-button">${battleDisplayLabel()}</button><button id="pause-zombie-health" class="text-button">僵尸血条：${showZombieHealth ? '开启' : '关闭'}</button><button id="pause-fullscreen" class="text-button">${fullscreenLabel()}</button><button id="pause-sound" class="text-button">音效：${audio.muted ? '关闭' : '开启'}</button><button id="pause-music" class="text-button">音乐：${music.enabled ? '开启' : '关闭'}</button></div></div>`, 'pause-panel');
     $('#resume').onclick = async () => { await audio.unlock(game); game.resume(); updateHud(); }; $('#restart').onclick = () => { if(game.isSurvival)clearSurvival(game.survivalScene, game.scenario); setLevel(game.level, game.scenario, game.survivalScene); };
     $('#pause-fullscreen').onclick = toggleFullscreen;
+    $('#pause-display').onclick = toggleBattleDisplay;
     $('#pause-zombie-health').onclick = toggleZombieHealth;
     $('#pause-music').onclick = () => { music.enabled = !music.enabled; $('#pause-music').textContent = `音乐：${music.enabled ? '开启' : '关闭'}`; };
     $('#pause-sound').onclick = () => { audio.muted = !audio.muted; $('#pause-sound').textContent = `音效：${audio.muted ? '关闭' : '开启'}`; };
@@ -465,13 +469,22 @@ function toggleZombieHealth() {
   if (scene) scene.showZombieHealth = showZombieHealth;
   document.querySelectorAll<HTMLButtonElement>('#zombie-health, #pause-zombie-health').forEach(button => { button.textContent = `僵尸血条：${showZombieHealth ? '开启' : '关闭'}`; });
 }
+function battleDisplayLabel() { return `战场：${battleDisplayMode === 'fill' ? '铺满' : '等比'}`; }
+function toggleBattleDisplay() {
+  battleDisplayMode = battleDisplayMode === 'contain' ? 'fill' : 'contain';
+  localStorage.setItem('pvz-battle-display', battleDisplayMode);
+  $('.page').classList.toggle('battle-fill', battleDisplayMode === 'fill');
+  if (scene) { scene.setDisplayMode(battleDisplayMode); if (screen === 'battle') { scene.render(game, 0, clock.alpha); scene.app.render(); } }
+  document.querySelectorAll<HTMLButtonElement>('#battle-display, #pause-display').forEach(button => { button.textContent = battleDisplayLabel(); });
+}
 function fullscreenLabel() { return document.fullscreenElement ? '退出全屏' : '进入全屏'; }
 document.addEventListener('fullscreenchange', () => {
   document.querySelectorAll<HTMLButtonElement>('#fullscreen, #pause-fullscreen').forEach(button => { button.textContent = fullscreenLabel(); });
 });
 function toggleFullscreen() { if (document.fullscreenElement) void document.exitFullscreen(); else void $('.page').requestFullscreen(); }
 $('#settings').onclick = () => {
-  panel(`<span class="kicker">庭院设置</span><h2>准备好出发</h2><div class="settings-controls"><button id="fullscreen" class="wood-button large">${fullscreenLabel()}</button><button id="zombie-health" class="wood-button large">僵尸血条：${showZombieHealth ? '开启' : '关闭'}</button><button id="sound" class="wood-button large">音效：${audio.muted ? '关闭' : '开启'}</button><button id="music" class="wood-button large">背景音乐：${music.enabled ? '开启' : '关闭'}</button><button id="pwa" class="wood-button large">安装与离线</button></div><button id="close" class="text-button">返回主菜单</button>`, 'paper-panel settings-panel');
+  panel(`<span class="kicker">庭院设置</span><h2>准备好出发</h2><div class="settings-controls"><button id="fullscreen" class="wood-button large">${fullscreenLabel()}</button><button id="zombie-health" class="wood-button large">僵尸血条：${showZombieHealth ? '开启' : '关闭'}</button><button id="sound" class="wood-button large">音效：${audio.muted ? '关闭' : '开启'}</button><button id="music" class="wood-button large">背景音乐：${music.enabled ? '开启' : '关闭'}</button><button id="battle-display" class="wood-button large" title="等比保留战场比例；铺满展开草坪，角色保持比例">${battleDisplayLabel()}</button><button id="pwa" class="wood-button large">安装与离线</button></div><button id="close" class="text-button">返回主菜单</button>`, 'paper-panel settings-panel');
+  $('#battle-display').onclick = toggleBattleDisplay;
   $('#pwa').onclick = showPwa;
   $('#music').onclick = () => { music.enabled = !music.enabled; $('#music').textContent = `背景音乐：${music.enabled ? '开启' : '关闭'}`; };
   $('#sound').onclick = () => { audio.muted = !audio.muted; $('#sound').textContent = `音效：${audio.muted ? '关闭' : '开启'}`; };
@@ -506,7 +519,7 @@ window.addEventListener('keydown', activateMusic, true);
 async function ensureScene() {
   sceneLoading ??= (async () => {
     const { Scene } = await import('./rendering/scene');
-    scene = new Scene(); scene.showZombieHealth = showZombieHealth;
+    scene = new Scene(); scene.showZombieHealth = showZombieHealth; scene.displayMode = battleDisplayMode;
     await scene.init($('#canvas-host'));
     const canvas = scene.app.canvas;
     canvas.addEventListener('webglcontextlost', () => showDiagnostic(new Error('WebGL context lost: GPU rendering context was lost.')));

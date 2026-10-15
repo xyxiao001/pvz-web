@@ -31,3 +31,28 @@ test('wide scenery does not create extra planting columns', () => {
   assert.ok(outside.x>800);
   assert.equal(game.canPlant('peashooter',Math.floor((outside.x-BOARD.left)/80),2),false);
 });
+
+for (const [width, height] of [[1920, 936], [844, 306], [2560, 936], [390, 292.5]]) {
+  test(`fill ${width}×${height} fills ground and keeps all scene targets aligned`, () => {
+    const view = battleViewport(width, height, 'fill');
+    const origin = worldToViewport(view, 0, 0), edge = worldToViewport(view, 800, 600);
+    assert.deepEqual(origin, { x: 0, y: 0 });
+    assert.ok(Math.abs(edge.x - width) < 1e-8 && Math.abs(edge.y - height) < 1e-8);
+    // A circular sprite remains circular; the distances between cells can expand.
+    assert.ok(Math.abs(view.scaleX * view.artScaleX - view.scaleY * view.artScaleY) < 1e-8);
+    for (const level of [1, 9, 19, 29, 39, 49] as const) {
+      const game = new Game(level, 1);
+      for (const row of game.config.rows) for (let column = 0; column < 9; column++) {
+        const x = BOARD.left + column * 80 + 40, y = game.rowY(row, x) - 30;
+        const screen = worldToViewport(view, x, y), pointer = viewportToWorld(view, screen.x, screen.y);
+        assert.equal(Math.floor((pointer.x - BOARD.left) / 80), column);
+        assert.equal(game.rowAt(pointer.y, pointer.x), row);
+        // Switching back to contain does not change the logical position.
+        const contain = battleViewport(width, height);
+        const restored = worldToViewport(contain, pointer.x, pointer.y);
+        const original = worldToViewport(contain, x, y);
+        assert.ok(Math.abs(restored.x - original.x) < 1e-8 && Math.abs(restored.y - original.y) < 1e-8);
+      }
+    }
+  });
+}

@@ -3,7 +3,7 @@ import { ZombieHealthBar } from './zombie-health';
 import { GiantMotion, hasGiantMotion, type GiantRig } from './giant-motion';
 import { hasPlantMotion, hasPlantMotionClip, PlantMotion, type PlantRig } from './plant-motion';
 import { renderResolution } from './resolution';
-import { battleViewport, viewportToWorld, worldToViewport } from './viewport';
+import { battleViewport, viewportToWorld, worldToViewport, type BattleDisplayMode } from './viewport';
 import { stormOpacity } from './storm';
 import firePea from './fire-pea.json';
 import { firePeaFrame } from './projectiles';
@@ -19,12 +19,14 @@ import { animationNames, animationFrame, combatTextureFiles } from './asset-plan
 
 type ClipData = { frames: number[][]; durations: number[]; anchor: number[]; pages: string[] };
 type Clip = { files: string[]; frames: Texture[]; ends: number[]; duration: number; anchors: number[][] };
-type Actor = { nativeRig?: ActorRig; healthBar?: ZombieHealthBar; giantRig?: GiantRig; rig?: PlantRig; root: Container; art: Sprite; clip: string; since: number; frame: number; seen: number; previousX: number; previousY: number; motion?: { x: number; y?: number } };
-type Effect = { node: Container; born: number; duration: number; actor?: Actor };
+type Actor = { nativeRig?: ActorRig; healthBar?: ZombieHealthBar; giantRig?: GiantRig; rig?: PlantRig; root: Container; visual: Container; stretch: boolean; art: Sprite; clip: string; since: number; frame: number; seen: number; previousX: number; previousY: number; motion?: { x: number; y?: number } };
+type Effect = { node: Container; born: number; duration: number; proportional?: boolean; actor?: Actor };
 
 export class Scene {
   readonly app = new Application();
   showZombieHealth = false;
+  displayMode: BattleDisplayMode = 'contain';
+  private host!: HTMLElement;
   private world = new Container();
   private bossArt?: BossArt;
   private plantMotion = new PlantMotion();
@@ -62,8 +64,34 @@ export class Scene {
   toWorld(x: number, y: number) { return viewportToWorld(this.viewport, x, y); }
   toScreen(x: number, y: number) { return worldToViewport(this.viewport, x, y); }
 
+  setDisplayMode(mode: BattleDisplayMode) {
+    this.displayMode = mode;
+    this.resize(this.host.clientWidth, this.host.clientHeight);
+  }
+
+  private sizeActor(actor: Actor) {
+    actor.visual.scale.set(actor.stretch ? 1 : this.viewport.artScaleX, actor.stretch ? 1 : this.viewport.artScaleY);
+  }
+
+  private resize(width: number, height: number) {
+    this.viewport = battleViewport(width, height, this.displayMode);
+    const { scale, scaleX, scaleY, x, y } = this.viewport;
+    this.app.renderer.resize(width, height, renderResolution(BOARD.width * scale, window.devicePixelRatio) / scale);
+    this.app.stage.scale.set(scaleX, scaleY);
+    this.app.stage.position.set(x, y);
+    this.app.canvas.style.width = '100%'; this.app.canvas.style.height = '100%';
+    for (const actor of this.actors.values()) this.sizeActor(actor);
+    for (const effect of this.effects) {
+      if (effect.actor) this.sizeActor(effect.actor);
+      else if (effect.proportional) effect.node.scale.set(this.viewport.artScaleX, this.viewport.artScaleY);
+    }
+    this.bossArt?.setViewport(this.viewport);
+    this.app.render();
+  }
+
   async init(host: HTMLElement) {
-    this.viewport = battleViewport(host.clientWidth, host.clientHeight);
+    this.host = host;
+    this.viewport = battleViewport(host.clientWidth, host.clientHeight, this.displayMode);
     await this.app.init({ width: host.clientWidth, height: host.clientHeight, backgroundAlpha: 0, antialias: true,
       resolution: renderResolution(BOARD.width * this.viewport.scale, window.devicePixelRatio) / this.viewport.scale, autoDensity: true, autoStart: false });
     host.appendChild(this.app.canvas);
@@ -71,15 +99,7 @@ export class Scene {
     this.app.canvas.style.height = '100%';
     this.app.canvas.setAttribute('aria-label', '庭院战场。先选植物，再点击草地种植；点击阳光收集。');
     new ResizeObserver(([entry]) => {
-      const { width, height } = entry.contentRect;
-      this.viewport = battleViewport(width, height);
-      const { scale, x, y } = this.viewport;
-      // Cap physical pixels per source pixel even when the canvas grows wider.
-      this.app.renderer.resize(width, height, renderResolution(BOARD.width * scale, window.devicePixelRatio) / scale);
-      this.app.stage.scale.set(scale);
-      this.app.stage.position.set(x, y);
-      this.app.canvas.style.width = '100%'; this.app.canvas.style.height = '100%';
-      this.app.render();
+      this.resize(entry.contentRect.width, entry.contentRect.height);
     }).observe(host);
     this.world.sortableChildren = true;
   }
@@ -139,7 +159,7 @@ export class Scene {
       frame: new Rectangle(i % firePea.columns * firePea.width, Math.floor(i / firePea.columns) * firePea.height, firePea.width, firePea.height),
     }));
     await this.plantMotion.prepare([...new Set([...game.seeds, ...(game.imitaterTarget?[game.imitaterTarget]:[]), ...game.plants.map(p => p.kind)])].filter(hasPlantMotion), progress, texture => this.app.renderer.prepare.upload(texture));
-    if(game.boss&&!this.bossArt){this.bossArt=new BossArt();await this.bossArt.load(progress);this.bossArt.root.zIndex=590;this.world.addChild(this.bossArt.root);}
+    if(game.boss&&!this.bossArt){const bossArt=new BossArt();await bossArt.load(progress);bossArt.setViewport(this.viewport);bossArt.root.zIndex=590;this.world.addChild(bossArt.root);this.bossArt=bossArt;}
     const base = `${import.meta.env.BASE_URL}assets/runtime/`;
     this.animationData ??= fetch(base + 'animations.json').then(response => response.json());
     const { animations } = await this.animationData;
@@ -238,7 +258,7 @@ export class Scene {
     if (hasPlantMotion(clipName)) {
       if(actor.nativeRig){actor.nativeRig.root.destroy({children:true});actor.nativeRig=undefined;}
       if (!actor.rig) {
-        actor.rig = this.plantMotion.create(clipName); actor.root.addChild(actor.rig.root); actor.art.visible = false;
+        actor.rig = this.plantMotion.create(clipName); actor.visual.addChild(actor.rig.root); actor.art.visible = false;
         actor.clip = clipName; actor.since = timeline - actor.root.uid * 17 % this.plantMotion.duration(clipName);
       }
       actor.rig.render((timeline - actor.since) * rate, shootingTicks);
@@ -254,7 +274,7 @@ export class Scene {
     const elapsed = (timeline - actor.since) * rate;
     if (hasGiantMotion(clipName)) {
       if (!actor.giantRig) {
-        actor.giantRig = this.giantMotion.create(); actor.root.addChild(actor.giantRig.root); actor.art.visible = false;
+        actor.giantRig = this.giantMotion.create(); actor.visual.addChild(actor.giantRig.root); actor.art.visible = false;
       }
       actor.giantRig.render(clipName, elapsed, loop);
       return;
@@ -264,7 +284,7 @@ export class Scene {
         actor.nativeRig.root.destroy({ children: true }); actor.nativeRig = undefined;
       }
       if (!actor.nativeRig) {
-        actor.nativeRig = this.actorMotion.create(clipName); actor.root.addChild(actor.nativeRig.root);
+        actor.nativeRig = this.actorMotion.create(clipName); actor.visual.addChild(actor.nativeRig.root);
       }
       actor.nativeRig.root.visible = true; actor.art.visible = false;
       actor.nativeRig.render(clipName, elapsed, loop);
@@ -312,9 +332,11 @@ export class Scene {
         actor.clip = ''; actor.frame = -1; actor.since = this.time; actor.motion = undefined;
         actor.root.visible = true; actor.art.scale.set(1); actor.art.tint = 0xffffff;
       } else {
-        const root = new Container(), art = new Sprite(); root.addChild(art);
-        actor = { root, art, clip: '', since: this.time, frame: -1, seen: this.stamp, previousX: 0, previousY: 0 };
+        const root = new Container(), visual = new Container(), art = new Sprite();
+        root.addChild(visual); visual.addChild(art);
+        actor = { root, visual, stretch: key.startsWith('ice') || key.startsWith('fire-') || /^f\d/.test(key), art, clip: '', since: this.time, frame: -1, seen: this.stamp, previousX: 0, previousY: 0 };
       }
+      this.sizeActor(actor);
       actor.root.zIndex = zIndex;
       if (key.startsWith('b')) {
         // Shots share one ordering layer per lane; spawning does not re-sort all rigs.
@@ -338,8 +360,8 @@ export class Scene {
     if (event.kind === 'vase') {
       const shards = new Graphics();
       for (let i=0;i<7;i++) shards.poly([i*9-30,-10, i*9-24,-24-(i%3)*5, i*9-18,-7]).fill(i%2 ? 0xb38e60 : 0x785231);
-      shards.position.set(event.x,event.y); shards.zIndex=700; this.world.addChild(shards);
-      this.effects.push({ node:shards, born:this.time, duration:25 });
+      shards.position.set(event.x,event.y); shards.zIndex=700; shards.scale.set(this.viewport.artScaleX, this.viewport.artScaleY); this.world.addChild(shards);
+      this.effects.push({ node:shards, proportional: true, born:this.time, duration:25 });
     }
     if (event.kind === 'swallow') {
       const key = `z${event.zombieId}`; const actor = this.actors.get(key);
@@ -348,7 +370,7 @@ export class Scene {
     if (event.kind === 'whack') {
       const hammer = new Sprite(this.textures.hammer); hammer.anchor.set(.75, .85);
       hammer.position.set(event.x, event.y); hammer.zIndex = 1000;
-      this.world.addChild(hammer); this.effects.push({ node: hammer, born: this.time, duration: 18 });
+      hammer.scale.set(this.viewport.artScaleX, this.viewport.artScaleY); this.world.addChild(hammer); this.effects.push({ node: hammer, proportional: true, born: this.time, duration: 18 });
     }
     if (event.kind === 'freeze') {
       const frost = new Graphics().rect(0,80,800,510).fill({color:0xc9f5ff,alpha:.55});
@@ -363,7 +385,7 @@ export class Scene {
       const label = new Text({ text: `+${event.value}`, style: { fontFamily: 'Arial', fontWeight: 'bold', fontSize: 25,
         fill: 0xfffbc2, stroke: { color: 0x496225, width: 3 } } });
       label.anchor.set(.5); label.position.set(event.x, event.y - 10); label.zIndex = 999;
-      this.world.addChild(label); this.effects.push({ node: label, born: this.time, duration: 70 });
+      label.scale.set(this.viewport.artScaleX, this.viewport.artScaleY); this.world.addChild(label); this.effects.push({ node: label, proportional: true, born: this.time, duration: 70 });
     }
     if (event.kind === 'fume') {
       const actor = this.actor(`f${this.stamp}-${this.effects.length}`, event.row * 100 + 30);
@@ -402,7 +424,7 @@ export class Scene {
       const actor = this.actor(`drop${drop.id}`, 650);
       if (actor.clip !== 'drop') {
         actor.clip='drop'; const card=new Sprite(this.textures.packet);card.width=48;card.height=68;card.anchor.set(.5);
-        actor.root.addChildAt(card,0);actor.art.texture=this.textures[drop.kind];actor.art.anchor.set(.5);
+        actor.visual.addChildAt(card,0);actor.art.texture=this.textures[drop.kind];actor.art.anchor.set(.5);
         const ratio=Math.min(38/actor.art.width,48/actor.art.height);actor.art.scale.set(ratio);
       }
       actor.root.position.set(cellX(drop.column),game.rowY(drop.row)-40);
@@ -491,7 +513,7 @@ export class Scene {
       actor.root.visible = actor.root.x > -220 && actor.root.x < BOARD.width + 220 && actor.root.y > -220 && actor.root.y < BOARD.height + 220;
       this.animate(actor, clip, !zombie.popIn && !zombie.jackOpening && zombie.vaultIn === 0 && zombie.rageIn === 0 && (!zombie.giant||zombie.giant.phase==='walk') && zombie.catapult?.phase!=='shoot' && !zombie.flight && !zombie.landingIn, zombie.animationTime + alpha * (zombie.frozenIn !== undefined && zombie.frozenIn > 0 ? 0 : zombie.chillIn > 0 ? .4 : 1), rate);
       if (this.showZombieHealth) {
-        if (!actor.healthBar) { actor.healthBar = new ZombieHealthBar(); actor.root.addChild(actor.healthBar.root); }
+        if (!actor.healthBar) { actor.healthBar = new ZombieHealthBar(); actor.visual.addChild(actor.healthBar.root); }
         actor.healthBar.root.visible = true;
         actor.healthBar.root.y = actor.nativeRig ? actor.nativeRig.healthTop(clip) : actor.giantRig ? -170 : -actor.art.height * actor.art.anchor.y - 10;
         actor.healthBar.update(zombie);
@@ -609,8 +631,8 @@ export class Scene {
       for(let i=0;i<35;i++){const x=(i*139+game.ticks*1.2)%850,y=80+(i*73+game.ticks*6)%520;this.weather.moveTo(x,y).lineTo(x-8,y+22);}
       this.weather.stroke({color:0xa9c8de,alpha:.3,width:1});
       const flash = stormOpacity(game.stormFlash, game.stormIn, game.ticks);
-      this.weather.rect(-this.viewport.x / this.viewport.scale,0,this.viewport.width / this.viewport.scale,600).fill({color:0x000000,alpha:flash.dark});
-      this.weather.rect(-this.viewport.x / this.viewport.scale,0,this.viewport.width / this.viewport.scale,600).fill({color:0xffffff,alpha:flash.white});
+      this.weather.rect(-this.viewport.x / this.viewport.scaleX,0,this.viewport.width / this.viewport.scaleX,600).fill({color:0x000000,alpha:flash.dark});
+      this.weather.rect(-this.viewport.x / this.viewport.scaleX,0,this.viewport.width / this.viewport.scaleX,600).fill({color:0xffffff,alpha:flash.white});
     }
     this.effects = this.effects.filter(effect => {
       const age = this.time - effect.born;

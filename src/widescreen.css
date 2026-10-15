@@ -154,3 +154,11 @@
   .pause-content .wood-button.large{height:44px;margin:4px auto}
   .menu-tools .wood-button{min-height:44px;font-size:14px}
 }
+
+/* Fill changes ground geometry only; actor art is compensated in the renderer. */
+@media (min-aspect-ratio:3/2) {
+  .page.in-battle.battle-fill .game-frame #canvas-host{left:0;width:100%;transform:none}
+  .page.in-battle.battle-fill .game-frame #battle-hud{width:100%}
+}
+.settings-controls #pwa{grid-column:auto;width:100%}
+.pause-audio #pause-display{grid-column:1 / -1}
