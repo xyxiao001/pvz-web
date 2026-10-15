@@ -15,7 +15,7 @@ export interface Packet { id: number; kind: PlantKind; x: number }
 export interface Zombie { id: number; kind: ZombieKind; armor: number; row: number; x: number; health: number; speed: number; biteIn: number; eating: boolean; wave: number; hitAt: number; chillIn: number; hasPole: boolean; vaultIn: number; animationTime: number; shield: number; rageIn: number; riseIn: number; hypnotized?: boolean; mini?: boolean; frozenIn?: number; summonIn?: number; dancePhase?: 'intro' | 'point' | 'hold' | 'dance'; danceIn?: number; leader?: number; slot?: number; flying?: boolean; popIn?: number; dolphin?: boolean; jackIn?: number; jackOpening?: boolean; sled?: number; sledLeader?: number; crashIn?: number; blownIn?: number; underground?: boolean; emergingIn?: number; backwards?: boolean; metalRemoved?: boolean; pogo?: boolean; butterIn?: number; ladderIn?: number; garlicIn?: number; garlicRow?: number; catapult?: { ammo: number; remaining: number; phase: 'walk' | 'shoot' | 'reload' }; giant?: { thrown: boolean; phase: 'walk' | 'smash' | 'throw'; remaining: number }; flight?: { remaining: number; duration: number; startX: number; endX: number }; landingIn?: number; bungee?: { phase: 'down' | 'wait' | 'up'; remaining: number; column: number; drop?: ZombieKind } }
 export interface Pea { id: number; row: number; x: number; ice: boolean; puff: boolean; age: number; longRange?: boolean; fire?: boolean; torch?: number; spike?: boolean; high?: boolean; vx?: number; vy?: number; y?: number; originY?: number; star?: boolean; lob?: { kind: 'cabbage' | 'kernel' | 'butter' | 'melon' | 'wintermelon' | 'basketball'; target: number; startX: number; endX: number; startY: number; endY: number; duration: number } }
 export interface Vase { id: number; row: number; column: number; green: boolean; content: { type: 'seed'; kind: PlantKind } | { type: 'zombie'; kind: ZombieKind } }
-export interface SeedDrop { id: number; kind: PlantKind; row: number; column: number; remaining: number }
+export interface SeedDrop { id: number; kind: PlantKind; row: number; column: number; remaining: number; timesDropped: number }
 export interface Sun { id: number; x: number; y: number; targetY: number; expiresIn: number; born: number; value: number }
 export interface Coin { id: number; x: number; y: number; targetY: number; born: number; expiresIn: number; value: number }
 export interface Mower { row: number; x: number; state: 'ready' | 'moving' | 'spent' }
@@ -55,6 +55,7 @@ export class Game {
   iceTrails: { row: number; x: number; remaining: number }[] = [];
   fogBlownIn = 0;
   stormIn = 650;
+  stormFlash: 1 | 2 | 3 = 1;
   ladders: { column: number; row: number }[] = [];
   vaseStage = 0;
   vases: Vase[] = [];
@@ -93,6 +94,7 @@ export class Game {
   survivalEnemies: ZombieKind[] = [];
 
   constructor(readonly level: LevelId, seed: number, readonly scenario: 'adventure' | SurvivalMode = 'adventure', readonly survivalScene: SurvivalScene = 'day') {
+    if (scenario === 'adventure' && level === 40) this.stormIn = 400;
     if (scenario === 'adventure' && level === 50) this.boss = createBoss();
     this.config = scenario !== 'adventure' ? survivalConfig(survivalScene, scenario) : LEVELS[level];
     this.needsSeedChoice = scenario !== 'adventure' || this.config.mode === 'lawn' && level > 7;
@@ -200,9 +202,18 @@ export class Game {
     this.selected = this.selectedPacket === null ? null : packet.kind;
   }
 
-  cancelSelection() { this.selected = null; this.selectedPacket = null; this.selectedDrop = null; this.digging = false; }
+  private releaseSeedDrop() {
+    const drop = this.seedDrops.find(drop => drop.id === this.selectedDrop);
+    if (drop) {
+      // Coin::DroppedUsableSeed grants 300 ticks only on the first return to the ground.
+      if (drop.timesDropped === 0) drop.remaining = Math.max(drop.remaining, 300);
+      drop.timesDropped++;
+    }
+  }
+  cancelSelection() { this.releaseSeedDrop(); this.selected = null; this.selectedPacket = null; this.selectedDrop = null; this.digging = false; }
   toggleShovel() {
     if (this.phase !== 'playing' || this.scenario === 'adventure' && this.level < 6) return;
+    this.releaseSeedDrop();
     this.digging = !this.digging; this.selected = null; this.selectedPacket = null; this.selectedDrop = null;
   }
   dig(column: number, row: number) {
@@ -223,7 +234,7 @@ export class Game {
     const occupants = this.plants.filter(p => p.column === column && p.row === row);
     if ((kind === 'lilypad' || kind === 'tanglekelp' || kind === 'seashroom') && (!this.waterRow(row) || occupants.length > 0)) return false;
     if (this.waterRow(row) && kind !== 'lilypad' && kind !== 'tanglekelp' && kind !== 'seashroom' && (kind === 'potatomine' || kind === 'spikeweed' || !occupants.some(p => p.kind === 'lilypad'))) return false;
-    if (this.config.environment === 'roof' && (['spikeweed','potatomine','lilypad','seashroom','tanglekelp','gravebuster'].includes(kind) || kind !== 'flowerpot' && !occupants.some(p => p.kind === 'flowerpot'))) return false;
+    if (this.config.environment === 'roof' && (['spikeweed','lilypad','seashroom','tanglekelp','gravebuster'].includes(kind) || kind !== 'flowerpot' && !occupants.some(p => p.kind === 'flowerpot'))) return false;
     const occupied = isUpgrade(kind) ? !occupants.some(p => p.kind === UPGRADES[kind])
       : kind === 'coffeebean' ? !occupants.some(p => this.sleeping(p)) || occupants.some(p => p.kind === 'coffeebean')
       : kind === 'pumpkin' ? occupants.some(p => p.kind === 'pumpkin')
@@ -358,7 +369,7 @@ export class Game {
 
   private breakVase(vase: Vase) {
     this.vases = this.vases.filter(v => v !== vase);
-    if (vase.content.type === 'seed') this.seedDrops.push({ id: ++this.id, kind: vase.content.kind, row: vase.row, column: vase.column, remaining: 1500 });
+    if (vase.content.type === 'seed') this.seedDrops.push({ id: ++this.id, kind: vase.content.kind, row: vase.row, column: vase.column, remaining: 1500, timesDropped: 0 });
     else this.spawnZombie(vase.content.kind, vase.row, cellX(vase.column), this.vaseStage);
     this.events.push({ kind: 'vase', x: cellX(vase.column), y: this.rowY(vase.row) - 40 });
   }
@@ -367,6 +378,7 @@ export class Game {
     if (this.phase !== 'playing') return;
     const drop = this.seedDrops.find(d => d.id === id);
     if (!drop) return;
+    if (this.selectedDrop !== id) this.releaseSeedDrop();
     this.selectedDrop = id; this.selected = drop.kind; this.digging = false;
   }
 
@@ -379,12 +391,20 @@ export class Game {
   step() {
     if (this.phase !== 'playing') return;
     this.ticks++;
-    if (this.level===40 && this.scenario==='adventure' && --this.stormIn===0) { this.stormIn=450+Math.floor(this.random()*450); this.events.push({kind:'thunder',x:400,y:300}); }
+    if (this.level === 40 && this.scenario === 'adventure') {
+      this.stormIn--;
+      if ((this.stormIn === 300 && this.stormFlash !== 3) || (this.stormIn === 150 && this.stormFlash !== 2)) this.events.push({ kind: 'thunder', x: 400, y: 300 });
+      if (this.stormIn === 0) {
+        const max = this.random() < .5 ? 750 : 400;
+        this.stormIn = 450 + Math.floor(this.random() * (max - 299));
+        this.stormFlash = (1 + Math.floor(this.random() * 3)) as 1 | 2 | 3;
+      }
+    }
     for (const ice of this.iceTrails) ice.remaining--;
     this.iceTrails = this.iceTrails.filter(ice => ice.remaining > 0);
     if (this.fogBlownIn > 0) this.fogBlownIn--;
-    for (const drop of this.seedDrops) if (drop.id !== this.selectedDrop) drop.remaining--;
-    this.seedDrops = this.seedDrops.filter(drop => drop.remaining > 0);
+    for (const drop of this.seedDrops) drop.remaining--;
+    this.seedDrops = this.seedDrops.filter(drop => drop.id === this.selectedDrop || drop.remaining > 0);
     for (const crater of this.craters) crater.remaining--;
     this.craters = this.craters.filter(c => c.remaining > 0);
     if (this.poolFrozenIn > 0) this.poolFrozenIn--;
@@ -808,10 +828,11 @@ export class Game {
     // Challenge::UpdateConveyor: reduce repeats and cards piling up on the belt.
     const choices = (this.boss ? portable.conveyorFifty : this.level === 45 ? portable.conveyorFortyFive : this.level === 40 ? portable.conveyorForty : this.level === 30 ? portable.conveyorThirty : this.level === 25 ? portable.conveyorTwentyFive : this.level === 20 ? portable.conveyorTwenty : portable.conveyorTen).map(({ kind, weight }) => {
       const count = this.conveyor.filter(packet => packet.kind === kind).length;
-      // Challenge.cpp:1630–1636: fewer bases once the new special boards are filled.
-      if ((this.boss || this.level === 45) && kind === 'flowerpot' || this.level === 40 && kind === 'lilypad') {
-        const total = count + this.plants.filter(p => p.kind === kind).length;
-        weight = Math.trunc(weight + (1 - weight) * Math.min(1, total / (kind === 'flowerpot' ? 35 : 18)));
+      const total = count + this.plants.filter(p => p.kind === kind).length;
+      // Challenge.cpp:1621–1636 applies to every conveyor, including 2–10, 3–5 and 3–10.
+      if (kind === 'gravebuster' && this.graves.length <= total) return { kind: kind as PlantKind, weight: 0 };
+      if (kind === 'flowerpot' || kind === 'lilypad') {
+        weight = Math.round(weight + (1 - weight) * Math.min(1, total / (kind === 'flowerpot' ? 35 : 18)));
       }
       if (this.boss && ['melonpult','kernelpult','cabbagepult'].includes(kind)) {
         const empty = this.plants.filter(p=>p.kind==='flowerpot'&&!this.plants.some(top=>top!==p&&top.column===p.column&&top.row===p.row)).length;

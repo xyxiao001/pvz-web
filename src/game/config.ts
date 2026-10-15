@@ -85,7 +85,7 @@ export function endlessConfig(scene: SurvivalScene): LevelConfig {
     if (kind === 'gravebuster') return scene === 'night';
     if (kind === 'plantern') return scene === 'fog';
     if (kind === 'flowerpot') return scene === 'roof';
-    if (scene === 'roof' && ['spikeweed','potatomine'].includes(kind)) return false;
+    if (scene === 'roof' && kind === 'spikeweed') return false;
     return true;
   });
   return { ...ENDLESS, environment: scene, title: `${SCENE_NAMES[scene]}无尽`, seeds: [...seeds, 'gatlingpea', 'twinsunflower', 'wintermelon'],
@@ -105,8 +105,8 @@ const poolSeeds: PlantKind[] = [...nightSeeds, 'iceshroom','doomshroom','lilypad
 const latePoolSeeds: PlantKind[] = [...poolSeeds,'squash','threepeater','tanglekelp','jalapeno'];
 const fogSeeds: PlantKind[] = [...latePoolSeeds,'spikeweed','torchwood','tallnut','seashroom'];
 const lateFogSeeds: PlantKind[] = [...fogSeeds,'plantern','cactus','blover','splitpea'];
-const roofSeeds: PlantKind[] = ([...lateFogSeeds,'starfruit','pumpkin','magnetshroom','cabbagepult'] as PlantKind[]).filter(k => !['lilypad','seashroom','tanglekelp','spikeweed','gravebuster','potatomine'].includes(k));
-const lateRoofSeeds: PlantKind[] = [...roofSeeds,'flowerpot','kernelpult','coffeebean','garlic','umbrella'];
+const roofSeeds: PlantKind[] = ([...lateFogSeeds,'starfruit','pumpkin','magnetshroom','cabbagepult'] as PlantKind[]).filter(k => !['lilypad','seashroom','tanglekelp','spikeweed','gravebuster'].includes(k));
+const lateRoofSeeds: PlantKind[] = [...roofSeeds,'flowerpot','kernelpult','coffeebean','garlic'];
 export const LEVELS: Record<LevelId, LevelConfig> = {
   1: { environment: 'day', mode: 'lawn', label: '1–1', title: '第一株守护者', description: '种下豌豆射手，守住中间这条草坪。', rows: [2], initialSun: 150, seeds: ['peashooter'], waveCount: portable.waveCounts[0], reward: 'sunflower' },
   2: { environment: 'day', mode: 'lawn', label: '1–2', title: '让阳光生长', description: '先种向日葵，再用射手守住三条草坪。', rows: [1, 2, 3], initialSun: 50, seeds: ['peashooter', 'sunflower'], waveCount: portable.waveCounts[1], reward: 'cherrybomb' },
@@ -151,12 +151,12 @@ export const LEVELS: Record<LevelId, LevelConfig> = {
   41: { environment: 'roof', mode: 'lawn', label: '5–1', title: '屋顶初战', description: '植物需要花盆。卷心菜投手可以越过屋顶坡面，留意蹦极偷取植物！', rows: [0, 1, 2, 3, 4], initialSun: 50, seeds: roofSeeds, waveCount: portable.waveCounts[40], reward: 'flowerpot' },
   42: { environment: 'roof', mode: 'lawn', label: '5–2', title: '铺满花盆', description: '用花盆扩展屋顶防线，保护后方的阳光生产。', rows: [0, 1, 2, 3, 4], initialSun: 50, seeds: [...roofSeeds,'flowerpot'], waveCount: portable.waveCounts[41], reward: 'kernelpult' },
   43: { environment: 'roof', mode: 'lawn', label: '5–3', title: '黄油与扶梯', description: '玉米投手偶尔投出定身黄油；扶梯僵尸会给坚果搭梯。', rows: [0, 1, 2, 3, 4], initialSun: 50, seeds: [...roofSeeds,'flowerpot','kernelpult'], waveCount: portable.waveCounts[42], reward: 'coffeebean' },
-  44: { environment: 'roof', mode: 'lawn', label: '5–4', title: '唤醒屋顶蘑菇', description: '咖啡豆唤醒白天睡眠的蘑菇，磁力菇可以吸走扶梯。', rows: [0, 1, 2, 3, 4], initialSun: 50, seeds: [...roofSeeds,'flowerpot','kernelpult','coffeebean'], waveCount: portable.waveCounts[43], reward: 'garlic' },
-  45: { environment: 'roof', mode: 'conveyor', label: '5–5', title: '蹦极突袭', description: '僵尸从天而降！使用花盆、食人花、南瓜头与樱桃炸弹守住屋顶。', rows: [0, 1, 2, 3, 4], initialSun: 0, seeds: ['flowerpot','chomper','pumpkin','cherrybomb'], waveCount: portable.waveCounts[44], reward: 'umbrella' },
-  46: { environment: 'roof', mode: 'lawn', label: '5–6', title: '撑起保护伞', description: '投石车会瞄准后排！叶子保护伞保护周围九格，弹开篮球和蹦极僵尸。', rows: [0,1,2,3,4], initialSun: 50, seeds: lateRoofSeeds, waveCount: portable.waveCounts[45], reward: 'marigold' },
-  47: { environment: 'roof', mode: 'lawn', label: '5–7', title: '屋顶的金币', description: '金盏花定期产出钱币。守住投石车和扶梯僵尸的进攻，收集本局金币。', rows: [0,1,2,3,4], initialSun: 50, seeds: [...lateRoofSeeds,'marigold'], waveCount: portable.waveCounts[46], reward: 'melonpult' },
-  48: { environment: 'roof', mode: 'lawn', label: '5–8', title: '巨人的脚步', description: '巨人会砸毁植物，受伤后抛出小鬼！西瓜的溅射火力与爆炸植物可以阻挡它。', rows: [0,1,2,3,4], initialSun: 50, seeds: [...lateRoofSeeds,'marigold','melonpult'], waveCount: portable.waveCounts[47], reward: null },
-  49: { environment: 'roof', mode: 'lawn', label: '5–9', title: '屋顶最后防线', description: '三面旗帜的屋顶大战。用保护伞守护后方，集中西瓜与爆炸火力迎战巨人。', rows: [0,1,2,3,4], initialSun: 50, seeds: [...lateRoofSeeds,'marigold','melonpult'], waveCount: portable.waveCounts[48], reward: null },
+  44: { environment: 'roof', mode: 'lawn', label: '5–4', title: '唤醒屋顶蘑菇', description: '咖啡豆唤醒白天睡眠的蘑菇，磁力菇可以吸走扶梯。', rows: [0, 1, 2, 3, 4], initialSun: 50, seeds: [...roofSeeds,'flowerpot','kernelpult','coffeebean'], waveCount: portable.waveCounts[43], reward: null },
+  45: { environment: 'roof', mode: 'conveyor', label: '5–5', title: '蹦极突袭', description: '僵尸从天而降！使用花盆、食人花、南瓜头与樱桃炸弹守住屋顶。', rows: [0, 1, 2, 3, 4], initialSun: 0, seeds: ['flowerpot','chomper','pumpkin','cherrybomb'], waveCount: portable.waveCounts[44], reward: 'garlic' },
+  46: { environment: 'roof', mode: 'lawn', label: '5–6', title: '投石车来袭', description: '投石车瞄准后排！用投手和爆炸植物阻止它，通关后获得叶子保护伞。', rows: [0,1,2,3,4], initialSun: 50, seeds: lateRoofSeeds, waveCount: portable.waveCounts[45], reward: 'umbrella' },
+  47: { environment: 'roof', mode: 'lawn', label: '5–7', title: '撑起保护伞', description: '叶子保护伞保护周围九格，弹开篮球和蹦极僵尸。守住三面旗帜，获得金盏花。', rows: [0,1,2,3,4], initialSun: 50, seeds: [...lateRoofSeeds,'umbrella'], waveCount: portable.waveCounts[46], reward: 'marigold' },
+  48: { environment: 'roof', mode: 'lawn', label: '5–8', title: '巨人的脚步', description: '巨人会砸毁植物，受伤后抛出小鬼！使用投手与爆炸植物阻挡它，通关后获得西瓜投手。', rows: [0,1,2,3,4], initialSun: 50, seeds: [...lateRoofSeeds,'umbrella','marigold'], waveCount: portable.waveCounts[47], reward: 'melonpult' },
+  49: { environment: 'roof', mode: 'lawn', label: '5–9', title: '屋顶最后防线', description: '三面旗帜的屋顶大战。用保护伞守护后方，集中西瓜与爆炸火力迎战巨人。', rows: [0,1,2,3,4], initialSun: 50, seeds: [...lateRoofSeeds,'umbrella','marigold','melonpult'], waveCount: portable.waveCounts[48], reward: null },
   50: { environment: 'roof', mode: 'conveyor', label: '5–10', title: '僵王博士的复仇', description: '传送带供应六种植物。僵王低头时集中攻击；寒冰菇消除火球，火爆辣椒消除同排冰球。小心蹦极、踩踏和飞来的房车！', rows: [0,1,2,3,4], initialSun: 0, seeds: ['flowerpot','melonpult','jalapeno','cabbagepult','kernelpult','iceshroom'], waveCount: 0, reward: null },
 };
 export const LEVEL_IDS: LevelId[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50];

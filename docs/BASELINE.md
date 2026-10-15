@@ -1,5 +1,7 @@
 # PvZ Web 源码基线与当前实现
 
+最新首次冒险复核见 [2026-10-15 冒险玩法复核](ADVENTURE-AUDIT.md)，其中修正了下方历史记录中的后期奖励次序、屋顶土豆雷和雷雨规则。
+
 行为基线锁定 [PvZ-Portable 141c1476dd462ac3526f796e303177616f4de6bc](https://github.com/wszqkzqk/PvZ-Portable/tree/141c1476dd462ac3526f796e303177616f4de6bc)。以下来自源码静态阅读；本项目是选择性 TypeScript 移植，没有嵌入 Portable 二进制，也没有完成 GOTY 全量移植。
 
 ## 已实现的对应规则

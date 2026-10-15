@@ -3,7 +3,7 @@ import { Game, headless } from '../../src/game/model';
 import { cellX, type LevelId, type PlantKind } from '../../src/game/config';
 export function playRoofFinale(level:LevelId,seed:number,observe?:(g:Game)=>void){
  const g=new Game(level,seed);
- const loadout:PlantKind[]=level<48?['sunflower','cabbagepult','flowerpot','umbrella','cherrybomb','squash']:level===48?['sunflower','cabbagepult','flowerpot','melonpult','cherrybomb','squash']:['sunflower','cabbagepult','flowerpot','jalapeno','cherrybomb','umbrella'];
+ const loadout:PlantKind[]=level<48?['sunflower','cabbagepult','flowerpot',level===46?'kernelpult':'umbrella','cherrybomb','squash']:level===48?['sunflower','cabbagepult','flowerpot','jalapeno','cherrybomb','squash']:['sunflower','cabbagepult','flowerpot','jalapeno','cherrybomb','umbrella'];
  for(const k of loadout)g.chooseSeed(k);g.start();g.autoCollectSun=true;
  const occupied=(c:number,r:number)=>g.plants.find(p=>p.row===r&&p.column===c&&p.kind!=='flowerpot');
  const place=(kind:PlantKind,c:number,r:number)=>{
@@ -19,7 +19,7 @@ export function playRoofFinale(level:LevelId,seed:number,observe?:(g:Game)=>void
    const foes=g.zombies.filter(z=>!z.hypnotized&&!headless(z)&&!z.bungee&&!z.flight).sort((a,b)=>a.x-b.x);
    const rows=[...g.config.rows].sort((a,b)=>{const strength=(r:number)=>g.plants.filter(p=>p.row===r&&['cabbagepult','melonpult'].includes(p.kind)).reduce((n,p)=>n+(p.kind==='melonpult'?2:1),0)*900+(foes.find(z=>z.row===r)?.x??1000);return strength(a)-strength(b);});
    for(const z of foes){
-    if(level===49&&(z.kind==='gargantuar'&&z.x<650||z.x<350&&foes.filter(o=>o.row===z.row).length>=2)){
+    if(level>=48&&(z.kind==='gargantuar'&&z.x<650||z.x<350&&foes.filter(o=>o.row===z.row).length>=2)){
      const rowTargets=foes.filter(o=>o.row===z.row);if(rowTargets.some(o=>o.health>1000)||z.x<350){
       let done=false;for(const c of [8,7,6,5,4,3,2,1,0])if(Math.abs(cellX(c)-z.x)>90&&place('jalapeno',c,z.row)){done=true;break;}
       if(!done&&g.sun>=125&&g.cooldowns.jalapeno===0){clear(0,z.row);place('jalapeno',0,z.row);}
@@ -40,7 +40,7 @@ export function playRoofFinale(level:LevelId,seed:number,observe?:(g:Game)=>void
    for(const r of rows)place('cabbagepult',2,r);
    if(g.plants.filter(p=>p.kind==='sunflower').length>=5){
     if(g.wave>=6)for(const r of [1,3])place('umbrella',1,r);
-    for(const r of rows)for(const c of level===49?[3,4,5]:[3,4])place(level===48?'melonpult':'cabbagepult',c,r);
+    for(const r of rows)for(const c of level===49?[3,4,5]:[3,4])place('cabbagepult',c,r);
     if(level<48)for(const r of rows)place('cabbagepult',5,r);
    }
 

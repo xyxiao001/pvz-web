@@ -3,6 +3,7 @@ import { ZombieHealthBar } from './zombie-health';
 import { GiantMotion, hasGiantMotion, type GiantRig } from './giant-motion';
 import { hasPlantMotion, hasPlantMotionClip, PlantMotion, type PlantRig } from './plant-motion';
 import { renderResolution } from './resolution';
+import { stormOpacity } from './storm';
 import { loadInBatches } from '../platform/load-queue';
 import { BossArt } from './boss';
 import 'pixi.js/prepare';
@@ -511,10 +512,11 @@ export class Scene {
     this.weather.clear();
     if(game.scenario==='adventure'&&game.level===40){
       this.fog.visible=false;
-      const flash=game.stormIn<150?1-game.stormIn/150:0;
-      this.weather.rect(0,80,800,520).fill({color:0x05091a,alpha:.92*(1-flash)});
       for(let i=0;i<35;i++){const x=(i*139+game.ticks*1.2)%850,y=80+(i*73+game.ticks*6)%520;this.weather.moveTo(x,y).lineTo(x-8,y+22);}
       this.weather.stroke({color:0xa9c8de,alpha:.3,width:1});
+      const flash = stormOpacity(game.stormFlash, game.stormIn, game.ticks);
+      this.weather.rect(0,80,800,520).fill({color:0x000000,alpha:flash.dark});
+      this.weather.rect(0,80,800,520).fill({color:0xffffff,alpha:flash.white});
     }
     this.effects = this.effects.filter(effect => {
       const age = this.time - effect.born;

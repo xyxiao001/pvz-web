@@ -29,9 +29,9 @@ export function playRoofAdventure(level:LevelId,seed:number,observe?:(g:Game)=>v
     for(const card of [...g.conveyor]){
      g.selectPacket(card.id);let done=false;
      const tryCells=(cs:number[],rs:readonly number[])=>{for(const r of rs){for(const c of cs)if(g.plant(c,r))return true;}return false;};
-     if(card.kind==='lilypad')done=tryCells([0,1,2,3,4,5,6,7,8],[2,3]);
+     if(card.kind==='lilypad')done=tryCells([0,1,2,3,4,5,6,7,8],[2,3].sort((a,b)=>g.plants.filter(p=>p.kind==='lilypad'&&p.row===a).length-g.plants.filter(p=>p.kind==='lilypad'&&p.row===b).length));
      else if(card.kind==='flowerpot')done=tryCells([3,4,5,6,7,8,2,1,0],rows);
-     else if(card.kind==='blover'){if(foes.some(z=>z.flying&&z.x<700))done=tryCells([8,7,6,5,4,3,2,1,0],land);}
+     else if(card.kind==='blover'){if(foes.some(z=>z.flying&&z.x<700)){done=tryCells([8,7,6,5,4,3,2,1,0],land);if(!done){const p=g.plants.find(p=>land.includes(p.row)&&p.kind!=='pumpkin');if(p){g.cancelSelection();g.toggleShovel();g.dig(p.column,p.row);g.selectPacket(card.id);done=g.plant(p.column,p.row);}}}}
      else if(card.kind==='cherrybomb'){
       for(const z of foes.filter(z=>!z.bungee))if(z.x<300||foes.filter(o=>!o.bungee&&Math.abs(o.row-z.row)<=1&&Math.abs(o.x-z.x)<115).length>=3){for(const c of [5,4,3,2,1,6,7,8,0])if(Math.abs(cellX(c)-z.x)<110&&g.plant(c,z.row)){done=true;break;}if(done)break;}
      }else if(card.kind==='pumpkin'){
