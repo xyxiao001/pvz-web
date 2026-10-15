@@ -14,7 +14,7 @@ inputs.mkdir(parents=True, exist_ok=True); results.mkdir(parents=True, exist_ok=
 images = {p.stem.upper(): p for p in directory.glob('*.png')}
 sources = {}; definitions = {}; fields = ['x','y','sx','sy','kx','ky','f','a','i']
 def record(path): sources[str(path.relative_to(repo))] = hashlib.sha256(path.read_bytes()).hexdigest()
-for key, name, layer, duration in [('peashooter','PeaShooter','anim_full_idle',100),('sunflower','SunFlower','anim_idle',100),('threepeater','ThreePeater','anim_idle',144),('gatlingpea','GatlingPea','anim_idle',144),('twinsunflower','TwinSunflower','anim_idle',144),('wintermelon','WinterMelon','anim_idle',248)]:
+for key, name, layer, duration in [('peashooter','PeaShooter','anim_full_idle',100),('sunflower','SunFlower','anim_idle',100),('threepeater','ThreePeater','anim_idle',144),('gatlingpea','GatlingPea','anim_idle',144),('twinsunflower','TwinSunflower','anim_idle',144),('wintermelon','WinterMelon','anim_idle',248),('cabbagepult','Cabbagepult','anim_idle',310),('kernelpult','Cornpult','anim_idle',190),('melonpult','Melonpult','anim_idle',310)]:
     path = directory / (name+'.reanim'); record(path)
     xml = ET.fromstring('<root>'+path.read_text()+'</root>'); tracks = {}
     for track in xml.findall('track'):
@@ -38,10 +38,11 @@ for key, name, layer, duration in [('peashooter','PeaShooter','anim_full_idle',1
     groups=[group(layer)]
     if key=='gatlingpea': groups.append(group('anim_head_idle','anim_idle'))
     if key=='threepeater': groups += [group('anim_head_idle'+i,'anim_head'+i) for i in ['1','3','2']]
-    shooting={'duration':group('anim_shooting')['length']/35*100,'groups':[group('anim_shooting')]} if key=='wintermelon' else None
+    shooting_duration = {'wintermelon':38/35*100,'cabbagepult':50,'kernelpult':50,'melonpult':155}
+    shooting={'duration':shooting_duration[key],'groups':[group('anim_shooting')]} if key in shooting_duration else None
     all_groups=groups+shooting['groups'] if shooting else groups
     used=sorted({p[8] for g in all_groups for t in g['tracks'] for p in t['poses'] if p[8]})
-    definitions[key]={'duration':duration,'origin':[-40,-74 if key!='threepeater' else -80],'groups':groups,'images':used}
+    definitions[key]={'duration':duration,'origin':[-40,-80 if key=='threepeater' else -73 if key in ['cabbagepult','kernelpult','melonpult'] else -74],'groups':groups,'images':used}
     if shooting: definitions[key]['shooting']=shooting
     for name in used:
         path=images[name];record(path);Image.open(path).convert('RGBA').save(inputs/(name+'.png'))

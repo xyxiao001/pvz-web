@@ -8,6 +8,9 @@ import sunflower from '../public/assets/runtime/plant-motion/sunflower.json';
 import threepeater from '../public/assets/runtime/plant-motion/threepeater.json';
 import gatling from '../public/assets/runtime/plant-motion/gatlingpea.json';
 import twin from '../public/assets/runtime/plant-motion/twinsunflower.json';
+import cabbage from '../public/assets/runtime/plant-motion/cabbagepult.json';
+import kernel from '../public/assets/runtime/plant-motion/kernelpult.json';
+import melon from '../public/assets/runtime/plant-motion/melonpult.json';
 import winter from '../public/assets/runtime/plant-motion/wintermelon.json';
 
 test('direct Pixi transforms preserve every native pose, interpolated frame and mirrored scale', () => {
@@ -18,7 +21,7 @@ test('direct Pixi transforms preserve every native pose, interpolated frame and 
     for (const component of ['a','b','c','d','tx','ty'] as const)
       assert.ok(Math.abs(part.localTransform[component] - expected[component]) < 1e-8, component);
   };
-  for (const group of [...[pea, sunflower, threepeater, gatling, twin, winter].flatMap(d => d.groups), ...winter.shooting.groups]) {
+  for (const group of [...[pea, sunflower, threepeater, gatling, twin, winter, cabbage, kernel, melon].flatMap(d => d.groups), ...[winter, cabbage, kernel, melon].flatMap(d => d.shooting.groups)]) {
     for (const track of group.tracks) for (let i=0;i<track.poses.length;i++)
       for (const fraction of [0, .25, .5, .75, 1]) compare(track.poses[i] as Pose, track.poses[(i+1)%track.poses.length] as Pose, fraction);
   }
@@ -29,7 +32,7 @@ test('direct Pixi transforms preserve every native pose, interpolated frame and 
 });
 
 test('native plant motion interpolates between poses without changing cycle duration at 1x/2x/4x', () => {
-  for (const definition of [pea, sunflower, threepeater, gatling, twin]) {
+  for (const definition of [pea, sunflower, threepeater, gatling, twin, cabbage, kernel, melon]) {
     for (const speed of [1, 2, 4]) {
       const duration = definition.duration, length = definition.groups[0].length;
       assert.deepEqual(motionFrame(duration, duration, length), { frame: 0, next: 1, fraction: 0 });
@@ -58,7 +61,7 @@ test('interpolated parts and attachment bind pose follow original affine transfo
   }
 });
 test('every plant image track resolves to its own atlas and complete pose sequence', () => {
-  for (const definition of [pea, sunflower, threepeater, gatling, twin]) {
+  for (const definition of [pea, sunflower, threepeater, gatling, twin, cabbage, kernel, melon]) {
     for (const group of definition.groups) for (const track of group.tracks) {
       assert.equal(track.poses.length, group.length);
       for (const pose of track.poses) if (pose[8]) assert.ok(pose[8] as string in definition.frames);
@@ -72,4 +75,14 @@ test('framebuffer matches small displays and stops at native 2x detail on high d
   assert.equal(renderResolution(800, 2), 2);
   assert.equal(renderResolution(1920, 2), 2);
   assert.equal(renderResolution(1280, 1), 1.6);
+});
+
+test('lobber motion preserves idle cycles and completes each existing attack window', () => {
+  for (const [definition, idle, shooting] of [[cabbage,310,50],[kernel,190,50],[melon,310,155]] as const) {
+    assert.equal(definition.duration,idle); assert.equal(definition.shooting.duration,shooting);
+    const length=definition.shooting.groups[0].length;
+    assert.equal(motionFrame(shooting,shooting,length,false).frame,length-1);
+    assert.ok(motionFrame(shooting/2,shooting,length,false).frame>length/3);
+    assert.deepEqual(definition.origin,[-40,-73]);
+  }
 });

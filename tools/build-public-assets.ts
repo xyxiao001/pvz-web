@@ -11,8 +11,8 @@ export function runtimePublicAssets(): Plugin {
     async writeBundle() {
       const copy = async (path: string) => { await mkdir(resolve(output, path, '..'), { recursive: true }); await cp(resolve(source, path), resolve(output, path), {
         recursive: true,
-        // Giant states now share one native part atlas; retain baked art only for authoring comparisons.
-        filter: file => !(file.startsWith(resolve(source, 'assets/runtime/clips/gargantuar-')) && file.endsWith('.webp')),
+        // Native plant/giant rigs replace these baked pages; keep masters for authoring comparisons.
+        filter: file => !(file.startsWith(resolve(source, 'assets/runtime/clips/')) && /\/(?:gargantuar-.+|peashooter|sunflower|threepeater|gatlingpea|twinsunflower|wintermelon|(?:cabbagepult|kernelpult|melonpult)(?:-attack)?)-\d+\.webp$/.test(file)),
       }); };
       const sounds = (await readdir(resolve(source, 'assets/original'))).filter(file => /\.mp3$/.test(file) && file !== 'winmusic.mp3');
       const icons = (await readdir(resolve(source, 'icons'))).filter(file => file !== 'icon-master.png');

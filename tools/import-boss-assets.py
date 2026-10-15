@@ -41,7 +41,7 @@ background = repo / 'images/background6boss.jpg';record(background);Image.open(b
 engine = root / 'artifacts/hd-work/runtime/realesrgan-ncnn-vulkan'
 subprocess.run([str(engine),'-i',str(inputs),'-o',str(results),'-m',str(engine.parent/'models'),'-n','realesr-animevideov3','-s','2','-f','png'],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 for name in [*sorted(used),'background']:
-    Image.open(results/(name+'.png')).save(output/(name+'.webp'),lossless=True,quality=90,method=4,exact=True)
+    Image.open(results/(name+'.png')).save(output/(name+'.webp'),lossless=name!='background',quality=90,method=6 if name=='background' else 4,exact=True)
 (output/'tracks.json').write_text(json.dumps(definitions,separators=(',',':')))
 (root/'src/game/data/boss-clips.json').write_text(json.dumps(definitions['body']['clips'],indent=2)+'\n')
 (root/'docs/boss-assets.json').write_text(json.dumps({'repository':'https://github.com/ruslan831/PlantsVsZombies-decompilation','commit':subprocess.check_output(['git','-C',str(repo),'rev-parse','HEAD'],text=True).strip(),'sources':sources,'scaling':'Real-ESRGAN animevideov3 2x, per source part; transforms remain in original coordinates'},indent=2)+'\n')

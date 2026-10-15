@@ -1,9 +1,9 @@
 {
   "sourceAnimationSha256": "a2a00716e14f7153580f5d2a14ce37cec215301983340bae231ca1ccfdc7a1d7",
-  "encoding": "lossless WebP",
+  "encoding": "WebP quality 90 for frame atlases/backgrounds; lossless UI and parts",
   "frames": 4622,
   "clips": 181,
   "staticImages": 108,
-  "outputBytes": 252869158,
+  "outputBytes": 64359690,
   "atlasRgbaBytes": 940530720
 }

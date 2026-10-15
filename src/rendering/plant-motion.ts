@@ -1,7 +1,8 @@
 import { Assets, Container, Matrix, Rectangle, Sprite, Texture } from 'pixi.js';
 import { loadInBatches } from '../platform/load-queue';
 
-export const MOTION_PLANTS = ['peashooter', 'sunflower', 'threepeater', 'gatlingpea', 'twinsunflower', 'wintermelon'] as const;
+export const MOTION_PLANTS = ['peashooter', 'sunflower', 'threepeater', 'gatlingpea', 'twinsunflower', 'wintermelon', 'cabbagepult', 'kernelpult', 'melonpult'] as const;
+export const hasPlantMotionClip = (name: string) => hasPlantMotion(name) || ['cabbagepult-attack', 'kernelpult-attack', 'melonpult-attack'].includes(name);
 export type MotionPlant = typeof MOTION_PLANTS[number];
 export const hasPlantMotion = (name: string): name is MotionPlant => (MOTION_PLANTS as readonly string[]).includes(name);
 export type Pose = [number, number, number, number, number, number, number, number, string];

@@ -1,4 +1,4 @@
-"""Pack lossless, per-animation WebP atlases from the existing 2x PNG masters.
+"""Pack per-animation WebP atlases from the existing 2x PNG masters.
 Run after build-hd-assets.py. No AI inference or pose/timing changes.
 """
 from concurrent.futures import ThreadPoolExecutor
@@ -27,7 +27,7 @@ def pack(item):
     files, sizes = [], []
     for i,page in enumerate(pages):
         path=f'clips/{name}-{i}.webp'
-        page.save(output/path,lossless=True,quality=90,method=6,exact=True)
+        page.save(output/path,quality=90,method=6,exact=True)
         files.append(path); sizes.append(list(page.size))
     return name, {**clip, 'pages':files, 'sizes':sizes, 'frames':[placements[tuple(f[:5])] + f[3:] for f in clip['frames']]}
 
@@ -36,7 +36,8 @@ with ThreadPoolExecutor(max_workers=4) as pool:
 static_files=[p for p in source.rglob('*.png') if not p.name.startswith('actors-')]
 def convert(path):
     relative=path.relative_to(source).with_suffix('.webp');dest=output/relative;dest.parent.mkdir(parents=True,exist_ok=True)
-    Image.open(path).save(dest,lossless=True,quality=90,method=4,exact=True)
+    background = relative.as_posix() in ['yard.webp','lawn.webp','original/menu.webp','original/pool.webp','original/night.webp','original/fog.webp','original/roof.webp']
+    Image.open(path).save(dest,lossless=not background,quality=90,method=6 if background else 4,exact=True)
 with ThreadPoolExecutor(max_workers=4) as pool:
     list(pool.map(convert,static_files))
 (output/'animations.json').write_text(json.dumps({'animations':animations},separators=(',',':')))
@@ -44,6 +45,6 @@ with ThreadPoolExecutor(max_workers=4) as pool:
 used={p for clip in animations.values() for p in clip['pages']}
 for page in (output/'clips').glob('*.webp'):
     if page.relative_to(output).as_posix() not in used: page.unlink()
-manifest={'sourceAnimationSha256':hashlib.sha256((source/'original/animations.json').read_bytes()).hexdigest(),'encoding':'lossless WebP','frames':sum(len(c['frames']) for c in animations.values()),'clips':len(animations),'staticImages':len(static_files),'outputBytes':sum(p.stat().st_size for p in output.rglob('*.webp')),'atlasRgbaBytes':sum(w*h*4 for c in animations.values() for w,h in c['sizes'])}
+manifest={'sourceAnimationSha256':hashlib.sha256((source/'original/animations.json').read_bytes()).hexdigest(),'encoding':'WebP quality 90 for frame atlases/backgrounds; lossless UI and parts','frames':sum(len(c['frames']) for c in animations.values()),'clips':len(animations),'staticImages':len(static_files),'outputBytes':sum(p.stat().st_size for p in output.rglob('*.webp')),'atlasRgbaBytes':sum(w*h*4 for c in animations.values() for w,h in c['sizes'])}
 (output/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print(json.dumps(manifest,indent=2))
