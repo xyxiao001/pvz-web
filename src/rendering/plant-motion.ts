@@ -33,6 +33,8 @@ export function motionFrame(ticks: number, duration: number, length: number, loo
 
 export class PlantRig {
   readonly root = new Container();
+  private lastTicks = NaN;
+  private lastShootingTicks?: number;
   private matrix = new Matrix();
   private groups: { shooting: boolean; definition: Group; root: Container; parts: Sprite[]; baseInverse?: Matrix }[];
   constructor(private loaded: Loaded) {
@@ -47,6 +49,8 @@ export class PlantRig {
     });
   }
   render(ticks: number, shootingTicks?: number) {
+    if (ticks === this.lastTicks && shootingTicks === this.lastShootingTicks) return;
+    this.lastTicks = ticks; this.lastShootingTicks = shootingTicks;
     const attack = shootingTicks !== undefined && shootingTicks < this.loaded.definition.shooting!.duration;
     for (const { definition, shooting, root, parts, baseInverse } of this.groups) {
       root.visible = shooting === attack;

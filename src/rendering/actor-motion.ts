@@ -15,6 +15,9 @@ type Loaded = { definition: ActorDefinition; textures: Record<string, Texture> }
 // Parts are allocated once per actor, including slots needed by later damage/death states.
 export class ActorRig {
   readonly root = new Container();
+  private lastName = "";
+  private lastTicks = NaN;
+  private lastLoop = false;
   private matrix = new Matrix();
   private groups: { root: Container; parts: Sprite[] }[];
   private bound = new Map<Group, Matrix>();
@@ -33,6 +36,8 @@ export class ActorRig {
   }
   healthTop(clip: string) { return this.loaded.definition.clips[clip].healthTop; }
   render(name: string, ticks: number, loop: boolean) {
+    if (name === this.lastName && ticks === this.lastTicks && loop === this.lastLoop) return;
+    this.lastName = name; this.lastTicks = ticks; this.lastLoop = loop;
     const clip = this.loaded.definition.clips[name];
     this.root.position.set(...clip.origin); this.root.scale.set(clip.scale);
     for (let g = 0; g < this.groups.length; g++) {

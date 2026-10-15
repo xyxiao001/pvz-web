@@ -1,0 +1,22 @@
+{
+  "source": "ruslan831/PlantsVsZombies-decompilation",
+  "files": {
+    "FirePea.reanim": "04a3a6315b077c437400dcaa07a75e9ed869cef2e7c6f7a7b710ba125e6b4e03",
+    "FirePea_spark.png": "ca5b6c467fbd539f2c92457ee42d82944f1200ef1fd40232c5098a33bd1a586d",
+    "FirePea_flame1.png": "39a6b88c5916129f53b6a72461bd64bc0a3e7a68be3234d13dd8cc0df19c65d3",
+    "FirePea.png": "a7e2698851015ceab73e7b57313ef35b0029978a2bc03cd4d0a13c7b0dfbd603",
+    "FirePea_flame2.png": "46c10b6377654c2a39ecadc7300fd33f27d4ff9c9e82b7852b827d4ce8f8e812",
+    "FirePea_flame3.png": "cf439977730023e3d5bccaaf3c18fb2f822cee609ad7fe44322a34e1ce0056b3"
+  },
+  "atlas": {
+    "frames": 25,
+    "columns": 5,
+    "width": 80,
+    "height": 45,
+    "anchor": [
+      0.725,
+      0.5333333333333333
+    ]
+  },
+  "bytes": 141944
+}

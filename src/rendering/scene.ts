@@ -4,6 +4,8 @@ import { GiantMotion, hasGiantMotion, type GiantRig } from './giant-motion';
 import { hasPlantMotion, hasPlantMotionClip, PlantMotion, type PlantRig } from './plant-motion';
 import { renderResolution } from './resolution';
 import { stormOpacity } from './storm';
+import firePea from './fire-pea.json';
+import { firePeaFrame } from './projectiles';
 import { loadInBatches } from '../platform/load-queue';
 import { BossArt } from './boss';
 import 'pixi.js/prepare';
@@ -29,6 +31,9 @@ export class Scene {
   private giantMotion = new GiantMotion();
   private actors = new Map<string, Actor>();
   private effects: Effect[] = [];
+  private projectilePool: Actor[] = [];
+  private projectileLayers = new Map<number, Container>();
+  private firePeaFrames: Texture[] = [];
   private textures: Record<string, Texture> = {};
   private textureFiles: string[] = [];
   private resourceWork = Promise.resolve();
@@ -111,6 +116,10 @@ export class Scene {
 
   private async loadActors(game: Game, progress: (done: number, total: number) => void) {
     await this.prepareTextures(combatTextureFiles(game), progress);
+    if (this.textures.firePea && this.firePeaFrames.length === 0) this.firePeaFrames = Array.from({ length: firePea.frames }, (_, i) => new Texture({
+      source: this.textures.firePea.source,
+      frame: new Rectangle(i % firePea.columns * firePea.width, Math.floor(i / firePea.columns) * firePea.height, firePea.width, firePea.height),
+    }));
     await this.plantMotion.prepare([...new Set([...game.seeds, ...game.plants.map(p => p.kind)])].filter(hasPlantMotion), progress, texture => this.app.renderer.prepare.upload(texture));
     if(game.boss&&!this.bossArt){this.bossArt=new BossArt();await this.bossArt.load(progress);this.bossArt.root.zIndex=590;this.world.addChild(this.bossArt.root);}
     const base = `${import.meta.env.BASE_URL}assets/runtime/`;
@@ -164,8 +173,8 @@ export class Scene {
     for (const clip of Object.values(this.clips)) {
       clip.frames.forEach(texture => texture.destroy()); files.push(...clip.files);
     }
-    for (const texture of [...this.lawnTextures, ...this.fogFrames, ...this.vaseFrames]) texture.destroy();
-    this.lawnTextures = []; this.fogFrames = []; this.vaseFrames = [];
+    for (const texture of [...this.lawnTextures, ...this.fogFrames, ...this.vaseFrames, ...this.firePeaFrames]) texture.destroy();
+    this.lawnTextures = []; this.fogFrames = []; this.vaseFrames = []; this.firePeaFrames = [];
     this.clips = {}; this.textures = {}; this.textureFiles = [];
     await Assets.unload(files);
   }
@@ -176,6 +185,10 @@ export class Scene {
     }
     for (const actor of this.actors.values()) actor.root.destroy({ children: true });
     for (const effect of this.effects) effect.node.destroy({ children: true });
+    for (const actor of this.projectilePool) actor.root.destroy({ children: true });
+    this.projectilePool = [];
+    for (const layer of this.projectileLayers.values()) layer.destroy();
+    this.projectileLayers.clear();
     this.actors.clear(); this.effects = []; this.explosions = []; this.time = 0; this.healthKey = ''; this.hoverKey = '';
     this.hover.clear(); this.health.clear(); this.fog.removeChildren().forEach(child=>child.destroy()); this.fogKey = '';
   }
@@ -212,6 +225,8 @@ export class Scene {
       // Spread idle plants across the cycle; do not synchronize every newly planted row.
       if (loop && ['peashooter', 'sunflower', 'wallnut', 'snowpea', 'potatomine', 'chomper', 'repeater', 'puffshroom', 'sunshroom', 'sunshroom-big', 'fumeshroom', 'hypnoshroom', 'scaredyshroom', 'iceshroom','doomshroom','lilypad','squash','threepeater','plantern','spikeweed','torchwood','tallnut','seashroom','cactus'].includes(clipName)) actor.since -= actor.root.uid * 17 % this.clipDuration(clipName);
     }
+    // Keep the clip clock while offscreen; resume at the current pose when it enters view.
+    if (!actor.root.visible) return;
     const elapsed = (timeline - actor.since) * rate;
     if (hasGiantMotion(clipName)) {
       if (!actor.giantRig) {
@@ -268,8 +283,22 @@ export class Scene {
   private actor(key: string, zIndex: number) {
     let actor = this.actors.get(key);
     if (!actor) {
-      const root = new Container(); root.zIndex = zIndex; const art = new Sprite(); root.addChild(art); this.world.addChild(root);
-      actor = { root, art, clip: '', since: this.time, frame: -1, seen: this.stamp, previousX: 0, previousY: 0 }; this.actors.set(key, actor);
+      actor = key.startsWith('b') ? this.projectilePool.pop() : undefined;
+      if (actor) {
+        actor.clip = ''; actor.frame = -1; actor.since = this.time; actor.motion = undefined;
+        actor.root.visible = true; actor.art.scale.set(1); actor.art.tint = 0xffffff;
+      } else {
+        const root = new Container(), art = new Sprite(); root.addChild(art);
+        actor = { root, art, clip: '', since: this.time, frame: -1, seen: this.stamp, previousX: 0, previousY: 0 };
+      }
+      actor.root.zIndex = zIndex;
+      if (key.startsWith('b')) {
+        // Shots share one ordering layer per lane; spawning does not re-sort all rigs.
+        let layer = this.projectileLayers.get(zIndex);
+        if (!layer) { layer = new Container(); layer.zIndex = zIndex; this.world.addChild(layer); this.projectileLayers.set(zIndex, layer); }
+        layer.addChild(actor.root);
+      } else this.world.addChild(actor.root);
+      this.actors.set(key, actor);
     }
     actor.seen = this.stamp;
     return actor;
@@ -408,7 +437,7 @@ export class Scene {
         : zombie.hasPole ? 'pole-run' : `${type}-${zombie.eating ? 'eat' : 'walk'}`;
       const walking = zombie.kind !== 'zomboni' && zombie.kind !== 'catapult' && !zombie.sled && (clip.endsWith('-walk') || clip.endsWith('-headless') || clip === 'pole-run');
       const rate = zombie.giant&&zombie.giant.phase!=='walk'?this.clipDuration(clip)/(zombie.giant.phase==='smash'?134:138):zombie.catapult?.phase==='shoot'?this.clipDuration(clip)/129:zombie.catapult?.phase==='walk'?.55:zombie.catapult?.phase==='reload'?1.2:clip === 'newspaper-gasp' ? this.clipDuration(clip) / 150 : walking ? this.clipDuration(clip) / walkingCycleTicks(zombie) : 1;
-      this.animate(actor, clip, !zombie.popIn && !zombie.jackOpening && zombie.vaultIn === 0 && zombie.rageIn === 0 && (!zombie.giant||zombie.giant.phase==='walk') && zombie.catapult?.phase!=='shoot' && !zombie.flight && !zombie.landingIn, zombie.animationTime + alpha * (zombie.frozenIn !== undefined && zombie.frozenIn > 0 ? 0 : zombie.chillIn > 0 ? .4 : 1), rate);
+
       this.move(actor, zombie, game.rowY(zombie.row,zombie.x) + 1, alpha);
       if(zombie.flight){const f=zombie.flight;actor.root.y-=Math.sin((1-f.remaining/f.duration)*Math.PI)*110+f.remaining/f.duration*88;}
       if(zombie.pogo)actor.root.y-=Math.abs(Math.sin(zombie.animationTime/80*Math.PI))*45;
@@ -421,6 +450,9 @@ export class Scene {
       actor.root.scale.x = (zombie.hypnotized || zombie.backwards ? -1 : 1) * (zombie.mini ? .5 : 1);
       actor.root.alpha = zombie.riseIn > 50 ? 0 : 1;
       actor.root.scale.y = (zombie.riseIn > 0 ? Math.max(.01, 1 - zombie.riseIn / 50) : 1) * (zombie.mini ? .5 : 1);
+      // Conservative actor extent includes giant arms, flags and bungee attachments.
+      actor.root.visible = actor.root.x > -220 && actor.root.x < BOARD.width + 220 && actor.root.y > -220 && actor.root.y < BOARD.height + 220;
+      this.animate(actor, clip, !zombie.popIn && !zombie.jackOpening && zombie.vaultIn === 0 && zombie.rageIn === 0 && (!zombie.giant||zombie.giant.phase==='walk') && zombie.catapult?.phase!=='shoot' && !zombie.flight && !zombie.landingIn, zombie.animationTime + alpha * (zombie.frozenIn !== undefined && zombie.frozenIn > 0 ? 0 : zombie.chillIn > 0 ? .4 : 1), rate);
       if (this.showZombieHealth) {
         if (!actor.healthBar) { actor.healthBar = new ZombieHealthBar(); actor.root.addChild(actor.healthBar.root); }
         actor.healthBar.root.visible = true;
@@ -436,7 +468,12 @@ export class Scene {
     for (const pea of game.peas) {
       const key = `b${pea.id}`; const actor = this.actor(key, pea.row * 100 + 30);
       const kind = pea.lob ? pea.lob.kind : pea.star?'star': pea.spike ? 'spike' : pea.puff ? 'puff' : pea.ice ? 'ice' : pea.fire ? 'fire' : 'pea';
-      if (actor.clip !== kind) { actor.clip = kind; actor.art.texture = pea.lob?this.textures[pea.lob.kind]:pea.star?this.textures.star:pea.spike ? this.textures.spike : pea.puff ? this.textures.puff : pea.ice ? this.textures.ice : this.textures.pea; actor.art.anchor.set(.5); actor.art.width = (pea.lob?.kind==='melon'||pea.lob?.kind==='wintermelon')?38:pea.lob?25:pea.star?28:pea.spike?26:19; actor.art.height = (pea.lob?.kind==='melon'||pea.lob?.kind==='wintermelon')?38:pea.lob?25:pea.star?28:pea.spike?8:19;actor.art.tint=pea.fire?0xff7925:0xffffff; }
+      if (kind === 'fire') {
+        if (actor.clip !== kind) { actor.clip = kind; actor.since = this.time; actor.frame = -1; actor.art.width = firePea.width; actor.art.height = firePea.height; actor.art.anchor.set(...firePea.anchor as [number, number]); actor.art.tint = 0xffffff; }
+        const frame = firePeaFrame(this.time - actor.since, pea.id);
+        if (actor.frame !== frame) { actor.frame = frame; actor.art.texture = this.firePeaFrames[frame]; }
+        actor.art.scale.x = pea.vx !== undefined && pea.vx < 0 ? -1 : 1;
+      } else if (actor.clip !== kind) { actor.clip = kind; actor.art.texture = pea.lob?this.textures[pea.lob.kind]:pea.star?this.textures.star:pea.spike ? this.textures.spike : pea.puff ? this.textures.puff : pea.ice ? this.textures.ice : this.textures.pea; actor.art.anchor.set(.5); actor.art.width = (pea.lob?.kind==='melon'||pea.lob?.kind==='wintermelon')?38:pea.lob?25:pea.star?28:pea.spike?26:19; actor.art.height = (pea.lob?.kind==='melon'||pea.lob?.kind==='wintermelon')?38:pea.lob?25:pea.star?28:pea.spike?8:19; actor.art.tint=0xffffff; }
       this.move(actor, pea, pea.y!==undefined?pea.y:pea.originY!==undefined?pea.originY-(pea.high?72:0):game.rowY(pea.row) - (pea.high ? 115 : 43), alpha);
     }
     for (const nut of game.rollers) {
@@ -470,6 +507,8 @@ export class Scene {
         const clip = special && ['zomboni','bobsled','dolphin','jack','balloon','digger','pogo','bungee','ladder','catapult','gargantuar','imp'].includes(special) ? `${special}${special==='gargantuar'&&actor.clip.includes('-bare-')?'-bare':''}-die` : actor.clip.startsWith('ducky') && !burned ? 'ducky-die' : special && (special!=='snorkel'||!burned) ? `${special}-${burned?'burn':'die'}` : `${actor.clip.startsWith('football-') && !burned ? 'football' : actor.clip.startsWith('newspaper-') ? 'newspaper' : actor.clip.startsWith('pole-') ? 'pole' : 'zombie'}-${burned ? 'burn' : 'die'}`;
         this.animate(actor, clip, false); (actor.nativeRig?.root ?? actor.giantRig?.root ?? actor.art).tint = 0xffffff;
         this.effects.push({ node: actor.root, actor, born: this.time, duration: this.clipDuration(clip) });
+      } else if (key.startsWith('b') && this.projectilePool.length < 256) {
+        actor.root.removeFromParent(); actor.motion = undefined; this.projectilePool.push(actor);
       } else actor.root.destroy({ children: true });
       this.actors.delete(key);
     }

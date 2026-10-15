@@ -1,57 +1,41 @@
 # 植物大战僵尸 Web
 
-用 TypeScript 和 PixiJS 构建的《植物大战僵尸》Web 移植项目，在浏览器中种植植物、收集阳光、守护庭院。
+在浏览器里种下向日葵，搭起防线，迎接下一波僵尸。
 
-开放 50 个冒险关卡，包括僵王博士挑战；新增普通与困难生存共 10 关，加上五种场景的无尽生存，覆盖白天、夜晚、泳池、迷雾和屋顶。生存模式支持轮间换卡、暂停、独立保存与继续挑战。
+基于 TypeScript 与 PixiJS 的《植物大战僵尸》Web 移植项目。现已开放 50 个冒险关卡，包含保龄球、打僵尸、砸罐子、雷雨之夜与僵王战；白天、夜晚、泳池、迷雾、屋顶五种场景均可挑战普通、困难和无尽生存。项目仍在持续移植与完善。
 
-支持冒险六槽与生存十槽选卡、机枪射手、双子向日葵与冰西瓜升级、全部关卡开放开关、成就、倍速、阳光落地后自动收集、背景音乐、植物与僵尸的部件插值动画和 2 倍高清素材。资源按需加载，可通过 PWA 安装到桌面，并缓存资源离线游玩；新版就绪时可从外层提示直接更新。
+**[开始游戏 →](https://pvz-web-khaki.vercel.app/)**
 
-手机横屏采用两侧操作栏，支持从设置或暂停菜单进入全屏，也可开启僵尸血条。
-
-**[在线游玩](https://pvz-web-khaki.vercel.app/)**
+- 冒险六槽选卡、生存最多十槽选卡，支持升级植物与轮间换卡。
+- 生存模式可暂停、保存退出，按场景和难度分别继续挑战。
+- 支持倍速、阳光落地后自动收集、可选僵尸血条、背景音乐和成就。
+- 原版素材与 HUD 风格，角色部件插值动画、动态火豌豆、按需加载。
+- 支持电脑与手机横屏，可通过 PWA 安装并下载离线资源。
 
 ## 技术栈
 
 | 技术 | 用途 |
 | --- | --- |
-| TypeScript | 游戏逻辑与交互 |
-| PixiJS 8 | 2D 场景与动画渲染 |
-| Vite 7 | 开发与构建 |
-| HTML / CSS | 菜单与游戏 HUD |
+| TypeScript | 游戏规则、固定步长模拟与交互 |
+| PixiJS 8 | 2D 场景、部件动画与特效 |
+| Vite 7 | 开发服务与生产构建 |
+| HTML / CSS | 游戏菜单、选卡与 HUD |
 | Web Audio API | 背景音乐与音效 |
-| PWA / Service Worker | 应用安装与离线缓存 |
+| Service Worker / PWA | 安装、离线缓存与更新 |
 | Vercel | 网站部署 |
 
-## 游戏截图
+## 游戏画面
 
-### 主界面
+### 疯狂戴夫的庭院
 
 ![游戏主界面](docs/screenshots/home.png)
 
-### 六槽选卡
+### 选择你的植物
 
-![屋顶关卡的六槽选卡界面](docs/screenshots/seed-selection.png)
+![屋顶冒险的六槽选卡与植物说明](docs/screenshots/seed-selection.png)
 
-### 砸罐子关卡
+### 泳池无尽
 
-![夜晚砸罐子关卡](docs/screenshots/vasebreaker.png)
+十槽卡组、升级植物与火焰豌豆的阵容展示，使用当前游戏渲染器与 HUD 截图。
 
-### 无尽十槽选卡
-
-![无尽模式的十槽选卡与植物说明](docs/screenshots/endless-chooser.png)
-
-### 无尽生存
-
-![五种场景的无尽生存模式](docs/screenshots/endless.png)
-
-### 普通与困难生存
-
-![五种场景的普通与困难生存关卡](docs/screenshots/survival-levels.png)
-
-### 手机横屏
-
-![手机横屏的战场与两侧操作栏](docs/screenshots/mobile-landscape.png)
-
-### 原版 HUD 风格菜单
-
-![原版石框与纸张风格的关卡菜单](docs/screenshots/hud-levels.png)
+![泳池无尽阵容与动态火豌豆](docs/screenshots/endless-battle.png)

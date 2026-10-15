@@ -62,3 +62,19 @@ test('each level selects only its needed native actor families',()=>{
   const first=animationNames(new Game(1,1),Object.keys(animations.animations));
   assert.ok(!first.some(n=>ACTOR_MOTION[n]==='zombie_catapult'));
 });
+
+test('frozen actor pose is reused, then resumes and changes clips without stale parts',()=>{
+  const definition=definitions[ACTOR_MOTION['zombie-walk']];
+  const textures=Object.fromEntries(Object.keys(definition.frames).map(name=>[name,Texture.WHITE]));
+  const rig=new ActorRig('zombie',{definition,textures});
+  rig.render('zombie-walk',15,true);
+  let updates=0;
+  for(const group of rig.root.children)for(const part of group.children){
+    const set=part.position.set.bind(part.position);
+    part.position.set=(x:number,y?:number)=>{updates++;return set(x,y);};
+  }
+  rig.render('zombie-walk',15,true);assert.equal(updates,0);
+  rig.render('zombie-walk',16,true);assert.ok(updates>0);
+  updates=0;rig.render('zombie-eat',16,true);assert.ok(updates>0);
+  rig.root.destroy({children:true});
+});

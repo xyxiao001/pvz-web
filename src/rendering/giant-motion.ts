@@ -19,6 +19,9 @@ export function giantFrame(ticks: number, duration: number, length: number, loop
 
 export class GiantRig {
   readonly root = new Container();
+  private lastName = "";
+  private lastTicks = NaN;
+  private lastLoop = false;
   private parts: Sprite[];
   constructor(private loaded: Loaded) {
     this.root.position.set(...loaded.definition.origin);
@@ -27,6 +30,8 @@ export class GiantRig {
     });
   }
   render(name: GiantClip, ticks: number, loop: boolean) {
+    if (name === this.lastName && ticks === this.lastTicks && loop === this.lastLoop) return;
+    this.lastName = name; this.lastTicks = ticks; this.lastLoop = loop;
     const clip = this.loaded.definition.clips[action(name)], bare = name.includes('-bare-');
     const { frame, next, fraction } = giantFrame(ticks, clip.duration, clip.length, loop);
     for (let i = 0; i < this.parts.length; i++) {

@@ -21,7 +21,7 @@ export function combatTextureFiles(game: Game) {
   if(game.config.environment==='roof'||game.waves.flat().includes('ladder')||game.ladders.length)files.ladder='original/ladder.webp';
   if(game.config.environment==='roof'||game.waves.flat().includes('bungee')||game.zombies.some(z=>z.kind==='bungee')){files.ladder='original/ladder.webp';files.bungeeTarget='original/bungee-target.webp';files.bungeeCord='original/bungee-cord.webp';}
   if (plants.has('cactus')) files.spike = 'original/spike.webp';
-  if (plants.has('torchwood')) files.pea = 'pea.webp';
+  if (plants.has('torchwood') || game.peas.some(pea => pea.fire)) files.firePea = 'original/fire-pea.webp';
   if (game.waves.flat().includes('zomboni')) files.iceTrail = 'original/ice-trail.webp';
   if (game.waves.flat().includes('bobsled')) files.sled = 'original/sled.webp';
   if (plants.has('doomshroom') || game.craters.length) files.crater = 'original/crater.webp';
