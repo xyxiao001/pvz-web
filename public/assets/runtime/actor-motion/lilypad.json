@@ -1,0 +1,1 @@
+{"clips":{"lilypad":{"duration":200.0,"groups":[{"length":1,"tracks":[{"name":"anim_idle","poses":[[-0.2,5.5,0.8,0.8,0,0,0,1,"LILYPAD_BODY"]]}]}],"origin":[-40.3,-64.1],"scale":1.0,"healthTop":-59}},"frames":{"LILYPAD_BODY":[1.0,1.0,100.0,100.0]}}

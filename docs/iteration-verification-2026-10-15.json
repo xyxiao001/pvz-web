@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-15",
+  "baseline": "da59904",
+  "animation": {
+    "newFamilies": 55,
+    "newStates": 160,
+    "existingNativePlants": 9,
+    "existingGiantAndBoss": true,
+    "rigidRotation": [
+      "wallnut-roll",
+      "explodenut"
+    ],
+    "frameEffectsRetained": [
+      "sun",
+      "fume-cloud",
+      "jalapeno-fire"
+    ],
+    "timing": "Existing simulation and clip durations unchanged. Original Reanim transforms interpolated at rendering time.",
+    "sourceCommit": "325b2229a7225d73870bb69322eefcda3a45bf8d"
+  },
+  "images": {
+    "images": 457,
+    "changed": 110,
+    "before": 68118185,
+    "after": 61609149
+  },
+  "build": {
+    "baselineBytes": 76939066,
+    "currentBytes": 43155555
+  },
+  "benchmark": {
+    "environment": "Desktop Codex in-app browser; 45 lobbers + 60 mixed zombies, 30 warm-up + 180 measured frames; texture memory is RGBA estimate, not process RSS; not a mobile-device benchmark.",
+    "before": {
+      "textureSources": 52,
+      "textureMiB": 191.00167846679688,
+      "cpuMedianMs": 0.9,
+      "cpuP95Ms": 2.1,
+      "frameP95Ms": 8.9
+    },
+    "after": {
+      "textureSources": 25,
+      "textureMiB": 32.048797607421875,
+      "cpuMedianMs": 2.2,
+      "cpuP95Ms": 4.3,
+      "frameP95Ms": 9.3
+    },
+    "tradeoff": "Native part interpolation costs more CPU than baked sprites but reduces texture memory and eliminates stepped character poses."
+  },
+  "verification": {
+    "testsPassed": 256,
+    "build": "passed",
+    "assetCheck": "4622 frame alpha checks; 108 static images retain alpha, lossless UI retains RGBA, compressed art SSIM >= 0.985",
+    "gallery": "160 states across 8 pages inspected; fixed newspaper visibility and splitpea head attachments.",
+    "adventureSmoke": "50/50 levels load and render 200 ticks each; not full playthroughs.",
+    "pwa": "Real waiting worker on isolated localhost: notice shown without settings, dismiss hides, fullscreen keeps notice visible, update click reloads and UI confirms new worker release.",
+    "ui": "Desktop and 844x390 landscape reviewed. Actual iOS/Android hardware performance remains to verify."
+  },
+  "publication": "Local commit only; no push or deployment."
+}

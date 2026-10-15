@@ -1,3 +1,4 @@
+import { ActorMotion, ACTOR_MOTION, hasActorMotion, type ActorRig } from './actor-motion';
 import { ZombieHealthBar } from './zombie-health';
 import { GiantMotion, hasGiantMotion, type GiantRig } from './giant-motion';
 import { hasPlantMotion, hasPlantMotionClip, PlantMotion, type PlantRig } from './plant-motion';
@@ -14,7 +15,7 @@ import { animationNames, animationFrame, combatTextureFiles } from './asset-plan
 
 type ClipData = { frames: number[][]; durations: number[]; anchor: number[]; pages: string[] };
 type Clip = { files: string[]; frames: Texture[]; ends: number[]; duration: number; anchors: number[][] };
-type Actor = { healthBar?: ZombieHealthBar; giantRig?: GiantRig; rig?: PlantRig; root: Container; art: Sprite; clip: string; since: number; frame: number; seen: number; previousX: number; previousY: number; motion?: { x: number; y?: number } };
+type Actor = { nativeRig?: ActorRig; healthBar?: ZombieHealthBar; giantRig?: GiantRig; rig?: PlantRig; root: Container; art: Sprite; clip: string; since: number; frame: number; seen: number; previousX: number; previousY: number; motion?: { x: number; y?: number } };
 type Effect = { node: Container; born: number; duration: number; actor?: Actor };
 
 export class Scene {
@@ -23,6 +24,7 @@ export class Scene {
   private world = new Container();
   private bossArt?: BossArt;
   private plantMotion = new PlantMotion();
+  private actorMotion = new ActorMotion();
   private giantMotion = new GiantMotion();
   private actors = new Map<string, Actor>();
   private effects: Effect[] = [];
@@ -121,7 +123,8 @@ export class Scene {
       delete this.clips[name];
     }
     await this.giantMotion.prepare([...needed].some(hasGiantMotion), texture => this.app.renderer.prepare.upload(texture));
-    const names = [...needed].filter(name => !hasGiantMotion(name) && !this.clips[name]);
+    await this.actorMotion.prepare([...needed], progress, texture => this.app.renderer.prepare.upload(texture));
+    const names = [...needed].filter(name => !hasGiantMotion(name) && !hasActorMotion(name) && !this.clips[name]);
     const files = [...new Set(names.flatMap(name => animations[name].pages))];
     const pages = new Map<string, Texture>();
     let done = 0; progress(done, files.length);
@@ -154,6 +157,7 @@ export class Scene {
     this.clearObjects();
     if (this.bossArt) { await this.bossArt.destroy(); this.bossArt = undefined; }
     await this.plantMotion.destroy();
+    await this.actorMotion.destroy();
     await this.giantMotion.destroy();
     const files = [...this.textureFiles];
     for (const clip of Object.values(this.clips)) {
@@ -190,7 +194,7 @@ export class Scene {
   setPointer(pointer: { x: number; y: number } | null) { this.pointer = pointer; }
 
   private clipDuration(name: string) {
-    return hasGiantMotion(name) ? this.giantMotion.duration(name) : this.clips[name].duration;
+    return hasActorMotion(name) ? this.actorMotion.duration(name) : hasGiantMotion(name) ? this.giantMotion.duration(name) : this.clips[name].duration;
   }
 
   private animate(actor: Actor, clipName: string, loop = true, timeline = this.time, rate = 1, shootingTicks?: number) {
@@ -205,7 +209,7 @@ export class Scene {
     if (actor.clip !== clipName) {
       actor.clip = clipName; actor.since = timeline; actor.frame = -1;
       // Spread idle plants across the cycle; do not synchronize every newly planted row.
-      if (loop && ['peashooter', 'sunflower', 'wallnut', 'snowpea', 'potatomine', 'chomper', 'repeater', 'puffshroom', 'sunshroom', 'sunshroom-big', 'fumeshroom', 'hypnoshroom', 'scaredyshroom', 'iceshroom','doomshroom','lilypad','squash','threepeater','plantern','spikeweed','torchwood','tallnut','seashroom','cactus'].includes(clipName)) actor.since -= actor.root.uid * 17 % this.clips[clipName].duration;
+      if (loop && ['peashooter', 'sunflower', 'wallnut', 'snowpea', 'potatomine', 'chomper', 'repeater', 'puffshroom', 'sunshroom', 'sunshroom-big', 'fumeshroom', 'hypnoshroom', 'scaredyshroom', 'iceshroom','doomshroom','lilypad','squash','threepeater','plantern','spikeweed','torchwood','tallnut','seashroom','cactus'].includes(clipName)) actor.since -= actor.root.uid * 17 % this.clipDuration(clipName);
     }
     const elapsed = (timeline - actor.since) * rate;
     if (hasGiantMotion(clipName)) {
@@ -215,7 +219,28 @@ export class Scene {
       actor.giantRig.render(clipName, elapsed, loop);
       return;
     }
+    if (hasActorMotion(clipName)) {
+      if (actor.nativeRig && actor.nativeRig.family !== ACTOR_MOTION[clipName]) {
+        actor.nativeRig.root.destroy({ children: true }); actor.nativeRig = undefined;
+      }
+      if (!actor.nativeRig) {
+        actor.nativeRig = this.actorMotion.create(clipName); actor.root.addChild(actor.nativeRig.root);
+      }
+      actor.nativeRig.root.visible = true; actor.art.visible = false;
+      actor.nativeRig.render(clipName, elapsed, loop);
+      return;
+    }
+    if (actor.nativeRig) actor.nativeRig.root.visible = false;
+    actor.art.visible = true;
     const clip = this.clips[clipName];
+    // Bowling nuts rotate as rigid bodies; interpolate the angle at display rate.
+    if (clipName === 'wallnut-roll' || clipName === 'explodenut') {
+      actor.art.texture = clip.frames[0]; actor.art.anchor.set(.5);
+      actor.art.position.set((.5 - clip.anchors[0][0]) * actor.art.texture.width,
+        (.5 - clip.anchors[0][1]) * actor.art.texture.height);
+      actor.art.rotation = elapsed / clip.duration * Math.PI * 2;
+      return;
+    }
     const position = loop ? elapsed % clip.duration : Math.min(elapsed, clip.duration - .001);
     const frame = animationFrame(clip.ends, position);
     if (actor.frame === frame) return;
@@ -346,10 +371,10 @@ export class Scene {
         : plant.kind === 'chomper' ? plant.chomp!.phase === 'digest' ? 'chomper-digest' : plant.chomp!.phase === 'ready' ? 'chomper' : 'chomper-bite'
         : plant.kind === 'potatomine' && plant.actionIn > 0 ? 'potatomine-unarmed' : plant.kind === 'wallnut' && plant.health < 1334 ? 'wallnut-cracked2'
         : plant.kind === 'wallnut' && plant.health < 2667 ? 'wallnut-cracked1' : plant.kind;
-      if(plant.kind==='flowerpot'){actor.art.texture=this.textures.flowerpot;actor.art.anchor.set(.5,.82);}else this.animate(actor, clip, plant.kind !== 'cherrybomb' && clip !== 'chomper-bite' && clip !== 'umbrella-block', sleeping ? 0 : this.time, clip === 'chomper-bite' ? this.clips[clip].duration / 70 : clip==='umbrella-block'?this.clips[clip].duration/65:1, (plant.kind==='wintermelon' && plant.winterLaunchIn!==undefined || ['cabbagepult','kernelpult','melonpult'].includes(plant.kind)) && !sleeping ? game.ticks+(game.phase==='playing'?alpha:0)-plant.shotAt : undefined);
+      this.animate(actor, clip, plant.kind !== 'cherrybomb' && clip !== 'chomper-bite' && clip !== 'umbrella-block', sleeping ? 0 : this.time, clip === 'chomper-bite' ? this.clipDuration(clip) / 70 : clip==='umbrella-block'?this.clipDuration(clip)/65:1, (plant.kind==='wintermelon' && plant.winterLaunchIn!==undefined || ['cabbagepult','kernelpult','melonpult'].includes(plant.kind)) && !sleeping ? game.ticks+(game.phase==='playing'?alpha:0)-plant.shotAt : undefined);
       actor.root.position.set(cellX(plant.column), game.rowY(plant.row,cellX(plant.column)));
       if(game.config.environment==='roof'&&plant.kind!=='flowerpot')actor.root.y-=12;
-      actor.art.tint=sleeping?0xa3a1be:0xffffff;
+      (actor.nativeRig?.root ?? actor.rig?.root ?? actor.art).tint=sleeping?0xa3a1be:0xffffff;
       if (sleeping) {
         const sleep=this.actor(`sleep${plant.id}`,plant.row*100+15);
         if(sleep.clip!=='sleep'){sleep.clip='sleep';const label=new Text({text:'Zzz',style:{fontSize:16,fill:0xc6d9ff}});sleep.root.addChild(label);}
@@ -381,7 +406,7 @@ export class Scene {
         : zombie.rageIn > 0 ? 'newspaper-gasp' : zombie.vaultIn > 52 ? 'pole-jump' : zombie.vaultIn > 0 ? 'pole-land'
         : zombie.hasPole ? 'pole-run' : `${type}-${zombie.eating ? 'eat' : 'walk'}`;
       const walking = zombie.kind !== 'zomboni' && zombie.kind !== 'catapult' && !zombie.sled && (clip.endsWith('-walk') || clip.endsWith('-headless') || clip === 'pole-run');
-      const rate = zombie.giant&&zombie.giant.phase!=='walk'?this.clipDuration(clip)/(zombie.giant.phase==='smash'?134:138):zombie.catapult?.phase==='shoot'?this.clips[clip].duration/129:zombie.catapult?.phase==='walk'?.55:zombie.catapult?.phase==='reload'?1.2:clip === 'newspaper-gasp' ? this.clips[clip].duration / 150 : walking ? this.clipDuration(clip) / walkingCycleTicks(zombie) : 1;
+      const rate = zombie.giant&&zombie.giant.phase!=='walk'?this.clipDuration(clip)/(zombie.giant.phase==='smash'?134:138):zombie.catapult?.phase==='shoot'?this.clipDuration(clip)/129:zombie.catapult?.phase==='walk'?.55:zombie.catapult?.phase==='reload'?1.2:clip === 'newspaper-gasp' ? this.clipDuration(clip) / 150 : walking ? this.clipDuration(clip) / walkingCycleTicks(zombie) : 1;
       this.animate(actor, clip, !zombie.popIn && !zombie.jackOpening && zombie.vaultIn === 0 && zombie.rageIn === 0 && (!zombie.giant||zombie.giant.phase==='walk') && zombie.catapult?.phase!=='shoot' && !zombie.flight && !zombie.landingIn, zombie.animationTime + alpha * (zombie.frozenIn !== undefined && zombie.frozenIn > 0 ? 0 : zombie.chillIn > 0 ? .4 : 1), rate);
       this.move(actor, zombie, game.rowY(zombie.row,zombie.x) + 1, alpha);
       if(zombie.flight){const f=zombie.flight;actor.root.y-=Math.sin((1-f.remaining/f.duration)*Math.PI)*110+f.remaining/f.duration*88;}
@@ -398,13 +423,13 @@ export class Scene {
       if (this.showZombieHealth) {
         if (!actor.healthBar) { actor.healthBar = new ZombieHealthBar(); actor.root.addChild(actor.healthBar.root); }
         actor.healthBar.root.visible = true;
-        actor.healthBar.root.y = actor.giantRig ? -170 : -actor.art.height * actor.art.anchor.y - 10;
+        actor.healthBar.root.y = actor.nativeRig ? actor.nativeRig.healthTop(clip) : actor.giantRig ? -170 : -actor.art.height * actor.art.anchor.y - 10;
         actor.healthBar.update(zombie);
       } else if (actor.healthBar) actor.healthBar.root.visible = false;
       const kelp = kelpTargets.get(zombie.id);
       if (kelp && kelp.remaining <= 50) { actor.root.y += 50 - kelp.remaining; actor.root.alpha = (kelp.remaining - 1) / 50; }
       if(zombie.underground)actor.root.alpha=.55;
-      (actor.giantRig?.root ?? actor.art).tint = zombie.butterIn ? 0xffdc63 : game.ticks - zombie.hitAt < 8 ? 0xe4ff9b : zombie.hypnotized ? 0xd28cff : zombie.chillIn > 0 ? 0x87c7ff : 0xffffff;
+      (actor.nativeRig?.root ?? actor.giantRig?.root ?? actor.art).tint = zombie.butterIn ? 0xffdc63 : game.ticks - zombie.hitAt < 8 ? 0xe4ff9b : zombie.hypnotized ? 0xd28cff : zombie.chillIn > 0 ? 0x87c7ff : 0xffffff;
     }
     for(const l of game.ladders){const actor=this.actor(`ladder${l.column}-${l.row}`,l.row*100+24);actor.art.texture=this.textures.ladder;actor.art.anchor.set(.5,1);actor.art.width=65;actor.art.height=115;actor.root.position.set(cellX(l.column)+20,game.rowY(l.row,cellX(l.column)));}
     for (const pea of game.peas) {
@@ -442,7 +467,7 @@ export class Scene {
         const burned = this.explosions.some(e => Math.abs(e.x - actor.root.x) <= 115 && Math.abs(e.y + 35 - actor.root.y) <= 101);
         const special = ['dancer','backup','snorkel','zomboni','bobsled','dolphin','jack','balloon','digger','pogo','bungee','ladder','catapult','gargantuar','imp'].find(name=>actor.clip.startsWith(`${name}-`));
         const clip = special && ['zomboni','bobsled','dolphin','jack','balloon','digger','pogo','bungee','ladder','catapult','gargantuar','imp'].includes(special) ? `${special}${special==='gargantuar'&&actor.clip.includes('-bare-')?'-bare':''}-die` : actor.clip.startsWith('ducky') && !burned ? 'ducky-die' : special && (special!=='snorkel'||!burned) ? `${special}-${burned?'burn':'die'}` : `${actor.clip.startsWith('football-') && !burned ? 'football' : actor.clip.startsWith('newspaper-') ? 'newspaper' : actor.clip.startsWith('pole-') ? 'pole' : 'zombie'}-${burned ? 'burn' : 'die'}`;
-        this.animate(actor, clip, false); (actor.giantRig?.root ?? actor.art).tint = 0xffffff;
+        this.animate(actor, clip, false); (actor.nativeRig?.root ?? actor.giantRig?.root ?? actor.art).tint = 0xffffff;
         this.effects.push({ node: actor.root, actor, born: this.time, duration: this.clipDuration(clip) });
       } else actor.root.destroy({ children: true });
       this.actors.delete(key);

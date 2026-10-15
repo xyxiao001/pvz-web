@@ -1,0 +1,1980 @@
+{
+  "commit": "325b2229a7225d73870bb69322eefcda3a45bf8d",
+  "clips": {
+    "umbrella": {
+      "source": "Umbrellaleaf",
+      "layer": "anim_idle",
+      "origin": [
+        -40,
+        -73
+      ]
+    },
+    "umbrella-block": {
+      "source": "Umbrellaleaf",
+      "layer": "anim_block",
+      "origin": [
+        -40,
+        -73
+      ]
+    },
+    "marigold": {
+      "source": "Marigold",
+      "layer": "anim_idle",
+      "origin": [
+        -40,
+        -73
+      ]
+    },
+    "catapult-walk": {
+      "source": "Zombie_catapult",
+      "layer": "anim_walk",
+      "origin": [
+        -50,
+        -143
+      ]
+    },
+    "catapult-shoot": {
+      "source": "Zombie_catapult",
+      "layer": "anim_shoot",
+      "origin": [
+        -50,
+        -143
+      ]
+    },
+    "catapult-idle": {
+      "source": "Zombie_catapult",
+      "layer": "anim_idle",
+      "origin": [
+        -50,
+        -143
+      ]
+    },
+    "catapult-die": {
+      "source": "Zombie_charred_catapult",
+      "layer": "charred",
+      "origin": [
+        -50,
+        -143
+      ]
+    },
+    "imp-walk": {
+      "source": "Zombie_imp",
+      "layer": "anim_walk",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "imp-eat": {
+      "source": "Zombie_imp",
+      "layer": "anim_eat",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "imp-thrown": {
+      "source": "Zombie_imp",
+      "layer": "anim_thrown",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "imp-land": {
+      "source": "Zombie_imp",
+      "layer": "anim_land",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "imp-die": {
+      "source": "Zombie_imp",
+      "layer": "anim_death",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "magnetshroom": {
+      "source": "Magnetshroom",
+      "layer": "anim_idle",
+      "origin": [
+        -40,
+        -73
+      ]
+    },
+    "magnetshroom-attack": {
+      "source": "Magnetshroom",
+      "layer": "anim_shooting",
+      "origin": [
+        -40,
+        -73
+      ]
+    },
+    "digger-walk": {
+      "source": "Zombie_digger",
+      "layer": "anim_walk",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "digger-eat": {
+      "source": "Zombie_digger",
+      "layer": "anim_eat",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "digger-die": {
+      "source": "Zombie_digger",
+      "layer": "anim_death",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "digger-dig": {
+      "source": "Zombie_digger",
+      "layer": "anim_dig",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "digger-rise": {
+      "source": "Zombie_digger",
+      "layer": "anim_drill",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "pogo-walk": {
+      "source": "Zombie_pogo",
+      "layer": "anim_walk",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "pogo-eat": {
+      "source": "Zombie_pogo",
+      "layer": "anim_eat",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "pogo-die": {
+      "source": "Zombie_pogo",
+      "layer": "anim_death",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "pogo-bounce": {
+      "source": "Zombie_pogo",
+      "layer": "anim_pogo",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "ladder-walk": {
+      "source": "Zombie_ladder",
+      "layer": "anim_ladderwalk",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "ladder-eat": {
+      "source": "Zombie_ladder",
+      "layer": "anim_laddereat",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "ladder-bare": {
+      "source": "Zombie_ladder",
+      "layer": "anim_walk",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "ladder-die": {
+      "source": "Zombie_ladder",
+      "layer": "anim_death",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "ladder-place": {
+      "source": "Zombie_ladder",
+      "layer": "anim_placeladder",
+      "origin": [
+        -50,
+        -130
+      ]
+    },
+    "bungee-idle": {
+      "source": "Zombie_bungi",
+      "layer": "anim_idle",
+      "origin": [
+        -50,
+        -95
+      ]
+    },
+    "bungee-drop": {
+      "source": "Zombie_bungi",
+      "layer": "anim_drop",
+      "origin": [
+        -50,
+        -95
+      ]
+    },
+    "bungee-die": {
+      "source": "Zombie_bungi",
+      "layer": "anim_hold",
+      "origin": [
+        -50,
+        -95
+      ]
+    },
+    "blover": {
+      "source": "Blover",
+      "layer": "anim_blow",
+      "origin": [
+        -40,
+        -80
+      ]
+    },
+    "blover-loop": {
+      "source": "Blover",
+      "layer": "anim_loop",
+      "origin": [
+        -40,
+        -80
+      ]
+    },
+    "bobsled-walk": {
+      "source": "Zombie_bobsled",
+      "layer": "anim_walk",
+      "origin": [
+        -50,
+        -160
+      ]
+    },
+    "bobsled-eat": {
+      "source": "Zombie_bobsled",
+      "layer": "anim_eat",
+      "origin": [
+        -50,
+        -160
+      ]
+    },
+    "bobsled-die": {
+      "source": "Zombie_bobsled",
+      "layer": "anim_death",
+      "origin": [
+        -50,
+        -160
+      ]
+    },
+    "wallnut": {
+      "source": "Wallnut",
+      "layer": "anim_idle"
+    },
+    "snowpea": {
+      "source": "SnowPea",
+      "layer": "anim_full_idle"
+    },
+    "repeater": {
+      "source": "PeaShooter",
+      "layer": "anim_full_idle"
+    },
+    "potatomine": {
+      "source": "PotatoMine",
+      "layer": "anim_armed"
+    },
+    "potatomine-unarmed": {
+      "source": "PotatoMine",
+      "layer": "anim_idle"
+    },
+    "chomper": {
+      "source": "Chomper",
+      "layer": "anim_idle"
+    },
+    "chomper-bite": {
+      "source": "Chomper",
+      "layer": "anim_bite"
+    },
+    "chomper-digest": {
+      "source": "Chomper",
+      "layer": "anim_chew"
+    },
+    "cherrybomb": {
+      "source": "CherryBomb",
+      "layer": "anim_explode"
+    },
+    "puffshroom": {
+      "source": "PuffShroom",
+      "layer": "anim_idle"
+    },
+    "sunshroom": {
+      "source": "SunShroom",
+      "layer": "anim_idle"
+    },
+    "sunshroom-big": {
+      "source": "SunShroom",
+      "layer": "anim_bigidle"
+    },
+    "fumeshroom": {
+      "source": "FumeShroom",
+      "layer": "anim_idle"
+    },
+    "fumeshroom-attack": {
+      "source": "FumeShroom",
+      "layer": "anim_shooting"
+    },
+    "hypnoshroom": {
+      "source": "HypnoShroom",
+      "layer": "anim_idle"
+    },
+    "scaredyshroom": {
+      "source": "ScaredyShroom",
+      "layer": "anim_idle"
+    },
+    "scaredyshroom-scared": {
+      "source": "ScaredyShroom",
+      "layer": "anim_scaredidle"
+    },
+    "iceshroom": {
+      "source": "IceShroom",
+      "layer": "anim_idle"
+    },
+    "doomshroom": {
+      "source": "DoomShroom",
+      "layer": "anim_idle"
+    },
+    "gravebuster": {
+      "source": "Gravebuster",
+      "layer": "anim_idle"
+    },
+    "lilypad": {
+      "source": "LilyPad",
+      "layer": "anim_idle"
+    },
+    "squash": {
+      "source": "Squash",
+      "layer": "anim_idle"
+    },
+    "squash-attack": {
+      "source": "Squash",
+      "layer": "anim_jumpdown"
+    },
+    "plantern": {
+      "source": "Plantern",
+      "layer": "anim_idle"
+    },
+    "tanglekelp": {
+      "source": "Tanglekelp",
+      "layer": "anim_idle"
+    },
+    "tanglekelp-grab": {
+      "source": "Tanglekelp",
+      "layer": "anim_grab"
+    },
+    "jalapeno": {
+      "source": "Jalapeno",
+      "layer": "anim_explode"
+    },
+    "spikeweed": {
+      "source": "Caltrop",
+      "layer": "anim_idle"
+    },
+    "torchwood": {
+      "source": "Torchwood",
+      "layer": "anim_idle"
+    },
+    "tallnut": {
+      "source": "Tallnut",
+      "layer": "anim_idle"
+    },
+    "seashroom": {
+      "source": "SeaShroom",
+      "layer": "anim_idle"
+    },
+    "cactus": {
+      "source": "Cactus",
+      "layer": "anim_idle"
+    },
+    "cactus-tall": {
+      "source": "Cactus",
+      "layer": "anim_idlehigh"
+    },
+    "splitpea": {
+      "source": "SplitPea",
+      "layer": "anim_idle"
+    },
+    "starfruit": {
+      "source": "Starfruit",
+      "layer": "anim_idle"
+    },
+    "pumpkin": {
+      "source": "Pumpkin",
+      "layer": "anim_idle"
+    },
+    "garlic": {
+      "source": "Garlic",
+      "layer": "anim_idle"
+    },
+    "flowerpot": {
+      "source": "Pot",
+      "layer": "anim_idle"
+    },
+    "coffeebean": {
+      "source": "Coffeebean",
+      "layer": "anim_crumble"
+    },
+    "wallnut-cracked1": {
+      "source": "Wallnut",
+      "layer": "anim_idle",
+      "replace": {
+        "anim_face": "WALLNUT_CRACKED1"
+      }
+    },
+    "wallnut-cracked2": {
+      "source": "Wallnut",
+      "layer": "anim_idle",
+      "replace": {
+        "anim_face": "WALLNUT_CRACKED2"
+      }
+    },
+    "tallnut-cracked1": {
+      "source": "Tallnut",
+      "layer": "anim_idle",
+      "replace": {
+        "anim_idle": "TALLNUT_CRACKED1"
+      }
+    },
+    "tallnut-cracked2": {
+      "source": "Tallnut",
+      "layer": "anim_idle",
+      "replace": {
+        "anim_idle": "TALLNUT_CRACKED2"
+      }
+    },
+    "garlic-cracked1": {
+      "source": "Garlic",
+      "layer": "anim_idle",
+      "replace": {
+        "anim_face": "GARLIC_BODY2"
+      }
+    },
+    "garlic-cracked2": {
+      "source": "Garlic",
+      "layer": "anim_idle",
+      "replace": {
+        "anim_face": "GARLIC_BODY3"
+      }
+    },
+    "pumpkin-cracked1": {
+      "source": "Pumpkin",
+      "layer": "anim_idle",
+      "replace": {
+        "Pumpkin_front": "PUMPKIN_DAMAGE1"
+      }
+    },
+    "pumpkin-cracked2": {
+      "source": "Pumpkin",
+      "layer": "anim_idle",
+      "replace": {
+        "Pumpkin_front": "PUMPKIN_DAMAGE3"
+      }
+    },
+    "zombie-walk": {
+      "source": "Zombie",
+      "layer": "anim_walk",
+      "hidden": [
+        "anim_cone",
+        "anim_bucket",
+        "anim_screendoor",
+        "Zombie_flaghand",
+        "Zombie_duckytube",
+        "anim_tongue",
+        "Zombie_mustache",
+        "Zombie_outerarm_screendoor",
+        "Zombie_innerarm_screendoor"
+      ],
+      "flag": false
+    },
+    "zombie-eat": {
+      "source": "Zombie",
+      "layer": "anim_eat",
+      "hidden": [
+        "anim_cone",
+        "anim_bucket",
+        "anim_screendoor",
+        "Zombie_flaghand",
+        "Zombie_duckytube",
+        "anim_tongue",
+        "Zombie_mustache",
+        "Zombie_outerarm_screendoor",
+        "Zombie_innerarm_screendoor"
+      ],
+      "flag": false
+    },
+    "cone-walk": {
+      "source": "Zombie",
+      "layer": "anim_walk",
+      "hidden": [
+        "anim_bucket",
+        "anim_screendoor",
+        "Zombie_flaghand",
+        "Zombie_duckytube",
+        "anim_tongue",
+        "Zombie_mustache",
+        "Zombie_outerarm_screendoor",
+        "Zombie_innerarm_screendoor",
+        "anim_hair"
+      ],
+      "flag": false
+    },
+    "cone-eat": {
+      "source": "Zombie",
+      "layer": "anim_eat",
+      "hidden": [
+        "anim_bucket",
+        "anim_screendoor",
+        "Zombie_flaghand",
+        "Zombie_duckytube",
+        "anim_tongue",
+        "Zombie_mustache",
+        "Zombie_outerarm_screendoor",
+        "Zombie_innerarm_screendoor",
+        "anim_hair"
+      ],
+      "flag": false
+    },
+    "bucket-walk": {
+      "source": "Zombie",
+      "layer": "anim_walk",
+      "hidden": [
+        "anim_cone",
+        "anim_screendoor",
+        "Zombie_flaghand",
+        "Zombie_duckytube",
+        "anim_tongue",
+        "Zombie_mustache",
+        "Zombie_outerarm_screendoor",
+        "Zombie_innerarm_screendoor",
+        "anim_hair"
+      ],
+      "flag": false
+    },
+    "bucket-eat": {
+      "source": "Zombie",
+      "layer": "anim_eat",
+      "hidden": [
+        "anim_cone",
+        "anim_screendoor",
+        "Zombie_flaghand",
+        "Zombie_duckytube",
+        "anim_tongue",
+        "Zombie_mustache",
+        "Zombie_outerarm_screendoor",
+        "Zombie_innerarm_screendoor",
+        "anim_hair"
+      ],
+      "flag": false
+    },
+    "flag-walk": {
+      "source": "Zombie",
+      "layer": "anim_walk",
+      "hidden": [
+        "anim_cone",
+        "anim_bucket",
+        "anim_screendoor",
+        "Zombie_duckytube",
+        "anim_tongue",
+        "Zombie_mustache",
+        "Zombie_outerarm_screendoor",
+        "anim_innerarm",
+        "Zombie_innerarm_screendoor_hand"
+      ],
+      "flag": true
+    },
+    "flag-eat": {
+      "source": "Zombie",
+      "layer": "anim_eat",
+      "hidden": [
+        "anim_cone",
+        "anim_bucket",
+        "anim_screendoor",
+        "Zombie_duckytube",
+        "anim_tongue",
+        "Zombie_mustache",
+        "Zombie_outerarm_screendoor",
+        "anim_innerarm",
+        "Zombie_innerarm_screendoor_hand"
+      ],
+      "flag": true
+    },
+    "door-walk": {
+      "source": "Zombie",
+      "layer": "anim_walk",
+      "hidden": [
+        "anim_cone",
+        "anim_bucket",
+        "Zombie_flaghand",
+        "Zombie_duckytube",
+        "anim_tongue",
+        "Zombie_mustache",
+        "anim_innerarm",
+        "Zombie_outerarm_hand",
+        "Zombie_outerarm_lower",
+        "Zombie_outerarm_upper"
+      ],
+      "flag": false
+    },
+    "door-eat": {
+      "source": "Zombie",
+      "layer": "anim_eat",
+      "hidden": [
+        "anim_cone",
+        "anim_bucket",
+        "Zombie_flaghand",
+        "Zombie_duckytube",
+        "anim_tongue",
+        "Zombie_mustache",
+        "anim_innerarm",
+        "Zombie_outerarm_hand",
+        "Zombie_outerarm_lower",
+        "Zombie_outerarm_upper"
+      ],
+      "flag": false
+    },
+    "ducky1-walk": {
+      "source": "Zombie",
+      "layer": "anim_swim",
+      "hidden": [
+        "anim_cone",
+        "anim_bucket",
+        "anim_screendoor",
+        "Zombie_flaghand",
+        "anim_tongue",
+        "Zombie_mustache",
+        "Zombie_outerarm_screendoor",
+        "Zombie_innerarm_screendoor",
+        "Zombie_innerleg",
+        "Zombie_outerleg"
+      ],
+      "flag": false
+    },
+    "ducky1-eat": {
+      "source": "Zombie",
+      "layer": "anim_eat",
+      "hidden": [
+        "anim_cone",
+        "anim_bucket",
+        "anim_screendoor",
+        "Zombie_flaghand",
+        "anim_tongue",
+        "Zombie_mustache",
+        "Zombie_outerarm_screendoor",
+        "Zombie_innerarm_screendoor",
+        "Zombie_innerleg",
+        "Zombie_outerleg"
+      ],
+      "flag": false
+    },
+    "ducky2-walk": {
+      "source": "Zombie",
+      "layer": "anim_swim",
+      "hidden": [
+        "anim_bucket",
+        "anim_screendoor",
+        "Zombie_flaghand",
+        "anim_tongue",
+        "Zombie_mustache",
+        "Zombie_outerarm_screendoor",
+        "Zombie_innerarm_screendoor",
+        "anim_hair",
+        "Zombie_innerleg",
+        "Zombie_outerleg"
+      ],
+      "flag": false
+    },
+    "ducky2-eat": {
+      "source": "Zombie",
+      "layer": "anim_eat",
+      "hidden": [
+        "anim_bucket",
+        "anim_screendoor",
+        "Zombie_flaghand",
+        "anim_tongue",
+        "Zombie_mustache",
+        "Zombie_outerarm_screendoor",
+        "Zombie_innerarm_screendoor",
+        "anim_hair",
+        "Zombie_innerleg",
+        "Zombie_outerleg"
+      ],
+      "flag": false
+    },
+    "ducky3-walk": {
+      "source": "Zombie",
+      "layer": "anim_swim",
+      "hidden": [
+        "anim_cone",
+        "anim_screendoor",
+        "Zombie_flaghand",
+        "anim_tongue",
+        "Zombie_mustache",
+        "Zombie_outerarm_screendoor",
+        "Zombie_innerarm_screendoor",
+        "anim_hair",
+        "Zombie_innerleg",
+        "Zombie_outerleg"
+      ],
+      "flag": false
+    },
+    "ducky3-eat": {
+      "source": "Zombie",
+      "layer": "anim_eat",
+      "hidden": [
+        "anim_cone",
+        "anim_screendoor",
+        "Zombie_flaghand",
+        "anim_tongue",
+        "Zombie_mustache",
+        "Zombie_outerarm_screendoor",
+        "Zombie_innerarm_screendoor",
+        "anim_hair",
+        "Zombie_innerleg",
+        "Zombie_outerleg"
+      ],
+      "flag": false
+    },
+    "zombie-headless": {
+      "source": "Zombie",
+      "layer": "anim_walk",
+      "hidden": [
+        "anim_cone",
+        "anim_bucket",
+        "anim_screendoor",
+        "Zombie_flaghand",
+        "Zombie_duckytube",
+        "anim_tongue",
+        "Zombie_mustache",
+        "Zombie_outerarm_screendoor",
+        "Zombie_innerarm_screendoor",
+        "anim_head",
+        "anim_hair"
+      ]
+    },
+    "zombie-die": {
+      "source": "Zombie",
+      "layer": "anim_death",
+      "hidden": [
+        "anim_cone",
+        "anim_bucket",
+        "anim_screendoor",
+        "Zombie_flaghand",
+        "Zombie_duckytube",
+        "anim_tongue",
+        "Zombie_mustache",
+        "Zombie_outerarm_screendoor",
+        "Zombie_innerarm_screendoor"
+      ]
+    },
+    "ducky-die": {
+      "source": "Zombie",
+      "layer": "anim_waterdeath",
+      "hidden": [
+        "anim_cone",
+        "anim_bucket",
+        "anim_screendoor",
+        "Zombie_flaghand",
+        "anim_tongue",
+        "Zombie_mustache",
+        "Zombie_outerarm_screendoor",
+        "Zombie_innerarm_screendoor",
+        "Zombie_innerleg",
+        "Zombie_outerleg"
+      ]
+    },
+    "football-walk": {
+      "source": "Zombie_football",
+      "layer": "anim_walk",
+      "hidden": [
+        "anim_hair"
+      ],
+      "replace": {}
+    },
+    "football-eat": {
+      "source": "Zombie_football",
+      "layer": "anim_eat",
+      "hidden": [
+        "anim_hair"
+      ],
+      "replace": {}
+    },
+    "football-bare-walk": {
+      "source": "Zombie_football",
+      "layer": "anim_walk",
+      "hidden": [
+        "zombie_football_helmet"
+      ],
+      "replace": {}
+    },
+    "football-bare-eat": {
+      "source": "Zombie_football",
+      "layer": "anim_eat",
+      "hidden": [
+        "zombie_football_helmet"
+      ],
+      "replace": {}
+    },
+    "football-headless": {
+      "source": "Zombie_football",
+      "layer": "anim_walk",
+      "hidden": [
+        "zombie_football_helmet",
+        "anim_head",
+        "anim_hair",
+        "anim_tongue"
+      ],
+      "replace": {}
+    },
+    "football-die": {
+      "source": "Zombie_football",
+      "layer": "anim_death",
+      "hidden": [
+        "anim_hair"
+      ],
+      "replace": {}
+    },
+    "newspaper-walk": {
+      "source": "Zombie_paper",
+      "layer": "anim_walk",
+      "hidden": [],
+      "replace": {}
+    },
+    "newspaper-eat": {
+      "source": "Zombie_paper",
+      "layer": "anim_eat",
+      "hidden": [],
+      "replace": {}
+    },
+    "newspaper-mad-walk": {
+      "source": "Zombie_paper",
+      "layer": "anim_walk_nopaper",
+      "hidden": [
+        "Zombie_paper_paper"
+      ],
+      "replace": {}
+    },
+    "newspaper-mad-eat": {
+      "source": "Zombie_paper",
+      "layer": "anim_eat_nopaper",
+      "hidden": [
+        "Zombie_paper_paper"
+      ],
+      "replace": {}
+    },
+    "newspaper-gasp": {
+      "source": "Zombie_paper",
+      "layer": "anim_gasp",
+      "hidden": [],
+      "replace": {}
+    },
+    "newspaper-headless": {
+      "source": "Zombie_paper",
+      "layer": "anim_walk_nopaper",
+      "hidden": [
+        "anim_head",
+        "anim_hair",
+        "anim_tongue",
+        "Zombie_paper_paper"
+      ],
+      "replace": {}
+    },
+    "newspaper-die": {
+      "source": "Zombie_paper",
+      "layer": "anim_death",
+      "hidden": [
+        "Zombie_paper_paper"
+      ],
+      "replace": {}
+    },
+    "pole-run": {
+      "source": "Zombie_polevaulter",
+      "layer": "anim_run",
+      "hidden": [],
+      "replace": {}
+    },
+    "pole-walk": {
+      "source": "Zombie_polevaulter",
+      "layer": "anim_walk",
+      "hidden": [],
+      "replace": {}
+    },
+    "pole-eat": {
+      "source": "Zombie_polevaulter",
+      "layer": "anim_eat",
+      "hidden": [],
+      "replace": {}
+    },
+    "pole-jump": {
+      "source": "Zombie_polevaulter",
+      "layer": "anim_jump",
+      "hidden": [],
+      "replace": {},
+      "slice": [
+        0,
+        0.58
+      ]
+    },
+    "pole-land": {
+      "source": "Zombie_polevaulter",
+      "layer": "anim_jump",
+      "hidden": [],
+      "replace": {},
+      "slice": [
+        0.58,
+        1
+      ]
+    },
+    "pole-headless": {
+      "source": "Zombie_polevaulter",
+      "layer": "anim_walk",
+      "hidden": [
+        "anim_head",
+        "anim_hair",
+        "anim_tongue"
+      ],
+      "replace": {}
+    },
+    "pole-die": {
+      "source": "Zombie_polevaulter",
+      "layer": "anim_death",
+      "hidden": [],
+      "replace": {}
+    },
+    "dancer-walk": {
+      "source": "Zombie_disco",
+      "layer": "anim_walk",
+      "hidden": [],
+      "replace": {}
+    },
+    "dancer-eat": {
+      "source": "Zombie_disco",
+      "layer": "anim_eat",
+      "hidden": [],
+      "replace": {}
+    },
+    "dancer-summon": {
+      "source": "Zombie_disco",
+      "layer": "anim_point",
+      "hidden": [],
+      "replace": {}
+    },
+    "dancer-headless": {
+      "source": "Zombie_disco",
+      "layer": "anim_walk",
+      "hidden": [
+        "anim_head",
+        "anim_hair",
+        "anim_tongue"
+      ],
+      "replace": {}
+    },
+    "dancer-die": {
+      "source": "Zombie_disco",
+      "layer": "anim_death",
+      "hidden": [],
+      "replace": {}
+    },
+    "backup-walk": {
+      "source": "Zombie_backup",
+      "layer": "anim_walk",
+      "hidden": [],
+      "replace": {}
+    },
+    "backup-eat": {
+      "source": "Zombie_backup",
+      "layer": "anim_eat",
+      "hidden": [],
+      "replace": {}
+    },
+    "backup-headless": {
+      "source": "Zombie_backup",
+      "layer": "anim_walk",
+      "hidden": [
+        "anim_head",
+        "anim_hair",
+        "anim_tongue"
+      ],
+      "replace": {}
+    },
+    "backup-die": {
+      "source": "Zombie_backup",
+      "layer": "anim_death",
+      "hidden": [],
+      "replace": {}
+    },
+    "snorkel-walk": {
+      "source": "Zombie_snorkle",
+      "layer": "anim_walk",
+      "hidden": [],
+      "replace": {}
+    },
+    "snorkel-swim": {
+      "source": "Zombie_snorkle",
+      "layer": "anim_swim",
+      "hidden": [],
+      "replace": {}
+    },
+    "snorkel-eat": {
+      "source": "Zombie_snorkle",
+      "layer": "anim_eat",
+      "hidden": [],
+      "replace": {}
+    },
+    "snorkel-die": {
+      "source": "Zombie_snorkle",
+      "layer": "anim_death",
+      "hidden": [],
+      "replace": {}
+    },
+    "dolphin-walk": {
+      "source": "Zombie_dolphinrider",
+      "layer": "anim_walkdolphin",
+      "hidden": [],
+      "replace": {}
+    },
+    "dolphin-ride": {
+      "source": "Zombie_dolphinrider",
+      "layer": "anim_ride",
+      "hidden": [],
+      "replace": {}
+    },
+    "dolphin-swim": {
+      "source": "Zombie_dolphinrider",
+      "layer": "anim_swim",
+      "hidden": [],
+      "replace": {}
+    },
+    "dolphin-jump": {
+      "source": "Zombie_dolphinrider",
+      "layer": "anim_dolphinjump",
+      "hidden": [],
+      "replace": {}
+    },
+    "dolphin-eat": {
+      "source": "Zombie_dolphinrider",
+      "layer": "anim_eat",
+      "hidden": [],
+      "replace": {}
+    },
+    "dolphin-die": {
+      "source": "Zombie_dolphinrider",
+      "layer": "anim_death",
+      "hidden": [],
+      "replace": {}
+    },
+    "jack-walk": {
+      "source": "Zombie_jackbox",
+      "layer": "anim_walk",
+      "hidden": [],
+      "replace": {}
+    },
+    "jack-eat": {
+      "source": "Zombie_jackbox",
+      "layer": "anim_eat",
+      "hidden": [],
+      "replace": {}
+    },
+    "jack-open": {
+      "source": "Zombie_jackbox",
+      "layer": "anim_pop",
+      "hidden": [],
+      "replace": {}
+    },
+    "jack-headless": {
+      "source": "Zombie_jackbox",
+      "layer": "anim_walk",
+      "hidden": [
+        "anim_head",
+        "anim_hair",
+        "anim_tongue"
+      ],
+      "replace": {}
+    },
+    "jack-die": {
+      "source": "Zombie_jackbox",
+      "layer": "anim_death",
+      "hidden": [],
+      "replace": {}
+    },
+    "balloon-fly": {
+      "source": "Zombie_balloon",
+      "layer": "anim_idle",
+      "hidden": [],
+      "replace": {}
+    },
+    "balloon-walk": {
+      "source": "Zombie_balloon",
+      "layer": "anim_walk",
+      "hidden": [],
+      "replace": {}
+    },
+    "balloon-eat": {
+      "source": "Zombie_balloon",
+      "layer": "anim_eat",
+      "hidden": [],
+      "replace": {}
+    },
+    "balloon-pop": {
+      "source": "Zombie_balloon",
+      "layer": "anim_pop",
+      "hidden": [],
+      "replace": {}
+    },
+    "balloon-die": {
+      "source": "Zombie_balloon",
+      "layer": "anim_death",
+      "hidden": [],
+      "replace": {}
+    },
+    "zomboni-walk": {
+      "source": "Zombie_zamboni",
+      "layer": "anim_drive",
+      "hidden": [],
+      "replace": {}
+    },
+    "zomboni-damaged": {
+      "source": "Zombie_zamboni",
+      "layer": "anim_drive",
+      "hidden": [],
+      "replace": {
+        "Zombie_zamboni_1": "ZOMBIE_ZAMBONI_1_DAMAGE1",
+        "Zombie_zamboni_2": "ZOMBIE_ZAMBONI_2_DAMAGE1"
+      }
+    },
+    "zomboni-critical": {
+      "source": "Zombie_zamboni",
+      "layer": "anim_drive",
+      "hidden": [],
+      "replace": {
+        "Zombie_zamboni_1": "ZOMBIE_ZAMBONI_1_DAMAGE2",
+        "Zombie_zamboni_2": "ZOMBIE_ZAMBONI_2_DAMAGE2"
+      }
+    },
+    "zombie-burn": {
+      "source": "Zombie_charred",
+      "layer": "anim_crumble"
+    },
+    "dancer-burn": {
+      "source": "Zombie_charred",
+      "layer": "anim_crumble"
+    },
+    "backup-burn": {
+      "source": "Zombie_charred",
+      "layer": "anim_crumble"
+    },
+    "newspaper-burn": {
+      "source": "Zombie_charred",
+      "layer": "anim_crumble"
+    },
+    "pole-burn": {
+      "source": "Zombie_charred",
+      "layer": "anim_crumble"
+    },
+    "zomboni-die": {
+      "source": "Zombie_charred_zamboni",
+      "layer": "anim_crumble"
+    }
+  },
+  "sources": {
+    "SexyAppFramework/reanim/Umbrellaleaf.reanim": "fc324dfaf29d6b075fa6ea56ddda31997a509743015dd53edfd8a5a3656dcdae",
+    "SexyAppFramework/reanim/Marigold.reanim": "e4159d60be1d6fd36ab19ea197d5b6c5682707170a4068323e698e1ce6d4dd9f",
+    "SexyAppFramework/reanim/Zombie_catapult.reanim": "2c09021433a8cc1a6417e5be417ba0cbc6193922aaba21e97eec9423b5964af8",
+    "SexyAppFramework/reanim/Zombie_charred_catapult.reanim": "02581ac402a127bdfdd4d0f16482eb634c4a9aefd7774f9fa70835d5134068bf",
+    "SexyAppFramework/reanim/Zombie_imp.reanim": "9552d5a911ff907889e3a1f4de75bff11d1fa6960a9c2dd01f231c49907a4c64",
+    "SexyAppFramework/reanim/Magnetshroom.reanim": "e278214d52d489bd13aac18d94aa05bb270aeca237efe0cd223cd5dac2d007a8",
+    "SexyAppFramework/reanim/Zombie_digger.reanim": "e8517a59585c838e7cc90ef25c62663315caa9937f06fe60d4abc66bd8e749f0",
+    "SexyAppFramework/reanim/Zombie_pogo.reanim": "edfed75c57d19664e590db8e65c601a55721acd3c0280785deb86feffa0072aa",
+    "SexyAppFramework/reanim/Zombie_ladder.reanim": "d459c054f106aa15bd56df0d97ba5b0165a95194a1847fd544ef0a3304392d42",
+    "SexyAppFramework/reanim/Zombie_bungi.reanim": "ef946ac04e84a3c1d6e4d1f80a17809f04a39fac01b93509775742baa5e2f394",
+    "SexyAppFramework/reanim/Blover.reanim": "146933cda2189bf494ab74c6d268bd06b9224a3ad753a2475f8971c3ce85b132",
+    "SexyAppFramework/reanim/Zombie_bobsled.reanim": "47711d4ae2048b018a661827a75035cb98b265c00066c166f72f2b5deaa4bd8d",
+    "SexyAppFramework/reanim/Wallnut.reanim": "87eec99d61f3d639a6af34ace7cc2150bbb32a1ee47053da0b2f1c2a28323f6d",
+    "SexyAppFramework/reanim/SnowPea.reanim": "e8f58d27df28a5ec20e7ce50f0f511ff2dd883f3f15aba7d982e7cbdabbe99fc",
+    "SexyAppFramework/reanim/PeaShooter.reanim": "0fc45b74f7c1614c9b325eeb44db23087b1cceae3a49f8ce131ee4721091061f",
+    "SexyAppFramework/reanim/PotatoMine.reanim": "c44210ac0676e5d63ca2cf76d47d3d6c5c928415aa47b68481ebe56a69f5582e",
+    "SexyAppFramework/reanim/Chomper.reanim": "bc702667cb873c5f57bc1e43dc0547d6ddaceadcd307780d5de6eb5d44a4dca8",
+    "SexyAppFramework/reanim/CherryBomb.reanim": "df9dedf623b9687f9ccee91aac9ccaa8a731430a54e5212735215fe5a5caf0d1",
+    "SexyAppFramework/reanim/PuffShroom.reanim": "bdc802f805e8a7ec2cc9b4c4eee72a8c1d1105a8d9f8ab912a56871c71135a81",
+    "SexyAppFramework/reanim/SunShroom.reanim": "fba1ba37de4b1d3885f397a7d3e434c853ae838a219ccd417d4df00e415e893c",
+    "SexyAppFramework/reanim/FumeShroom.reanim": "6b0d71e3d5f1c0ca4dc5bbddfb244adb7f778ff0cb804f81ba12677cec4f2b02",
+    "SexyAppFramework/reanim/HypnoShroom.reanim": "1060cf6509e7b2e9665406e050139d262a9aa8e94aed464de6078ce4deff5e2e",
+    "SexyAppFramework/reanim/ScaredyShroom.reanim": "53bc4cc0c805e964e0e5ebd21d7d314ef987b3a5afe94064f9472574ac293259",
+    "SexyAppFramework/reanim/IceShroom.reanim": "341c121294da397342ac0e9b00255fda6c4e42739629c1caaac78b49414f84bf",
+    "SexyAppFramework/reanim/DoomShroom.reanim": "921ac909cae5d95533d758f121aac659f1f8b058ca92620f129034c81ca37b29",
+    "SexyAppFramework/reanim/Gravebuster.reanim": "ad8e60b474dc05ead34efb505e68d807a1be269a8e9480d95eb578942e9d935c",
+    "SexyAppFramework/reanim/LilyPad.reanim": "db122ca28d824a42f3e6820b8b58822ef89cd8e8242c2a4582a7778204a59ad1",
+    "SexyAppFramework/reanim/Squash.reanim": "03c0689370973af3a1d527b1115f773ac5e48f455b708abccc52c89e58c414f3",
+    "SexyAppFramework/reanim/Plantern.reanim": "2567b9f303f2b0e4d657f21a4d98a19c1b1700bf953cd04a14f7f9481b078b6a",
+    "SexyAppFramework/reanim/Tanglekelp.reanim": "f6588fb99011f6ce57f64a282c46666d9a89c9e5dfefd5f37804b83299ad1b43",
+    "SexyAppFramework/reanim/Jalapeno.reanim": "93a33b182b9572b71de71e6650000c7c8cff182808eb7c655c642cb2a53ee658",
+    "SexyAppFramework/reanim/Caltrop.reanim": "2a8d2cf19dd9e4fba2d06b0e9f64302a69a7be6a4bd802462a6aa63840a0b7f4",
+    "SexyAppFramework/reanim/Torchwood.reanim": "4ce227347a9835f0525b393b3f0d592352ab8e934f4a1ada984d79ec06c0f2bc",
+    "SexyAppFramework/reanim/Tallnut.reanim": "3a23c457d11f088852262253c7f050a76114bb09e5ff2831e5edf61f32c54748",
+    "SexyAppFramework/reanim/SeaShroom.reanim": "0926dc80fc72200f1a53491c9fba729b35655af151576e9af97b80c8ec7d9eed",
+    "SexyAppFramework/reanim/Cactus.reanim": "e5fd6389547a7cc8923caab57824b1a11941d142b9ce67785c781dea609e9711",
+    "SexyAppFramework/reanim/SplitPea.reanim": "9c5215b56ebc819c0db61365da9627558d563a784f9e49fe5f27ba5cfd593ac4",
+    "SexyAppFramework/reanim/Starfruit.reanim": "6a6ca43460082eac3032209cb3173d460ad4174fb7adace4751483992d65e602",
+    "SexyAppFramework/reanim/Pumpkin.reanim": "8f78d79ed5bb7183ece9efb3c976bd379b8290d5306250c5d80f392215d80d63",
+    "SexyAppFramework/reanim/Garlic.reanim": "e03e531945b8001a8225a44c0f35c9c0a4d84b4319c1ac5d9ce890a17a584325",
+    "SexyAppFramework/reanim/Pot.reanim": "534053268e273f2dcb8550e5ebd2ac29704e89a2ec852712f848a527539689c4",
+    "SexyAppFramework/reanim/Coffeebean.reanim": "69fce9b1eca0a2c3ee67247abd808f71c1851933990ec74dfc15c20ede854cf8",
+    "SexyAppFramework/reanim/Zombie.reanim": "4b53ccfa0c000b203405a1f7666eec761935553e533e1746ec0dea517897b9cc",
+    "SexyAppFramework/reanim/Zombie_flagpole.reanim": "64ad15bc116f3a485adc19a158eacd021c0677bf01f69e8c94ad86af533b54e3",
+    "SexyAppFramework/reanim/Zombie_football.reanim": "34f8baf9bf2863f242447286841a58134e084a935595fcf1549cb79c6a088f2d",
+    "SexyAppFramework/reanim/Zombie_paper.reanim": "b44166daf83610880aab4803238963de5ee6ce263f7329e497ec12400aa73fb1",
+    "SexyAppFramework/reanim/Zombie_polevaulter.reanim": "feec2e6c7a4e812e5f5f8be91899da106a2504672fd299bbf4111eb46e805dab",
+    "SexyAppFramework/reanim/Zombie_disco.reanim": "29090cb3d7a50e39b7f32332238410bb8cd3dd814e8a5e8346ceb098e863e40b",
+    "SexyAppFramework/reanim/Zombie_backup.reanim": "daae761602c6bb56d8fe78f1b22452a82ad558f9dfcb7eb22181102da8dcdc46",
+    "SexyAppFramework/reanim/Zombie_snorkle.reanim": "d3818117774e3eef798131b6d2832e284f1731a66586532900e0afce5ca21e9c",
+    "SexyAppFramework/reanim/Zombie_dolphinrider.reanim": "dcbbf4e4750e80fbffac671e77b2cf477cfe26c58077201cc56dc09705585ab0",
+    "SexyAppFramework/reanim/Zombie_jackbox.reanim": "86419f7941bfccc28837c2aa0b47a064082acab085408f7605e9077a9dd1f871",
+    "SexyAppFramework/reanim/Zombie_balloon.reanim": "dcb0aec53eee94ee698528a5e11eead8f28f9ab1492906cdff4fa13a686f2b29",
+    "SexyAppFramework/reanim/Zombie_zamboni.reanim": "6de7f40117211d8c1c0a22fa3c928712da8a2dc3ce4c4af2db24d52d2ec046a1",
+    "SexyAppFramework/reanim/Zombie_charred.reanim": "320c4eeb05ae487680dcec40f721b71dc9f19cb96b4ad6683b6533ec4b359918",
+    "SexyAppFramework/reanim/Zombie_charred_zamboni.reanim": "150b46daa366940a9d978e4bc5dae568b9e0538f8c183954921f1a1e1153904a",
+    "SexyAppFramework/reanim/Umbrellaleaf_body.png": "0ecf941bd28c9429c8b7f15fc6628909635a32daadbb67dcfd306a86e6ee9e64",
+    "SexyAppFramework/reanim/Umbrellaleaf_leaf1.png": "93ac48c763c8263e80d9da4040f2148208c21ad31a2cae4408deddcfee8103d6",
+    "SexyAppFramework/reanim/Umbrellaleaf_leaf2.png": "a5d940a7bd8c81ad8d751d009ed07a75bbe12da367ed283cca9e2b01aeb5037d",
+    "SexyAppFramework/reanim/Umbrellaleaf_leaf3.png": "ed831317c68aac1b5f82067fbc58d4f07c31ce955f67b54779fe1cae823ff377",
+    "SexyAppFramework/reanim/Umbrellaleaf_leaf4.png": "bbc4c3201709c92de4cb1873f41b9ee06e92e3a38e71381a25349ed1eb7d1abf",
+    "SexyAppFramework/reanim/Umbrellaleaf_leaf5.png": "1cc1090a04ca16b18a072614d245bda0b0351290256b7465a757eb0304eeb07f",
+    "SexyAppFramework/reanim/Umbrellaleaf_leaf6.png": "d43ab265e354f3e3f7cedb5e1e62af185eb9ae0b7b41596d974bef9e4b726b9b",
+    "SexyAppFramework/reanim/Umbrellaleaf_leaf7.png": "e889fe3729e714a72c470c737830019c8a99294de1e08dcc559b7941649803f4",
+    "SexyAppFramework/reanim/Marigold_eyebrow1.png": "22730fe079ce41bad2ed7cd473775ae467aa572ed5f28cdab2d72d72da7146f4",
+    "SexyAppFramework/reanim/Marigold_eyebrow2.png": "a4aab28b5ae8601ef4e0495b538a0f5130ab4e60ef10ed428d2ee72f3cfb978b",
+    "SexyAppFramework/reanim/Marigold_head.png": "cdb4c9b52d3152f143d3c123037d8b97c34bd19220d7d0dbc4b99a628e8c0631",
+    "SexyAppFramework/reanim/Marigold_mouth.png": "0dc8bfb5e1511538c2ee1a1f1c4261dff63f1d96fcab9896d32106bcddce3f0c",
+    "SexyAppFramework/reanim/Marigold_petals.png": "4e9b20943a31a2a9d328f8d3958916a3a274910cbd5359cfcf24498e4b77fb62",
+    "SexyAppFramework/reanim/PeaShooter_backleaf.png": "db925b5ce54fec6324cde2a635d160353fa06511948429636601011f25a0dab3",
+    "SexyAppFramework/reanim/PeaShooter_backleaf_lefttip.png": "feb34aa6cc279ca31156f924c54a53861b9a79cb70c35aa7aeea3c6e79cb77f2",
+    "SexyAppFramework/reanim/PeaShooter_backleaf_righttip.png": "60419cd6e7b7619077078ddd35aada8fc4fc9fbc2ea5fb4917e8c777ce49bf03",
+    "SexyAppFramework/reanim/PeaShooter_frontleaf.png": "26ce3afa0788a624d8a1747dab2ba51223489a04aed61f08a453c0d073bfbddd",
+    "SexyAppFramework/reanim/PeaShooter_frontleaf_lefttip.png": "fac7ced98626e9a9f91aa9746025e3713496cde453c1999ab89bdad6ed966f4d",
+    "SexyAppFramework/reanim/PeaShooter_frontleaf_righttip.png": "a5a5245bd884c6cc90ff13666f147b9ece85c6e6453dbeb56857c5d50caf785d",
+    "SexyAppFramework/reanim/PeaShooter_stalk_bottom.png": "79de9bd29cb7297fc218e564676a36ea0cbb3738e16b47da16b3dbc1ec5cfbd4",
+    "SexyAppFramework/reanim/PeaShooter_stalk_top.png": "0628a9cf3676bc78a8532ac97266091aff348611f162318a069e13db46b37f67",
+    "SexyAppFramework/reanim/LawnMower_wheel2.png": "164826c660f053fa631e78e57a44ec042ec3adfa335241ea1cd3ceb2e4469d72",
+    "SexyAppFramework/reanim/LawnMower_wheelpiece.png": "6d88370ac1a74ca9dc66cf1de1aafccf1072f4b903dd6ee74b2a821b2eb9f489",
+    "SexyAppFramework/reanim/Zombie_catapult_basket.png": "fe632078f584337dc5e22e46a20c8ebe1cc75efe8c1226d58feb2d04cb56c18c",
+    "SexyAppFramework/reanim/Zombie_catapult_basketball.png": "b91373694b3d608a37b47824f49004ecb7bed6acd557d239e2e67a904931d804",
+    "SexyAppFramework/reanim/Zombie_catapult_basket_overlay.png": "b772bcb86d7adf3706b2a7aef849f5085852c92ba785dbaa2d9eb663c1cacf87",
+    "SexyAppFramework/reanim/Zombie_catapult_body.png": "c7a9e4bd591217fb7245f1f83064f5f53696fbfcace0f07dce9fb47454967697",
+    "SexyAppFramework/reanim/Zombie_catapult_body_overlay1.png": "c31c1647a095f56a609846b088932068f0bea49d7f8e9d594e7011ea7243674d",
+    "SexyAppFramework/reanim/Zombie_catapult_body_overlay2.png": "1343e445df6427bafd5b94185811d5cbcfdcdaed132cf472b08771b97f99afcd",
+    "SexyAppFramework/reanim/Zombie_catapult_crank.png": "76b70f088dc9e8343a68c614b11f1f289bd2dc81d4ad9a50d3d453727f52cfa6",
+    "SexyAppFramework/reanim/Zombie_catapult_crankarm.png": "3e2b7bd128144b79fc5b0bff46dc8c447ad3336b7f04954b53acf37c048ed882",
+    "SexyAppFramework/reanim/Zombie_catapult_driver_body.png": "d70234c90e0cc8642a51a38ca65daf9a0a81de927af3ed86f5fb99cb7c27efd1",
+    "SexyAppFramework/reanim/Zombie_catapult_driver_hankie.png": "7ec5f013336d519ebdde945420b889596755699903b0eb7266afe14d58bf9897",
+    "SexyAppFramework/reanim/Zombie_catapult_driver_head.png": "15fbb704c540c874995093ca1d1557e3936feb4c715a9c89e6297e2013499e1f",
+    "SexyAppFramework/reanim/Zombie_catapult_driver_innerarm_hand.png": "a691567783300521d2554490cfece04965961b952ffc9c0217fd9e8f00ca90cb",
+    "SexyAppFramework/reanim/Zombie_catapult_driver_innerarm_lower.png": "c6907f290e1fcf8d08e3422e1195016edb185dc3faa4fbb4c143ae5a0e51b40f",
+    "SexyAppFramework/reanim/Zombie_catapult_driver_innerarm_upper.png": "5dd970c3b714654371a3d37dd1491a4d46533c6dfbd18b46751daf9dfa29e1c5",
+    "SexyAppFramework/reanim/Zombie_catapult_driver_innerleg_foot.png": "e72edf084646e7e5edb1e8f4ef1802139ba907e13cdb11dff21469c813042db6",
+    "SexyAppFramework/reanim/Zombie_catapult_driver_innerleg_lower.png": "d130bc51a8901165f66fbb6a674cb91f3e6459886883f9bf2429ccdcf9dd94fb",
+    "SexyAppFramework/reanim/Zombie_catapult_driver_innerleg_upper.png": "262ed3ad9197684e4a7f04630cd7a1bac21a20ca0abf412aa640f43d3d2d1365",
+    "SexyAppFramework/reanim/Zombie_catapult_driver_mouth.png": "e2e2867221bc29ba9d7f26ada3cbfeed14c6d0c3a328fc8d5da3eda6fd407d3e",
+    "SexyAppFramework/reanim/Zombie_catapult_driver_outerarm_hand.png": "3726d6e3686421cca1567e2619a975e48dcddb7222ad81877aa2ab0ce8a53254",
+    "SexyAppFramework/reanim/Zombie_catapult_driver_outerarm_lower.png": "0bf39c839332145815baeda6837b2fe7435b9a0527061c1f35ec0d1931738f2e",
+    "SexyAppFramework/reanim/Zombie_catapult_driver_outerarm_upper.png": "25fa962dc21650e6834646bbacef70ae625df12381fd8ee998c58e92b09377c1",
+    "SexyAppFramework/reanim/Zombie_catapult_driver_outerleg_foot.png": "df81805864943c2b01523db9b2bd279226ba9c480aade52ab5eaad424e1eeb05",
+    "SexyAppFramework/reanim/Zombie_catapult_driver_outerleg_lower.png": "f02bfcb5e5f8b4d288ef75ec9833715b863f8530de25b919338624be22408772",
+    "SexyAppFramework/reanim/Zombie_catapult_driver_outerleg_upper.png": "485d590b03fda12787ebf12e7a6546eebab0b46f1dc83d6e4077874172470727",
+    "SexyAppFramework/reanim/Zombie_catapult_engine.png": "6259751c99ccd9f3a4241a9a8f64f4618d7dffd5847842e216f4bb906b2d647a",
+    "SexyAppFramework/reanim/Zombie_catapult_manhole.png": "207f28c7e47e7c3889827684d411f16daa7bf8b2e71d9c17161ece224aeb9ab3",
+    "SexyAppFramework/reanim/Zombie_catapult_manhole_overlay.png": "1aa00ff5d8d7ecbffb2f933e699dfbbe7538bb8bf5a29e64f2289d79c7c7e23e",
+    "SexyAppFramework/reanim/Zombie_catapult_pole.png": "131007c303193b5f7aed330848eec5ae35fd3a65854f914d9cc31d323710ed21",
+    "SexyAppFramework/reanim/Zombie_catapult_pole_withball.png": "07e3b0e579e58dcf535c7a7d9b6602f458d4a856c1757fb80f9aa0408afb1716",
+    "SexyAppFramework/reanim/Zombie_catapult_siding.png": "1cdc83fb139082684ec82c31813088f4b7663f8a65346f2f39f9488fb097ef3a",
+    "SexyAppFramework/reanim/Zombie_catapult_spring.png": "77b9049c4cb142c953ea39842f87b0e712cbe68d48f587cc4fc349b68720297a",
+    "SexyAppFramework/reanim/Zombie_catapult_tape.png": "b05ada7a5a7745b8e8f6d36cb4a11a6a9315c45e1f1f14326105cbf099d9a611",
+    "SexyAppFramework/reanim/Zombie_charred_catapult1.png": "105031283a6edea9eb9352c7fe71396110c53735abd544d455b656cae33f28b8",
+    "SexyAppFramework/reanim/Zombie_charred_catapult2.png": "68c06df65a23cb42bbf8a1872a8c88027068438b6d8e32cd06ffae9ba4a04d3e",
+    "SexyAppFramework/reanim/Zombie_charred_catapult3.png": "3f331328ca88106b1973304c8c67abbc02379941b605a3182f28aea3f7badf5c",
+    "SexyAppFramework/reanim/Zombie_charred_catapult4.png": "0e0ddf04992d40697f8a8b9ee5e1e7923293878f5e969c1fc1821c5e399139f2",
+    "SexyAppFramework/reanim/Zombie_charred_catapult5.png": "34755217fc5f0c6afccd8e3ff0951d1a390b8a312ff7bfe571dcf4176604b2ee",
+    "SexyAppFramework/reanim/Zombie_charred_catapult6.png": "52318fee2c56d6130381422d223ff9138fcc0f4645698ecf03f2c82b4c4d9b1b",
+    "SexyAppFramework/reanim/Zombie_charred_catapult7.png": "0b3eda0b931b05f4a553ea6634c9afc6b604838b205f65fb40fa07e07a67e772",
+    "SexyAppFramework/reanim/Zombie_charred_catapult8.png": "756d663bb95db4e3dda30eb515f002754561611ce77715e207586d2604c225bf",
+    "SexyAppFramework/reanim/Zombie_charred_catapult9.png": "cb4b24b3c05757f3be4063240f1c93a9a736d70c3f69b8044675344e99f4058c",
+    "SexyAppFramework/reanim/Zombie_charred_catapult_blink1.png": "fedb68056d0f74b7ccada24fc1e0fbdb9fcfb73f17ef1e1ccf86ac2fb13a2140",
+    "SexyAppFramework/reanim/Zombie_charred_catapult_blink2.png": "75232493952699608d6428f8ef4cb9b591d6ff3363ba056d3a822e568a1762f5",
+    "SexyAppFramework/reanim/Zombie_charred_catapult_head.png": "293ccc29d93ca0841518f2dd1a7c8e5245a9774fc2421dbe9686d98b8f499bfd",
+    "SexyAppFramework/reanim/Zombie_charred_pile1.png": "8bb58aa75901d64fe28ca6ea8da48d838d87316d5163b82fb3a7606499ee697b",
+    "SexyAppFramework/reanim/Zombie_charred_pile2.png": "4b58f363e772b87b8999019c632d72b9b9db6da3cc775306a19ab70085acfc76",
+    "SexyAppFramework/reanim/Zombie_charred_tail.png": "f3978791991dda8a730976762b2ce7ef478d7b2ab63c3b3dfdd1460cedc438ca",
+    "SexyAppFramework/reanim/Zombie_imp_arm1.png": "6bdaa021a982c22e974b7bac4df41e55f654cd8e808289f47ab3ef28ffd068c7",
+    "SexyAppFramework/reanim/Zombie_imp_arm1_bone.png": "1a3d18e421298dd3c13f5af5bd0825932f5e787aa6a1a6b03f92b62c884c4f6a",
+    "SexyAppFramework/reanim/Zombie_imp_arm2.png": "a4f2e24cf1154d48e9bf5fd41fa859a946a1e78982c26f3cfe3c8cf01c029c6c",
+    "SexyAppFramework/reanim/Zombie_imp_body1.png": "067298565a3b91ffd373a4b6dee83d6fc317c4ce8647e5fe58aafeeec1866780",
+    "SexyAppFramework/reanim/Zombie_imp_body2.png": "7a3a3144113fe73070c2231f55f091fd12f12e97c3b0d27d5f7e5c358bb3b2d3",
+    "SexyAppFramework/reanim/Zombie_imp_head.png": "ac1153b07b5ee706d6067dea3aefd4cc1cf196972b5e0351815ca431abc05440",
+    "SexyAppFramework/reanim/Zombie_imp_innerleg_foot.png": "a3051439aff1840b933ca60e9c6691f3424368a001a13dbc9aabc6601da2c94e",
+    "SexyAppFramework/reanim/Zombie_imp_innerleg_lower.png": "58eff4def11844b89b6ee7b579c7263ba0029bb1fe06cdef0786b3b170540d37",
+    "SexyAppFramework/reanim/Zombie_imp_innerleg_upper.png": "43a4e5897d58b85831ff147affaa5f90e2f4ad195e585bb1a7f06063edea4056",
+    "SexyAppFramework/reanim/Zombie_imp_jaw.png": "b419aa858586941ae710939e589184ab7d2148e20fc87dda1bd35b74bb670e57",
+    "SexyAppFramework/reanim/Zombie_imp_outerleg_foot.png": "78a7524e67795ae61cf5e07325f36bffec178d403c55f767c2677193e459756c",
+    "SexyAppFramework/reanim/Zombie_imp_outerleg_lower.png": "eae5b67651288dd79606bcf7e999e4deff9bed72e402c8e234df99daf80aa314",
+    "SexyAppFramework/reanim/Zombie_imp_outerleg_upper.png": "f71e2d5ff77164685dc5d5ea0bd33cea5592613dc7b6156c4b83c182350ac75d",
+    "SexyAppFramework/reanim/Magnetshroom_dot.png": "0ded8f1929e3325d9753fda3e88086280d5db5a5239c8ded9c0dba42cae5d35b",
+    "SexyAppFramework/reanim/Magnetshroom_eye1.png": "3d88b511f754c0951248cd055efd424211e51763d0a4a743ba7ddc7b9d9f2876",
+    "SexyAppFramework/reanim/Magnetshroom_eye3.png": "70cf5b9a2ec589558eb1abc3cf6099b08dc9bc8eee4dc7f70be6f85754753022",
+    "SexyAppFramework/reanim/Magnetshroom_eyebrow.png": "2ad6976c0223ab63380209c4c63a32cde052cd2557744bc8f3782b8d2b64893e",
+    "SexyAppFramework/reanim/Magnetshroom_head1.png": "667c5856929f21cf9979c01aea9a61dbfb359ca3460db02d2a7472a61f8944e6",
+    "SexyAppFramework/reanim/Magnetshroom_head3.png": "fb387dedcaed5fa60e3e6416366f5771fbca124811dcd922821c86b8fd2771cc",
+    "SexyAppFramework/reanim/Magnetshroom_head4.png": "7ba9fc2c10d0d728fa13d983e2e765397597c88b787a35425f7e480790991861",
+    "SexyAppFramework/reanim/Magnetshroom_idle_electric1.png": "3d5ebce095385307c9842463aa5e171112c06c2d916f3ad543415e7afd76f425",
+    "SexyAppFramework/reanim/Magnetshroom_idle_electric2.png": "0ce334cfc67973f0f5998bfa27709bb077ed3b5694cd2ed2c9c786c59d545a08",
+    "SexyAppFramework/reanim/Magnetshroom_idle_electric3.png": "0c589bfdf2c13a73ac5f22d2932383ad41df6802a446cc798422bebba134a309",
+    "SexyAppFramework/reanim/Magnetshroom_shock1.png": "50fea3b8ef5a014c1023cb128d0b45d036b3a8f686f11b3871a59d19c09d83a4",
+    "SexyAppFramework/reanim/Magnetshroom_shock2.png": "e7d58b45272adb25cd66f3c62f8c76e22b77400534611febd9c5237adb23d9d7",
+    "SexyAppFramework/reanim/Magnetshroom_shock3.png": "d3f7d6f8c8d11f1e21954a8bf9c8297ec2cf4c2383121b780dff05d0a8bee476",
+    "SexyAppFramework/reanim/Magnetshroom_stem.png": "b528f1407840df44348cb89b4fba6c3b3df79a72caad8707deadb1cd019fa285",
+    "SexyAppFramework/reanim/Magnetshroom_stemcap.png": "760c57ced346dc62553f07855567390242536874f7b92d07e714f467c951e51a",
+    "SexyAppFramework/reanim/Magnetshroom_stemcap_overlay.png": "ac52b68c4e89bcff67678da7b556750b6e9021c1c30fc937dbe3dcddd21261aa",
+    "SexyAppFramework/reanim/Zombie_digger_body.png": "352e4a26f13490fbb1ae228897841afe07128ef1ba97ca015589b99b41e5bf96",
+    "SexyAppFramework/reanim/Zombie_digger_dig0.png": "ed4eaffb2e0f4a75498cc646858a68ce8dccd4233a6ea10b8c90284c39a715d5",
+    "SexyAppFramework/reanim/Zombie_digger_dig1.png": "6a683414106384554d77fea9f89c7e228bc54302f2059889958876c321b5184a",
+    "SexyAppFramework/reanim/Zombie_digger_dig2.png": "a47729047c7ce1809a6e012813cadbccdd70c0119f48f9c3dabd436b2bead4bf",
+    "SexyAppFramework/reanim/Zombie_digger_dig3.png": "bf77825ed1ed463009ac5e6c805a53ada6f64ecbf2a87f01a077bb290ca47fbb",
+    "SexyAppFramework/reanim/Zombie_digger_dig4.png": "a58b7b8c82f2925540a1739124c85bd6717e08f3cb86163dacf7567746933185",
+    "SexyAppFramework/reanim/Zombie_digger_dig5.png": "ce144175befef5fc483a733887701caf5f925f73fe3def757a7f76e5aee21370",
+    "SexyAppFramework/reanim/Zombie_digger_dirt.png": "2a066fa46acbaa1a7ef7c72c335430e2003a8fc96c815cebf9faef2361a8755c",
+    "SexyAppFramework/reanim/Zombie_digger_hardhat.png": "061aec2ba8a06afc901626d19005902c66ff5445100a87cfb71c57dd071a13bb",
+    "SexyAppFramework/reanim/Zombie_digger_head.png": "5128de15a22c43ea8cb16e3cc971d526cc32cd101ffb10b5cb413b51de7488f2",
+    "SexyAppFramework/reanim/Zombie_digger_innerarm_hand.png": "96d2ea7955b7e4116fd0abe04293ca140346efd41875e375a876654d5fc2610a",
+    "SexyAppFramework/reanim/Zombie_digger_innerarm_lower.png": "066d5869bf735ea48ec927e3acd5ced2d1968334efc8a2c052772dc6e63ea8d5",
+    "SexyAppFramework/reanim/Zombie_digger_innerarm_upper.png": "69d5bfd6cda10e30b81c4c1051163e132953fde26a2652d48ad732cf568d1e5a",
+    "SexyAppFramework/reanim/Zombie_digger_innerleg_foot.png": "f72aeb623433aebbd70791fd19765a8c580878410db0b0fd8e7beeb6549ee197",
+    "SexyAppFramework/reanim/Zombie_digger_innerleg_lower.png": "9ffb62bdbc70f0e6c7c3ae69fd1adf0bd1b72c035d7a034485cb5b85c2b8891c",
+    "SexyAppFramework/reanim/Zombie_digger_innerleg_upper.png": "13751895cfa3aadfb13851fcd683529d7bb66e9ce2f104fd3eed4b9488813398",
+    "SexyAppFramework/reanim/Zombie_digger_jaw.png": "9a8705572449b0a20482356c5c87b98a8af07daee8857193b84d02ee18ee683a",
+    "SexyAppFramework/reanim/Zombie_digger_outerarm_hand.png": "3bf4cb6e1ff14e78f396d075eca34e97a61f1bdaa4d7443db07b024ee3fea98d",
+    "SexyAppFramework/reanim/Zombie_digger_outerarm_lower.png": "e127c6d0ffba2c9b95d17444e06b68c903707144bc68e2dfb3f6cb59e5f36f31",
+    "SexyAppFramework/reanim/Zombie_digger_outerarm_upper.png": "c187f7b4b256045d94ab6dcbc3aa1a2303d1afc9ee173e78fe8d136455a687c5",
+    "SexyAppFramework/reanim/Zombie_digger_outerarm_upper2.png": "8f631b5b201181b6123de9f1c917f6e3dcafd433d80d5230d45538547ebd4d60",
+    "SexyAppFramework/reanim/Zombie_digger_outerleg_fool.png": "d84c9dbc85c8242a0060ad55a9bea03e5de37b8301cfd51f7a9e0ae4b276402b",
+    "SexyAppFramework/reanim/Zombie_digger_outerleg_lower.png": "248ee5c3cc8cb0567e1909b684370a9aea52480e3731746120d9724efdffea9e",
+    "SexyAppFramework/reanim/Zombie_digger_outerleg_upper.png": "5a25da9ad190c0fabde16b31d859cab916244aac588902f633adfdeaa9ccccb7",
+    "SexyAppFramework/reanim/Zombie_digger_pickaxe.png": "d112d75e7a8293d92fc142a7319d25288cf81df7821e24b26549750010e61f0b",
+    "SexyAppFramework/reanim/Zombie_digger_rise2.png": "31af1657fbf8e2075d6efc037932ff47bf9fbe1a6fefe97dee0dcfc066c739bf",
+    "SexyAppFramework/reanim/Zombie_digger_rise3.png": "24416ed31ffe8f9e9c445c3e18e1a1b1e1dc1438006e1b8e5fe237ff6d11482d",
+    "SexyAppFramework/reanim/Zombie_digger_rise4.png": "7a7e289963e46ee148331b9a3ca5ce8e87b9639854b2a6b7234bac90cad6b89c",
+    "SexyAppFramework/reanim/Zombie_digger_rise5.png": "02fb0ef43fb345125a301e4fea9a01b745151e95c2767f44669681499e58f52a",
+    "SexyAppFramework/reanim/Zombie_digger_rise6.png": "b8130ed199a6de131fe8d3232e23c3ed01f428e50732313985b5a2e98509537e",
+    "SexyAppFramework/reanim/Zombie_innerarm_hand.png": "95f6e1a9d8cfdcaaa01ba02e05d735bff52fc9f33b53c35a1a76026e5326e293",
+    "SexyAppFramework/reanim/Zombie_outerarm_hand.png": "8fbcf285b446adc52e970c4cf84bb60450e97baef92b7ad1e3313a146438f239",
+    "SexyAppFramework/reanim/Zombie_outerarm_hand2.png": "fd1482c170cf75ecbf6bda740348c2794a517bb8d5b4d2bb427c5049d452764a",
+    "SexyAppFramework/reanim/Zombie_paper_glasses.png": "666e743b12a76a028a9163b549497b1b1266f77302c2c14904f02caa450241e9",
+    "SexyAppFramework/reanim/Zombie_pogo_body.png": "7bb42d1e2044b2d98496779ab1055db50045728bde729eb7908f813305eda867",
+    "SexyAppFramework/reanim/Zombie_pogo_hair.png": "ce9708639a151f340456d47bb290bdb969e0578f6dea358db13a076fd889f62a",
+    "SexyAppFramework/reanim/Zombie_pogo_head.png": "b45213bcebca5b03d5cf01b16b3a73128578b7076e81d7521918d1883359f7ad",
+    "SexyAppFramework/reanim/Zombie_pogo_innerarm_lower.png": "2933a5f0f426a8fd131120ef7522523d633510a3d23f7e33702f3fb851ca3092",
+    "SexyAppFramework/reanim/Zombie_pogo_innerarm_upper.png": "2a8544043c2124e073bd231ad95bad79dccc15e1a2d688d96e631cfdaa550858",
+    "SexyAppFramework/reanim/Zombie_pogo_innerleg_foot.png": "f38fa1a5992516fb24e0baab991476e8bb70f0f56206212e91a78d1a02a6f3e0",
+    "SexyAppFramework/reanim/Zombie_pogo_innerleg_lower.png": "2e47f2c2ebd334ee1e0b56b8afe9523ce5c4d48609d3e9572ad3104f1fc02df9",
+    "SexyAppFramework/reanim/Zombie_pogo_innerleg_upper.png": "67266e4f398be46098ca3541b7bca755e1722cd26c7f169b90309cc651716026",
+    "SexyAppFramework/reanim/Zombie_pogo_jaw.png": "34f1693f398123c11f82f3a8e8bb608fcf188643af7465ce64802ba45606464e",
+    "SexyAppFramework/reanim/Zombie_pogo_outerarm_lower.png": "6ea377e330430a603315ad9114c1ac4a7c886fffe42e130e8b1484a11e19e85a",
+    "SexyAppFramework/reanim/Zombie_pogo_outerarm_upper.png": "826859ea77f898f3cba0b297af3b72cef8542dd08b72e456be0870f96e45576f",
+    "SexyAppFramework/reanim/Zombie_pogo_outerleg_foot.png": "4681bbdc148c4a01bf25d087b4ab69f7656642fa23858cc084aae9c061f73dd2",
+    "SexyAppFramework/reanim/Zombie_pogo_outerleg_lower.png": "962f68b51ffd6618a8c3d4c552786cacc896d68944878a2aa6297bd39428fcf3",
+    "SexyAppFramework/reanim/Zombie_pogo_outerleg_upper.png": "3992cef2ce33e073c328256cc647bea4f3afd455ab881be79d34be1435b48160",
+    "SexyAppFramework/reanim/Zombie_pogo_stick.png": "d6cd1cd117e9ac9ff271e19dec69d2d9bc77d5cf6468b4aede1cb0032f854a64",
+    "SexyAppFramework/reanim/Zombie_pogo_stick2.png": "c6a5172ba4aaf6f267790dd261b399dcf0896a37596f74d525a591f6b60f52a0",
+    "SexyAppFramework/reanim/Zombie_pogo_stick3.png": "83ab5649d870f36443dda67bdcc9967b47be68a8b0508e176eeb9366f814876d",
+    "SexyAppFramework/reanim/Zombie_pogo_stickhands.png": "cdc99db4d91e3c8dba1a05dc0fc7bd236c1dec7383f07998a800598cea4d2dd8",
+    "SexyAppFramework/reanim/Zombie_ladder_1.png": "349de391af1d5f483d5e7b1c4252e372512194ec2c2f75b87e0f97e53c0c51fe",
+    "SexyAppFramework/reanim/Zombie_ladder_2.png": "c5b5de7d24abf9bcd2c20523659925e6f1799cfb4b8955841c41dbec6de1a963",
+    "SexyAppFramework/reanim/Zombie_ladder_3.png": "27379336eac3aa1b229ab8020b07496dd4866b2c0b63ca2f0e30d8589e4a5099",
+    "SexyAppFramework/reanim/Zombie_ladder_4.png": "ad3f264b5445156fdecff8f318baf7e07247f3c6ee6eb3e43e025bf1ac7ed179",
+    "SexyAppFramework/reanim/Zombie_ladder_5.png": "7b7f943543b8360dd70928138d9887c0732288447ca473fa71e73d6ed06a2ada",
+    "SexyAppFramework/reanim/Zombie_ladder_body.png": "7f6e4640f2fd870b36a36f77403048000b0f2b4f2d88803b75864ac1ab0a016d",
+    "SexyAppFramework/reanim/Zombie_ladder_body2.png": "2048d64db73d013691c4701e38caa7ba5dd34bf081419e44b66a658406e78b02",
+    "SexyAppFramework/reanim/Zombie_ladder_hammer.png": "dcf4f5dd65fb95f77719ac5ade5048800843e1010f44e9d0dda867ffa77298fb",
+    "SexyAppFramework/reanim/Zombie_ladder_head.png": "4d737fad2ecc2a3ad253b57a2dec75dc99806756203b36c3041ff4eb7f56a4db",
+    "SexyAppFramework/reanim/Zombie_ladder_innerarm_hand.png": "dcdadfa10e99251c497241e58c85a843678730aa62e9fc7e6e675aeb9e842f4d",
+    "SexyAppFramework/reanim/Zombie_ladder_innerarm_lower.png": "ea8255e83b97447424ceaa5d9bb36172778e604e7ef8207d7e1f4d8c80c24a33",
+    "SexyAppFramework/reanim/Zombie_ladder_innerarm_upper.png": "d6e3a3c9d963f7e8107adc9df639453e0e3a7b17fc9dc022fa11d2837b2ece5a",
+    "SexyAppFramework/reanim/Zombie_ladder_innerleg_foot.png": "fe9d64bbfb5698ad91458a888fc1ce5239f2e787dba21edf304f0d6879b5c042",
+    "SexyAppFramework/reanim/Zombie_ladder_innerleg_lower.png": "d721e01f0c98216540b82cad165cfd351cad90a85e2d9c343d426ad59831b35e",
+    "SexyAppFramework/reanim/Zombie_ladder_innerleg_upper.png": "874c273254a4f3700cab543c8dfa2c250178a01aeb8f2239e4e06b82ccc45949",
+    "SexyAppFramework/reanim/Zombie_ladder_jaw.png": "edb217b778de5e53020b088c25eaf10fd72c24333d3351f7bc96a45d7f53c5d9",
+    "SexyAppFramework/reanim/Zombie_ladder_outerarm_hand2.png": "30353f233ada4b4eff32fd97cc6f8bc008000178ec09a9c6668cd9db0b1c856d",
+    "SexyAppFramework/reanim/Zombie_ladder_outerarm_lower.png": "cee944454d0167808962950366bc37761bbcf970635bb8d8a2541f4567fa96e0",
+    "SexyAppFramework/reanim/Zombie_ladder_outerarm_upper.png": "3bd0a401893301cedcfa9cc081529e93f68f6d65c35916f95d15dd57918b87d9",
+    "SexyAppFramework/reanim/Zombie_ladder_outerarm_upper2.png": "f2b8e6a87719e063e53da86d4a6fadabb21caee5299d026c8cced10e0f133208",
+    "SexyAppFramework/reanim/Zombie_ladder_outerleg_lower.png": "f808655662f891c1a1197e93546a1dc6b608328021e053ee31b0bae6c2e35b3b",
+    "SexyAppFramework/reanim/Zombie_ladder_outerleg_upper.png": "6210597026736b3d45549dacd3303c7bca75092c75bf1755844fbd365e9f4a02",
+    "SexyAppFramework/reanim/Zombie_outerleg_foot.png": "868ff1e057c5c8e81cb11a9a4c231670b44db58f0d865519398bb1b55cd42954",
+    "SexyAppFramework/reanim/Zombie_bungi_body.png": "076f2f85bb70c6d34ff95100e090fb2f76abc4b23a44cec83b0ab3e21b6d195f",
+    "SexyAppFramework/reanim/Zombie_bungi_body2.png": "90576a2a8df1caf0c229daf506c5afda099dbd6c35b47c617f638815dae18db0",
+    "SexyAppFramework/reanim/Zombie_bungi_foot.png": "a042b24024605bcea00e44380ce9bcdbbc4fa2646049a03227a66786fb173330",
+    "SexyAppFramework/reanim/Zombie_bungi_hair.png": "e057dcbef3069f0fc7a420298d3f08e16725d6b464336df0da6809a82f5bc57b",
+    "SexyAppFramework/reanim/Zombie_bungi_hand.png": "b9f6371fe9e81056e1194523dbdb53dae67112df63f70621e91b42833dcaf21e",
+    "SexyAppFramework/reanim/Zombie_bungi_hand2.png": "0986cf9dc8dbdda568a236932b4f96d4a3fa67994b24d6438818629724d23a6a",
+    "SexyAppFramework/reanim/Zombie_bungi_head.png": "441cdcb5121f1c02b305106b85ae8e13a8545adc908296b65b53f2140951fb49",
+    "SexyAppFramework/reanim/Zombie_bungi_jaw.png": "db62d2e288413533c51b316d5249eab74a55938ae3caf3e9396f8738e19ca1ce",
+    "SexyAppFramework/reanim/Zombie_bungi_leftarm_lower.png": "50984bd114b461c722e33b01c544e463823cacbdd47c00cdae285648ea6af6c2",
+    "SexyAppFramework/reanim/Zombie_bungi_leftarm_lower2.png": "a994a1d4849b3c40d619e6dbc3595c70a151150e706293fee286e5743ae67df1",
+    "SexyAppFramework/reanim/Zombie_bungi_leftarm_upper.png": "08d6ca14d221e260eaaa31455cc01e37835e10bfb706e5e916e4825769c07a66",
+    "SexyAppFramework/reanim/Zombie_bungi_leftarm_upper2.png": "04b06a77014ec76404eac5d41cd01149db8764ff6d1d8b9dc9aba7a1e1a8f0a2",
+    "SexyAppFramework/reanim/Zombie_bungi_leftleg_lower.png": "91d30c3609b4cdcdc0583773220ad5bf527fcdaa9750ff88dde66660a61dbba6",
+    "SexyAppFramework/reanim/Zombie_bungi_leftleg_tatter.png": "c5d718d069bf2a69469ac1fc57170e855d1454d9ba9c98afdeea57f3ea10ce19",
+    "SexyAppFramework/reanim/Zombie_bungi_leftleg_upper.png": "266a16203bc31829dd4c911773f46f6270b804f50be9a67c57aa39e2e9e09b95",
+    "SexyAppFramework/reanim/Zombie_bungi_leftshirt.png": "985617c7ba37b8e98e7564b4bf93d4f5e40f6602bb13c0a81bd2d4c4e9f0814c",
+    "SexyAppFramework/reanim/Zombie_bungi_left_tatter.png": "50e80f6ed6985f553f1512f6ce59c33f652d182c22348acbbd2f9ad4ffd62540",
+    "SexyAppFramework/reanim/Zombie_bungi_rightarm_cuff.png": "de8662e9db6258424897576ea11b8cc1d2dc3ed208c1179e8ccac26c8bbe9ae3",
+    "SexyAppFramework/reanim/Zombie_bungi_rightarm_lower.png": "91e8435c690226cfb0587e3f4437a54564c2fb7eb10ebc46e0a14a94080274e8",
+    "SexyAppFramework/reanim/Zombie_bungi_rightarm_lower2.png": "bedddb45dbbbeb806920241a891e7eae6347752d74bdb073a31d58ef1b3e9ace",
+    "SexyAppFramework/reanim/Zombie_bungi_rightarm_upper.png": "abb31920e011d8816f74c9de4f2d212f6af876a63dfb1bda26ce67e178064faa",
+    "SexyAppFramework/reanim/Zombie_bungi_rightarm_upper2.png": "5e6dd29794985e785bef190d8f007af0d1cd7098b48e09c04248d9822b499c7e",
+    "SexyAppFramework/reanim/Zombie_bungi_rightleg_lower.png": "a5067e811dcfc0f2b43dcf79befe95b18d5e1f41c38755dbbf72a1552676bdd9",
+    "SexyAppFramework/reanim/Zombie_bungi_rightleg_upper.png": "3650e1b99efdec9eeba7be3b5e8752dd4f71454b8eeea653725de368087643bf",
+    "SexyAppFramework/reanim/Zombie_bungi_rightshirt.png": "e31bad4d4fcee92ceeb54758e499a13f16eee4f29636e8d2c6957519ac7122f7",
+    "SexyAppFramework/reanim/Blover_dirt_back.png": "34e8b344b4ab5133d1e8fce862c45534a7c7c97de86bc3551cd47db04035b159",
+    "SexyAppFramework/reanim/Blover_dirt_front.png": "f58458da1f2b6b60bcafed46a5045899e768d3c91f05fc7c0e9678f723217e89",
+    "SexyAppFramework/reanim/Blover_head.png": "87ab938b8ba00944f94ca207a8a094728e3952c42e6b49f073e84725efbf9de9",
+    "SexyAppFramework/reanim/Blover_head2.png": "01f039787503847975dc7e495f9314beaaa27bc16acd373e3a57d40d6e96e9f8",
+    "SexyAppFramework/reanim/Blover_petal.png": "3fe020328888b35feaca7f85a02765ff7563805241d671b6f1e015b10607ad24",
+    "SexyAppFramework/reanim/Blover_stem1.png": "07e0db604e761f04c4e9c30e54ba2ecc73e88b82fb40e4f5bed73df293887f09",
+    "SexyAppFramework/reanim/Blover_stem2.png": "63dc77ec9b6c378de7c05138bb7c936a50d484a09d32b0f00dbd2da6521476f1",
+    "SexyAppFramework/reanim/Zombie_bobsled_body1.png": "d19df8997d3adfc9cb2d228f421209da8e760ebbfd60390e3ff645da0ccf6732",
+    "SexyAppFramework/reanim/Zombie_bobsled_body2.png": "30413289f8476a7f6a277535668a7565cb278c369eee51a994e8b6c24b63a4f5",
+    "SexyAppFramework/reanim/Zombie_bobsled_innerarm_hand.png": "99a6a5120b1d3d30886af74243bb02438ecb1245c2c7cc50c9bad260d2287362",
+    "SexyAppFramework/reanim/Zombie_bobsled_innerarm_lower.png": "5fc094ea24e592ac526dda952a6054342c5dc12cf73f4b336082b46b858d8f5b",
+    "SexyAppFramework/reanim/Zombie_bobsled_innerarm_upper.png": "242d6ff4a00bf5e2bb5b960779266613d4e8db039b8b7859d74fee635a7adc66",
+    "SexyAppFramework/reanim/Zombie_bobsled_innerleg_foot.png": "f3450df6c3a040163c68eeaec7e446d4197b097fb35e28228fe3b6944da7d951",
+    "SexyAppFramework/reanim/Zombie_bobsled_innerleg_lower.png": "b7eafbe1fbde8d88cb7f8f9a35b2e1e52513a2c0dd8847f0664ed80778317ed9",
+    "SexyAppFramework/reanim/Zombie_bobsled_innerleg_upper.png": "dfc380ecee07ae8958a0c528dbf0ed4287e9896a6bade23fbf1ac651aa338395",
+    "SexyAppFramework/reanim/Zombie_bobsled_newhead.png": "f48d2825b41f153607ef4b334f9813981d8263e8b20e36306ddf11c51143d499",
+    "SexyAppFramework/reanim/Zombie_bobsled_outerarm_hand.png": "716dc4c333513bae533069d30d30bb024d5bd3e83809fdd9cebae0fa4cdd8c92",
+    "SexyAppFramework/reanim/Zombie_bobsled_outerarm_lower.png": "ff6d2450bf7d75c205e2613dc99d0d53448e13a5745269acf7915d382f18784a",
+    "SexyAppFramework/reanim/Zombie_bobsled_outerarm_upper.png": "fc282b4257bc7545595cc54a80c2a97ef8cddbde42be905be4d6545026857b7b",
+    "SexyAppFramework/reanim/Zombie_bobsled_outerleg_foot1.png": "443f146a899e9036a43eb744ce9511574d54d560bf8ab755468fc876d04fec88",
+    "SexyAppFramework/reanim/Zombie_bobsled_outerleg_foot2.png": "2585c51c4c2705203368c072920fe2ae8c3c9431c8114788f8b94e5ad1880876",
+    "SexyAppFramework/reanim/Zombie_bobsled_outerleg_lower.png": "9039ff474379fa9ba37c2cb25cf4e20b3fe57c440bb69584698fc3e44f4aa4fd",
+    "SexyAppFramework/reanim/Zombie_bobsled_outerleg_upper.png": "dd0bd21b12d45de71006b94dab47fdd340dadec3a85713e0b48b817158412b72",
+    "SexyAppFramework/reanim/Zombie_jaw.png": "e4407b91697b8b90347eab1e124f4147c3fc6459722ae1dc74d77b491e4be931",
+    "SexyAppFramework/reanim/Wallnut_body.png": "5b38dc3365f2d1ba44af43a979e328973c2b1ae9e1a4371857a00310518911ba",
+    "SexyAppFramework/reanim/Wallnut_cracked1.png": "13c3533479147545823144ac5816fba137f5900e6065e38b7c4a4caa64a4dacd",
+    "SexyAppFramework/reanim/Wallnut_cracked2.png": "a7f68de19400558089b6d1aeed2696c56bff8ccb51965776fb93c46588d9666c",
+    "SexyAppFramework/reanim/SnowPea_crystals1.png": "9223cc55b9b02bf608f480685667d16bc4b9a338a0a7db1a6c18d7f32a2c1410",
+    "SexyAppFramework/reanim/SnowPea_crystals2.png": "a4343a8010e40b024a9a374280e23b2ca592b7a32182a07ef221b575ac500ff5",
+    "SexyAppFramework/reanim/SnowPea_crystals3.png": "c408aabe0514221e9a915ff33218999ac2c1825c1042657eff6b8c1bedb152af",
+    "SexyAppFramework/reanim/SnowPea_head.png": "916541a3d4281a3a70df8873ceea77cee2b3a85ff520f2a4a2aebcaa53ef7e99",
+    "SexyAppFramework/reanim/SnowPea_mouth.png": "83741c72fef5f04c8c3ef6c08203d4cbef7ddb2ed8d4b4d68e1c350d581c29eb",
+    "SexyAppFramework/reanim/PeaShooter_eyebrow.png": "49b144848621df2526c5d79be9204f8f988cac80fb660dc1ba98141f7e6daf25",
+    "SexyAppFramework/reanim/PeaShooter_Head.png": "89489d1df066b4c89541455525447220437c5913f0f1e3e850a7a6116f241882",
+    "SexyAppFramework/reanim/PeaShooter_headleaf_2rdfarthest.png": "a5943425a31980190c2d8fb4b150d79e99270aa0fdfa49f8822e8ac51e089295",
+    "SexyAppFramework/reanim/PeaShooter_headleaf_3rdfarthest.png": "a7d8ee1136c917d34eb73ef117fae5cce0cc325ced80e997329f08107326bb8e",
+    "SexyAppFramework/reanim/PeaShooter_headleaf_farthest.png": "a51d3dea2026071ad331522ddaede52f47357510b7da7ebda7893131d864b75d",
+    "SexyAppFramework/reanim/PeaShooter_headleaf_nearest.png": "27a085af419f1d8552fe8a134d47c0f3dc3084bb3aa9292479985e6d78455e08",
+    "SexyAppFramework/reanim/PeaShooter_headleaf_tip_bottom.png": "0e650fb81440ccfed9c3f552e543d8525f03a45bb4174a8c9565bb86c2187e58",
+    "SexyAppFramework/reanim/PeaShooter_headleaf_tip_top.png": "b20fd4f08810a1cba23f476e5fb4eafe66190b0e9d1a5183fb377ada4482ce06",
+    "SexyAppFramework/reanim/PeaShooter_mouth.png": "3d2b62a308274279990e696f7b248dd8e0b06a5fa1191b24fe15ae0eed877ca7",
+    "SexyAppFramework/reanim/PotatoMine_body.png": "9b6b48e576d1ad1146adf590f2585cb42445187d6d45226fc3915dc4f0f1f08a",
+    "SexyAppFramework/reanim/PotatoMine_eyes.png": "78e9360a7574bf6a9ae90070e818b7bdfaa85966e3abc1200eb28c98ac99a470",
+    "SexyAppFramework/reanim/PotatoMine_light1.png": "e4688d72c213e8ca42c5d4648863eb4fbf74e846ea1fed5c3c38c7cb75d03890",
+    "SexyAppFramework/reanim/PotatoMine_light2.png": "dd71089dfa4ee0bfeed2e6b3481e3ba07491f569725a96077abea405d460231f",
+    "SexyAppFramework/reanim/PotatoMine_rock1.png": "b2410efe945371ff64c7c503d08f81224ae13ee1a830baf7ca8b7885b2d8a6ab",
+    "SexyAppFramework/reanim/PotatoMine_rock2.png": "7a1d782f154e29ea67c8fb4b8ca12076e369837391e68e72eff259d0f732ee49",
+    "SexyAppFramework/reanim/PotatoMine_rock3.png": "cbc795ea791b6870b1c6dad329e885eb916098ce3225466244349cbba6b29d20",
+    "SexyAppFramework/reanim/PotatoMine_rock4.png": "da46dcdd4d74dd29e8cd036a2def5e525cf866668253bcc76cb42400f5d95584",
+    "SexyAppFramework/reanim/PotatoMine_rock5.png": "c6e82dfdcde49fa1761d0baf5b7abe52593febfe013b181b9c8b33e77a8bac1d",
+    "SexyAppFramework/reanim/PotatoMine_rock6.png": "0f96a43f1fad07a6f2c4c3c579ec54500089afbfa1bb29811aed6303061e6ca2",
+    "SexyAppFramework/reanim/PotatoMine_stem.png": "7a5bff754c6f68dac8bde3b75a1269b7ec5813db1e4e784bd81339e278c73f8b",
+    "SexyAppFramework/reanim/Chomper_bottomlip.png": "faad0850f1b7ec73b3ba1192290922d8b90042a145bca310cfa0424b234a2ac1",
+    "SexyAppFramework/reanim/Chomper_groundleaf1.png": "ad533d3b9a4e8ef65445a409048e0e281359ff8b6e92681ff414ce2253fb2fdd",
+    "SexyAppFramework/reanim/Chomper_groundleaf1tip.png": "2c383e9c2cf298760a9815482c2ce227e02ab09f7dc4e029876ec64b4fdf6476",
+    "SexyAppFramework/reanim/Chomper_groundleaf2.png": "c96bf9dd8d6b2fa6814ca0742bf51127f428cb38bfc9154f000f30c0064bffff",
+    "SexyAppFramework/reanim/Chomper_groundleaf2tip.png": "cfa7517ded6393f4dcd884dcc7c22a0292e4acd0e3b56cbf3570ad1f254d0c14",
+    "SexyAppFramework/reanim/Chomper_groundleaf3.png": "dbbafacfbc600597ef302e0d48f0e9a20b3062f0db09a3054c22c8dfc7cdd952",
+    "SexyAppFramework/reanim/Chomper_groundleaf4.png": "46ddd173e36c3b1e7581c26628ffea74d88befef6e7e6e5949e6bbc85ed17161",
+    "SexyAppFramework/reanim/Chomper_Headleaf1.png": "411edb25cfaee41ddcd7f8628f64a283bac1bb5e430f9032045340e516e7efff",
+    "SexyAppFramework/reanim/Chomper_Headleaf2.png": "09d1c4d770ea2234c48b43d151c383a5c2c6ef9055a67ed4c177e490619bacd7",
+    "SexyAppFramework/reanim/Chomper_Headleaf3.png": "6c1d1671aeb8d22fadd3aac087fbc7d4ce73a98af03e7e38658297f2ecf1082b",
+    "SexyAppFramework/reanim/Chomper_Headleaf4.png": "c78940e12ec192b378c1681ab237f771bcff65a179498cb5bf31bc4e7641db3f",
+    "SexyAppFramework/reanim/Chomper_insidemouth.png": "685e642dd827e94663740d4588bbef6b73af2ce46bce5224f4c963ff23b08ffe",
+    "SexyAppFramework/reanim/Chomper_spike.png": "fcb3c8ef582fc28f2e93ac0947079d38c50a6464f854c346760ef19ce836bd82",
+    "SexyAppFramework/reanim/Chomper_stem1.png": "96f15f283c5474ee9b8b5d45e4450c3d63d4b13a9f7c4f200de792fc49d39a21",
+    "SexyAppFramework/reanim/Chomper_stem2.png": "08782fe6ae235ae1fa1d760093f202677d862fe22fb7a434b16afe2b2493825d",
+    "SexyAppFramework/reanim/Chomper_stem3.png": "e50e3ddca82865ddfdea606179d3dd5d843efbe8c6d1d005f56dd4e321ca10f0",
+    "SexyAppFramework/reanim/Chomper_tongue.png": "6f0229bba9184cdaf6e83bbdc466d2d39cb4c874ed0822f829e328d3c9bc7f5b",
+    "SexyAppFramework/reanim/Chomper_topjaw.png": "2f7c70e54a3a20b82b812410402126fa2a164884443d232ac5f504a22e5e11ae",
+    "SexyAppFramework/reanim/Chomper_underjaw.png": "0737be18f5fbbf5ccc6e63f12e08a53e71a4e3658745ad5f006703c90a331d9f",
+    "SexyAppFramework/reanim/Zombie_outerarm_lower.png": "6819041cf0a9964133d9168b766a9f840a41bf9b3a3d7f2f77c1004741396c7d",
+    "SexyAppFramework/reanim/CherryBomb_leaf1.png": "5ef35382b89bcfc0a635fa7acdcb994e4279336a5df2657f0d2c16aa27954c6e",
+    "SexyAppFramework/reanim/CherryBomb_leaf1tip.png": "8a4aaa5cf07f2b0236845ccb668803ba176d502dc106d3571ac0bf60372684e0",
+    "SexyAppFramework/reanim/CherryBomb_leaf2.png": "c658d4877cd6c4a6b9979ee963d67a3a854738f40555113522406e754547cd72",
+    "SexyAppFramework/reanim/CherryBomb_leaf2tip.png": "0531430e1fd349f2d1dd0b69a97046118a2540fedd6db53a26c62479c8c99612",
+    "SexyAppFramework/reanim/CherryBomb_leaf3.png": "c0c209af912070f5f54f2ee424d987b1b27cd7188d28af3cbc05c9c48e7c8f22",
+    "SexyAppFramework/reanim/CherryBomb_left1.png": "6060f54c848836e69413f293e2fb1b4766e3d2b2256577c4d64d8b65edb36709",
+    "SexyAppFramework/reanim/CherryBomb_left3.png": "d1ec984e42d962a7119fe37c130eb32493032e0f4b6d1ee89f7718516e927c22",
+    "SexyAppFramework/reanim/CherryBomb_lefteye11.png": "6a961e45f723d9312c47da844a35ab9847d5865daada3af6f90f0117b254eff6",
+    "SexyAppFramework/reanim/CherryBomb_lefteye21.png": "255c53cffb0b09208ed5368d4d3d53f62d320f2693053ef74cff19dac69a44ca",
+    "SexyAppFramework/reanim/CherryBomb_leftmouth1.png": "fe61fa8ec493b66c1d113af96465b760a86c84d7067d0b8431c7853eb2fc9c92",
+    "SexyAppFramework/reanim/CherryBomb_leftstem.png": "b7d2c2806674b4852bd5367f295ad62c6b7ca712e166c32a2c1c1ed1f69940fe",
+    "SexyAppFramework/reanim/CherryBomb_right1.png": "f45f5cce8fc6ea9f9c751284b438e477da25e38b5dcc4284d003fc5bfeec0b40",
+    "SexyAppFramework/reanim/CherryBomb_right3.png": "bf620302f6cfced0901aed03ece238f54fb3ba6586ba435107143380ba71de07",
+    "SexyAppFramework/reanim/CherryBomb_righteye11.png": "656fe423f99c8dd53ce1ab3a52a1848d2cc7c2d6babc053bd7fdb7d3db26513e",
+    "SexyAppFramework/reanim/CherryBomb_righteye21.png": "e9c6c8dfb60379748a538d7db09d7f159de898332b9147762eb1cd8571064193",
+    "SexyAppFramework/reanim/CherryBomb_rightmouth1.png": "1a0e271c19c1f716705521690beba74d6c6e97562efad3a03bd6f08ddb4b80fa",
+    "SexyAppFramework/reanim/CherryBomb_rightstem.png": "d05380f50882f4348ea495013190a1a029f11c7131fb7825ef7300002e125b64",
+    "SexyAppFramework/reanim/PuffShroom_body.png": "245a9a9e8d3ac3bae7d5bab08fcc99f883cd93bb658f23e08f6847689353c584",
+    "SexyAppFramework/reanim/PuffShroom_head.png": "5f8071f541bd510fb2e2e7ab4e364dd597ac6b107981317f5609f6d7453fcf46",
+    "SexyAppFramework/reanim/PuffShroom_stem.png": "83ee68c7f7562ff20ffdf7d488f8f4955a7a4b78ad3fb6b2221ff0d885eaeb5c",
+    "SexyAppFramework/reanim/PuffShroom_tip.png": "0f7e69daaec03f8af85fcd173708aa453a5af4d7d550827eab8cc292e301475b",
+    "SexyAppFramework/reanim/SunShroom_body.png": "ea006e755ddcddc0bae1f0ee6eabe3a085c345b5853f0af1bf655cfb2687db78",
+    "SexyAppFramework/reanim/SunShroom_head.png": "551dfc5e509961f1eac1bb79b35da7827a1544034ed90a96d6d539c9425b7e64",
+    "SexyAppFramework/reanim/FumeShroom_blink2.png": "2a7ee2643d1070038e93d199f22a7a5c3e89d8999afe21d5a891d743e750287d",
+    "SexyAppFramework/reanim/FumeShroom_body.png": "37f431bbc886b20d383b610a1fdb9f4260fabc93f5fc93a8eb8e9dfac5351452",
+    "SexyAppFramework/reanim/FumeShroom_head.png": "9221cbdbe7e5713cefdba58e5a09e39f13a3d893272263c81b38c5e853ef197e",
+    "SexyAppFramework/reanim/FumeShroom_spout.png": "5cc410b11f4cb8ff8e6315cd7695abe47525b2b3a04b3b70213921891c80f62e",
+    "SexyAppFramework/reanim/FumeShroom_tip.png": "7100d5fc8f1eaac123b326a01f6f65b8c5c4ef5408ef56a1357b5d7bdae47c61",
+    "SexyAppFramework/reanim/HypnoShroom_body.png": "de967ffcb8d6c9212b3a9b77f717cd089b2a6207050517b7abbaaf26726d7f50",
+    "SexyAppFramework/reanim/HypnoShroom_eye1.png": "c7dda96a6b0f4db01520d0a7b9b5599afe8e90c0e43178bb4841f16b4effdbd3",
+    "SexyAppFramework/reanim/HypnoShroom_eye2.png": "7b816ab2fab9b13024120a3ae9e6c5d5b6f770332197890120a696053f73d47c",
+    "SexyAppFramework/reanim/HypnoShroom_head.png": "af84fcc294ee72a4ad3b33d55086e1b31e47f5c47b618f6859080329f6db50a5",
+    "SexyAppFramework/reanim/ScaredyShroom_eye1.png": "41eddea635a3eba7734e66df7792b54929a4af99f3a12305054b808cc6b4697b",
+    "SexyAppFramework/reanim/ScaredyShroom_eye2.png": "edcfc039b2423696853f46fe60baa30d605580d04d5dbbb71ed11d985267c333",
+    "SexyAppFramework/reanim/ScaredyShroom_eyebrow1.png": "ead854bc0cff1eee8cb01c645efb1e55b4bd0c8cbb9699eebccaff7af867d13f",
+    "SexyAppFramework/reanim/ScaredyShroom_eyebrow2.png": "6d98d92a3a6eab2f68c233355f48360259113b088ef48ff6d16b006f7d34b7e3",
+    "SexyAppFramework/reanim/ScaredyShroom_eye_big.png": "1aeb4abf338b0800274c7c3b1e853126305ce13c7a31497b2ebce77d7372ba96",
+    "SexyAppFramework/reanim/ScaredyShroom_head.png": "cf0b5487b4bcf5cdbfde1bfeb5a3ada80d0690133f9990bb86bcf77ab5840f4b",
+    "SexyAppFramework/reanim/ScaredyShroom_head2.png": "4eb7ad3f4819d8bba28d89a6e05aa3361bfbc26603d343f7bd1822e1bdad7735",
+    "SexyAppFramework/reanim/ScaredyShroom_head_inner.png": "a6cadd40c7ab8bb8fec89500e61e9b07391d30b28a425efda7fa3d2aeaff04a9",
+    "SexyAppFramework/reanim/ScaredyShroom_lips.png": "0b6c7b755064f2cb69e07aa394500b1d1e3bd45c23a243bffa282ac29424c91b",
+    "SexyAppFramework/reanim/ScaredyShroom_mouth.png": "9bcd88a9f540faa40d94a8bda35c7305ae868f1969f7c0418bc8bc19a6cf3778",
+    "SexyAppFramework/reanim/ScaredyShroom_stem.png": "86ab786b434913d74415ec3cd4fd5ef43edca3a73b0a39f909789ce485ef753a",
+    "SexyAppFramework/reanim/ScaredyShroom_sweat.png": "7972884fe60c607c2f3f32de246fb3ede8ae96a308467569aa11bb711b88ef60",
+    "SexyAppFramework/reanim/IceShroom_base.png": "76fb5223cd1e02c40270f041027536455268d1be83b5a84d2845bad3bf59229b",
+    "SexyAppFramework/reanim/IceShroom_body.png": "c77c86f096bdbf1e0377e224af8773a1ad924b08c80dbe33fa794fb2c9e93856",
+    "SexyAppFramework/reanim/IceShroom_head.png": "c3094d75839167b25c1f0ac1973de2fbdf7b18d8588acfdd7bc77eaf25def5a9",
+    "SexyAppFramework/reanim/DoomShroom_body.png": "19326608a0339ed1bf28c7b17b113322bd351a649ea1920e1241dc9cabda3f9e",
+    "SexyAppFramework/reanim/DoomShroom_head1.png": "f3e3798c9c1530fd84f12086d3e9a5108b689ed505d18c070560ccf2d8b25611",
+    "SexyAppFramework/reanim/Gravebuster_eyebrows.png": "ddfcff17c2355766949f781e926296d24b12c07197a47995eaa59f2c02bc77ad",
+    "SexyAppFramework/reanim/Gravebuster_head.png": "48f2364136e575f05a565cd48c510d8c168a3cd406eba629e43884e897e95a13",
+    "SexyAppFramework/reanim/Gravebuster_leaf1.png": "e8764ddc11ec02af6c23074d4f8fd9ac68d4224e5f76d1cbe5e68e4dff4ca314",
+    "SexyAppFramework/reanim/Gravebuster_leaf2.png": "6c81f149ddc42fdf13aa930efb4120dcb90100d77c19edf6bfccf4f779ee8fdb",
+    "SexyAppFramework/reanim/Gravebuster_tooth1.png": "4d87f34007eb4c59f2b5dad6fca6d484260062adc14c4c451e361faa15b010de",
+    "SexyAppFramework/reanim/Gravebuster_tooth2.png": "aafaf15a147a8f9384df494648fd08359b04ca7b66db62ecf3ba92b8db3ee7eb",
+    "SexyAppFramework/reanim/Gravebuster_tooth3.png": "b6db878394cc716039b6aeaa0aa4be8a57f96a9e758dbf73e7aa2899ec29c161",
+    "SexyAppFramework/reanim/Gravebuster_tooth4.png": "85913493eefb47e6d1a49aaca5a740c9d9363950b46b732778ade18556e1f1d5",
+    "SexyAppFramework/reanim/Gravebuster_tooth5.png": "7d443be6dff77b6489ba71b6ff1b8b5dbdbc61b9a4b8750db878a6003beefdbf",
+    "SexyAppFramework/reanim/Gravebuster_tooth6.png": "f0e2088ca26e15c0b45c3620234e6c6d609b3159df33f32acbeaf7f4410293db",
+    "SexyAppFramework/reanim/Gravebuster_vines.png": "ccfb0bc29fa1b5cd0c41cf047d301257432f10f588d3c0e9c39feb7dd0a5e23a",
+    "SexyAppFramework/reanim/LilyPad_body.png": "f1f5a0542828e8e02babced913958a003fe6161ea713b5804b7eff6f6a710af6",
+    "SexyAppFramework/reanim/Squash_body.png": "d890a454d2999dc0d31942cd3b99555c5ffbe0559d931d3e5dcc2606bbebd3c4",
+    "SexyAppFramework/reanim/Squash_eyebrows.png": "67f7bbaafb673371c0d326ecfd0b453679a0807834a237ccb1dd9592909d1927",
+    "SexyAppFramework/reanim/Squash_eyes.png": "b872d407fbac99a2cdbd011b54e8eaf7e0d9cff80878e7554bdf0ff601e3a122",
+    "SexyAppFramework/reanim/Squash_stem.png": "ad08aafbd96f3528c5b1c1e831f18a2cc02f45d749dc8f32138621391fbb2324",
+    "SexyAppFramework/reanim/Plantern_body.png": "824c1ff06edf4b78726282a327e8616d42138f94068e6afd859d5321fe3376c4",
+    "SexyAppFramework/reanim/Plantern_leaf1.png": "7e274df3116d7a6ae20e33d0a67c49e43732b1b86716fd93c36955341433d0ba",
+    "SexyAppFramework/reanim/Plantern_leaf2.png": "2845949da6a8d78ce750db16fd12648ea90a50676f00d366fe1ff3d1b8dc2e1c",
+    "SexyAppFramework/reanim/Plantern_leaf3.png": "2cdbfdd34c0444d1bce77e029494ca6dc8b8f99e7fd8921e687a94ef54d2fd41",
+    "SexyAppFramework/reanim/Plantern_leaf4.png": "6ece1672088b879a859cc5247040c2b2cdde593c815c16a0e3eaffc96f77e42f",
+    "SexyAppFramework/reanim/Plantern_leaf5.png": "cedccafde1b555323716b2dc78fa50411fa982057385045e3e8e4175633ba50b",
+    "SexyAppFramework/reanim/Plantern_stem.png": "b20db47f37db3bc12e5bc748afe6199fa675b017f113a5f4a3c7cf85f9ed2c46",
+    "SexyAppFramework/reanim/Tanglekelp_arm 8.png": "e9c23a21717b034a2f06cfb36b76697a2f4d50d4359e08c27343fd95c63a1553",
+    "SexyAppFramework/reanim/Tanglekelp_arm1.png": "0ef0f090eaf6caf070ad8aad6fc044b1faa4dba64cff5fd1aa5165f783c7e6e4",
+    "SexyAppFramework/reanim/Tanglekelp_arm2.png": "a300fde7a8fb18d7054b210b951ba562c74d3cee5d7f5612de75f588df77f27b",
+    "SexyAppFramework/reanim/Tanglekelp_arm3.png": "c098a250c19a54a6332f820fb3323a484af9d3a7f5ed4848bb8432265e4196d5",
+    "SexyAppFramework/reanim/Tanglekelp_arm4.png": "000dbac6fd89e1ab2e7c648fb6f0716c6e5b3973bdaa0db951a0fe0babfcd5e1",
+    "SexyAppFramework/reanim/Tanglekelp_arm5.png": "509a4d7f98fbfde3088b0ccf8b2e91fd88d18de06b12c0d0f0d63a4419f556b8",
+    "SexyAppFramework/reanim/Tanglekelp_arm6.png": "5ecd099252060593587c5c86cede9a0985a1fd8fc026662d034e2465a4694326",
+    "SexyAppFramework/reanim/Tanglekelp_arm7.png": "d7b6066a632b9db120c5d70897929878709e12e5ca034ac6891e41bf2d1e85db",
+    "SexyAppFramework/reanim/Tanglekelp_body.png": "9d51dcaad47c43c9ac1d9b90f0c9da0ca223e4cdf50078d6b75a95d0064163b0",
+    "SexyAppFramework/reanim/Tanglekelp_grab_back1.png": "59f2c723f5dd47d2e52fb8bd2191e58dca464143856628f8d0e09fb14d5c5691",
+    "SexyAppFramework/reanim/Tanglekelp_grab_back2.png": "152487f9360cc73496d228b4088961608a047e5a7579db809b79a7de5a7c2880",
+    "SexyAppFramework/reanim/Tanglekelp_grab_back3.png": "95c2d2f5e9e9d5221ae0b5da2c308c2a1a6b7eaf9718518932bf1636513b1af7",
+    "SexyAppFramework/reanim/Tanglekelp_grab_back4.png": "2fcf871d9c1a54e8d2334c374625abf61828ae6fd0cb4112b1900a8975a6d45e",
+    "SexyAppFramework/reanim/Tanglekelp_grab_front1.png": "5c65be7d2e484348e9801eec84d40c78971d0fc6cbbb2526bb726a13fb3db567",
+    "SexyAppFramework/reanim/Tanglekelp_grab_front2.png": "fcac8170d0b16a41a67ee149887d0aa02e5cb023c6b4d5ae1cfc022bf04150c1",
+    "SexyAppFramework/reanim/Tanglekelp_grab_front3.png": "7ad0fac00730ea5d750583c49e7ba2b532d434b31c8edf3feddfedb9b454c838",
+    "SexyAppFramework/reanim/Tanglekelp_grab_front4.png": "dc973c47228521cbb2f587344609485411404a24b01615eb39f8b7fbfa4e6f2a",
+    "SexyAppFramework/reanim/Tanglekelp_grab_front5.png": "1500d0ed6a73367ec2b07ff8074d1aab2f489921cba6f1828617d5cf4638fe61",
+    "SexyAppFramework/reanim/Tanglekelp_whitewater1.png": "f6bcf029873e8d958e70ba151fedd38cad6e72e899468472b1b1ab4bb13ff5be",
+    "SexyAppFramework/reanim/Tanglekelp_whitewater2.png": "ac54cfdf9e5c14e4afccb998236df8264aae659acf239bdaf8ed665cfe6ed48d",
+    "SexyAppFramework/reanim/Tanglekelp_whitewater3.png": "93cad0f104e8c4d3d0cc04cda7c64bc99f9ac5ae29d5c05e46777ccbef009c82",
+    "SexyAppFramework/reanim/Jalapeno_body.png": "572567c84c58312cdb8a2907266b5e4c02cb9ae8261be5f3526f7cd26b9dd731",
+    "SexyAppFramework/reanim/Jalapeno_cheek.png": "3b4eaceec53bd99a8d817fbd2199ef53567048536d26635dea67d68ea87b140e",
+    "SexyAppFramework/reanim/Jalapeno_eye1.png": "1a16a71c48b9293d4b70658f418488ad598f10275d47f7759991adeb53e926c7",
+    "SexyAppFramework/reanim/Jalapeno_eye2.png": "a3f67448aa100df3017a2c3739d56a6b2f6a530fb849605a6145f54a60b424eb",
+    "SexyAppFramework/reanim/Jalapeno_eyebrow1.png": "a3f7b195e870c4ef127c4af002251f7c63b8216917b37f3e41eaa2621bdb219a",
+    "SexyAppFramework/reanim/Jalapeno_eyebrow2.png": "9c563895b7da194f5f76b43105aac5793c01b21bfc229e229e0f4ce7eb252810",
+    "SexyAppFramework/reanim/Jalapeno_mouth.png": "f0a8b428e241bb9a47e9325c257a33f67173d658529959b598f2a5caafaf5d54",
+    "SexyAppFramework/reanim/Jalapeno_stem.png": "966157557ed9dc1c13efd9381ae8b89cbaa3d57415d9a049d7cf427329e685c0",
+    "SexyAppFramework/reanim/Caltrop_body.png": "589dd17f4a1f4fdcd217695f55c2563c5b1cff08d32e33a6c8989c6c8f4ab0ef",
+    "SexyAppFramework/reanim/Caltrop_horn1.png": "a29455cb2b6492dec89a73aba5d7f426ad828d0fa78bb47b1d38f1000aee967a",
+    "SexyAppFramework/reanim/Caltrop_horn2.png": "9f2f608642468322e6b1b2844009aeb8585e2c09dc2e28926061e85a287add50",
+    "SexyAppFramework/reanim/Caltrop_horn3.png": "ddb59efc85c28cc85c1250f14e0cc4401d311214018b7988e466d72691c2f10e",
+    "SexyAppFramework/reanim/Caltrop_horn4.png": "7611de8e321d0b3b0bbce53a8bf76dbceb6a0e8aca3356aec0b12c2249499adf",
+    "SexyAppFramework/reanim/Torchwood_body.png": "b050591d953bbcb8ea82c37feb382230016a00d072a56346e20b20d498a4b3c2",
+    "SexyAppFramework/reanim/Torchwood_fire1a.png": "b3cfbaab049c1992ee201d185aac8fab6fbbdddde53fab81c83e1eae7be73c40",
+    "SexyAppFramework/reanim/Torchwood_fire1b.png": "e79a41f19545a69f1787756f38745433ed52e84a1f9f6b8f7de70596618c82b3",
+    "SexyAppFramework/reanim/Torchwood_fire1c.png": "d938f44578ab62de2c22e14711b90718ceb9ce59f0486c1f2603ff7b6f3f5ff9",
+    "SexyAppFramework/reanim/Torchwood_mouth.png": "c0016dbe1f4fca2cd75e96b8aa854091ab2fd2ea1b98f695a281f862ad3f63e5",
+    "SexyAppFramework/reanim/Torchwood_spark.png": "d94bd3b94271b0ce1af95b285c575cb5b49d5a579e018c7fe2ad9f2fe590a7a4",
+    "SexyAppFramework/reanim/Tallnut_body.png": "318f64a2a4817ad27e40939e6dcb4fb7a2c449e53f4b593b93c1b0392a736dec",
+    "SexyAppFramework/reanim/Tallnut_cracked1.png": "2a77868807ba5f9845d26e82cfdfe5380d6b457524f09ada878787083ec12cbb",
+    "SexyAppFramework/reanim/Tallnut_cracked2.png": "f3e9ca44f047ecadf8af4d7a698092e5b8585d060762bdd27cd64ee9a0271355",
+    "SexyAppFramework/reanim/SeaShroom_body.png": "00875dfe0ed1780f7cbd9c6c058e2bd5e0488b009623fd0f6806e520172e2ab6",
+    "SexyAppFramework/reanim/SeaShroom_foam.png": "792a1fb02a72a841816dc9fed94c4f3dbc2b0637ab96d6ea5f226aebc5a735ab",
+    "SexyAppFramework/reanim/SeaShroom_head.png": "4cc1b83f35585c978bec0b73c669198b39f964f89e0e87f545bc892ff684a8b9",
+    "SexyAppFramework/reanim/SeaShroom_lips.png": "cd1c460e8531b9850d6f1ee2b4b40790d0801c1a598ecc98344358db941dbd01",
+    "SexyAppFramework/reanim/SeaShroom_mouth.png": "93c0a45bef2a4fe69473838045d76762d4f2e32d97d2796caf98177796dd61df",
+    "SexyAppFramework/reanim/SeaShroom_tentacles.png": "571d28980a49cc4216b81de50a71111215729579ff9833ac76eca07c64fb945d",
+    "SexyAppFramework/reanim/Cactus_arm1_1.png": "41bbbd382524009db2deb55659ca89ac677b9e41bc2c6dd45ca7a38eb9be2881",
+    "SexyAppFramework/reanim/Cactus_arm1_2.png": "b6e9a299cba14fc788ecb9c286d20483c5d1d66b9608ae34cdcf1761385102f0",
+    "SexyAppFramework/reanim/Cactus_arm2_1.png": "47baa0d17599d339eeed42f7f9e2c35c6d10b71524c26b053009e1658fe054e6",
+    "SexyAppFramework/reanim/Cactus_arm2_2.png": "482a6260dc05aed11be0b3e272813d78813750c4c5f5457dc2cb1e6539bd905e",
+    "SexyAppFramework/reanim/Cactus_body1.png": "40f6b615d770a069a947bde55eb8ed6e13af97484100f2bb781daee4e1614423",
+    "SexyAppFramework/reanim/Cactus_body2.png": "7bd736ec27f3aaeb87a33f2968080ed28b3e6f07c383d10414de001eb8ddd9af",
+    "SexyAppFramework/reanim/Cactus_body3.png": "7e7f681b4afec07d0645a09a3642b96ae060387bc7783b832b509078ed623019",
+    "SexyAppFramework/reanim/Cactus_body_overlay.png": "9434cd335fb65a57861b56cb8dee902e0dda0a661fed3e118849f1d58ae6cf50",
+    "SexyAppFramework/reanim/Cactus_body_overlay2.png": "2074b3e9e96d7cc88bf5478b4d4354f429bdbf9fc852db8d2d748c9d18087b9f",
+    "SexyAppFramework/reanim/Cactus_flower.png": "9c64b8f25b978225a794d8f190c25952b46c0ad07ca6fc0b504faf0c95216164",
+    "SexyAppFramework/reanim/Cactus_flower_top.png": "ebc426b7bdd90e8b63ad92b10dcdf3f7a1d29bddb30d8888079afcf0e4357876",
+    "SexyAppFramework/reanim/Cactus_lips.png": "d1f5bb892b60b5f08164f7145cad520b347ada5a213484a8da3a76bcd0f8643b",
+    "SexyAppFramework/reanim/Cactus_mouth.png": "8374777d7eeac6f25697bfe11fc1b4f909cb3fbfdfce5ceab974f04e4df6cdaf",
+    "SexyAppFramework/reanim/Splitpea_head.png": "1f754040672ea150ba32e738b0bb37743d6bdda172b28e3b54c4824dac716eeb",
+    "SexyAppFramework/reanim/Starfruit_body.png": "b64b0e39b7d228401b81ca3fd8060fbd054b36d5fd1dfc2949895c897a120af2",
+    "SexyAppFramework/reanim/Starfruit_leaf.png": "53b5fd444103cb532ae53e240c6755e8cefbe323c192e8a0f8b5a4ce4fb29a70",
+    "SexyAppFramework/reanim/Starfruit_smile.png": "a4ce7c25ceb838bcd97e6d1d6635a23e1a1b7761974be3c21e2b1324aa31b97b",
+    "SexyAppFramework/reanim/Starfruit_stem.png": "014f8baaaa54ae5cf9dc01329f8e1ad2457822729eb0dff6d8e627599ffe8974",
+    "SexyAppFramework/reanim/Pumpkin_back.png": "6fc4bdba51ea980b8ae06f6d1a78327088f6c3ca02f3bff136564c34a0784ac6",
+    "SexyAppFramework/reanim/pumpkin_damage1.png": "e8bca81e6c3316eb297e7f0ff0ae3b5ec66deff3e0c07e61d98303ea5a896a7b",
+    "SexyAppFramework/reanim/Pumpkin_damage3.png": "86826ec324b91813f214ee186543a2b0be4832687ff86b69a7c7f2be21884d2f",
+    "SexyAppFramework/reanim/Pumpkin_front.png": "a1aae4f9717717a56665ab697c12e8eed44b79dc7e0c21d4bfb3e1466bb508f8",
+    "SexyAppFramework/reanim/Garlic_body1.png": "7b4279692b0f6e536b742c7de26042fcb8bcb0f2e64ab14a567ab3b4193a7634",
+    "SexyAppFramework/reanim/Garlic_body2.png": "b06b8177676752d8806baac31dddf43d7e48adb4791105b71fd1af25f6fe0003",
+    "SexyAppFramework/reanim/Garlic_body3.png": "7c459d1e1ac9a06bf576ff2745235c9d0b8dcfb9a4d2866b9181c68eae5e1271",
+    "SexyAppFramework/reanim/Garlic_stem1.png": "010575548cc1d9c4383f23ab4ff5220e263bfaeaafdb203cf3ad64ead29eb125",
+    "SexyAppFramework/reanim/Garlic_stem2.png": "6fd225aa0e242f7d444ffbe531c760e8363584db35689758aff02c22d1658189",
+    "SexyAppFramework/reanim/Garlic_stem3.png": "eb84f96657de3d291c002aa530bbb5108716908030ab63093beec13d7e870e8e",
+    "SexyAppFramework/reanim/Garlic_stink1.png": "f5d2f8f5235447b295ad30618c5eb972bf06a5780e024c894529d3210d422787",
+    "SexyAppFramework/reanim/Garlic_stink2.png": "77bf520cb7fc39219459170f496bcbd4d3df45fb4eddca6bf39b10f10aa802de",
+    "SexyAppFramework/reanim/Garlic_stink3.png": "c036daac759cdf350be50710d3a741afb345b16fde38f580a3572d216e708801",
+    "SexyAppFramework/reanim/Garlic_stink4.png": "114a18995f6f614d9a552972bc1199b848b235e51943f82d7ad51397e2089a9f",
+    "SexyAppFramework/reanim/Pot_bottom.png": "6c7917ad4b6f696a239bb19c2bdcc7bfd1fa800951bc1ff7ffb2ed89aed2353b",
+    "SexyAppFramework/reanim/Pot_leaf1.png": "f12e300aa333b848a444cf7e77cfc21074a1982a60a3029e8fd6b44767e84703",
+    "SexyAppFramework/reanim/Pot_leaf2.png": "33fb823da398a4c3e0f82610b5e8f6abdb94c878a90b31095e814cad20e088e0",
+    "SexyAppFramework/reanim/Pot_stem.png": "76c325e90cf2f5dc595408caf7a5d982b534a0a608c3be423714917521a00770",
+    "SexyAppFramework/reanim/Pot_top.png": "342cf3f1e2d0543128f201f5637bf1449cbe89c50f18c8e536cb01e6e7a91c84",
+    "SexyAppFramework/reanim/Coffeebean_head1.png": "6f34701e7eba7c9d0207d1fff08e5c85bb1bf0b26a9e786c06aa73e68da83f6f",
+    "SexyAppFramework/reanim/Coffeebean_head10.png": "99a6644c9add2b6b943ca95538a9d1bae7375eae6e120aa33f91cbc632d1ec0d",
+    "SexyAppFramework/reanim/Coffeebean_head11.png": "7ef6cfdb802d7319533e14522ce53698b3ec8790f572cd69c8284fb650d0799e",
+    "SexyAppFramework/reanim/Coffeebean_head12.png": "93d1bb7f253b28179a54fe6bafdb202786fa752e390a924beab8a51a5097fcae",
+    "SexyAppFramework/reanim/Coffeebean_head2.png": "190df3ba7b75fdd6bc75eba4713db9eb749a5f3757019bfe212849bd9c8e95b4",
+    "SexyAppFramework/reanim/Coffeebean_head3.png": "0608e6365edaea39b1fe7055e3210fb51873548064dd06454144412097645ee8",
+    "SexyAppFramework/reanim/Coffeebean_head4.png": "07f4cde8b264adde8505fa70afb1e0a5e76e8fd76bfef39b6a6ece12de2a8de4",
+    "SexyAppFramework/reanim/Coffeebean_head5.png": "27f2c61ce36aba3ec2a84d742bc4bafa5b2b71326b260953bcfb9a7874026ace",
+    "SexyAppFramework/reanim/Coffeebean_head6.png": "8af8a439237d7b13e2c3d044d8002b6a4857b98a1abf4255914f2a1f47d293c4",
+    "SexyAppFramework/reanim/Coffeebean_head7.png": "b2bab6aab8c2218624d4ae7fdb958fd5f77cc1ab163af5b6c3ca1526e9145787",
+    "SexyAppFramework/reanim/Coffeebean_head8.png": "0219cfa633a4d60bac930febe358e0d371a964fde23f2cce76f8cb9dca27ebec",
+    "SexyAppFramework/reanim/Coffeebean_head9.png": "ebdc1a3b66a4c1fa9dea1a708ad110acaf8ed54404ac8456682bf3d52df8be81",
+    "SexyAppFramework/reanim/Coffeebean_leaf.png": "b47227bf0fc1b7d334f87868f9e83f2b797e2aefd23f246c898f69003bf4f55a",
+    "SexyAppFramework/reanim/Zombie_body.png": "7a455d5aa3bc3dfcfbd5c8d7e16c01948bb3ee3ab210894b446d8add04ce194d",
+    "SexyAppFramework/reanim/Zombie_bucket1.png": "65faa9d4db65a52a0e127d86b4326aeb6f82e9ecda2018be7e955ced11f11232",
+    "SexyAppFramework/reanim/Zombie_cone1.png": "f534854721cdc25fe57dcb4862cc5fb583f3f6f282192a9e8378bd4960988b79",
+    "SexyAppFramework/reanim/Zombie_duckytube.png": "c09d37901b3e06e67d4ff83c20b039cf41b30e09b8ff588a2c9f84553ae840c5",
+    "SexyAppFramework/reanim/Zombie_duckytube_inwater.png": "4f39047b11d848a97c95477ab94465bd1aaac405d8062e22a8f325535935690d",
+    "SexyAppFramework/reanim/Zombie_flag1.png": "529b28f68c2d9c38811d321c918814ab42fbcec4e98c03e7122fd6c22036230f",
+    "SexyAppFramework/reanim/Zombie_flaghand.png": "c8edc4c0cdefa8243a4fa19d947b0b3bd90f26cec0cf0758cef5af32716b449c",
+    "SexyAppFramework/reanim/Zombie_flagpole.png": "0b0b6dcc4151350bea40062bde32e419ebf178b9a692ba851348f28fca5638c1",
+    "SexyAppFramework/reanim/Zombie_hair.png": "bb8224b333f247faa69cee1b45169da3bc152e1997427c0bd31760dd1ad687bf",
+    "SexyAppFramework/reanim/Zombie_head.png": "5ec9b8345ae1dbb3bf81299fa07b5730c47c3a9f28176c15f1bc05dd2b2ea386",
+    "SexyAppFramework/reanim/Zombie_innerarm_lower.png": "be386c18a81f455857e76eca4386a65dfcd535fe70e257aada724f93d526f44e",
+    "SexyAppFramework/reanim/Zombie_innerarm_screendoor.png": "082a00d2c67c409feaacb9d31450011c6fc68e732423e1a096a9f116a24a1cd5",
+    "SexyAppFramework/reanim/Zombie_innerarm_screendoor_hand.png": "dcdadfa10e99251c497241e58c85a843678730aa62e9fc7e6e675aeb9e842f4d",
+    "SexyAppFramework/reanim/Zombie_innerarm_upper.png": "343ca5d76242394b329f49f3fa82c2ac1ef478504cf5b59b54090e9f7324dfb6",
+    "SexyAppFramework/reanim/Zombie_innerleg_foot.png": "74655485c53723f661c2986603f547ab89eb9fb67e451fb61d5b9feaa02bf460",
+    "SexyAppFramework/reanim/Zombie_innerleg_lower.png": "84cd77e3969b134c8e51b06b8bc7f68c1d8e92e06206afe9b34cde6950f01e99",
+    "SexyAppFramework/reanim/Zombie_innerleg_upper.png": "1a514ebd1714bdccf4613ba540a816b4de08382470401bf72c8aeef5c6161777",
+    "SexyAppFramework/reanim/Zombie_neck.png": "9c5ea6452e882aabc2a778a304ddaa2f2a0df452d718d066a69af0142c011ed6",
+    "SexyAppFramework/reanim/Zombie_outerarm_screendoor.png": "9c0d080622338f1ad02481112e0a6cae9dead69391cf525e9bb87eab9dd6ec5d",
+    "SexyAppFramework/reanim/Zombie_outerarm_upper.png": "27b13fb81c6835f66f90cc51712f1622a6d955eac91301fac15a7e7bc2d8634b",
+    "SexyAppFramework/reanim/Zombie_outerarm_upper2.png": "5d1363d989a5f988acfe50c49188971d786ffa506ccf43bf30120187a1a72adc",
+    "SexyAppFramework/reanim/Zombie_outerleg_lower.png": "1a0e6e38f8d4799d330c7c77e245c48fc0a61a231478b35e04249796b130e20b",
+    "SexyAppFramework/reanim/Zombie_outerleg_upper.png": "f8eb4b8deaaf8ac06d433d7dd89a69fe73bad77a79cebe25b0aa5c196bf36f1d",
+    "SexyAppFramework/reanim/Zombie_screendoor1.png": "11f5654042c1c39f9b5182f6c9d84ee5d1b54321cc3ecd25219daf6147ec0941",
+    "SexyAppFramework/reanim/Zombie_snorkle_whitewater1.png": "115e15275af187313c58e049f87fc5949e6fcde3f66417a120f7917eb484d670",
+    "SexyAppFramework/reanim/Zombie_snorkle_whitewater2.png": "b2d79c8897fd31ba761e4f34e45358e377e427535117ad2bdb139666cc9a31e8",
+    "SexyAppFramework/reanim/Zombie_snorkle_whitewater3.png": "364279ae20bd2fde7bb92f2b36626b1a82aaedb7cb3932490eb3398844696743",
+    "SexyAppFramework/reanim/Zombie_tie.png": "d13b8b2e6803e80b1c4169e8d0918d3839c6d990fd1ce9e501de5ee0eadef82d",
+    "SexyAppFramework/reanim/Zombie_whitewater1.png": "f555ecc0a5414be74537a6d55a85e3ef6560957540839f08dc2b32509ddf44a7",
+    "SexyAppFramework/reanim/Zombie_whitewater2.png": "1c25b268f76f43365cf599a295d6ca4ce6ed8b8cfba60f6918e9c2a4ca0398a6",
+    "SexyAppFramework/reanim/Zombie_whitewater3.png": "bb2e1f34c0dded1e776c354a9b00cd153c16c6075725768e2f77ffb51c5e7962",
+    "SexyAppFramework/reanim/Zombie_football_head.png": "502564c523c33e76cb8a1c729d579d6484b8c837555fd33a8d9a2c37e2e23947",
+    "SexyAppFramework/reanim/Zombie_football_helmet.png": "ffde510f91d8628c1721f295068583c8770d908a9dd3f8808e9415408395c6eb",
+    "SexyAppFramework/reanim/Zombie_football_leftarm_eatinghand.png": "e66a00dbfe6074d908e596192c8fe3b49c380498ed7c8a118ed0b549ce7000b6",
+    "SexyAppFramework/reanim/Zombie_football_leftarm_eatinglower.png": "88290b083ba60dd5106e410054042de0f11723e9b8b8a38ebc5b30f3532a93da",
+    "SexyAppFramework/reanim/Zombie_football_leftarm_hand.png": "44558b58d8d3c3ae4b91eb48f891ca6e9ba5f03482786f8ee9066a87a1f81cb8",
+    "SexyAppFramework/reanim/Zombie_football_leftarm_lower.png": "88290b083ba60dd5106e410054042de0f11723e9b8b8a38ebc5b30f3532a93da",
+    "SexyAppFramework/reanim/zombie_football_leftarm_upper.png": "5628fccc12832696a5a8b59e84caa9fa281a7d5c9c0315927f502a30124134e6",
+    "SexyAppFramework/reanim/Zombie_football_leftleg_foot.png": "e851d4deaf233642712425be0ab4a1a76e5d900a4b0a23ecf1383b4e6389f611",
+    "SexyAppFramework/reanim/Zombie_football_leftleg_lower.png": "8471f2bbebde17236cfb7eaeedc4d105ff9a15bf195b2dbebbbf562657b1df11",
+    "SexyAppFramework/reanim/Zombie_football_leftleg_upper.png": "98b464412f5fc3bc54a9578f338566bfcae81f2f67b2d2eda13a90ddd6773af0",
+    "SexyAppFramework/reanim/Zombie_football_lowerbody.png": "4464847e2ee777e5892abaa9deee23434252672e0a0dd97a916d3202d592baf8",
+    "SexyAppFramework/reanim/Zombie_football_outerarm_eatinghand.png": "83b1bd6ea051a873fcb520ff974444e5ec2242ca6afbf4c8e45b30e836b28dd9",
+    "SexyAppFramework/reanim/zombie_football_rightarm_hand.png": "715c3a12d72c518107738e1e9480e6c7d8d3a2ebbaca57a5d347bee1219e00a7",
+    "SexyAppFramework/reanim/zombie_football_rightarm_lower.png": "9685be94cf8cf95f7ebf2d80fe4db39eed07d6dd3caec616b3741661363fe03e",
+    "SexyAppFramework/reanim/zombie_football_rightarm_upper.png": "349a23de10dbbdb8208156d7db97125b180ba91663e96cd46945b59430e0f438",
+    "SexyAppFramework/reanim/Zombie_football_rightleg_foot.png": "8a267a55384919f809341979afefa6a3e8fb1abd0be24bf4d23eb0f0555ae7d6",
+    "SexyAppFramework/reanim/Zombie_football_rightleg_lower.png": "a7e7a17a0d863bccdb7accd5cd6b9fda0fd41b4f8b6522e53e8bc2468d063f2c",
+    "SexyAppFramework/reanim/Zombie_football_rightleg_upper.png": "31c5a7a6a6b9521364cec3234800801f2a21c0d53593274c8385a1a304c16b07",
+    "SexyAppFramework/reanim/Zombie_football_upperbody.png": "0fb3174badb006d2863692a541dfc5e56bcd7c14a960e23f793e6d24b37ac7e6",
+    "SexyAppFramework/reanim/Zombie_football_upperbody2.png": "2ae578ef951e28b4c1656ef6e9d7b287c5f96c6c3f77db1a66e75d36fd3c52ad",
+    "SexyAppFramework/reanim/Zombie_football_upperbody3.png": "9ec405225e2dbfdd620a06e9855622f0ece91ead7dcf6bff6e4d1cde270dd70b",
+    "SexyAppFramework/reanim/Zombie_paper_body.png": "36b4f0d2666fdc9191b44db91ef668966c7cc079faed47708f628105bb3c42e0",
+    "SexyAppFramework/reanim/Zombie_paper_hairpiece.png": "bea7ffd6ec4632a5c0b04b85443d06971422702373e4227e82e6c91e33f2d834",
+    "SexyAppFramework/reanim/Zombie_paper_hands.png": "99b9b8f2a864909c65aad17cc699a31f08a47dcaf6dd2558db18e4af0a41657b",
+    "SexyAppFramework/reanim/Zombie_paper_hands2.png": "434a146124a491674a5410e7581324f7a94e7b0ee548c12db2d706d3132e6586",
+    "SexyAppFramework/reanim/Zombie_paper_hands3.png": "5c96e9a245c7d0556f184dd0d3512ddfcadad90f17a4d1d39aca5cd8ec063521",
+    "SexyAppFramework/reanim/Zombie_paper_head_look.png": "381073df1ffee8d63355e91106014ed47e26101e2be73c2e658a52a8413922fe",
+    "SexyAppFramework/reanim/Zombie_paper_leftarm_lower.png": "e874e7924f72c7bf2bd8c64d2eaf9b7c4c84aa7c2e8fe99ff829210f5c1442a9",
+    "SexyAppFramework/reanim/Zombie_paper_leftarm_upper.png": "c8ec5a092f659b97e60eb2f6325ba1889089a44b5b839b7a91e86c165cded7e2",
+    "SexyAppFramework/reanim/Zombie_paper_leftarm_upper2.png": "349f32d2757225a05c91b5a0a31d0dcff82cb2c37ec3a9881e7542bf8931d6b0",
+    "SexyAppFramework/reanim/Zombie_paper_leftfoot.png": "96ccadc6567d29ede2544785f644e41265f23971ed3d0be9a1669b2017782f81",
+    "SexyAppFramework/reanim/Zombie_paper_leftleg_lower.png": "ea99435ac10329162c1fe63864733da78212a7119bce4cb4ec931f16556abfb2",
+    "SexyAppFramework/reanim/Zombie_paper_leftleg_upper.png": "0f6298f396ef4ed0d6ff4cc4d9d3a9f94d8a34aeb0dbedd75dfcea2944529270",
+    "SexyAppFramework/reanim/Zombie_paper_lowerbody1.png": "86ea9c5189f03a448373f19fc506965a60a813cdb4e564d0b584496c0b9e3b6c",
+    "SexyAppFramework/reanim/Zombie_paper_lowerbody2.png": "8bd3af4b10e21ad9c88294e77fe95086910d93c7dbffafb8eb94c736657becb0",
+    "SexyAppFramework/reanim/Zombie_paper_paper1.png": "c390d4febdc25a965bf56fc489c36ad4909369987f276648fa23630b1ff8cb1a",
+    "SexyAppFramework/reanim/Zombie_paper_rightarm_lower.png": "60adbeb977867985cf5689db6398b7a814e168e7dd90dbac4938c440f759ab6d",
+    "SexyAppFramework/reanim/Zombie_paper_rightarm_upper.png": "e7555382a47bd48ad1a82751bd2adff10af7eac489e015b387630134533eab86",
+    "SexyAppFramework/reanim/Zombie_paper_rightfoot.png": "4327df152b98e0bd571149b889594ce204c4bba918a8b856e877e57f47c6d253",
+    "SexyAppFramework/reanim/Zombie_paper_rightleg_lower.png": "42a41c5cde86e994f14086e0ecd78a7ab02da05546655df3a3d256a56a24885f",
+    "SexyAppFramework/reanim/Zombie_paper_rightleg_upper.png": "7417c25c161d72cf225b23328b17e3a46de6c9ca21b6622d03ebd3342b36d372",
+    "SexyAppFramework/reanim/Zombie_pupils.png": "fb4c277d68cd35e409e1fb3cf04c4dc13090dd72b670c66850d1430a9343949f",
+    "SexyAppFramework/reanim/Zombie_polevaulter_body1.png": "1e557d435e9dc4a3991e00b6ed833747aace9bd17dd6cdaad03275333536bff3",
+    "SexyAppFramework/reanim/Zombie_polevaulter_body2.png": "d9a5d5da7166081c821a96dfacfc6584e101947df78f9d48f8747b96bcccdb27",
+    "SexyAppFramework/reanim/Zombie_polevaulter_hair.png": "df50fe55f72e4152d167d344619f9c7da4b9b2e30a30e836917831455385a0ef",
+    "SexyAppFramework/reanim/Zombie_polevaulter_innerarm_lower.png": "069029e4e0fa5d7d47a041a3c03daa6655fda5ffbafc2cabcc89dc30648d19b9",
+    "SexyAppFramework/reanim/Zombie_polevaulter_innerarm_upper.png": "793b6fc6edbbac92d09239e9bb7a5b1e0d81efc378139fe38840ebe5b01b90c9",
+    "SexyAppFramework/reanim/Zombie_polevaulter_innerhand.png": "5a136ff53b87b682aa70fe4515aa96cbd8e97f4ab0de6b55501f53f156ea6688",
+    "SexyAppFramework/reanim/Zombie_polevaulter_innerleg_foot.png": "c47775ec5c5e7816d783f72df2ad9d873777c94e71100ae831fcf4b020c921d2",
+    "SexyAppFramework/reanim/Zombie_polevaulter_innerleg_lower.png": "e8a56b8c34d5e1bb8fb183d7821c2a66f6e73c5b023b96b507bb83be58aade22",
+    "SexyAppFramework/reanim/Zombie_polevaulter_innerleg_toe.png": "1b445b38abec1e1e83cebf65c61800086b26bda62e7da385f519c796b35b473c",
+    "SexyAppFramework/reanim/Zombie_polevaulter_innerleg_upper.png": "b313dcad1cbb642a824d0579342c8b550c17fa984e9c738c7719aeccf375b738",
+    "SexyAppFramework/reanim/Zombie_polevaulter_outerarm_lower.png": "858c69dce25393e1f04a48fb6823eebb51ab8c19e243b8856d66da3af254d082",
+    "SexyAppFramework/reanim/Zombie_polevaulter_outerarm_upper.png": "e5c6a8b801ab05baf5bb5776b8d87d65a83441dc66079060679e5346c98f83be",
+    "SexyAppFramework/reanim/Zombie_polevaulter_outerarm_upper2.png": "454f03ff83650267a2edf420b7ca0e53233a5a5f15cd8e43bc1a0b8869d1ae64",
+    "SexyAppFramework/reanim/Zombie_polevaulter_outerleg_foot.png": "fedd27a28db9007aec5baec85c90a7e34b7fad9221cde1e7530b337fc3146933",
+    "SexyAppFramework/reanim/Zombie_polevaulter_outerleg_lower.png": "dc6099efc3e3e2cff1057cd6b8e1aebf6a36ab9f845a4b546fa3061c0c6e2cb6",
+    "SexyAppFramework/reanim/Zombie_polevaulter_outerleg_toe.png": "61886ae622c2017f9207f3b4513fa36a34303323ff544cd4b3e56c140e6a3bed",
+    "SexyAppFramework/reanim/Zombie_polevaulter_outerleg_upper.png": "d9b59ccc399cc6c221adb3b4d2b42c23d5e9f418fff263b93366250c40bbc841",
+    "SexyAppFramework/reanim/Zombie_polevaulter_pole.png": "452c3797f037ca5580e652e408be63cfaeb3e1d0ed37ec62cd7872bf516c3017",
+    "SexyAppFramework/reanim/Zombie_polevaulter_pole2.png": "2bd1caf1bacd99752a85e76405a9e03b07f817250ae9e5973a1ae6dbeca095cb",
+    "SexyAppFramework/reanim/Zombie_Jackson_body1.png": "715fdfafd7e633c97cebfeb652c03da5c926ec17abe5c337b369cd80d346975f",
+    "SexyAppFramework/reanim/Zombie_Jackson_body2.png": "a23cba38e545b3e43ffcabc83bd5aaaf114cc9b89dc6d374823e2bf4d1303617",
+    "SexyAppFramework/reanim/Zombie_Jackson_colar.png": "a83682190133f3fd1bb9f84cd4e3e2a1804ccc579123395092ab2998ca22e388",
+    "SexyAppFramework/reanim/Zombie_Jackson_hair.png": "7bb6f867d47d15822c56b9c08221113139565e9a9baae4b5bea63bfb876e8e1b",
+    "SexyAppFramework/reanim/Zombie_jackson_head.png": "4cd8029923d282145af5ddc83867c600e5e4c70011d4416643ea9fb0df3c63f0",
+    "SexyAppFramework/reanim/Zombie_Jackson_innerarm_hand.png": "f30ce82cc003438e268d0f37f7a8e2d6c75d8797ab911a6a1712aac59b52f25a",
+    "SexyAppFramework/reanim/Zombie_Jackson_innerarm_hand2.png": "33d98fbda32e117b640c9c302f0807abd343b61599d855303cca57cd0e4c3637",
+    "SexyAppFramework/reanim/Zombie_Jackson_innerarm_lower.png": "c4f3b572bb8f39e541e846aaeac642735b44d3d44b58ea71d14786d496603685",
+    "SexyAppFramework/reanim/Zombie_Jackson_innerarm_upper.png": "fb0ede873a4480e854d0eae227fba14f22a260153c2098fac7bf7904605ac3d1",
+    "SexyAppFramework/reanim/Zombie_Jackson_innerleg_foot.png": "a97879ba5d89dc5e007e9d239d0cb96d712c68f2897cbfc039cce01bbf695e32",
+    "SexyAppFramework/reanim/Zombie_Jackson_innerleg_lower.png": "78c036d3cd3e9167ad824bc769655def62c77d1095cd864e63c9278f654254e4",
+    "SexyAppFramework/reanim/Zombie_Jackson_innerleg_toe.png": "43d46a3ae4a74881af1bcb4f8ce0996341ff9a7a84fecd0126a17384c9532d15",
+    "SexyAppFramework/reanim/Zombie_Jackson_innerleg_upper.png": "3b5342f348ebb3637d962c5fec22a9d9f2dd9971ddaf2411f6057c569f6cdcdd",
+    "SexyAppFramework/reanim/Zombie_Jackson_outerarm_hand.png": "b03432c326943dfc87ce31fca6f8cf01caa06c15597ef6f4c0cc8e4ce8b55f8c",
+    "SexyAppFramework/reanim/Zombie_Jackson_outerarm_lower.png": "abe52225218420e78f04419a559ef714cdbda67ccd4c5a2c8b59338b0c25df4c",
+    "SexyAppFramework/reanim/Zombie_Jackson_outerarm_upper.png": "3fb56da20c2a0928a3bc8c676abf75d090fba41a1707187a2d11c917f281a160",
+    "SexyAppFramework/reanim/Zombie_Jackson_outerleg_foot.png": "097717dfb00fdbaa24907bbf8e051b612f4d51f3be122254e26402140f1bff55",
+    "SexyAppFramework/reanim/Zombie_Jackson_outerleg_lower.png": "c66cfae27b67660799c51ea86678a54383497783fb8d9e6cb07298847ac7608d",
+    "SexyAppFramework/reanim/Zombie_Jackson_outerleg_toe.png": "2e3305ab7541c1e96d9eb37a6cd9a060715c338e4cc2751e9b8ff754e00a699d",
+    "SexyAppFramework/reanim/Zombie_Jackson_outerleg_upper.png": "0c17683c8cd2fcc75211935cf7ceae257a92a8c7b61b69bbbaaa35f7b0dfb41e",
+    "SexyAppFramework/reanim/Zombie_dancer_belt.png": "e27c03cb9d497d70350b9e771fa4d4a177a818dbeb1dddfc48745b5ab982410c",
+    "SexyAppFramework/reanim/Zombie_dancer_body1.png": "b39eb6ebd03c0df818387157b78fd802863620f44ea46888e9bf9de9a16b68b2",
+    "SexyAppFramework/reanim/Zombie_dancer_body2.png": "f55f4e4b486903dd96708acfb22023a9ac497711e2c758112d74ba8e54bdaa17",
+    "SexyAppFramework/reanim/Zombie_dancer_colar.png": "ff5f0eaadace7ab04893b534de479a400936c01f4e5d20a39200caf4dad98177",
+    "SexyAppFramework/reanim/Zombie_dancer_earing.png": "2467e97c23f99bc1ecbc2162436aa23bf943394d26ca073fb20e47699f3103cb",
+    "SexyAppFramework/reanim/Zombie_dancer_hair.png": "8f6ca4ccb15d63971914309afaa043c6d27e79dc0da865ab4ae28d729181b07a",
+    "SexyAppFramework/reanim/Zombie_dancer_innerarm_hand.png": "97c31039bcb647e7277b4d5cc66315a590befa2984021e444f00049c4af8bbc6",
+    "SexyAppFramework/reanim/Zombie_dancer_innerarm_lower.png": "8aff0f047e7b943d89ba6a9545b38f5d808029d838fd39077e5174841a3ec4c9",
+    "SexyAppFramework/reanim/Zombie_dancer_innerarm_upper.png": "f81bd62079f800bca4b881ab15d698903abdf895e31f640176eb90d95a7ceeb6",
+    "SexyAppFramework/reanim/Zombie_dancer_innerleg_foot.png": "cef6c544429c6e1e63a51dbf4450ac1ffa4b376d75ab8e4811c009d64d05cd8e",
+    "SexyAppFramework/reanim/Zombie_dancer_innerleg_lower.png": "a58a3c87d4856419cb1511f1c804fd3752e0555fbbdec29609a54f33ed201984",
+    "SexyAppFramework/reanim/Zombie_dancer_innerleg_upper.png": "33830493e871e72a0f983f3d7c3077d5dc3503cdd0f7412613d524e5fe6f6344",
+    "SexyAppFramework/reanim/Zombie_dancer_outerarm_hand.png": "51f0cf43e83b919ca7bd074b1fdb511257488f6f565cc517e46da435a3a61419",
+    "SexyAppFramework/reanim/Zombie_dancer_outerarm_lower.png": "99e2c71330f72c76225d8ac38baf16edd013ae5c9ae33744a6b23186b0643653",
+    "SexyAppFramework/reanim/Zombie_dancer_outerarm_upper.png": "660e012638b2cc84ef4e066a526ac795e095dd70d141c18765f66b1a6b476dfa",
+    "SexyAppFramework/reanim/Zombie_dancer_outerleg_foot.png": "41c3125e5e046f6ad0d1cd5a43a950f5905fd24c89f47d10d8c467bff071c3b1",
+    "SexyAppFramework/reanim/Zombie_dancer_outerleg_lower.png": "e3014d8dd26a7c626aa1d3786ed7336a35e2bc66b454914b4559ccb87bd57fb7",
+    "SexyAppFramework/reanim/Zombie_dancer_outerleg_toe.png": "21a5eb7e49e66c9245033f70e3422768d07363338d9554d59e25624ee1f901d4",
+    "SexyAppFramework/reanim/Zombie_dancer_outerleg_upper.png": "d27dd1dd15962e913345e5045be1d95840387e2fef8fcbf3e1d4e93204cac61e",
+    "SexyAppFramework/reanim/Zombie_dancer__head.png": "9c380c71c6aebd4fab6d139a6d3c97d36e772749af6c44c966876fbe30b1b13a",
+    "SexyAppFramework/reanim/Zombie_snorkle_body1.png": "7da138c6ae91e5df91134816afab431497f9119495aae218e37137c49a410f82",
+    "SexyAppFramework/reanim/Zombie_snorkle_body2.png": "e9c6ca221806ef3f93c55b7560f00cd04f255f30de04360cc98e3d725bb17636",
+    "SexyAppFramework/reanim/Zombie_snorkle_head.png": "b146082017cebe0a8c158b780570a56a764d89dfae7f03ee6966d5b262b09c4b",
+    "SexyAppFramework/reanim/Zombie_snorkle_head4.png": "17375142101804cea71e94ada227216ced6ed0966fa0daa2a7eecd3223558d0d",
+    "SexyAppFramework/reanim/Zombie_snorkle_headwater.png": "98d7a782f61533711ed6d816ff4f2f9aee3200c95c8f6d93634284609e023808",
+    "SexyAppFramework/reanim/Zombie_snorkle_head_jaw.png": "6681ce7bd2aee4726b82d68a753a375a03d46ca10700b177ef2ba7a14c597f90",
+    "SexyAppFramework/reanim/Zombie_snorkle_innerarm_hand.png": "5cb1705d972daef698b52c2987bf1a1ef6e1d9f5d448a03e44b220325945893e",
+    "SexyAppFramework/reanim/Zombie_snorkle_innerarm_lower.png": "c261b1753438ad5ba6625bcabde60935a2b739a922dd4ea4d79f3cf19f1af5e0",
+    "SexyAppFramework/reanim/Zombie_snorkle_innerarm_upper.png": "ddd4194a6797426968105392bfd0a1e6052db452447046d9c0b5874fe74dc57e",
+    "SexyAppFramework/reanim/Zombie_snorkle_innerleg_foot.png": "7d22e26722c3f699e3fbd5af29339c3460cfed06c81e75c3f9a91d3dadfe80b4",
+    "SexyAppFramework/reanim/Zombie_snorkle_innerleg_lower.png": "fe539de1a3e98b48f8d0c7c41b618f22b5863bdd19fbe25561ece02ce728f8a4",
+    "SexyAppFramework/reanim/Zombie_snorkle_innerleg_upper.png": "b7f652943c0386a2cea6d2a688c689aabeb0bdc08956300943443f80ae4e2387",
+    "SexyAppFramework/reanim/Zombie_snorkle_outerarm_lower.png": "7a020509dc0c9c635e7ba58237800c64850ea062842cd661dcf4e19dc5db42e0",
+    "SexyAppFramework/reanim/Zombie_snorkle_outerarm_upper.png": "eb6c880ce1a44e8ec7c6ea423d5d9e8334b3bb505b0038adbcaf703361eaaac7",
+    "SexyAppFramework/reanim/Zombie_snorkle_outerarm_upper2.png": "275d938d7687e49e94972e6a66af37d4c9966eb6d14d63e1c2e192156865850c",
+    "SexyAppFramework/reanim/Zombie_snorkle_outerleg_foot.png": "2333322681dcefedc5d60999a7a5e750d3e54ef4dae847945a500c1152b9bdee",
+    "SexyAppFramework/reanim/Zombie_snorkle_outerleg_lower.png": "75bc550ca0d7dd4f326cd8a6b7baf6516029a0e00c98343c091e84f4db4d6526",
+    "SexyAppFramework/reanim/Zombie_snorkle_outerleg_upper.png": "e4dc5e79338c09f8913fd845f402241f3e1956ab6dc088fef759a5cf4e537eb0",
+    "SexyAppFramework/reanim/Zombie_snorkle_snorkle.png": "7a9a6cb776f65442ac4b36d2300254c410ae4976917698927898c480e2b7431d",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_body1.png": "dfab3311572a9d9f64905f046c5e7ac0b4955cfb4147a360cc02417f020a1c77",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_body2.png": "ccbaf4afbf0a809d7228c84d61942853caabeb2d5da8736c008ac6c8e9a211ba",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_dolphinbody1.png": "2c4b00b8753f4aa74631e1b54577062d121036e79630eb45f4ca7878b4347924",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_dolphinbody2.png": "3cb4696d505ad429678d5d2e18ea89814efbe874ea14067ba2b5f174af237c79",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_dolphinfin1.png": "093df2e732fb62223c4e723c9f9f5733ffd70768db9c84b6b731e467f404779b",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_dolphinfin2.png": "c3afce4afc374e8b65497699d9111db4c97ac0155ca5320c460614b14875d440",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_dolphininwater.png": "8abf45f7f02e505c1a5f44a3aaa73544944bde6a907b213ccb1c1e8822086cbf",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_dolphinjaw.png": "376267c92dabb723c3b6416d9c3b3e8caf2601d9a976f5b856ac41db7cf816d7",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_head.png": "77dfd2fc465fec04d6eecf2e95ee9f3a455912864eee47ef398675fc2887c0f6",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_innerarm_hand.png": "df72be630832b74b3974171ee51c62121558cecb2109715e48cdde1d61ba9cdc",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_innerarm_lower.png": "f6dd8e3bae91abeffd6e0216fcf5d6e1090e5e5a2e4586fe929972f504d44691",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_innerarm_upper.png": "bc982e3af145fb6eb2c31c07ac423d40b4bd4bab062750de2f88071d1e426d43",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_innerleg_foot.png": "1aab3ef3fbd25f498280257b1ddee0e6b943efaa1b51112f6d5644bacd5e985e",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_innerleg_lower.png": "1ed6c91e78ee91eea9f785b19f6035dae14624fb7dbc2f9c132fe00eb584a299",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_innerleg_upper.png": "a19551170ff74ef396ad623b06b9f85fe428fa613f410ceb8b518212de3420f6",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_jaw.png": "d3f998f91c649f71c1ccbadb4c5963044eaa58d7dbb58f709891d3af1cf4bc73",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_outerarm_hand.png": "aa0bf5a52f3d086f82c3fe8e3678184adb4883ca152d711be13f9d72ed54988b",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_outerarm_lower.png": "b4857d9e4a785489226fd36717b07c83dbbe8b7a4f04ac09bc243f9685f7a035",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_outerarm_upper.png": "ec004437612e0c670799e52206b6c8bf13816ccffb0cf006a2574c1847ec3a4a",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_outerarm_upper2.png": "a1ac11789f90901b41896353d300a3787ad3571cf60614105aaf012d53d47baa",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_outerleg_foot1.png": "4815fb8e7073b7c719cb960bda4e8533b8665e4eda83e9384c123c414eac95ff",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_outerleg_foot2.png": "7438be9d7689993c2ec901d55fe10323ffaf8c46a2b5e98c9f3d5774a19bc86e",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_outerleg_lower.png": "f76788edbc45cc8005c181d68f9f01ac682fca52ce5a5767d13b21107a7b20ae",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_outerleg_upper.png": "da24943e6c25ef8caa7318f3598db9406ccb4d8665ca80f508157a3c8bb310ad",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_watershadow.png": "05cfdd5bc2f2896be6d5b10a41b7fc693864523d7c343ad0907840899521616c",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_whitewater1.png": "96bc53c0cce3a5f1ec01daadc6ac18058ef67b0c4d96ad61c0e2107795710997",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_whitewater2.png": "0acb8a0d6db4c08141e2a9bb52e8b49808e0f5adb198239f55d0940be34dacc2",
+    "SexyAppFramework/reanim/Zombie_dolphinrider_whitewater3.png": "44aed14a79ab1eebc61f7147fd46b5ea27997a489f49d4d61d226194e9abcc36",
+    "SexyAppFramework/reanim/Zombie_jackbox_body1.png": "664835f1124ca6917af25ae1404acc797257ac904b1330cb25683f3de0cda214",
+    "SexyAppFramework/reanim/Zombie_jackbox_body2.png": "cb02f542c2edb1ab78cd51c80e17690733c71fc1f5bd4354b49fcd49b2b54f6f",
+    "SexyAppFramework/reanim/Zombie_jackbox_box.png": "4d84100a0415516a2e0b72c654660f29fc4ab65d8a89be2f91060229fe77cff1",
+    "SexyAppFramework/reanim/Zombie_jackbox_box2.png": "29c6e87448ac4fa7bbfe396e000a5fccd0bf97963c825037d671192301ea2446",
+    "SexyAppFramework/reanim/Zombie_jackbox_clownhead.png": "13757d6589160afefd17aa3fc63a57da0a10f32c0ce8abb674a4f8fecec6c97d",
+    "SexyAppFramework/reanim/Zombie_jackbox_clownneck.png": "6d182a4b79b20cf18cd8e9f8e645b1790b35463d1cb695ca5773787937407154",
+    "SexyAppFramework/reanim/Zombie_jackbox_handle.png": "46bd2b232da6232820acb5358c59a445c74606ee3600962c2fd73a426a7b2b53",
+    "SexyAppFramework/reanim/Zombie_jackbox_head.png": "83e4c4c0bc131208a137a6aae7e8267d6f87004bd984330ead44feb2c7fe7e0f",
+    "SexyAppFramework/reanim/Zombie_jackbox_head2.png": "7c9524f6ac05d1d86571f02a743154010368161d20b7aab784e776d25aef79b8",
+    "SexyAppFramework/reanim/Zombie_jackbox_innerarm_lower.png": "4eef8bf6b63a40efc358e1802f009a950df7bcbc06b0d1a510aaed0facbf26e2",
+    "SexyAppFramework/reanim/Zombie_jackbox_innerarm_upper.png": "b3581519cad04202d0a5c3508e1eb0fdb435869e4eb4d3f7cc587ca342072039",
+    "SexyAppFramework/reanim/Zombie_jackbox_innerleg_foot.png": "cb74ceced3dc4126833025b70da6b3630cbc4acbd127af275b5c3e2adc5261f5",
+    "SexyAppFramework/reanim/Zombie_jackbox_innerleg_lower.png": "de64f493d3071653cabf0e66c2bf526e2617457055580c1f827a45e0f8d0b4e6",
+    "SexyAppFramework/reanim/Zombie_jackbox_innerleg_upper.png": "16bcc10766702389ff7868c3f9dd929cb0d790b8d97917fa61a1e924b12e85f3",
+    "SexyAppFramework/reanim/Zombie_jackbox_jaw.png": "44a4fe9f8cd014a4a2cbc017370384e1a83570c0d8e25d23d88c78a8665011da",
+    "SexyAppFramework/reanim/Zombie_jackbox_outerarm_lower.png": "3af01a323a48b3fe0dc9435bfb9637451b3ca787b92ca7b16783ef10de969ffe",
+    "SexyAppFramework/reanim/Zombie_jackbox_outerarm_lower2.png": "b28297ff5e24a4b90c187b1f86d4a6ddfe0715663bb42f0893209b2b47c0b848",
+    "SexyAppFramework/reanim/Zombie_jackbox_outerarm_upper.png": "19cbef47fd061030ee6b669b8f70c6563be1193b2a642e41d9a63d767a962a36",
+    "SexyAppFramework/reanim/Zombie_jackbox_outerleg_foot.png": "a9ffcfae1b939e7eedf4f635b678794d6e3c9c4e4492ebed6168167c100cb5fc",
+    "SexyAppFramework/reanim/Zombie_jackbox_outerleg_lower.png": "ea3319d6e7b4b3ddf585e5da2e1828699d328663ce622d7fa8ac827fd75f416a",
+    "SexyAppFramework/reanim/Zombie_jackbox_outerleg_upper.png": "272b935a8c3613fd47505bed3e93cf4984626d50cb85b544d1bbf6d47d479d6e",
+    "SexyAppFramework/reanim/Zombie_balloon_body1.png": "b2623209957bc50e4902c5c44f038bf5a393a5a1fb11df9fc181852fdf6d81da",
+    "SexyAppFramework/reanim/Zombie_balloon_body2.png": "8b248163ad3df7035b671ba9764cd9d01d73fe013ed0e3ed3d136ad4b5e015cc",
+    "SexyAppFramework/reanim/Zombie_balloon_bottom.png": "c8f32b6ee2ba38fbf50413ac0a4567b801c0769d725234cb84132c67b60d1c1a",
+    "SexyAppFramework/reanim/Zombie_balloon_hat.png": "318151559951455a4aaf949981c4fd0393fa329bf87a00aa9c717684583ec8e9",
+    "SexyAppFramework/reanim/Zombie_balloon_head.png": "8e25d225fdad86558dba7802e8fef64ca98790dcd1a9ddcaba1dd4eb97456591",
+    "SexyAppFramework/reanim/Zombie_balloon_innerarm_lower.png": "bcae1dc5ee0fe02b4bd22f8df47684f36c2d67e73ceccf5303dc2bdcd51d1917",
+    "SexyAppFramework/reanim/Zombie_balloon_innerarm_upper.png": "30eabeaa8c9da09dd873ce04cbd6bda0a5c88ff042594c014df1ff8241086445",
+    "SexyAppFramework/reanim/Zombie_balloon_innerleg_foot.png": "3c062dc397ab48aa991cb0601075d6fbcc23e4cf0f985cd575c7f2dde4497134",
+    "SexyAppFramework/reanim/Zombie_balloon_innerleg_lower.png": "89457eccab416be68512542881bc26dba6ecf2a746cf8e08f642661644b54515",
+    "SexyAppFramework/reanim/Zombie_balloon_innerleg_upper.png": "16a5652fd1f2931e7163ceb76ace3ddda05d9517610927b432953c6f48b5f6c7",
+    "SexyAppFramework/reanim/Zombie_balloon_jaw.png": "9948d887d8ca3ac20338ad4ddba2026c75dcd4e02afeb4e39ead8ffe7e3e62d1",
+    "SexyAppFramework/reanim/Zombie_balloon_outerarm_lower.png": "a69739f1adfe9ee8c7e709c2740686cbe8bb3bccb9040ee230a69907e6cdbdd9",
+    "SexyAppFramework/reanim/Zombie_balloon_outerarm_upper.png": "1ede0c9f0e18a3d7e469b095f55725df2d9220c992f0facaa343b49a96c82d9c",
+    "SexyAppFramework/reanim/Zombie_balloon_outerarm_upper2.png": "64c62eb87c28d7666d643bfef357fa6330a6fd21c81e5c8c00395b35eb052295",
+    "SexyAppFramework/reanim/Zombie_balloon_outerleg_FOOT.png": "8aa31ab6672656e477b2cf10ec5599eec3f8ab0ec1d9a0cd267a7a0d538f2f9d",
+    "SexyAppFramework/reanim/Zombie_balloon_outerleg_lower.png": "89725b1d7c9f6980b04a8311cc816792aa8bd00e63a9d52935d2d9317c55aed9",
+    "SexyAppFramework/reanim/Zombie_balloon_outerleg_upper.png": "3e96837885f40009487f073292edb5c88b032bbf5a268172402dd7c63b6b4573",
+    "SexyAppFramework/reanim/Zombie_balloon_pop1.png": "8d5e910e80c52637912515a68b5dc2cf94db3423bdc99ea2fa58fe7863bccddd",
+    "SexyAppFramework/reanim/Zombie_balloon_pop2.png": "ce84d9eb8289eb4033950cfc063c2175e46a56c5a8c92b93d7acd1a5a7024c24",
+    "SexyAppFramework/reanim/Zombie_balloon_string.png": "0b716ca316dced766a2764b38e7ab17885df6719a62595281633733c7c570aec",
+    "SexyAppFramework/reanim/Zombie_balloon_top.png": "03425d72ef6c10697577319357d67910eb42d50f106c1829609134bd4ebc9148",
+    "SexyAppFramework/reanim/Zombie_zambonidriver_beanie.png": "36d240d69fed5d735986792ffdbe8970dc33bc7814af20a8293f04a49aa6b00e",
+    "SexyAppFramework/reanim/Zombie_zambonidriver_body.png": "93dce61892608717204de7822bcb56ecf1ef7674e7d1e465f4c2ff6324c6f555",
+    "SexyAppFramework/reanim/Zombie_zambonidriver_innerarm_hand.png": "66082251be70d5355acecf9b87760705e28762564dbd5817f4e714b3e0e9d2ef",
+    "SexyAppFramework/reanim/Zombie_zambonidriver_legs.png": "1d442f9ffba36887d0dff2fa078b0482a3e515dd063f321546a1184e44e32d97",
+    "SexyAppFramework/reanim/Zombie_zambonidriver_lowerarm_outer.png": "f9b686a3d1742589ec60e3613d61ebbff9ece38acd4d1838f48931cf1e6d3e0a",
+    "SexyAppFramework/reanim/Zombie_zambonidriver_mullet2.png": "bfdbbb8a8434c6c821ffed8036886d856ffaec5594b538bd02f86d0e36028d9b",
+    "SexyAppFramework/reanim/Zombie_zambonidriver_outerarm_hand.png": "3e1deb0a71ad202e7040a5a4cca9f92c06a97f0fd89cf3f8b4a50061bc4ecfad",
+    "SexyAppFramework/reanim/Zombie_zambonidriver_shoulder.png": "710f54ee9043ad689e25eba3177b67059d4d154497d5b08610e55f32d5074d3e",
+    "SexyAppFramework/reanim/Zombie_zambonidriver_upperarm.png": "73d83dbc1f9dc16729cf1344ec7e600a59990270f33de8611980a18e972de87f",
+    "SexyAppFramework/reanim/Zombie_zamboni_1.png": "bf0b3e943802b16222f9d4f6d4cfca68fb1483d2f149a9cc0fc63698a25e7815",
+    "SexyAppFramework/reanim/Zombie_zamboni_1_damage1.png": "1a192d55925e96acf823561b845db3b17fedf7f092c27d1f55943ed96d915186",
+    "SexyAppFramework/reanim/Zombie_zamboni_1_damage2.png": "78f4414d1e241f5e64c8660f595551dce5e380b9e9e862d7be118539e6869cf3",
+    "SexyAppFramework/reanim/Zombie_zamboni_2.png": "7ad6310c328a80cbc732e916964b95f7dd04ea92f61a684b6d0df73e6cea9fd7",
+    "SexyAppFramework/reanim/Zombie_zamboni_2_damage1.png": "1ca07cd2823ac689595608dbd0c0e3827adc43afaab18476c22eca7675361378",
+    "SexyAppFramework/reanim/Zombie_zamboni_2_damage2.png": "8b3791887956e6a96bcf7920bdae905b9183e94fb488881d1af2335fa9a10e06",
+    "SexyAppFramework/reanim/Zombie_zamboni_3.png": "7489a0943953512f4dffe5403d64add993c356a7fdcb0c7232eae3281a4fa0aa",
+    "SexyAppFramework/reanim/Zombie_zamboni_4.png": "1068a017f304a51023c08d667e7bb1a51020b6d1a85551d342b312d3c9edfac5",
+    "SexyAppFramework/reanim/Zombie_zamboni_brush.png": "82f5d1867b3e013fd5eb9a8950affd1c9daf2cfe2be80232171424088f687c6f",
+    "SexyAppFramework/reanim/Zombie_zamboni_seat.png": "5c89c4eea7d070d758053060e1efc4afc8882f11adeed0e04b88a9762c7e1fae",
+    "SexyAppFramework/reanim/Zombie_zamboni_wheel.png": "7ba8e685c8b18270bdcf867fa4f68b2a60dac28da39eb05911a6000d544fd4e0",
+    "SexyAppFramework/reanim/Zombie_zamboni_wires.png": "55ce00a6bd6ef88c5e15688ed9a82e305c872b1f82cdb298440b47b54ecb61cf",
+    "SexyAppFramework/reanim/Zombie_charred1.png": "98014ca93d752b20b5c0c1a013083396c7c242daebf75d69138693008a2f6b54",
+    "SexyAppFramework/reanim/Zombie_charred10.png": "13d663019ccf9057432c4b696cc24103d192fd4c0ab73df95cb06e1a02b5a4c8",
+    "SexyAppFramework/reanim/Zombie_charred2.png": "f140b7fe142c681d660573860d408f0bbf8b1a170ed9c43a926809791cb5b16a",
+    "SexyAppFramework/reanim/Zombie_charred3.png": "fe3daeebf8c2312ebeb0c1f9259a560eaa8d00b9672b94ae2e14e4e8848be9c8",
+    "SexyAppFramework/reanim/Zombie_charred4.png": "cb4778241a5f8b814681abfa1fad6a84c6640b401446794d2163fc11c799af02",
+    "SexyAppFramework/reanim/Zombie_charred5.png": "6ed4e39c67c79dd7442176340af1e060f8bd1e5b99e1d2c7b4bfd2904cdf3116",
+    "SexyAppFramework/reanim/Zombie_charred6.png": "0fdc9d235c09308a86661ec2427a4a4d33c8a7f1919f4e84dcd2b830ebbac3ff",
+    "SexyAppFramework/reanim/Zombie_charred7.png": "4ea8bbf4f50da37ba9781248305b80fe88cd226a328b4dda5457b8e7d94e0920",
+    "SexyAppFramework/reanim/Zombie_charred8.png": "4a3bb132f0bc12f24c2bc1e90148ff92c34bd98b506dd31f201dde25e1313feb",
+    "SexyAppFramework/reanim/Zombie_charred9.png": "b1b1fbd42e11b83f9d6323ebe32c1e56393a015fb1e53425cf086ac169622267",
+    "SexyAppFramework/reanim/Zombie_charred_eyes1.png": "15f100dd30bc6d06a44e55ebec3e33b07bdf936b4f30012fde5af35846487744",
+    "SexyAppFramework/reanim/Zombie_charred_eyes2.png": "808a039b23030ebdb4414b93a06b2de354c4b800f575ddcd42c33eb3452ec3e3",
+    "SexyAppFramework/reanim/Zombie_charred_head.png": "29ebaab99136151e19c1016e9d6294166c8db508e29ee33d2c4a2833e2d987db",
+    "SexyAppFramework/reanim/Zombie_charred_zamboni1.png": "0c384fbef6e48cdb4e5732334cf8e04572a89e7f4cceba69087f969bbf09414d",
+    "SexyAppFramework/reanim/Zombie_charred_zamboni10.png": "236c7cfa12e9752003b4cb069c0a6545e31454b598224bce075068f55fc7a288",
+    "SexyAppFramework/reanim/Zombie_charred_zamboni11.png": "b5380c1119e9c36d213715e82e4c2798db080cdd1b0ec117b8a8aa4bec841df3",
+    "SexyAppFramework/reanim/Zombie_charred_zamboni12.png": "c725e9c78c270f1a9de35e695029f68e4f6f1532fea0651eec779cde77e5eb1c",
+    "SexyAppFramework/reanim/Zombie_charred_zamboni13.png": "6a942c81e35a7da7614304159423f8c7b42b02d5089fb527c0db1fcbdde9784e",
+    "SexyAppFramework/reanim/Zombie_charred_zamboni14.png": "aff551fe2600c14ff7c1b289dd05ffb89f02c3bf19c8889d18c4a2a0eb84d74e",
+    "SexyAppFramework/reanim/Zombie_charred_zamboni2.png": "e149e1c4c87ecfadce4be60ea06eb5429caabe3ea8d72615eeaba2be24a80408",
+    "SexyAppFramework/reanim/Zombie_charred_zamboni3.png": "9ec5540a7aea867803780a9bbff9a76b95428a0f02719ef70676e8dec0645c0a",
+    "SexyAppFramework/reanim/Zombie_charred_zamboni4.png": "8b67c5631028b14162f2b007ad2919ebd641964931c18659ed3d1a9b0d94a78f",
+    "SexyAppFramework/reanim/Zombie_charred_zamboni5.png": "6c34c66c3b6a1a2c0210022fdd8abca67bfc8f2abab9c6efc8d59b5b6f86ed76",
+    "SexyAppFramework/reanim/Zombie_charred_zamboni6 .png": "67ab39b20590d8911148c2a14038dc3e641827b853d01108d78d5f46d95493ea",
+    "SexyAppFramework/reanim/Zombie_charred_zamboni7.png": "e10fd830e0d9e49555d83b2af4558e3b57413a23896807bd355784f986f4e297",
+    "SexyAppFramework/reanim/Zombie_charred_zamboni8.png": "e3546778e61d68a0fa0085af7835be10b41ff0be3fade7ab1c17b75372080340",
+    "SexyAppFramework/reanim/Zombie_charred_zamboni9.png": "ca19f4e0cc103b2fb509f731bb7db2f423bfb214f52692149db95eb1fce84803",
+    "SexyAppFramework/reanim/Zombie_charred_zambonihead.png": "bad9e74b3595aab634a32d1926eca9a4bdad83a5676ed6ffd4f57f59759ed9cc",
+    "SexyAppFramework/reanim/Zombie_charred_zambonitail.png": "1a6984250c09a2b6df3ef23578e0952c994db68ca3545010dd360ff780e83383"
+  }
+}

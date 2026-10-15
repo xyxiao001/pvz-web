@@ -1,0 +1,4578 @@
+{
+  "images": 457,
+  "changed": 110,
+  "before": 68118185,
+  "after": 61609149,
+  "files": [
+    {
+      "file": "assets/runtime/actor-motion/blover.webp",
+      "before": 10788,
+      "after": 10788,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 398,
+      "height": 76,
+      "alphaSha256": "ef2c6d259ac0848d549adda1f6e4ffe4a3e8cb7365fcd6613a1f50b98ac4ef70"
+    },
+    {
+      "file": "assets/runtime/actor-motion/cactus.webp",
+      "before": 32078,
+      "after": 32078,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 958,
+      "height": 152,
+      "alphaSha256": "49007f04e6adf20b9391ac4befbc6829923a4136115e3a9885c115ac87e54596"
+    },
+    {
+      "file": "assets/runtime/actor-motion/caltrop.webp",
+      "before": 14270,
+      "after": 14270,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 360,
+      "height": 78,
+      "alphaSha256": "6a1eee4f7aa6e061c5f4ee962173a06bb2cc389bc87f8f51500bd3bf678c566c"
+    },
+    {
+      "file": "assets/runtime/actor-motion/cherrybomb.webp",
+      "before": 26090,
+      "after": 26090,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 960,
+      "height": 124,
+      "alphaSha256": "f365d866a561f396e41bde4cdcc5d81dc2b7b44cd4031aacef065b9e2026d9a5"
+    },
+    {
+      "file": "assets/runtime/actor-motion/chomper.webp",
+      "before": 53886,
+      "after": 53886,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1394,
+      "height": 154,
+      "alphaSha256": "f11aac8bb02ad31731d1333611fe040feb6e13637a997427f17d842d7ad424fd"
+    },
+    {
+      "file": "assets/runtime/actor-motion/coffeebean.webp",
+      "before": 98086,
+      "after": 98086,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1488,
+      "height": 316,
+      "alphaSha256": "25dab17cfae9df1aff1d3e50ed210f3e52c524c86b061fc3ce6abe9a1b019a56"
+    },
+    {
+      "file": "assets/runtime/actor-motion/doomshroom.webp",
+      "before": 9912,
+      "after": 9912,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 322,
+      "height": 114,
+      "alphaSha256": "1679fcb6e4fbe93ed10871c5f50972ce6f9bb5994186e30bde01ea42d4f86de1"
+    },
+    {
+      "file": "assets/runtime/actor-motion/fumeshroom.webp",
+      "before": 15792,
+      "after": 15792,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 476,
+      "height": 146,
+      "alphaSha256": "39b928d21870a502c0f08a048edcc1e2f36abaa883cca7635af77a817d2cd2f7"
+    },
+    {
+      "file": "assets/runtime/actor-motion/garlic.webp",
+      "before": 24192,
+      "after": 24192,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 634,
+      "height": 124,
+      "alphaSha256": "80b0a65e57baf6a3dd2ef7538e8d2b85407ded20e108740dd24090c83b1b6741"
+    },
+    {
+      "file": "assets/runtime/actor-motion/gravebuster.webp",
+      "before": 21106,
+      "after": 21106,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 688,
+      "height": 94,
+      "alphaSha256": "41874042a58fd1772d6a5a5698e5c2e66aa6509ee0b7739844d767cab35bfd62"
+    },
+    {
+      "file": "assets/runtime/actor-motion/hypnoshroom.webp",
+      "before": 12678,
+      "after": 12678,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 300,
+      "height": 144,
+      "alphaSha256": "b8ef1774aa8bff7eeb51872359c88f80fc3c6a442b8978040cf07a54860803c1"
+    },
+    {
+      "file": "assets/runtime/actor-motion/iceshroom.webp",
+      "before": 20582,
+      "after": 20582,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 504,
+      "height": 112,
+      "alphaSha256": "c5776d7253f214037e6017ead9551bda88d7f204712b91abb62d2c5d850aab6a"
+    },
+    {
+      "file": "assets/runtime/actor-motion/jalapeno.webp",
+      "before": 14516,
+      "after": 14516,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 406,
+      "height": 176,
+      "alphaSha256": "d302ae37f56e406385b7806d513c9b4410ec88ea13dc11077f88d8dd2be7d92d"
+    },
+    {
+      "file": "assets/runtime/actor-motion/lilypad.webp",
+      "before": 9680,
+      "after": 9680,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 208,
+      "height": 204,
+      "alphaSha256": "47b2b9281ff68410983b25f1491bebb1621c0c82e61bfc441363a70b597347a5"
+    },
+    {
+      "file": "assets/runtime/actor-motion/magnetshroom.webp",
+      "before": 49750,
+      "after": 49750,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1418,
+      "height": 226,
+      "alphaSha256": "4b57f6c247bd1c1a574e953f1bdd04fee3f87b6f70a6e1ed36810021d684861b"
+    },
+    {
+      "file": "assets/runtime/actor-motion/marigold.webp",
+      "before": 27012,
+      "after": 27012,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 828,
+      "height": 152,
+      "alphaSha256": "784468315068d4d2349be4a6b7178aad90bc20baddc5a6cb8c58b7672c8cfc27"
+    },
+    {
+      "file": "assets/runtime/actor-motion/peashooter.webp",
+      "before": 32580,
+      "after": 32580,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 954,
+      "height": 134,
+      "alphaSha256": "6bc4787ad380f45e46b7cd9b9af575a6b7f2f3aa9b5b1a9cc67a8627517f85c0"
+    },
+    {
+      "file": "assets/runtime/actor-motion/plantern.webp",
+      "before": 18926,
+      "after": 18926,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 434,
+      "height": 200,
+      "alphaSha256": "4849ef060bb8c926b45592ac427249d9c534a37d584032032ac0e3664b4107be"
+    },
+    {
+      "file": "assets/runtime/actor-motion/pot.webp",
+      "before": 13392,
+      "after": 13392,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 394,
+      "height": 132,
+      "alphaSha256": "61688e860fd6ac2e53ee5980a48857be1d3f6f2eda2ddc59d487cc02f64c58b1"
+    },
+    {
+      "file": "assets/runtime/actor-motion/potatomine.webp",
+      "before": 27478,
+      "after": 27478,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 856,
+      "height": 136,
+      "alphaSha256": "4f4d636de902068b777d484e0fb23f15242263a56a6f307a270e9b5d607e349b"
+    },
+    {
+      "file": "assets/runtime/actor-motion/puffshroom.webp",
+      "before": 10080,
+      "after": 10080,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 320,
+      "height": 110,
+      "alphaSha256": "8b658f1bca3b3a0ba052dc8371a11985a44e684173fd3a3b3bfa6957478fbf48"
+    },
+    {
+      "file": "assets/runtime/actor-motion/pumpkin.webp",
+      "before": 56064,
+      "after": 56064,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 980,
+      "height": 164,
+      "alphaSha256": "31b7c940268e050dc423a41c7a1965bfd18d8f0d480c17e14a3612c0fff5c4c3"
+    },
+    {
+      "file": "assets/runtime/actor-motion/scaredyshroom.webp",
+      "before": 19420,
+      "after": 19420,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 550,
+      "height": 110,
+      "alphaSha256": "a8f9fd4a5dde3af7a36ea48eb7944b918a1fce82f02f24b17c8de46b03ce4395"
+    },
+    {
+      "file": "assets/runtime/actor-motion/seashroom.webp",
+      "before": 11134,
+      "after": 11134,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 452,
+      "height": 78,
+      "alphaSha256": "0e2c60937e78956b3dbce46ebb99e7b3b4d938583c1b8fa3f9074a8f5e2b1720"
+    },
+    {
+      "file": "assets/runtime/actor-motion/snowpea.webp",
+      "before": 36766,
+      "after": 36766,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 920,
+      "height": 136,
+      "alphaSha256": "e687947133e2cbfb1080702ac417ef8152b13052cf4c18f98efa9a18d11e27e4"
+    },
+    {
+      "file": "assets/runtime/actor-motion/splitpea.webp",
+      "before": 30610,
+      "after": 30610,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 848,
+      "height": 134,
+      "alphaSha256": "981f420cf126d8a91aedd625c5f3d74f9630322a32a6232173f30b39238f5b3a"
+    },
+    {
+      "file": "assets/runtime/actor-motion/squash.webp",
+      "before": 16014,
+      "after": 16014,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 368,
+      "height": 192,
+      "alphaSha256": "f751573dab0558699e48edf9096ddd9aff2fc40e69aff21c8b07026db5b5ba81"
+    },
+    {
+      "file": "assets/runtime/actor-motion/starfruit.webp",
+      "before": 13810,
+      "after": 13810,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 346,
+      "height": 180,
+      "alphaSha256": "1521fd4356400fac5a97b55a8469c0c5f986fe5d04d2a9ae3bfa67338825ce9f"
+    },
+    {
+      "file": "assets/runtime/actor-motion/sunshroom.webp",
+      "before": 11368,
+      "after": 11368,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 322,
+      "height": 132,
+      "alphaSha256": "1df240dbd4092ae081d9798daf07673083fdbfba615645e9161ed2294dafa209"
+    },
+    {
+      "file": "assets/runtime/actor-motion/tallnut.webp",
+      "before": 41108,
+      "after": 41108,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 610,
+      "height": 296,
+      "alphaSha256": "0ad096e35befb9f00266aaad37f5622af939209c13ca4315b2dfcbf611e92384"
+    },
+    {
+      "file": "assets/runtime/actor-motion/tanglekelp.webp",
+      "before": 87186,
+      "after": 87186,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2044,
+      "height": 324,
+      "alphaSha256": "dbe19661ebf5910de03bb735761cc94a4a2a42807ca55553ae9861ae9559d6d0"
+    },
+    {
+      "file": "assets/runtime/actor-motion/torchwood.webp",
+      "before": 30688,
+      "after": 30688,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 770,
+      "height": 146,
+      "alphaSha256": "8e8b63266c47faad2eaccc1891ba34c87edfb4fc611cf7a7d67eddf43a1808ce"
+    },
+    {
+      "file": "assets/runtime/actor-motion/umbrellaleaf.webp",
+      "before": 40546,
+      "after": 40546,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 912,
+      "height": 136,
+      "alphaSha256": "ddc5cdbbb7a085cd734775b758ca606873969b11af7925838446c66785463260"
+    },
+    {
+      "file": "assets/runtime/actor-motion/wallnut.webp",
+      "before": 33374,
+      "after": 33374,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 616,
+      "height": 204,
+      "alphaSha256": "af80b539c309f455aea5f1da3c209f8688f71cb69287a693ae0833af7b66b4fb"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie.webp",
+      "before": 140580,
+      "after": 140580,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2004,
+      "height": 474,
+      "alphaSha256": "eb32f34112a3087e239b10d21fe467125992c6a0cd822a378bb125af66a96f1a"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_backup.webp",
+      "before": 48606,
+      "after": 48606,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1330,
+      "height": 122,
+      "alphaSha256": "9a81f99521ce57b1d10b1930ce8a519768f3a665c136ed5effae3910cedc7d9f"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_balloon.webp",
+      "before": 68512,
+      "after": 68512,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1692,
+      "height": 288,
+      "alphaSha256": "d14829a51d4e864f5205c0133679354a8ffc23dd308e4e21a7abca909b47ecac"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_bobsled.webp",
+      "before": 32718,
+      "after": 32718,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 956,
+      "height": 136,
+      "alphaSha256": "e2beab4f35c41070e02ea97e14ae552a1e6b600f0606ee1e25b8f6a1c88520d8"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_bungi.webp",
+      "before": 83000,
+      "after": 83000,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1978,
+      "height": 204,
+      "alphaSha256": "09c9d7bc282dd59b3a01d3ae405f66b198150273804b508dbbbea5931bf7c0c6"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_catapult.webp",
+      "before": 166278,
+      "after": 166278,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1998,
+      "height": 382,
+      "alphaSha256": "9ba2b4dc13f6be8b04067f92698f6fe270d2fa154667ac7287b5b69981a27f7d"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_charred.webp",
+      "before": 71528,
+      "after": 71528,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1890,
+      "height": 220,
+      "alphaSha256": "ac5dd78c7f2809ab1bcf7863602ed564d3aa77f134ac04be900b0abe7a8a6a6f"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_charred_catapult.webp",
+      "before": 165528,
+      "after": 165528,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1900,
+      "height": 796,
+      "alphaSha256": "60ca0da27d6b5428a04d603e55036334242aa6c33494a1f932447e7da7466ad7"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_charred_zamboni.webp",
+      "before": 189264,
+      "after": 189264,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1992,
+      "height": 786,
+      "alphaSha256": "7f6c0c4fa248f4cef8c71e743de4df5d832487c24fec61a3667033c5a5110a7d"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_digger.webp",
+      "before": 210888,
+      "after": 210888,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2022,
+      "height": 922,
+      "alphaSha256": "84128a57e5a75d97fd83a4406e63e688f92489b1b072ce1785d042fb849deac4"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_disco.webp",
+      "before": 47190,
+      "after": 47190,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1312,
+      "height": 122,
+      "alphaSha256": "6973dc6ff99ccdebc19162633bf3d19cb2a3b01f43f21ceabee8b1df2db4e2c2"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_dolphinrider.webp",
+      "before": 76316,
+      "after": 76316,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1992,
+      "height": 190,
+      "alphaSha256": "bbdb50555ee85943250c2fac002d3bbb725fddbc059b421358376b12f3732e24"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_football.webp",
+      "before": 78486,
+      "after": 78486,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1794,
+      "height": 344,
+      "alphaSha256": "ae4039dece1be935cbbfd950ea9b97dfd33c00cfa4993524e14f2595b8a9d47e"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_imp.webp",
+      "before": 17206,
+      "after": 17206,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 574,
+      "height": 82,
+      "alphaSha256": "d2d0fa870986b1b6f18fd927e6034c70a51cb4d5a807ca95ad1eb1e78e5f36c7"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_jackbox.webp",
+      "before": 97050,
+      "after": 97050,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1974,
+      "height": 170,
+      "alphaSha256": "bb1343dfad07390c15eae348dc0db762ba810837be09b68373508f6fdc6e89c2"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_ladder.webp",
+      "before": 96718,
+      "after": 96718,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2006,
+      "height": 246,
+      "alphaSha256": "f9c49a89e9bb06e11525adccb40360bbd0a200147708833b71b2112017ec3027"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_paper.webp",
+      "before": 81956,
+      "after": 81956,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1934,
+      "height": 336,
+      "alphaSha256": "d5d864d23312c9ad60f35f83421fef4a84afbf122cf747267c3675963f60d464"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_pogo.webp",
+      "before": 49776,
+      "after": 49776,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1542,
+      "height": 130,
+      "alphaSha256": "0ba90e2201cbfa4b1586befe040025c17948128056761bc3a4b8db836004ce1f"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_polevaulter.webp",
+      "before": 52032,
+      "after": 52032,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1716,
+      "height": 142,
+      "alphaSha256": "209938784e3ff043303dfc6b6929911324b9435e3c770d6864bcd08d2f7404ef"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_snorkle.webp",
+      "before": 72058,
+      "after": 72058,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1930,
+      "height": 130,
+      "alphaSha256": "ced104957d4297c557f431920b6a40e066554526d4c4441d0471c9ae40b2003d"
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_zamboni.webp",
+      "before": 141196,
+      "after": 141196,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2034,
+      "height": 642,
+      "alphaSha256": "68372ee08e5c49b2522f3b4dca10e3ad8310088ebac04e061c70ce6b7a380237"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_BODY.webp",
+      "before": 17842,
+      "after": 17842,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 84,
+      "height": 146,
+      "alphaSha256": "2aadcf33acbeb973977bbd02792de2afc32268004e06c529858610a32744329b"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_BRAIN.webp",
+      "before": 19480,
+      "after": 19480,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 122,
+      "height": 104,
+      "alphaSha256": "873a3da56eb162140df09c5a84f5cd22a2cba26231069e6baa1532f17c5fd1dc"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_FACE.webp",
+      "before": 15994,
+      "after": 15994,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 98,
+      "height": 82,
+      "alphaSha256": "a33903630f14db03d02218f0ecdf7b3a53f002167716c77de28cf8d5da639ffe"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_FACE2.webp",
+      "before": 16080,
+      "after": 16080,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 98,
+      "height": 82,
+      "alphaSha256": "24bb1816d27f8a75d552e5174c74ecb7a7f7b561f9e89bc074489c601472744b"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_INNERHAND.webp",
+      "before": 10666,
+      "after": 10666,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 66,
+      "height": 86,
+      "alphaSha256": "ae6ba32ad3c6c83c499f9841f08a2f720a7f88c599be22515a6685b2896fa80d"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_JAW.webp",
+      "before": 7944,
+      "after": 7944,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 60,
+      "height": 56,
+      "alphaSha256": "69649101c1095d55284e316e9b691cb2ab96bfb36db5159f316a073064fd08a8"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_JAW2.webp",
+      "before": 8224,
+      "after": 8224,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 60,
+      "height": 56,
+      "alphaSha256": "e86df7f452d68c678adc76baf29f0d38fb7208cc609087fe522307ac68469c88"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_LOWERARM.webp",
+      "before": 9878,
+      "after": 9878,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 78,
+      "height": 72,
+      "alphaSha256": "781e4a19b4501c3de225824d0fe2fa03b03e0cffc25ef9e6324cac757447d155"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_LOWERARM2.webp",
+      "before": 4554,
+      "after": 4460,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 42,
+      "height": 50,
+      "alphaSha256": "a52b003edf4e48c5cf5939f7d129f2f425d357b64e141763b528f1dde95adbbf"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_OUTERHAND.webp",
+      "before": 8706,
+      "after": 8664,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 68,
+      "height": 60,
+      "alphaSha256": "d024066320c56b8e75e4749db938afe9fc1ceb6018262225d083a5ec8d2fd2ca"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_UPPERARM.webp",
+      "before": 6628,
+      "after": 6628,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 50,
+      "height": 66,
+      "alphaSha256": "a6a1e8127ba092a84045058633a1b229f2bbe428dcdeaa68506daa90bc338f93"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ANTENNA.webp",
+      "before": 9814,
+      "after": 9814,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 94,
+      "height": 94,
+      "alphaSha256": "c13eedf157e3b3860d993d42c1cfe7d558e3396eea7cf7d2c2992abf706ac699"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ANTENNA_LIT.webp",
+      "before": 10678,
+      "after": 10678,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 94,
+      "height": 94,
+      "alphaSha256": "8fadeae3aafd02fc11ba3a19a81816e8c631dd392225cdf3041809be7c66d767"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ARM_UPPER2.webp",
+      "before": 109326,
+      "after": 29292,
+      "mode": "webp-q94",
+      "ssim": 0.98995,
+      "width": 270,
+      "height": 296,
+      "alphaSha256": "56c244062358ae9485597be2fa05c857253b8b9faf18d4d4371825e96cefed23"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_EYEGLOW.webp",
+      "before": 35872,
+      "after": 7318,
+      "mode": "webp-q94",
+      "ssim": 0.99276,
+      "width": 394,
+      "height": 178,
+      "alphaSha256": "35c750acc7e96eaa995999936e2d53b7bc4074f601ddb56be95b2fc3b7d0554b"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_EYEGLOW_BLACK.webp",
+      "before": 4480,
+      "after": 2812,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 394,
+      "height": 178,
+      "alphaSha256": "35c750acc7e96eaa995999936e2d53b7bc4074f601ddb56be95b2fc3b7d0554b"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_EYEGLOW_RED.webp",
+      "before": 41674,
+      "after": 9094,
+      "mode": "webp-q94",
+      "ssim": 0.992669,
+      "width": 394,
+      "height": 178,
+      "alphaSha256": "35c750acc7e96eaa995999936e2d53b7bc4074f601ddb56be95b2fc3b7d0554b"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_FIREBALL.webp",
+      "before": 131346,
+      "after": 131346,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 338,
+      "height": 338,
+      "alphaSha256": "ad1f08e1240cd73aea88968c3bc974061f7f75394be7a7020a391de78bf6575a"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_FIREBALL_ADDITIVE.webp",
+      "before": 28152,
+      "after": 8152,
+      "mode": "webp-q94",
+      "ssim": 0.999452,
+      "width": 338,
+      "height": 338,
+      "alphaSha256": "097c38db382083de18e225c538723f30c3d4794ee4f2e53e5184ffa868942970"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_FIREBALL_CHUNKS.webp",
+      "before": 59934,
+      "after": 16402,
+      "mode": "webp-q94",
+      "ssim": 0.999802,
+      "width": 338,
+      "height": 338,
+      "alphaSha256": "066e0bea82b764bb1702accb818f5456c90724b1e788a798986bd577491448e8"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_FIREBALL_MULTIPLY.webp",
+      "before": 79086,
+      "after": 23338,
+      "mode": "webp-q94",
+      "ssim": 0.999312,
+      "width": 338,
+      "height": 338,
+      "alphaSha256": "6fc4f8e7a13cdb61597091160650d07da378b99eefad0047db6524afd4c4e90f"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_FIREBALL_SUPERGLOW.webp",
+      "before": 63158,
+      "after": 25776,
+      "mode": "webp-q94",
+      "ssim": 0.999362,
+      "width": 576,
+      "height": 576,
+      "alphaSha256": "ceb17ddefa7036b105df1b82d866895485b5c990562d5dac64d93317e2b3efeb"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_FLAG.webp",
+      "before": 9668,
+      "after": 9668,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 126,
+      "height": 98,
+      "alphaSha256": "b880389c4bd8ac1e9fd732fca46c3cf8448e97261145991e5368d8d453a31396"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_FLAGPOLE.webp",
+      "before": 1240,
+      "after": 1240,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 12,
+      "height": 196,
+      "alphaSha256": "10316ec44ecee8906ceecb999f5f36d80c564069f21ad4660ac42fddda4d2d62"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_FOOT.webp",
+      "before": 292142,
+      "after": 51696,
+      "mode": "webp-q94",
+      "ssim": 0.99185,
+      "width": 734,
+      "height": 452,
+      "alphaSha256": "fe73e6a53035f6a8eaba949eae17086a6f1f78e7efe93073c43e3b4bc3a89376"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_HEAD.webp",
+      "before": 228602,
+      "after": 49798,
+      "mode": "webp-q94",
+      "ssim": 0.991446,
+      "width": 548,
+      "height": 452,
+      "alphaSha256": "23e7474bf150ef1c19d4bda965b1705de9ac3fc8193d45b4ecd2c27277a41bd0"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_HEAD2.webp",
+      "before": 69820,
+      "after": 16698,
+      "mode": "webp-q94",
+      "ssim": 0.989669,
+      "width": 370,
+      "height": 152,
+      "alphaSha256": "c55e5a8246732dd48f7fb37f95335772d54b2db6b2221ab26ad1dadad58d398a"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ICEBALL.webp",
+      "before": 80682,
+      "after": 80680,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 350,
+      "height": 350,
+      "alphaSha256": "72da2ff7b6891c07f7231f18386f0feca383468fb8faf4112d179cd09cdf827f"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ICEBALL_CRYSTAL1.webp",
+      "before": 5676,
+      "after": 5676,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 46,
+      "height": 58,
+      "alphaSha256": "65299360c696dd9c8239568441f4de927c7249e7c6d8fb69f55a9e80fd3d8d95"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ICEBALL_CRYSTAL2.webp",
+      "before": 20744,
+      "after": 20546,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 102,
+      "height": 116,
+      "alphaSha256": "70fa2bd32d9dabcba1f17a3e467f3b0c4191f80c4d43c4af12b60a0c32fd0b3d"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ICEBALL_CRYSTAL3.webp",
+      "before": 16184,
+      "after": 16086,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 102,
+      "height": 108,
+      "alphaSha256": "9aa8c550b194317d250e9813e95d692280f8332d56ddbe621a6951e626446fba"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ICEBALL_HIGHLIGHT.webp",
+      "before": 37578,
+      "after": 13658,
+      "mode": "webp-q94",
+      "ssim": 0.999699,
+      "width": 350,
+      "height": 350,
+      "alphaSha256": "adfed023971f88505118b14773bedf99a05ec834e74ef7f5b701c8d7fd30898d"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ICEBALL_MULTIPLY.webp",
+      "before": 92004,
+      "after": 27256,
+      "mode": "webp-q94",
+      "ssim": 0.998854,
+      "width": 350,
+      "height": 350,
+      "alphaSha256": "642d5c572c2c5b02484b5c0e45a5718cb04f4a47a91ac46da3fa7ab4d751d9f1"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ICEBALL_OVERLAY.webp",
+      "before": 128808,
+      "after": 36136,
+      "mode": "webp-q94",
+      "ssim": 0.995266,
+      "width": 350,
+      "height": 350,
+      "alphaSha256": "1a539ccbf32bcee74bdba24a11879f508bbb41b454809fcd965adb01d20e6a2e"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ICEFIRE_SHADOW.webp",
+      "before": 5768,
+      "after": 5698,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 314,
+      "height": 130,
+      "alphaSha256": "f56e0a8093fbf6663966952b2e3281a255a9aae7c9a356a3a7ec6c1f4b7cfc9c"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_INNERARM_FINGER.webp",
+      "before": 38654,
+      "after": 9384,
+      "mode": "webp-q94",
+      "ssim": 0.991494,
+      "width": 146,
+      "height": 206,
+      "alphaSha256": "ca66f71fc2a1a08062fa184c37d23280578f9aa007591e8576874633250e72cd"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_INNERARM_FINGERROPE.webp",
+      "before": 41260,
+      "after": 10370,
+      "mode": "webp-q94",
+      "ssim": 0.989495,
+      "width": 146,
+      "height": 206,
+      "alphaSha256": "cdadcd204b486e6489c03ae48f0a6d8b18b315a30f056378672f46c8192682e2"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_INNERARM_HAND.webp",
+      "before": 88158,
+      "after": 18150,
+      "mode": "webp-q94",
+      "ssim": 0.99194,
+      "width": 322,
+      "height": 282,
+      "alphaSha256": "6883ee3d2eee8b3e0c53802e9ee9eeaaeb86bf85c8d98caf09ef5f0384e8b966"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_INNERARM_LOWER.webp",
+      "before": 183300,
+      "after": 32388,
+      "mode": "webp-q94",
+      "ssim": 0.989766,
+      "width": 388,
+      "height": 464,
+      "alphaSha256": "6b6ccdd99c48976ac6e5528775e0cc80d1f47796d614a91009416f0db88c40a1"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_INNERARM_THUMB1.webp",
+      "before": 20816,
+      "after": 5644,
+      "mode": "webp-q94",
+      "ssim": 0.990984,
+      "width": 126,
+      "height": 114,
+      "alphaSha256": "48dea4c3beff54c061e0387a0add57e3bf3c4aa45d48c5f6afea7573e182f33a"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_INNERARM_THUMB2.webp",
+      "before": 29664,
+      "after": 7174,
+      "mode": "webp-q94",
+      "ssim": 0.990904,
+      "width": 120,
+      "height": 186,
+      "alphaSha256": "1c0b5e3b6940f7ce26100e8aad50db809623bcab2fef398d939e6973a483f27b"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_INNERARM_UPPER.webp",
+      "before": 220922,
+      "after": 46248,
+      "mode": "webp-q94",
+      "ssim": 0.9915,
+      "width": 454,
+      "height": 500,
+      "alphaSha256": "7cc45436ac678955f489cdde689bd5573df8e4b156b039d380a0b270f17e0a7a"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_INNERJAW.webp",
+      "before": 5740,
+      "after": 5740,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 284,
+      "height": 270,
+      "alphaSha256": "ee435a0bd9a6293d5b9566c4f8f42adfa593ccf19cf6ce9dec3702c2d9577374"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_INNERLEG_UPPER.webp",
+      "before": 129248,
+      "after": 26330,
+      "mode": "webp-q94",
+      "ssim": 0.99091,
+      "width": 320,
+      "height": 416,
+      "alphaSha256": "5e36c618cb003feed580971915b40d670419053c2ef7b94122cb0ae53cbe1972"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_JAW.webp",
+      "before": 130286,
+      "after": 25294,
+      "mode": "webp-q94",
+      "ssim": 0.9946,
+      "width": 418,
+      "height": 406,
+      "alphaSha256": "a4ae14bacdf0bd012dcce4c76b612bd2908a27801b4b5b0eddc380bf18e4b23d"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_LEGBITS.webp",
+      "before": 70776,
+      "after": 15632,
+      "mode": "webp-q94",
+      "ssim": 0.986416,
+      "width": 268,
+      "height": 234,
+      "alphaSha256": "fb9acf47a65ad14264c537d77855fb7e9a1a278ad8fa14c4851538050159e4ab"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_LEG_LOWER.webp",
+      "before": 257724,
+      "after": 36690,
+      "mode": "webp-q94",
+      "ssim": 0.992119,
+      "width": 536,
+      "height": 576,
+      "alphaSha256": "28ede95ddc8b3f72662665372166f7a68f39229ae3e23c25a81695458251bd90"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_LOWERBODY.webp",
+      "before": 249938,
+      "after": 39976,
+      "mode": "webp-q94",
+      "ssim": 0.992118,
+      "width": 666,
+      "height": 500,
+      "alphaSha256": "5ec8cee262df74ca2b5443b6d62b4d2b39d51034cdbbfb72cc967b0e2d824511"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_MOUTHGLOW.webp",
+      "before": 23832,
+      "after": 16336,
+      "mode": "webp-q94",
+      "ssim": 0.999059,
+      "width": 270,
+      "height": 270,
+      "alphaSha256": "c149aac03bf3c1fe7ea0669307dbf07c5ae42c458f0a084abe7ad152cbf682e5"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_MOUTHGLOW_RED.webp",
+      "before": 23576,
+      "after": 16352,
+      "mode": "webp-q94",
+      "ssim": 0.998362,
+      "width": 270,
+      "height": 270,
+      "alphaSha256": "c149aac03bf3c1fe7ea0669307dbf07c5ae42c458f0a084abe7ad152cbf682e5"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_NECK.webp",
+      "before": 365926,
+      "after": 77160,
+      "mode": "webp-q94",
+      "ssim": 0.989727,
+      "width": 536,
+      "height": 578,
+      "alphaSha256": "c15c1462b1404cad7545b80ba803bbfa89e1b2e079b7470520e71e13e20f6760"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_OUTERARM_FINGER1.webp",
+      "before": 31626,
+      "after": 8028,
+      "mode": "webp-q94",
+      "ssim": 0.993222,
+      "width": 152,
+      "height": 152,
+      "alphaSha256": "c7fb01950e03caf1268d65eb351b18b9bc9973ef6231dc0cc2eba719da2effc6"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_OUTERARM_FINGER2.webp",
+      "before": 62204,
+      "after": 12904,
+      "mode": "webp-q94",
+      "ssim": 0.993998,
+      "width": 228,
+      "height": 254,
+      "alphaSha256": "20583f383be5f02590d22b05cd1f4f672ecb37542c39b638882c533f8c1e7b50"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_OUTERARM_HAND.webp",
+      "before": 172778,
+      "after": 35444,
+      "mode": "webp-q94",
+      "ssim": 0.990856,
+      "width": 396,
+      "height": 396,
+      "alphaSha256": "e32a898b3515f8f6aaef6846f2aaeebc606936270b63a437cccc69ada56c6ffb"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_OUTERARM_LOWER.webp",
+      "before": 156212,
+      "after": 25262,
+      "mode": "webp-q94",
+      "ssim": 0.990492,
+      "width": 462,
+      "height": 422,
+      "alphaSha256": "1d69c68aefdc2a8a07e669092b7e638ed2db6aa1e4eec6a5f7faee013e620bb3"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_OUTERARM_THUMB1.webp",
+      "before": 20502,
+      "after": 4746,
+      "mode": "webp-q94",
+      "ssim": 0.992797,
+      "width": 152,
+      "height": 112,
+      "alphaSha256": "78ce241014beaee7cb9845605b05156ef43684bfa99419e35c33ef2ee6ff2b02"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_OUTERARM_THUMB2.webp",
+      "before": 50674,
+      "after": 12556,
+      "mode": "webp-q94",
+      "ssim": 0.993523,
+      "width": 174,
+      "height": 202,
+      "alphaSha256": "b5b5c85928ab1baee3af658a28083f142e2b7c0574756c186939b0d7515515a0"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_OUTERARM_UPPER.webp",
+      "before": 307220,
+      "after": 40230,
+      "mode": "webp-q94",
+      "ssim": 0.990793,
+      "width": 570,
+      "height": 712,
+      "alphaSha256": "8318fac28373f95d712838dedc131a33a0afc98b158dba99acaa6d00fe56f59c"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_OUTERLEG_UPPER.webp",
+      "before": 184078,
+      "after": 32220,
+      "mode": "webp-q94",
+      "ssim": 0.99089,
+      "width": 400,
+      "height": 498,
+      "alphaSha256": "17191341cbda1a28089142bfdfe2a63cf0826dc689e2e579f1ddabeb40486e3c"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_RV.webp",
+      "before": 220756,
+      "after": 45224,
+      "mode": "webp-q94",
+      "ssim": 0.991766,
+      "width": 598,
+      "height": 340,
+      "alphaSha256": "517203fabb2d67e1ab4082ba2b44a76fece2df1a72bc16e88526c26a06150d3b"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_RVWHEEL.webp",
+      "before": 12160,
+      "after": 12160,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 98,
+      "height": 98,
+      "alphaSha256": "32029c15789d23eee9489ac6bdda28e822b7e7f7177fb2059236e57d20611e9f"
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_UPPERBODY.webp",
+      "before": 761868,
+      "after": 128122,
+      "mode": "webp-q94",
+      "ssim": 0.992184,
+      "width": 1044,
+      "height": 958,
+      "alphaSha256": "4550d3bbc5b5629d20e32cae55999ec1754700f35de177c62d38bc9ec9d78780"
+    },
+    {
+      "file": "assets/runtime/boss/background.webp",
+      "before": 218420,
+      "after": 218420,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2800,
+      "height": 1200,
+      "alphaSha256": "9f6291e9c891edcb9e5d71cd359d88fa30f2ba99a1e2ea593036313a472ddaad"
+    },
+    {
+      "file": "assets/runtime/clips/backup-burn-0.webp",
+      "before": 36038,
+      "after": 36038,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 326,
+      "height": 1606,
+      "alphaSha256": "436e88cebf23d18e8dbf3fd2181578cf60c09b1ea74a559974df38223e965224"
+    },
+    {
+      "file": "assets/runtime/clips/backup-die-0.webp",
+      "before": 312008,
+      "after": 312008,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1386,
+      "height": 1354,
+      "alphaSha256": "ec4864aaa4b4dfa6a4836b563f0a7b9a5669263783e86db26430f163731aa24c"
+    },
+    {
+      "file": "assets/runtime/clips/backup-eat-0.webp",
+      "before": 312766,
+      "after": 312766,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1066,
+      "height": 1878,
+      "alphaSha256": "39b78627dcf47e79bf7ce9b4d862440850ed8a0d0c38120d1e04d6d43be0e4a0"
+    },
+    {
+      "file": "assets/runtime/clips/backup-headless-0.webp",
+      "before": 135468,
+      "after": 135468,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1410,
+      "height": 610,
+      "alphaSha256": "5f983680d2e84e0c3ed047322a96e39383f69654f35f1137cb58ede8da30c5df"
+    },
+    {
+      "file": "assets/runtime/clips/backup-walk-0.webp",
+      "before": 187568,
+      "after": 187568,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 610,
+      "height": 1728,
+      "alphaSha256": "696e7ff369e6c65b35f2c09342cd5d3d600d7053fac0f49219a3d071bf8a1a6b"
+    },
+    {
+      "file": "assets/runtime/clips/balloon-die-0.webp",
+      "before": 129332,
+      "after": 129332,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1652,
+      "height": 380,
+      "alphaSha256": "25adb34b9564dd55b7f05a17384592dd55d1ffaef7f06d2a2a73802ed3e8da37"
+    },
+    {
+      "file": "assets/runtime/clips/balloon-eat-0.webp",
+      "before": 175678,
+      "after": 175678,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 970,
+      "height": 840,
+      "alphaSha256": "cfd5f3bd101005797f2bf1b4a3732d36c09c81d794897510ecedea45b750badf"
+    },
+    {
+      "file": "assets/runtime/clips/balloon-fly-0.webp",
+      "before": 111560,
+      "after": 111560,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 996,
+      "height": 524,
+      "alphaSha256": "87d47c728a9066f531398af75e90951735a2280c5db90ddd796390ce0ef5f24e"
+    },
+    {
+      "file": "assets/runtime/clips/balloon-pop-0.webp",
+      "before": 217104,
+      "after": 217104,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1600,
+      "height": 686,
+      "alphaSha256": "a07a6cb5bc3d18cc85be474679f561cffd602469feb065966ad831e10f611021"
+    },
+    {
+      "file": "assets/runtime/clips/balloon-walk-0.webp",
+      "before": 293124,
+      "after": 293124,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1648,
+      "height": 896,
+      "alphaSha256": "0b455fdc880fde1a0bb9af8cd17804fc4a60e367e553dbea15f03eef3da59808"
+    },
+    {
+      "file": "assets/runtime/clips/blover-0.webp",
+      "before": 169626,
+      "after": 169626,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2000,
+      "height": 428,
+      "alphaSha256": "6777c0aae2f5c1623c353f5fbb57952a478f3a10b4870960671d6b6159d92e24"
+    },
+    {
+      "file": "assets/runtime/clips/blover-loop-0.webp",
+      "before": 95466,
+      "after": 95466,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 722,
+      "height": 690,
+      "alphaSha256": "c2e49800ce7f85d070eb235bec7ee8c7d6e0f0d9f282118e9daf244125f0d34f"
+    },
+    {
+      "file": "assets/runtime/clips/bobsled-die-0.webp",
+      "before": 165382,
+      "after": 165382,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 758,
+      "height": 804,
+      "alphaSha256": "ad1f560397fb5300b9262201e1af6024efdc21be9954444b91977cc747751d74"
+    },
+    {
+      "file": "assets/runtime/clips/bobsled-eat-0.webp",
+      "before": 449926,
+      "after": 449926,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1396,
+      "height": 1276,
+      "alphaSha256": "95128d17b084156dd6d5f7f00086ed1422e1813715a9aa55b8f79b85bb572b70"
+    },
+    {
+      "file": "assets/runtime/clips/bobsled-walk-0.webp",
+      "before": 415744,
+      "after": 415744,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2014,
+      "height": 762,
+      "alphaSha256": "696a3de33516ad5a6c125a6fa28079cd97da271e18b62cbda5d9d4d596e91a6b"
+    },
+    {
+      "file": "assets/runtime/clips/bucket-eat-0.webp",
+      "before": 349212,
+      "after": 349212,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1396,
+      "height": 1384,
+      "alphaSha256": "1f61e7a4b6b55231184edb8186acdd5cd64082603866332897c54467879fab33"
+    },
+    {
+      "file": "assets/runtime/clips/bucket-walk-0.webp",
+      "before": 407712,
+      "after": 407712,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1020,
+      "height": 1986,
+      "alphaSha256": "238567762f8e9adfe2d88475980a842976b07dcc5043bede5b16b1fce3b01a02"
+    },
+    {
+      "file": "assets/runtime/clips/bungee-die-0.webp",
+      "before": 79452,
+      "after": 79452,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 226,
+      "height": 1762,
+      "alphaSha256": "b52475d0f58438c7a47206d610bfd55c4a64c849a829d77a6281e851220fcf28"
+    },
+    {
+      "file": "assets/runtime/clips/bungee-drop-0.webp",
+      "before": 115552,
+      "after": 115552,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 300,
+      "height": 1674,
+      "alphaSha256": "8277246767ff0b05716d4b7e23f138d5d7abfb9b8d61350009767cba3f51bea5"
+    },
+    {
+      "file": "assets/runtime/clips/bungee-idle-0.webp",
+      "before": 321294,
+      "after": 321294,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1222,
+      "height": 1080,
+      "alphaSha256": "c809967f54ffacee317cad1c365cd38bb5fe2c7e4a6263c6b6f9dea618967b5a"
+    },
+    {
+      "file": "assets/runtime/clips/cabbagepult-0.webp",
+      "before": 263334,
+      "after": 263334,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 572,
+      "height": 1496,
+      "alphaSha256": "44667aac3879b0292a8d04974fa767bd58d4d9368d92bd40239847aed08c9259"
+    },
+    {
+      "file": "assets/runtime/clips/cabbagepult-attack-0.webp",
+      "before": 316534,
+      "after": 316534,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1000,
+      "height": 1056,
+      "alphaSha256": "f1636af7dc1e87456e0273be69f14aafa207a70265641edf4f942f603525c937"
+    },
+    {
+      "file": "assets/runtime/clips/cactus-0.webp",
+      "before": 101480,
+      "after": 101480,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 352,
+      "height": 1166,
+      "alphaSha256": "24ef02d9b21416006fe4416d7f5ec89d3d9d9c91b2c28f57224dd634b0c1a684"
+    },
+    {
+      "file": "assets/runtime/clips/cactus-tall-0.webp",
+      "before": 149096,
+      "after": 149096,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 524,
+      "height": 1538,
+      "alphaSha256": "7dd8bd8002b6a9ce2487dd2378367b9697a310eb46fdfc1fda220cafdc2c3bc3"
+    },
+    {
+      "file": "assets/runtime/clips/catapult-die-0.webp",
+      "before": 98164,
+      "after": 98164,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1084,
+      "height": 1200,
+      "alphaSha256": "0b83429f5b91e1857ef0273a59f01a33ac1d659ba56768f637b9edb674a525cf"
+    },
+    {
+      "file": "assets/runtime/clips/catapult-idle-0.webp",
+      "before": 345258,
+      "after": 345258,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1116,
+      "height": 1480,
+      "alphaSha256": "ae5779a903eff8bc99c4c1b72c72843588a626afac5b7e0c57165656d6350a7d"
+    },
+    {
+      "file": "assets/runtime/clips/catapult-shoot-0.webp",
+      "before": 886378,
+      "after": 886378,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2046,
+      "height": 1840,
+      "alphaSha256": "f504d337aaeca86fe6a7709b0c98730f100ff23d76f4bdc12a9112b435c6d46d"
+    },
+    {
+      "file": "assets/runtime/clips/catapult-walk-0.webp",
+      "before": 718446,
+      "after": 718446,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1878,
+      "height": 1510,
+      "alphaSha256": "7064db84a595a21f8d4d4c8bbca899c3fd5334e2677b7f55546bbac169ca1a9c"
+    },
+    {
+      "file": "assets/runtime/clips/cherrybomb-0.webp",
+      "before": 75724,
+      "after": 75724,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 750,
+      "height": 608,
+      "alphaSha256": "1de76b2f1a68bf1c1b703a2e8699da8db53b009aadb98ad068cb776f41bc9e95"
+    },
+    {
+      "file": "assets/runtime/clips/chomper-0.webp",
+      "before": 252308,
+      "after": 252308,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1016,
+      "height": 964,
+      "alphaSha256": "9abadbb4a9d6e293b10746ef2a0e389bdef131c36df8014baaee2b1bc1ed514b"
+    },
+    {
+      "file": "assets/runtime/clips/chomper-bite-0.webp",
+      "before": 234360,
+      "after": 234360,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 732,
+      "height": 1268,
+      "alphaSha256": "43e849f45478715948b50c10402d550a9a479509e5d2d204b9f467bcfaa332f9"
+    },
+    {
+      "file": "assets/runtime/clips/chomper-digest-0.webp",
+      "before": 129672,
+      "after": 129672,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 822,
+      "height": 504,
+      "alphaSha256": "ca042f8bf6acc19adb086c28cc0f4fd95301a3edd96258dd95dba07766a5fce3"
+    },
+    {
+      "file": "assets/runtime/clips/coffeebean-0.webp",
+      "before": 19730,
+      "after": 19730,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 500,
+      "height": 260,
+      "alphaSha256": "c7fcc86fa088340e189c4916100e657e6ac506e099d4abff9952d5ac8da6e47d"
+    },
+    {
+      "file": "assets/runtime/clips/cone-eat-0.webp",
+      "before": 345508,
+      "after": 345508,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1398,
+      "height": 1462,
+      "alphaSha256": "25d7845089e4c71af4c31ed6f1c1a6126446690cb0737c182ab8007affe682aa"
+    },
+    {
+      "file": "assets/runtime/clips/cone-walk-0.webp",
+      "before": 405772,
+      "after": 405772,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1752,
+      "height": 1158,
+      "alphaSha256": "56dd31cadd5141585a57f95bd8b82b8552330958fce12c4c8944d3d2dd74f468"
+    },
+    {
+      "file": "assets/runtime/clips/dancer-burn-0.webp",
+      "before": 36038,
+      "after": 36038,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 326,
+      "height": 1606,
+      "alphaSha256": "436e88cebf23d18e8dbf3fd2181578cf60c09b1ea74a559974df38223e965224"
+    },
+    {
+      "file": "assets/runtime/clips/dancer-die-0.webp",
+      "before": 324918,
+      "after": 324918,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1720,
+      "height": 964,
+      "alphaSha256": "b16b925dd3cf65ca8f6f901e86dad24efe194cd1b1cc5e62bb54d0e378739e73"
+    },
+    {
+      "file": "assets/runtime/clips/dancer-eat-0.webp",
+      "before": 392672,
+      "after": 392672,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2018,
+      "height": 1054,
+      "alphaSha256": "bf28ffd03cff7dd5b69053cbe653216f583f3b4284d09a6ab3d154327f6d07d7"
+    },
+    {
+      "file": "assets/runtime/clips/dancer-headless-0.webp",
+      "before": 155598,
+      "after": 155598,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 486,
+      "height": 1936,
+      "alphaSha256": "e63ba1c5dc48ee8070c54aeddb72be838bffb34801688f0259e0d78d4e69a981"
+    },
+    {
+      "file": "assets/runtime/clips/dancer-summon-0.webp",
+      "before": 109994,
+      "after": 109994,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1482,
+      "height": 358,
+      "alphaSha256": "4f544434415f84f524acfda9d8af0e7b067bfb720327512ec1b46945a1992128"
+    },
+    {
+      "file": "assets/runtime/clips/dancer-walk-0.webp",
+      "before": 219468,
+      "after": 219468,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1216,
+      "height": 1066,
+      "alphaSha256": "dda62e493edd0c4cb5a66214b9910f225d7762388e30208fc791b99da559c2a7"
+    },
+    {
+      "file": "assets/runtime/clips/digger-die-0.webp",
+      "before": 410192,
+      "after": 410192,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1886,
+      "height": 946,
+      "alphaSha256": "5df7498dd8f54eb980c0efad2ecd8f6a925631e9cac5f646980a3ee9277f3c21"
+    },
+    {
+      "file": "assets/runtime/clips/digger-dig-0.webp",
+      "before": 66314,
+      "after": 66314,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 158,
+      "height": 1326,
+      "alphaSha256": "7ff2768a8574e55dc783f40a97a49f1f9b0a2ca0fae2464a3141f8bd71c87f38"
+    },
+    {
+      "file": "assets/runtime/clips/digger-eat-0.webp",
+      "before": 508664,
+      "after": 508664,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1356,
+      "height": 1396,
+      "alphaSha256": "2ae69270b7baf7516aaec1578ff2d8053f62dd8111ee916386ed5d5084f597be"
+    },
+    {
+      "file": "assets/runtime/clips/digger-rise-0.webp",
+      "before": 121258,
+      "after": 121258,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1536,
+      "height": 298,
+      "alphaSha256": "d686350e531d178cfd5c9b75ebe54fdfad4845631b7ffca88def59e04ee2d5d6"
+    },
+    {
+      "file": "assets/runtime/clips/digger-walk-0.webp",
+      "before": 573824,
+      "after": 573824,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1982,
+      "height": 1108,
+      "alphaSha256": "053f6a5622d413484940c77fa4380024f8616303a020df5a735ff15440dbb6fb"
+    },
+    {
+      "file": "assets/runtime/clips/dolphin-die-0.webp",
+      "before": 38602,
+      "after": 38602,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1290,
+      "height": 142,
+      "alphaSha256": "9bf84dabe23a85094707417257ac4111cd6cd5a24f17c43a078b791b3bc35e9e"
+    },
+    {
+      "file": "assets/runtime/clips/dolphin-eat-0.webp",
+      "before": 204014,
+      "after": 204014,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 960,
+      "height": 918,
+      "alphaSha256": "58e05817e9810b65d6793decdb9d612c8e80f28ffba950f811db035c1d41c327"
+    },
+    {
+      "file": "assets/runtime/clips/dolphin-jump-0.webp",
+      "before": 58218,
+      "after": 58218,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 588,
+      "height": 1200,
+      "alphaSha256": "bac131469c68df5689b7df30205bdd5a25f1625765913ac1012b014ecbd049be"
+    },
+    {
+      "file": "assets/runtime/clips/dolphin-ride-0.webp",
+      "before": 50702,
+      "after": 50702,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 202,
+      "height": 1264,
+      "alphaSha256": "ab4ddf15d95f5d6b0dcd44de45854e61e77d982e629e1a71aa509a5b9b82bb9d"
+    },
+    {
+      "file": "assets/runtime/clips/dolphin-swim-0.webp",
+      "before": 206104,
+      "after": 206104,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1896,
+      "height": 478,
+      "alphaSha256": "7df16238ea9ba5cfe68817e8e9886ee9be675f5f7178ffa4e515c41a56e3e174"
+    },
+    {
+      "file": "assets/runtime/clips/dolphin-walk-0.webp",
+      "before": 313700,
+      "after": 313700,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1884,
+      "height": 960,
+      "alphaSha256": "19c6d5ee443c5b2cf2df85a3421e814e99c16a6e4634604bfa10359127587191"
+    },
+    {
+      "file": "assets/runtime/clips/doomshroom-0.webp",
+      "before": 60894,
+      "after": 60894,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 352,
+      "height": 1808,
+      "alphaSha256": "930029fab2e34d13c7abb4ac323f476df6eb1c63d0463bdb5ca8301b18991a1b"
+    },
+    {
+      "file": "assets/runtime/clips/door-eat-0.webp",
+      "before": 510064,
+      "after": 510064,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1788,
+      "height": 1082,
+      "alphaSha256": "a5858acf5aeee5be2ae4f0933319dd54d92b4b5c300f8a68bcd20f475da1ed2d"
+    },
+    {
+      "file": "assets/runtime/clips/door-walk-0.webp",
+      "before": 606870,
+      "after": 606870,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1766,
+      "height": 1282,
+      "alphaSha256": "6e0d90661fef5982c4a63137c9071be50b6e6dd0847b47e0b089ba6a87b4a698"
+    },
+    {
+      "file": "assets/runtime/clips/ducky-die-0.webp",
+      "before": 93074,
+      "after": 93074,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 330,
+      "height": 1152,
+      "alphaSha256": "682972a18b5aafc5a34727a704860fca1696561a7ad0dff677ba150053d8aca9"
+    },
+    {
+      "file": "assets/runtime/clips/ducky1-eat-0.webp",
+      "before": 279234,
+      "after": 279234,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1722,
+      "height": 722,
+      "alphaSha256": "2013d6b5e421413d2334a0f52b8837badb1d9ff952bf57324710053d5ce538d6"
+    },
+    {
+      "file": "assets/runtime/clips/ducky1-walk-0.webp",
+      "before": 416714,
+      "after": 416714,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1770,
+      "height": 1272,
+      "alphaSha256": "c227dcedbdfc2ba6a03a18171f7b39027c2f30e0fd90e4104b5585a2d39efee7"
+    },
+    {
+      "file": "assets/runtime/clips/ducky2-eat-0.webp",
+      "before": 328030,
+      "after": 328030,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1384,
+      "height": 1146,
+      "alphaSha256": "34ccc33818160c98fdeff42f2850514feb15ab5422d8258165701d334ceaf85d"
+    },
+    {
+      "file": "assets/runtime/clips/ducky2-walk-0.webp",
+      "before": 470608,
+      "after": 470608,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1260,
+      "height": 2014,
+      "alphaSha256": "0630bcc6cbf3847999c89acba6c3a49d0609c3d016e4a4d5518a879634dcf07c"
+    },
+    {
+      "file": "assets/runtime/clips/ducky3-eat-0.webp",
+      "before": 316892,
+      "after": 316892,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1728,
+      "height": 848,
+      "alphaSha256": "ecddb84c21b4283a59c41ad49fb808aab60a7cab28796d3650b588574aee045b"
+    },
+    {
+      "file": "assets/runtime/clips/ducky3-walk-0.webp",
+      "before": 464594,
+      "after": 464594,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1262,
+      "height": 1974,
+      "alphaSha256": "790c16bcd064479a1b5d552e87f6703b582766caaa6e928d01a62e7f7c855d06"
+    },
+    {
+      "file": "assets/runtime/clips/explodenut-0.webp",
+      "before": 27388,
+      "after": 27388,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1044,
+      "height": 144,
+      "alphaSha256": "d11c7f407ca56bc21b84ca83f5e50d4a5aaad923b9b37a9e159d2fc3f28c5e5e"
+    },
+    {
+      "file": "assets/runtime/clips/flag-eat-0.webp",
+      "before": 389298,
+      "after": 389298,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1648,
+      "height": 1446,
+      "alphaSha256": "e95fb705cfb911e607a647ed98b42175f950c0064965760fcdc827ea4896770a"
+    },
+    {
+      "file": "assets/runtime/clips/flag-walk-0.webp",
+      "before": 491222,
+      "after": 491222,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1664,
+      "height": 1712,
+      "alphaSha256": "13ce5d8d423f6efecec575cd11fc7a8e9d1e0b98321a1f80b149c2e2d0499a3e"
+    },
+    {
+      "file": "assets/runtime/clips/flowerpot-0.webp",
+      "before": 54308,
+      "after": 54308,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 138,
+      "height": 1628,
+      "alphaSha256": "e5d2da229d18af351109063d9ded6b587b5566640514f7b5a6368de974f685c9"
+    },
+    {
+      "file": "assets/runtime/clips/football-bare-eat-0.webp",
+      "before": 397186,
+      "after": 397186,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1704,
+      "height": 1346,
+      "alphaSha256": "88e5961bc395dc0d343342b5d68810d4d0b556c2323aaeb41a6c800ae28827ec"
+    },
+    {
+      "file": "assets/runtime/clips/football-bare-walk-0.webp",
+      "before": 354454,
+      "after": 354454,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1362,
+      "height": 1514,
+      "alphaSha256": "0fe7de7c4df8fab3a8c4e155928aa3896ff5c61466d195ae1a1451d2ecee2a55"
+    },
+    {
+      "file": "assets/runtime/clips/football-die-0.webp",
+      "before": 159136,
+      "after": 159136,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 628,
+      "height": 1484,
+      "alphaSha256": "b51cf33237755c5219e1020bb04af9f5ba6eff5c2c957a392e60ef6f77c78d12"
+    },
+    {
+      "file": "assets/runtime/clips/football-eat-0.webp",
+      "before": 456072,
+      "after": 456072,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1742,
+      "height": 1412,
+      "alphaSha256": "043a01ed5b66580f3063ec0068b92db8fc21bbe40c886ad684a7ef236a1060c5"
+    },
+    {
+      "file": "assets/runtime/clips/football-headless-0.webp",
+      "before": 296724,
+      "after": 296724,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2036,
+      "height": 932,
+      "alphaSha256": "3167474c9317f28536145add0428174fbe16bb8fb367e2b6ac2fc11b61b0e74e"
+    },
+    {
+      "file": "assets/runtime/clips/football-walk-0.webp",
+      "before": 406840,
+      "after": 406840,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1620,
+      "height": 1324,
+      "alphaSha256": "782133fabff8d14ef714f0c22e40db5d11c3d13e0431ae1c21de54a83be15a0d"
+    },
+    {
+      "file": "assets/runtime/clips/fume-cloud-0.webp",
+      "before": 89126,
+      "after": 89126,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1294,
+      "height": 374,
+      "alphaSha256": "7b96923278b2d56be46d981212f9933a15ba66890f874576b29b76c67fc378af"
+    },
+    {
+      "file": "assets/runtime/clips/fumeshroom-0.webp",
+      "before": 73040,
+      "after": 73040,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 872,
+      "height": 514,
+      "alphaSha256": "42c8c7a30cd8996d4abfb767fd1c895b93dee420c6df5b634637189a48d21a6a"
+    },
+    {
+      "file": "assets/runtime/clips/fumeshroom-attack-0.webp",
+      "before": 5990,
+      "after": 5990,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 188,
+      "height": 148,
+      "alphaSha256": "59d5d0eecd9ae20bc9d6eaed58e3be559e1e5bfe6badf69893fae4b1c206abdd"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-bare-die-0.webp",
+      "before": 610000,
+      "after": 610000,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1978,
+      "height": 1742,
+      "alphaSha256": "083935cffacde91179ae732895d350f37f14b8abf75aa8cc613d48590c64c1aa"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-bare-die-1.webp",
+      "before": 673724,
+      "after": 673724,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2046,
+      "height": 1990,
+      "alphaSha256": "fb47a252b60f7b5dfef9bb3235b54523525098eae8eef37dfaead33adc47c877"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-bare-die-2.webp",
+      "before": 542966,
+      "after": 542966,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1982,
+      "height": 1670,
+      "alphaSha256": "5b84d3b215dc68c5a2b1b4526a660012bb0b0ddea52825c518114d97e4f1af44"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-bare-smash-0.webp",
+      "before": 722842,
+      "after": 722842,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2038,
+      "height": 1880,
+      "alphaSha256": "f20fc258d2aefa33ccb25fcfaac013f935202791b0efcecda3c88fcc59334da0"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-bare-smash-1.webp",
+      "before": 509646,
+      "after": 509646,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2000,
+      "height": 1162,
+      "alphaSha256": "e7d9767aa72a693564c2322c1b33d976a5bfb56a72650545a53b35610deae3a9"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-bare-walk-0.webp",
+      "before": 897400,
+      "after": 897400,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1920,
+      "height": 1942,
+      "alphaSha256": "28c4c4602be3232ad30623a4cc71418b59336af490ac117defcd4780b4315676"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-bare-walk-1.webp",
+      "before": 858864,
+      "after": 858864,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1900,
+      "height": 1882,
+      "alphaSha256": "1d1cef6c52c246676bd5b13008b36c28e6159359761614c016e92332f9670b31"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-die-0.webp",
+      "before": 610000,
+      "after": 610000,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1978,
+      "height": 1742,
+      "alphaSha256": "083935cffacde91179ae732895d350f37f14b8abf75aa8cc613d48590c64c1aa"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-die-1.webp",
+      "before": 718478,
+      "after": 718478,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2048,
+      "height": 2008,
+      "alphaSha256": "0e91a876b4648f0d3a2c23749c3710f054dd65849a680e497865a152ccbc2e11"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-die-2.webp",
+      "before": 507654,
+      "after": 507654,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1916,
+      "height": 1682,
+      "alphaSha256": "9f4d692b704b51d132a4561e102d0dc533a789be9ada59e3f7cf054456d40d53"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-smash-0.webp",
+      "before": 502248,
+      "after": 502248,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1274,
+      "height": 1952,
+      "alphaSha256": "037817f5acba3af575abc2132ea9d5754ad22af99095039b5b4131f0c0e67ffd"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-smash-1.webp",
+      "before": 473136,
+      "after": 473136,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1272,
+      "height": 1742,
+      "alphaSha256": "2d791c914478fce868af1357ce4499534642f6d8c05e3e27c31510556214fdf5"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-smash-2.webp",
+      "before": 341210,
+      "after": 341210,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1124,
+      "height": 1230,
+      "alphaSha256": "17a0472641910064897bea291cceafa3ef7bdb272ddb661d447ec5e8715ce4bf"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-throw-0.webp",
+      "before": 619660,
+      "after": 619660,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1456,
+      "height": 1792,
+      "alphaSha256": "496176d900690adc3b22930040faf96cfa9e99cc35ad0b99cdbbd5ac6d15b1c3"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-throw-1.webp",
+      "before": 591142,
+      "after": 591142,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1538,
+      "height": 1666,
+      "alphaSha256": "d9307dce066b450f3d7bb1c5a198670d628055348e3fc4b2f7d5e9752391f210"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-throw-2.webp",
+      "before": 145864,
+      "after": 145864,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1624,
+      "height": 386,
+      "alphaSha256": "c50e3c5bd9c5d7d2e71e706d1f1b0c3124604dc3daed2c70f169ccd973d25e85"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-walk-0.webp",
+      "before": 619288,
+      "after": 619288,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1592,
+      "height": 1694,
+      "alphaSha256": "190dedf3888c752e9afb06da1f50e83d5a8bc8d156910a30b49b3d292ba12a0d"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-walk-1.webp",
+      "before": 617938,
+      "after": 617938,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1500,
+      "height": 1676,
+      "alphaSha256": "73cff796d06f5c295e4f0c35f3407014de3e7bb104c68a8c8908d824ae5276a8"
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-walk-2.webp",
+      "before": 642056,
+      "after": 642056,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1576,
+      "height": 1624,
+      "alphaSha256": "53249534e1bac96ccd6049aff48ca61b1126cc1d26c7bc08b5876be90a497b17"
+    },
+    {
+      "file": "assets/runtime/clips/garlic-0.webp",
+      "before": 51702,
+      "after": 51702,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 244,
+      "height": 814,
+      "alphaSha256": "516525c3c88fa8cbabf6b7959d0fd160b8e291b6494a51cb910ae3bba60215ec"
+    },
+    {
+      "file": "assets/runtime/clips/garlic-cracked1-0.webp",
+      "before": 50704,
+      "after": 50704,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 246,
+      "height": 814,
+      "alphaSha256": "cd92816ddae03d65c5b9cccb1164cf4d57df034cf6a967ced220f008212b5119"
+    },
+    {
+      "file": "assets/runtime/clips/garlic-cracked2-0.webp",
+      "before": 41372,
+      "after": 41372,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 850,
+      "height": 182,
+      "alphaSha256": "e9d69722e0127398f641f7df03a6cb56caf9ec23968a9ad6fc6ddbf360cd735c"
+    },
+    {
+      "file": "assets/runtime/clips/gravebuster-0.webp",
+      "before": 140022,
+      "after": 140022,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 612,
+      "height": 1322,
+      "alphaSha256": "ed5764a74c9087ea56fbddcecb19bca179ca3a42b7508f7abe14547334607fad"
+    },
+    {
+      "file": "assets/runtime/clips/hypnoshroom-0.webp",
+      "before": 72756,
+      "after": 72756,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 476,
+      "height": 762,
+      "alphaSha256": "ce839f1c2f85a1c118b45d36bf8b4acfcf67c5e1810350ea7501772b70718f58"
+    },
+    {
+      "file": "assets/runtime/clips/iceshroom-0.webp",
+      "before": 95196,
+      "after": 95196,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 344,
+      "height": 1224,
+      "alphaSha256": "b74fd25c0581da06f0289abeb35eabb3f506f651e4acc961733a46bd880f2ff2"
+    },
+    {
+      "file": "assets/runtime/clips/imp-die-0.webp",
+      "before": 92202,
+      "after": 92202,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 226,
+      "height": 1144,
+      "alphaSha256": "a484b7a21584015481ff0946b2d14d667e395a556caf7fcabcaa0fdb66a7fb04"
+    },
+    {
+      "file": "assets/runtime/clips/imp-eat-0.webp",
+      "before": 177008,
+      "after": 177008,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 360,
+      "height": 1512,
+      "alphaSha256": "78c42f0660ed502567fd285899130208aca959489d9d73dbb7d8c85c43f28d4d"
+    },
+    {
+      "file": "assets/runtime/clips/imp-land-0.webp",
+      "before": 40148,
+      "after": 40148,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 118,
+      "height": 960,
+      "alphaSha256": "468bcefe6fbf9201aedec0233a507f8b2322d29612cda9ce2f1349c89fed39d3"
+    },
+    {
+      "file": "assets/runtime/clips/imp-thrown-0.webp",
+      "before": 101662,
+      "after": 101662,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1104,
+      "height": 280,
+      "alphaSha256": "9dcb56752c6919afcb3ae124df1ab43535a945da064f70fa4b2c58286a7511ea"
+    },
+    {
+      "file": "assets/runtime/clips/imp-walk-0.webp",
+      "before": 225856,
+      "after": 225856,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 468,
+      "height": 1338,
+      "alphaSha256": "bf2e4dc782fb23eed76de9c5a2db0db7589c2a34ac9da876ae77c0c2702b9066"
+    },
+    {
+      "file": "assets/runtime/clips/jack-die-0.webp",
+      "before": 238816,
+      "after": 238816,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1384,
+      "height": 860,
+      "alphaSha256": "5ae4381c8d7d44494caf8f77e38c9944cf0350c99773427b1cd2876fd4a8bb99"
+    },
+    {
+      "file": "assets/runtime/clips/jack-eat-0.webp",
+      "before": 182496,
+      "after": 182496,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1512,
+      "height": 570,
+      "alphaSha256": "72c1a58041c5c13c635e2c0d216c5075abd369ad699d26cb38f5fa503a99f5e6"
+    },
+    {
+      "file": "assets/runtime/clips/jack-headless-0.webp",
+      "before": 163386,
+      "after": 163386,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1656,
+      "height": 442,
+      "alphaSha256": "f72770d9dd54dbf919d5ac9c71241815f6b23cacfeed2a43b9ca98f1f15ffcf7"
+    },
+    {
+      "file": "assets/runtime/clips/jack-open-0.webp",
+      "before": 230098,
+      "after": 230098,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 900,
+      "height": 1140,
+      "alphaSha256": "6861cca4bc41dabd1cc7e29d45c27b367372212cd54e1a9763d12deade8d4cf0"
+    },
+    {
+      "file": "assets/runtime/clips/jack-walk-0.webp",
+      "before": 208476,
+      "after": 208476,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 706,
+      "height": 1426,
+      "alphaSha256": "ac42535a6ccc843c88e157e61e0f62847087a974154da1d0b4ad0f8b0142a6e4"
+    },
+    {
+      "file": "assets/runtime/clips/jalapeno-0.webp",
+      "before": 51078,
+      "after": 51078,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 764,
+      "height": 352,
+      "alphaSha256": "e38a904620eae453dca2b33e5474eaf45fa84c828b32365e90453b66fa8b1e0d"
+    },
+    {
+      "file": "assets/runtime/clips/jalapeno-fire-0.webp",
+      "before": 164120,
+      "after": 164120,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1400,
+      "height": 1318,
+      "alphaSha256": "f8fcce6b7ad3b756a98aff2e9cae178c0a2b3f3361b8229913102876333d29cd"
+    },
+    {
+      "file": "assets/runtime/clips/kernelpult-0.webp",
+      "before": 191124,
+      "after": 191124,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 446,
+      "height": 1660,
+      "alphaSha256": "ed0a9e0377ba82ae07c20c3f9543b9f9df493db44bcdf96b6ff4132e80df3cf6"
+    },
+    {
+      "file": "assets/runtime/clips/kernelpult-attack-0.webp",
+      "before": 301176,
+      "after": 301176,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 880,
+      "height": 1654,
+      "alphaSha256": "b8cd586855dcc64eb5163f49e5c771a4efa22d14200ef1fc50f58fa9ba8954a3"
+    },
+    {
+      "file": "assets/runtime/clips/ladder-bare-0.webp",
+      "before": 619116,
+      "after": 619116,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2000,
+      "height": 1090,
+      "alphaSha256": "9b914f80098b698b20ecdda6cf831e950e68cf753ae9694591727d66b949f94d"
+    },
+    {
+      "file": "assets/runtime/clips/ladder-die-0.webp",
+      "before": 346158,
+      "after": 346158,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1378,
+      "height": 996,
+      "alphaSha256": "b4aba4ab195931cf2ac3dc481ce84356bec9ddc2d17f3530f6891eea615b2c7f"
+    },
+    {
+      "file": "assets/runtime/clips/ladder-eat-0.webp",
+      "before": 392976,
+      "after": 392976,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1250,
+      "height": 1068,
+      "alphaSha256": "c29c6ffdfef16ab5e3efd0d7c9d0f225b486a9d95c163c6c11198bccb6bae688"
+    },
+    {
+      "file": "assets/runtime/clips/ladder-place-0.webp",
+      "before": 216384,
+      "after": 216384,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 638,
+      "height": 1136,
+      "alphaSha256": "02ce6a77722eda1c8ac735a361530749a665a298187fd3b4ff413d63d442345f"
+    },
+    {
+      "file": "assets/runtime/clips/ladder-walk-0.webp",
+      "before": 844614,
+      "after": 844614,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1718,
+      "height": 1630,
+      "alphaSha256": "06a24e43fd518c53515d491270bd55e7242a6bcead4475bbec2d206f96d44ef3"
+    },
+    {
+      "file": "assets/runtime/clips/lilypad-0.webp",
+      "before": 4456,
+      "after": 4456,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 162,
+      "height": 120,
+      "alphaSha256": "7999f3750bafe69a519264b6e2cdb2947f57ded9c2b0ff6da6317225de8ed61e"
+    },
+    {
+      "file": "assets/runtime/clips/magnetshroom-0.webp",
+      "before": 123562,
+      "after": 123562,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 348,
+      "height": 1302,
+      "alphaSha256": "810048a1ed55a32c9b40f9da66a0ecf343f819b5e56130914a0dd9c3071dd527"
+    },
+    {
+      "file": "assets/runtime/clips/magnetshroom-attack-0.webp",
+      "before": 34818,
+      "after": 34818,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1026,
+      "height": 154,
+      "alphaSha256": "63bb6ac34f0e2c61ec521280321cc1f3a310a6bf76ae5f91345ac4fbf4f3f320"
+    },
+    {
+      "file": "assets/runtime/clips/marigold-0.webp",
+      "before": 154706,
+      "after": 154706,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 562,
+      "height": 792,
+      "alphaSha256": "45e3242111a9158c117d5c9d01ace98da5c00809e68725f8a0569f98df3d9be8"
+    },
+    {
+      "file": "assets/runtime/clips/melonpult-0.webp",
+      "before": 270266,
+      "after": 270266,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 678,
+      "height": 1756,
+      "alphaSha256": "dfdbe4e9102a821a6959385387d19060a497a034b595e1157b4d1cd6cc218789"
+    },
+    {
+      "file": "assets/runtime/clips/melonpult-attack-0.webp",
+      "before": 338768,
+      "after": 338768,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1274,
+      "height": 1018,
+      "alphaSha256": "6336632232ca71cdb420d1d346b00db3de53d219be3ed89ba5ee137bd2170ca0"
+    },
+    {
+      "file": "assets/runtime/clips/newspaper-burn-0.webp",
+      "before": 36082,
+      "after": 36082,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 326,
+      "height": 1606,
+      "alphaSha256": "b6f189fa232ae516a9424e1cc40f3c0b2f4ce5ce5f74d8d2cfe3c4c3968f1be6"
+    },
+    {
+      "file": "assets/runtime/clips/newspaper-die-0.webp",
+      "before": 184688,
+      "after": 184688,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1230,
+      "height": 952,
+      "alphaSha256": "80398f704ea69d0a68f4fdd0ef759c1fee25c6a4e7cbafb74d55efdfcab8212f"
+    },
+    {
+      "file": "assets/runtime/clips/newspaper-eat-0.webp",
+      "before": 245272,
+      "after": 245272,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1496,
+      "height": 776,
+      "alphaSha256": "256c1bd307005a9ca7aeba9039c67a7f43573cef9dda1e6a38fe6485a3286500"
+    },
+    {
+      "file": "assets/runtime/clips/newspaper-gasp-0.webp",
+      "before": 98874,
+      "after": 98874,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 388,
+      "height": 1774,
+      "alphaSha256": "0c7fd198c66a2215acc312f602fc0492c8352ea33df1735f0ab91e3cbf1a52f5"
+    },
+    {
+      "file": "assets/runtime/clips/newspaper-headless-0.webp",
+      "before": 277258,
+      "after": 277258,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1814,
+      "height": 982,
+      "alphaSha256": "1d46d5d20978dbe8c25910684bdc74598813a33e545b3ada3eeb0fb6e51ea2ed"
+    },
+    {
+      "file": "assets/runtime/clips/newspaper-mad-eat-0.webp",
+      "before": 206362,
+      "after": 206362,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1144,
+      "height": 1036,
+      "alphaSha256": "42eb539f01458d4f8e813315de9dae646cab027d58d198c79ac7062697b4d027"
+    },
+    {
+      "file": "assets/runtime/clips/newspaper-mad-walk-0.webp",
+      "before": 395586,
+      "after": 395586,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1812,
+      "height": 1314,
+      "alphaSha256": "396cf3a0282b37d13de05581a1e8101e97272ebe37d16517e4933a5042c60b90"
+    },
+    {
+      "file": "assets/runtime/clips/newspaper-walk-0.webp",
+      "before": 506644,
+      "after": 506644,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1774,
+      "height": 1314,
+      "alphaSha256": "e64836fae21ef500cc94a85b9c2694aa1ea2e6b1c8592194ac96c560827dfa05"
+    },
+    {
+      "file": "assets/runtime/clips/peashooter-0.webp",
+      "before": 104346,
+      "after": 104346,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 650,
+      "height": 694,
+      "alphaSha256": "43b169c11232f66a37cab96bec7c54c1c38dfbf1bfeec282cd677bfd4b0f496a"
+    },
+    {
+      "file": "assets/runtime/clips/plantern-0.webp",
+      "before": 100788,
+      "after": 100788,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1634,
+      "height": 362,
+      "alphaSha256": "762cb25f2ff53dd11cf855e2bbc25073830c66ed7e54f9e3caf704f33a2be682"
+    },
+    {
+      "file": "assets/runtime/clips/pogo-bounce-0.webp",
+      "before": 128878,
+      "after": 128878,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 296,
+      "height": 1346,
+      "alphaSha256": "af657d49da73062e1743a5b7eae4903df4903af083023444d921da65eb61237f"
+    },
+    {
+      "file": "assets/runtime/clips/pogo-die-0.webp",
+      "before": 236932,
+      "after": 236932,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1070,
+      "height": 892,
+      "alphaSha256": "f48e114c44778cd1ebf2c7b8718f615e0d2b30be101c40f2540706b5303adced"
+    },
+    {
+      "file": "assets/runtime/clips/pogo-eat-0.webp",
+      "before": 442272,
+      "after": 442272,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1776,
+      "height": 986,
+      "alphaSha256": "f2718a98fe7b56ca87294dbd1fe72f04ab912b422365cd9b13b60baaf1989d32"
+    },
+    {
+      "file": "assets/runtime/clips/pogo-walk-0.webp",
+      "before": 539828,
+      "after": 539828,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1496,
+      "height": 1296,
+      "alphaSha256": "240200b1746e40b4b25cf342ed87ae99ceec90d5b24a1918528e15065a19c9b8"
+    },
+    {
+      "file": "assets/runtime/clips/pole-burn-0.webp",
+      "before": 36004,
+      "after": 36004,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 326,
+      "height": 1606,
+      "alphaSha256": "d0e3dec224529d70192e983f3079dfccba3b239866f38efb50e0eb617e642224"
+    },
+    {
+      "file": "assets/runtime/clips/pole-die-0.webp",
+      "before": 169950,
+      "after": 169950,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 600,
+      "height": 1398,
+      "alphaSha256": "999e5c9c33a9ae5b9c0bc3bd259e55a71930eadce3169f54ced5cb133fa043bd"
+    },
+    {
+      "file": "assets/runtime/clips/pole-eat-0.webp",
+      "before": 274948,
+      "after": 274948,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1532,
+      "height": 806,
+      "alphaSha256": "da05829b3bdd71d7f12906dfabec154ca5b5b94de9b3eff7a2aab7693d51f16f"
+    },
+    {
+      "file": "assets/runtime/clips/pole-headless-0.webp",
+      "before": 311598,
+      "after": 311598,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1272,
+      "height": 1042,
+      "alphaSha256": "8b2d26ae0b4fce0d6af0569121baf95a81fd41073ab307bc870c5d1a026a7601"
+    },
+    {
+      "file": "assets/runtime/clips/pole-jump-0.webp",
+      "before": 376482,
+      "after": 376482,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1900,
+      "height": 1810,
+      "alphaSha256": "9efc969a8c8ee277467848a60b02d64aad86fc447360ccc0a9d36b13c34c625e"
+    },
+    {
+      "file": "assets/runtime/clips/pole-land-0.webp",
+      "before": 125162,
+      "after": 125162,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1040,
+      "height": 516,
+      "alphaSha256": "0cb1d9daba145ad2204c6a6f09f43f27798c09b506ea7f67d4d652fafa3735f1"
+    },
+    {
+      "file": "assets/runtime/clips/pole-run-0.webp",
+      "before": 263352,
+      "after": 263352,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1182,
+      "height": 1986,
+      "alphaSha256": "9b1fb318f271d79faa225a22d777b4e3115c08968bf214e3891ebc53f4dbafe8"
+    },
+    {
+      "file": "assets/runtime/clips/pole-run-1.webp",
+      "before": 183220,
+      "after": 183220,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1178,
+      "height": 1310,
+      "alphaSha256": "a508cfc2ff0b2dc3ed13aeaa5bbf4344055bf01e4b8f2306197d80917472ea75"
+    },
+    {
+      "file": "assets/runtime/clips/pole-walk-0.webp",
+      "before": 451582,
+      "after": 451582,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1770,
+      "height": 1112,
+      "alphaSha256": "3ea682b93289845c3f43cd3af45c6b78b7fd1ce176b86e937e8d006eda28a3e3"
+    },
+    {
+      "file": "assets/runtime/clips/potatomine-0.webp",
+      "before": 36380,
+      "after": 36380,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 148,
+      "height": 1152,
+      "alphaSha256": "c0f60033a68d83d1932e2a513d23c714accc36cd3a20dbe89c4b5020d0c81432"
+    },
+    {
+      "file": "assets/runtime/clips/potatomine-unarmed-0.webp",
+      "before": 2316,
+      "after": 2316,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 80,
+      "height": 66,
+      "alphaSha256": "74a35f41e730ed6744834f75113d58dfee927117d1be471d820413bed6e2b6fc"
+    },
+    {
+      "file": "assets/runtime/clips/puffshroom-0.webp",
+      "before": 24376,
+      "after": 24376,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 236,
+      "height": 394,
+      "alphaSha256": "29d2efe46e11e41259c2a1f9aaaedc0d6a351740199f1ae9c84cefb3004ac8a2"
+    },
+    {
+      "file": "assets/runtime/clips/pumpkin-0.webp",
+      "before": 128714,
+      "after": 128714,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1678,
+      "height": 260,
+      "alphaSha256": "ff02c9e3364e0629dd8ebd1d34a2b398db95512f770e50a852a4bf92044c9bd5"
+    },
+    {
+      "file": "assets/runtime/clips/pumpkin-cracked1-0.webp",
+      "before": 109754,
+      "after": 109754,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 202,
+      "height": 1636,
+      "alphaSha256": "184565933bd317169796bbe9dee03f3b6d0c6dadd4a20e63130ac58c520de741"
+    },
+    {
+      "file": "assets/runtime/clips/pumpkin-cracked2-0.webp",
+      "before": 120808,
+      "after": 120808,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 200,
+      "height": 1662,
+      "alphaSha256": "99f90995165e8bd6d0ed46b84f28df4d1051f138765b17d77a3f5f3825675e71"
+    },
+    {
+      "file": "assets/runtime/clips/repeater-0.webp",
+      "before": 126144,
+      "after": 126144,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 684,
+      "height": 686,
+      "alphaSha256": "77c00e48c2ec2ef60f34d926c5cc51010b3eff6f9f280acf715bf8f7df6ce286"
+    },
+    {
+      "file": "assets/runtime/clips/scaredyshroom-0.webp",
+      "before": 40736,
+      "after": 40736,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1586,
+      "height": 142,
+      "alphaSha256": "a9da19bd2284ebfce3850428cca4d5639bf58b3616a047d37970991b979e86be"
+    },
+    {
+      "file": "assets/runtime/clips/scaredyshroom-scared-0.webp",
+      "before": 24136,
+      "after": 24136,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 108,
+      "height": 920,
+      "alphaSha256": "5b7dae9777e7021ffd3a048d95f0c27a5bdd3f69edc8e892f9d689890ab165e6"
+    },
+    {
+      "file": "assets/runtime/clips/seashroom-0.webp",
+      "before": 53150,
+      "after": 53150,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 360,
+      "height": 458,
+      "alphaSha256": "bc62897e4cca147ed1b5de79973af10999559ac5faeeff3aee05dc3f049ba348"
+    },
+    {
+      "file": "assets/runtime/clips/snorkel-die-0.webp",
+      "before": 106570,
+      "after": 106570,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 484,
+      "height": 764,
+      "alphaSha256": "f9a2250e442d01b1897cb57a2ea44469098c5b6c1aa157921e49996830fb04aa"
+    },
+    {
+      "file": "assets/runtime/clips/snorkel-eat-0.webp",
+      "before": 174486,
+      "after": 174486,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 816,
+      "height": 856,
+      "alphaSha256": "56783000238e79785697674f3d415c4803f6d4d90249afe24d865b9af7f21ba0"
+    },
+    {
+      "file": "assets/runtime/clips/snorkel-swim-0.webp",
+      "before": 19176,
+      "after": 19176,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 106,
+      "height": 612,
+      "alphaSha256": "d5efd78b98b83884afe8082bc2c41766f82679a2440af12a787affe7e582d9fc"
+    },
+    {
+      "file": "assets/runtime/clips/snorkel-walk-0.webp",
+      "before": 353466,
+      "after": 353466,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1252,
+      "height": 1428,
+      "alphaSha256": "a3c0d23099d5046e19bd84fa32baf1fa2a3908e51a9501cde8ec6840740be070"
+    },
+    {
+      "file": "assets/runtime/clips/snowpea-0.webp",
+      "before": 124604,
+      "after": 124604,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 268,
+      "height": 1682,
+      "alphaSha256": "b88a479e4eafebfcd62f108778d7fdd726f1ada805f08361729e85bf8c6c17fd"
+    },
+    {
+      "file": "assets/runtime/clips/spikeweed-0.webp",
+      "before": 58416,
+      "after": 58416,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 174,
+      "height": 1216,
+      "alphaSha256": "c4996904528231a10681f650e4bc305d6783967ad28e887d41da7feaa5612a70"
+    },
+    {
+      "file": "assets/runtime/clips/splitpea-0.webp",
+      "before": 90096,
+      "after": 90096,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 178,
+      "height": 1912,
+      "alphaSha256": "37dbf1ab5b8041db99fdf17c250ac667452dfbbf66445ddc8225d19b7ddb3627"
+    },
+    {
+      "file": "assets/runtime/clips/squash-0.webp",
+      "before": 99624,
+      "after": 99624,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 448,
+      "height": 1032,
+      "alphaSha256": "2ea30ced6eb35e8f5ff2170e82339ead2a56df656010f3081370d47183f660a6"
+    },
+    {
+      "file": "assets/runtime/clips/squash-attack-0.webp",
+      "before": 49942,
+      "after": 49942,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 708,
+      "height": 352,
+      "alphaSha256": "51160dda1c28d314ac40b351e699667e8a224afe0a3cde1a538b33ad7ec088c2"
+    },
+    {
+      "file": "assets/runtime/clips/starfruit-0.webp",
+      "before": 75710,
+      "after": 75710,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 628,
+      "height": 560,
+      "alphaSha256": "728a45aba7b963f2cdc087e30a049fdcd04449ee169dcde2910cce3daa7053a6"
+    },
+    {
+      "file": "assets/runtime/clips/sun-0.webp",
+      "before": 100834,
+      "after": 100834,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1604,
+      "height": 316,
+      "alphaSha256": "d963d1e29d40f3538cae30220d1b108c238989cd21db44ae825838913b2592c8"
+    },
+    {
+      "file": "assets/runtime/clips/sunflower-0.webp",
+      "before": 148906,
+      "after": 148906,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 396,
+      "height": 1174,
+      "alphaSha256": "1c0642d244787850493ecbaabecebead10ba9cab5336d8caabe92c375cecb015"
+    },
+    {
+      "file": "assets/runtime/clips/sunshroom-0.webp",
+      "before": 19618,
+      "after": 19618,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 874,
+      "height": 82,
+      "alphaSha256": "d64173fcaa1c7cf8cd8c89d6e3615e03b2ac6e8e8f407bec6389ee3b3b646c42"
+    },
+    {
+      "file": "assets/runtime/clips/sunshroom-big-0.webp",
+      "before": 31944,
+      "after": 31944,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 120,
+      "height": 1224,
+      "alphaSha256": "b25423d1c9eb0454a383588802657621a7c8b6e83ead70cc75c528984675b0e9"
+    },
+    {
+      "file": "assets/runtime/clips/tallnut-0.webp",
+      "before": 78790,
+      "after": 78790,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1168,
+      "height": 484,
+      "alphaSha256": "0722f07051fec8ec018ddad5b3fca0303d64cfd0ee6668cfd8da7f2a56ec5ed5"
+    },
+    {
+      "file": "assets/runtime/clips/tallnut-cracked1-0.webp",
+      "before": 92112,
+      "after": 92112,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 348,
+      "height": 1622,
+      "alphaSha256": "8ca50c10d5bfe976b04c670681619241c046976143523bcc61affe6637902230"
+    },
+    {
+      "file": "assets/runtime/clips/tallnut-cracked2-0.webp",
+      "before": 96046,
+      "after": 96046,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1184,
+      "height": 460,
+      "alphaSha256": "5dd2c19d2ae80325c92c83e5a398a446fb846e9bbd9f5e7c6cd9f2388c6c6198"
+    },
+    {
+      "file": "assets/runtime/clips/tanglekelp-0.webp",
+      "before": 147550,
+      "after": 147550,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 546,
+      "height": 918,
+      "alphaSha256": "f6ecbc672c895facab24b4435d5adda35e8e7aa2b90f50b7f348065d5af5dd94"
+    },
+    {
+      "file": "assets/runtime/clips/tanglekelp-grab-0.webp",
+      "before": 6412,
+      "after": 6412,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 122,
+      "height": 134,
+      "alphaSha256": "91dba1e414bb9ed2c559e144ac867c56e20eaf30c4f4ada7462c76b12de153d9"
+    },
+    {
+      "file": "assets/runtime/clips/threepeater-0.webp",
+      "before": 134340,
+      "after": 134340,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1152,
+      "height": 332,
+      "alphaSha256": "e9f9734fa0de41913e6f51234dfc02d1d8693af9b6d748efd56cd345f152de0c"
+    },
+    {
+      "file": "assets/runtime/clips/torchwood-0.webp",
+      "before": 121998,
+      "after": 121998,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 440,
+      "height": 1194,
+      "alphaSha256": "8b288afabfa13c92e5a657181068ffbf589434324d4408af67ce1355d492ece4"
+    },
+    {
+      "file": "assets/runtime/clips/umbrella-0.webp",
+      "before": 98952,
+      "after": 98952,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 330,
+      "height": 958,
+      "alphaSha256": "7be7d7525080129d0a82e7248fc406ed74995434996c55d4200f10f13bc6ef2d"
+    },
+    {
+      "file": "assets/runtime/clips/umbrella-block-0.webp",
+      "before": 206940,
+      "after": 206940,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 976,
+      "height": 1650,
+      "alphaSha256": "766aeab2c10fdf3ac4df3cc8a70a77b6f54087d313b003676bf387fdb74b7f13"
+    },
+    {
+      "file": "assets/runtime/clips/wallnut-0.webp",
+      "before": 65180,
+      "after": 65180,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 510,
+      "height": 588,
+      "alphaSha256": "4e96adbcfc48d5858dc0ff25133c52ee302d39c0987b19a3cd6b7cfedf792169"
+    },
+    {
+      "file": "assets/runtime/clips/wallnut-cracked1-0.webp",
+      "before": 66700,
+      "after": 66700,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 638,
+      "height": 438,
+      "alphaSha256": "f3b8303742a8119fe3cf6ee74dbb848c703f1529733341e0f782787ce9c503c0"
+    },
+    {
+      "file": "assets/runtime/clips/wallnut-cracked2-0.webp",
+      "before": 74760,
+      "after": 74760,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 382,
+      "height": 832,
+      "alphaSha256": "17d5ce783f419279eba264b8e175fc40b053244f91fce698be9cfe71990bd12c"
+    },
+    {
+      "file": "assets/runtime/clips/wallnut-roll-0.webp",
+      "before": 56426,
+      "after": 56426,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 912,
+      "height": 286,
+      "alphaSha256": "3c55814d263bd594f143677b65d14e71fbf297ea759accc267c92fc6af53142c"
+    },
+    {
+      "file": "assets/runtime/clips/zombie-burn-0.webp",
+      "before": 81038,
+      "after": 81038,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 498,
+      "height": 1274,
+      "alphaSha256": "dafb475d68a781fa033ce4155ae62ec6b9d632674c919f430f19dd666567278f"
+    },
+    {
+      "file": "assets/runtime/clips/zombie-die-0.webp",
+      "before": 166322,
+      "after": 166322,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1098,
+      "height": 856,
+      "alphaSha256": "cf1aa95216782414415c7a02812ee790c16cbaacd6de517487e7086aa19659b0"
+    },
+    {
+      "file": "assets/runtime/clips/zombie-eat-0.webp",
+      "before": 297018,
+      "after": 297018,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1408,
+      "height": 1218,
+      "alphaSha256": "53b943e199b8aa4773a5d7221884ddb1b2a811cbb1efc45c5534a560d928fcdd"
+    },
+    {
+      "file": "assets/runtime/clips/zombie-headless-0.webp",
+      "before": 229280,
+      "after": 229280,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1458,
+      "height": 770,
+      "alphaSha256": "73c8f9621e08b31bf72f8b903a263c78baef9ddf378dcd15b1a350626adc898e"
+    },
+    {
+      "file": "assets/runtime/clips/zombie-walk-0.webp",
+      "before": 353062,
+      "after": 353062,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1746,
+      "height": 1018,
+      "alphaSha256": "341c254c39eb22b43d5733eb94454fea1293a1c10b685cb29ed970dd8efc65f5"
+    },
+    {
+      "file": "assets/runtime/clips/zomboni-critical-0.webp",
+      "before": 260422,
+      "after": 260422,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1044,
+      "height": 1702,
+      "alphaSha256": "5fda7ef4dc5d6009326cfd86798f4fbb2bd3bf9c3d67e4fc1f91e9ca5a4c2b3c"
+    },
+    {
+      "file": "assets/runtime/clips/zomboni-damaged-0.webp",
+      "before": 247978,
+      "after": 247978,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1044,
+      "height": 1702,
+      "alphaSha256": "c28c40de9dbc2b5e4a5004ae0795e5d42d60796c9ee736225e1ae1c06b626e79"
+    },
+    {
+      "file": "assets/runtime/clips/zomboni-die-0.webp",
+      "before": 290404,
+      "after": 290404,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1528,
+      "height": 1662,
+      "alphaSha256": "f3834dc1ddc5129f42dfbce213a681cdd11cbb1dad50888562eb56fcd91568eb"
+    },
+    {
+      "file": "assets/runtime/clips/zomboni-walk-0.webp",
+      "before": 249836,
+      "after": 249836,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1056,
+      "height": 1702,
+      "alphaSha256": "085c09b58b6acbc7e6e5fca1a25451ad9ca17339a595e2193534abf322eb2c3c"
+    },
+    {
+      "file": "assets/runtime/giant-motion/gargantuar.webp",
+      "before": 436538,
+      "after": 129818,
+      "mode": "webp-q94",
+      "ssim": 0.994773,
+      "width": 1024,
+      "height": 592,
+      "alphaSha256": "b70dd62cd82fc77aa2c72ef96e0e37ed2e609708794350bff3875b93b0725d18"
+    },
+    {
+      "file": "assets/runtime/lawn.webp",
+      "before": 430818,
+      "after": 430818,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2800,
+      "height": 1200,
+      "alphaSha256": "9f6291e9c891edcb9e5d71cd359d88fa30f2ba99a1e2ea593036313a472ddaad"
+    },
+    {
+      "file": "assets/runtime/original/adventure-hover.webp",
+      "before": 59468,
+      "after": 17132,
+      "mode": "webp-q94",
+      "ssim": 0.989947,
+      "width": 330,
+      "height": 140,
+      "alphaSha256": "14eaf873288076ff85edfcc0d39b72e0b9f17be16d345955b70ee1b0dd6a8dd5"
+    },
+    {
+      "file": "assets/runtime/original/adventure.webp",
+      "before": 62796,
+      "after": 17618,
+      "mode": "webp-q94",
+      "ssim": 0.991015,
+      "width": 332,
+      "height": 140,
+      "alphaSha256": "7195ccf084586f07b68b4619ca9566b966bdb74fd20eb784a82c2cf8ae38c70a"
+    },
+    {
+      "file": "assets/runtime/original/basketball.webp",
+      "before": 6882,
+      "after": 6882,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 62,
+      "height": 62,
+      "alphaSha256": "dd9a797168d8c4b3c3c8e28dbe54a665ded7659a028c4e14b23d8997225d278b"
+    },
+    {
+      "file": "assets/runtime/original/blover.webp",
+      "before": 26340,
+      "after": 26222,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 172,
+      "height": 168,
+      "alphaSha256": "6634e5f4059fe54069972f25925ceb1a426cdd53003f920bb6af816ef82069e4"
+    },
+    {
+      "file": "assets/runtime/original/bowling-stripe.webp",
+      "before": 94870,
+      "after": 40172,
+      "mode": "webp-q97",
+      "ssim": 0.985461,
+      "width": 44,
+      "height": 1004,
+      "alphaSha256": "2480fdc7453e63101322f62fc52269b497d227fc933da1a4a98e7c614d5da302"
+    },
+    {
+      "file": "assets/runtime/original/bungee-cord.webp",
+      "before": 3466,
+      "after": 3148,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 16,
+      "height": 128,
+      "alphaSha256": "cbfa950a8d25736793bbd2b44a3d127f507e05124c3a377f0ca5440104e366de"
+    },
+    {
+      "file": "assets/runtime/original/bungee-target.webp",
+      "before": 33866,
+      "after": 33788,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 142,
+      "height": 152,
+      "alphaSha256": "060281175d324f2d41d09a2ed91cb472132f66c4ced473e4487d55b5d1e13fdf"
+    },
+    {
+      "file": "assets/runtime/original/butter.webp",
+      "before": 15842,
+      "after": 15842,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 98,
+      "height": 100,
+      "alphaSha256": "5b01a9140b6a7a7016c26515d2dac4ad179a45ba5312de4b4e66e502534f5da5"
+    },
+    {
+      "file": "assets/runtime/original/button.webp",
+      "before": 20578,
+      "after": 20578,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 224,
+      "height": 92,
+      "alphaSha256": "d045b747b9dd154fa805c8fe3d0f12a531dd1f570825c1cdf6342db1c4ed6e19"
+    },
+    {
+      "file": "assets/runtime/original/cabbage.webp",
+      "before": 7096,
+      "after": 7096,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 60,
+      "height": 54,
+      "alphaSha256": "0e02847873578da6b03f87bb170d2a656df6f39d3b9939ebd0517812ab022a2d"
+    },
+    {
+      "file": "assets/runtime/original/cabbagepult.webp",
+      "before": 30802,
+      "after": 30008,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 174,
+      "height": 144,
+      "alphaSha256": "b5341d43f2dfb02a9e099f1117e1dc58475cb32b0273953e3351b08c329abd79"
+    },
+    {
+      "file": "assets/runtime/original/cactus.webp",
+      "before": 40302,
+      "after": 40302,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 168,
+      "height": 154,
+      "alphaSha256": "c14f4a6f4a006b9aa1347564c0d24377e87480f8d13b4933de1801139e6e7664"
+    },
+    {
+      "file": "assets/runtime/original/card-cherrybomb.webp",
+      "before": 35734,
+      "after": 35734,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 128,
+      "height": 180,
+      "alphaSha256": "beaca6d8b5aec6a02fe4db04662136db628ec2543d396d03601853067dd47eac"
+    },
+    {
+      "file": "assets/runtime/original/card-chomper.webp",
+      "before": 36882,
+      "after": 36882,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 128,
+      "height": 178,
+      "alphaSha256": "b86d284ed93035cb4ea0d255034dd03b6e84bb5d4f803df76805a0df3495fac3"
+    },
+    {
+      "file": "assets/runtime/original/card-doomshroom.webp",
+      "before": 64992,
+      "after": 64992,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 200,
+      "height": 240,
+      "alphaSha256": "b06bcfd9e101086c3a84bd0e975ad87e699d80275d9bdedfb611f078e80d10bf"
+    },
+    {
+      "file": "assets/runtime/original/card-hypnoshroom.webp",
+      "before": 32152,
+      "after": 32152,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 128,
+      "height": 178,
+      "alphaSha256": "b86d284ed93035cb4ea0d255034dd03b6e84bb5d4f803df76805a0df3495fac3"
+    },
+    {
+      "file": "assets/runtime/original/card-iceshroom.webp",
+      "before": 77234,
+      "after": 77108,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 200,
+      "height": 240,
+      "alphaSha256": "89217026762101bd4916229ad2ca4e21f21562364fa335d1bcc509195acac462"
+    },
+    {
+      "file": "assets/runtime/original/card-lilypad.webp",
+      "before": 68624,
+      "after": 68434,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 200,
+      "height": 240,
+      "alphaSha256": "dd67d377354a4d165fd022c1621bd93429e81819a26f053922117fb2accacd89"
+    },
+    {
+      "file": "assets/runtime/original/card-peashooter.webp",
+      "before": 35678,
+      "after": 35678,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 130,
+      "height": 180,
+      "alphaSha256": "ad20bda7ce071bedd6ad7f8d880004c99b035e6548b9e4f493ef0e77cb3dc7f9"
+    },
+    {
+      "file": "assets/runtime/original/card-plantern.webp",
+      "before": 76938,
+      "after": 76938,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 200,
+      "height": 240,
+      "alphaSha256": "c7cbe9e41401019d8b94b75057efd0b4812f098b731afcd35f71fc142c12dea4"
+    },
+    {
+      "file": "assets/runtime/original/card-potatomine.webp",
+      "before": 32792,
+      "after": 32792,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 128,
+      "height": 178,
+      "alphaSha256": "b86d284ed93035cb4ea0d255034dd03b6e84bb5d4f803df76805a0df3495fac3"
+    },
+    {
+      "file": "assets/runtime/original/card-puffshroom.webp",
+      "before": 30432,
+      "after": 30432,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 128,
+      "height": 178,
+      "alphaSha256": "b86d284ed93035cb4ea0d255034dd03b6e84bb5d4f803df76805a0df3495fac3"
+    },
+    {
+      "file": "assets/runtime/original/card-repeater.webp",
+      "before": 35220,
+      "after": 35220,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 128,
+      "height": 178,
+      "alphaSha256": "b86d284ed93035cb4ea0d255034dd03b6e84bb5d4f803df76805a0df3495fac3"
+    },
+    {
+      "file": "assets/runtime/original/card-scaredyshroom.webp",
+      "before": 32098,
+      "after": 32098,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 128,
+      "height": 178,
+      "alphaSha256": "b86d284ed93035cb4ea0d255034dd03b6e84bb5d4f803df76805a0df3495fac3"
+    },
+    {
+      "file": "assets/runtime/original/card-snowpea.webp",
+      "before": 35080,
+      "after": 35080,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 128,
+      "height": 180,
+      "alphaSha256": "beaca6d8b5aec6a02fe4db04662136db628ec2543d396d03601853067dd47eac"
+    },
+    {
+      "file": "assets/runtime/original/card-squash.webp",
+      "before": 74400,
+      "after": 74400,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 200,
+      "height": 240,
+      "alphaSha256": "53739fad303d4f493effc38c42c1d2595e653c2453d20fbbce8ecefceff49e49"
+    },
+    {
+      "file": "assets/runtime/original/card-sunflower.webp",
+      "before": 36200,
+      "after": 36200,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 128,
+      "height": 178,
+      "alphaSha256": "b86d284ed93035cb4ea0d255034dd03b6e84bb5d4f803df76805a0df3495fac3"
+    },
+    {
+      "file": "assets/runtime/original/card-sunshroom.webp",
+      "before": 31386,
+      "after": 31386,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 128,
+      "height": 178,
+      "alphaSha256": "b86d284ed93035cb4ea0d255034dd03b6e84bb5d4f803df76805a0df3495fac3"
+    },
+    {
+      "file": "assets/runtime/original/card-threepeater.webp",
+      "before": 85704,
+      "after": 85704,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 200,
+      "height": 240,
+      "alphaSha256": "5487ad4d9a800d6036ccba8f4d07c29fc0f91efd07191d860505010ee2db3b44"
+    },
+    {
+      "file": "assets/runtime/original/card-wallnut.webp",
+      "before": 34130,
+      "after": 34130,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 128,
+      "height": 180,
+      "alphaSha256": "beaca6d8b5aec6a02fe4db04662136db628ec2543d396d03601853067dd47eac"
+    },
+    {
+      "file": "assets/runtime/original/cherrybomb.webp",
+      "before": 31144,
+      "after": 30858,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 224,
+      "height": 162,
+      "alphaSha256": "787afccaf7108aa3a4463adfa05ffac5d62600659d32ec31d6192ba75a127c27"
+    },
+    {
+      "file": "assets/runtime/original/chomper.webp",
+      "before": 50822,
+      "after": 12832,
+      "mode": "webp-q94",
+      "ssim": 0.988627,
+      "width": 260,
+      "height": 228,
+      "alphaSha256": "e51b45d35ddc6efe62b8012023300116460385b03e91a178353ba40d08931896"
+    },
+    {
+      "file": "assets/runtime/original/coffeebean.webp",
+      "before": 10010,
+      "after": 10010,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 78,
+      "height": 194,
+      "alphaSha256": "4eac252ab575bd228a9963907adaa36831dc0301dc5a6f314009ee7b3f98ff18"
+    },
+    {
+      "file": "assets/runtime/original/coin-gold.webp",
+      "before": 14098,
+      "after": 13908,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 90,
+      "height": 90,
+      "alphaSha256": "53ac67a5ae43a47b8a8b8240c625b856b464417df58aa40f64106744a3c96ebf"
+    },
+    {
+      "file": "assets/runtime/original/coin-silver.webp",
+      "before": 11950,
+      "after": 11944,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 86,
+      "height": 80,
+      "alphaSha256": "07c5c53675574b50fe9bff04ff9990c6905b74f2726744b5f79cbb8484cc8c8f"
+    },
+    {
+      "file": "assets/runtime/original/conveyor-back.webp",
+      "before": 58472,
+      "after": 58416,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 1032,
+      "height": 172,
+      "alphaSha256": "e98466453ade7e16d3ae5142c472fa57a55aacab01534d38926ae67542d4d7d6"
+    },
+    {
+      "file": "assets/runtime/original/conveyor.webp",
+      "before": 94932,
+      "after": 54170,
+      "mode": "webp-q94",
+      "ssim": 0.998347,
+      "width": 1004,
+      "height": 192,
+      "alphaSha256": "f6ea812552c55e795d68fcac5545ccf8a6b61aafbf3f46cc79db85896bac4c19"
+    },
+    {
+      "file": "assets/runtime/original/crater.webp",
+      "before": 59488,
+      "after": 21060,
+      "mode": "webp-q94",
+      "ssim": 0.986511,
+      "width": 360,
+      "height": 122,
+      "alphaSha256": "e153933e4b91fb19f67a08d6ef8273413fe3d974c201ac172121b5358d3abed9"
+    },
+    {
+      "file": "assets/runtime/original/dialog.webp",
+      "before": 511880,
+      "after": 511880,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 824,
+      "height": 966,
+      "alphaSha256": "b2074f74f0b910f27b2c329957d4e33c9399598fa80301414c038aece080574b"
+    },
+    {
+      "file": "assets/runtime/original/doomshroom.webp",
+      "before": 21716,
+      "after": 4024,
+      "mode": "webp-q94",
+      "ssim": 0.993298,
+      "width": 204,
+      "height": 182,
+      "alphaSha256": "27ddfef4c597053c7afa7e4097a50954cae1a4ac85cc260eab205f6340923af3"
+    },
+    {
+      "file": "assets/runtime/original/explodenut.webp",
+      "before": 21656,
+      "after": 21316,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 142,
+      "height": 142,
+      "alphaSha256": "e778dda7108c736949d79c112933be60833a771f3da4517fe19b8b70aaa67291"
+    },
+    {
+      "file": "assets/runtime/original/flowerpot.webp",
+      "before": 28178,
+      "after": 28178,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 144,
+      "height": 136,
+      "alphaSha256": "1fc375e3e86777be8e859868756170124e1eb80d028a0e8b19c40dc8f7f8d9f1"
+    },
+    {
+      "file": "assets/runtime/original/fog-cloud.webp",
+      "before": 1021682,
+      "after": 148888,
+      "mode": "webp-q94",
+      "ssim": 0.995585,
+      "width": 3360,
+      "height": 380,
+      "alphaSha256": "a315a29ad3b08c3e97b7951034ee7b87848ebb5bebdf312dde1da663aaa9dbbf"
+    },
+    {
+      "file": "assets/runtime/original/fog.webp",
+      "before": 266774,
+      "after": 266774,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2800,
+      "height": 1200,
+      "alphaSha256": "9f6291e9c891edcb9e5d71cd359d88fa30f2ba99a1e2ea593036313a472ddaad"
+    },
+    {
+      "file": "assets/runtime/original/fumeshroom.webp",
+      "before": 38182,
+      "after": 8884,
+      "mode": "webp-q97",
+      "ssim": 0.987339,
+      "width": 200,
+      "height": 176,
+      "alphaSha256": "77166e1af825647cc51738da215480e0fdd42165b0bc997d6e529d8094b4a04a"
+    },
+    {
+      "file": "assets/runtime/original/garlic.webp",
+      "before": 20980,
+      "after": 5220,
+      "mode": "webp-q94",
+      "ssim": 0.991496,
+      "width": 120,
+      "height": 118,
+      "alphaSha256": "31c94277de0d970bc6b31765c0f67e0cafad2d45287bfcda3de3fe5029d38f69"
+    },
+    {
+      "file": "assets/runtime/original/gatlingpea.webp",
+      "before": 25934,
+      "after": 25934,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 150,
+      "height": 145,
+      "alphaSha256": "94bf1ec807f9b57ad9fae374303ce4a478512e962f66dbdf3f321cbfbb71d38c"
+    },
+    {
+      "file": "assets/runtime/original/grave.webp",
+      "before": 52036,
+      "after": 13944,
+      "mode": "webp-q94",
+      "ssim": 0.990179,
+      "width": 176,
+      "height": 200,
+      "alphaSha256": "ca7554561a72deb827df57f66cebd4b15d1577015d1698f6bd25aa3d19f0002f"
+    },
+    {
+      "file": "assets/runtime/original/gravebuster.webp",
+      "before": 39922,
+      "after": 8482,
+      "mode": "webp-q94",
+      "ssim": 0.993563,
+      "width": 198,
+      "height": 212,
+      "alphaSha256": "6f37c03e6e3907e473e7f2bf4a982a25f1090d85a9028ab1a2fc4114302fe613"
+    },
+    {
+      "file": "assets/runtime/original/hammer.webp",
+      "before": 17470,
+      "after": 17470,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 98,
+      "height": 118,
+      "alphaSha256": "62fc53bc9d22220b9ad02b1c9f626681a6feb7c2e36829b21be2d244e7ad2568"
+    },
+    {
+      "file": "assets/runtime/original/hypnoshroom.webp",
+      "before": 27566,
+      "after": 6540,
+      "mode": "webp-q97",
+      "ssim": 0.98656,
+      "width": 136,
+      "height": 152,
+      "alphaSha256": "2f5a33074658a98067f1f9989a5d713ea123ae5e4c3bfda81c62fe5d2e5a7c92"
+    },
+    {
+      "file": "assets/runtime/original/ice-trail.webp",
+      "before": 28506,
+      "after": 4398,
+      "mode": "webp-q94",
+      "ssim": 0.988073,
+      "width": 300,
+      "height": 144,
+      "alphaSha256": "3f82034ea224f72feff730838e60aa10edf1ee7de69ed2cb67fe9ffdd944a912"
+    },
+    {
+      "file": "assets/runtime/original/iceshroom.webp",
+      "before": 32140,
+      "after": 32140,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 166,
+      "height": 150,
+      "alphaSha256": "fa58ef508a7ebfbabb3871d29d3549ea9b033f25741cd7e93648d345a533735c"
+    },
+    {
+      "file": "assets/runtime/original/jalapeno.webp",
+      "before": 14584,
+      "after": 14584,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 136,
+      "height": 178,
+      "alphaSha256": "4316665cf7c57e24d10098e39bc3d330e88bb9de0a885a492573dd03e69fda98"
+    },
+    {
+      "file": "assets/runtime/original/kernel.webp",
+      "before": 3192,
+      "after": 3192,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 42,
+      "height": 44,
+      "alphaSha256": "b852f3137cb48925f8cc6a407c1fb61a27e2e4e7d086d17f2927f7c19e7004ef"
+    },
+    {
+      "file": "assets/runtime/original/kernelpult.webp",
+      "before": 35638,
+      "after": 35052,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 204,
+      "height": 190,
+      "alphaSha256": "38943c17183d5daf9295cd17800074933c805d4febb63b0a34ede7598a658c49"
+    },
+    {
+      "file": "assets/runtime/original/ladder.webp",
+      "before": 25734,
+      "after": 9430,
+      "mode": "webp-q94",
+      "ssim": 0.998625,
+      "width": 154,
+      "height": 242,
+      "alphaSha256": "aaf7867382d816aadbc2dd8228cbe8c4a31f1006adeb2154e90f26270ca9720e"
+    },
+    {
+      "file": "assets/runtime/original/lilypad.webp",
+      "before": 22654,
+      "after": 22496,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 158,
+      "height": 116,
+      "alphaSha256": "531ed1067c27ecd76fcc9884bc87b28b757c632460d68d43c5f907d6886bb4ef"
+    },
+    {
+      "file": "assets/runtime/original/logo.webp",
+      "before": 343504,
+      "after": 343504,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1400,
+      "height": 232,
+      "alphaSha256": "965d90310dff19d1a76e6e79280055744e910539e30c54bacdcc76fa029d556e"
+    },
+    {
+      "file": "assets/runtime/original/magnetshroom.webp",
+      "before": 18192,
+      "after": 18144,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 108,
+      "height": 144,
+      "alphaSha256": "8f8f62c181909f8798fd5b617e52a7bbe7ae771cb108eaa0e66a5440dee1cd62"
+    },
+    {
+      "file": "assets/runtime/original/marigold.webp",
+      "before": 23444,
+      "after": 22708,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 104,
+      "height": 144,
+      "alphaSha256": "70b2439df155f2e963b09765a83fcd7921df40d24d6f8a36e177bdc7035f87be"
+    },
+    {
+      "file": "assets/runtime/original/melon.webp",
+      "before": 16364,
+      "after": 16364,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 110,
+      "height": 96,
+      "alphaSha256": "ac8e38e57830933b6e02c5c74cf38c62e5ebb78d0f0e791ad28b28d34ddcad36"
+    },
+    {
+      "file": "assets/runtime/original/melonpult.webp",
+      "before": 37848,
+      "after": 37848,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 200,
+      "height": 178,
+      "alphaSha256": "fdcdb9cd16916ace4cdc63fa4652a3133d7652bd3bb3b4ef08ea0180449814e5"
+    },
+    {
+      "file": "assets/runtime/original/menu.webp",
+      "before": 156070,
+      "after": 156070,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1800,
+      "height": 1200,
+      "alphaSha256": "095513d90f4635f03194f38ee961f7703b42400ee685ae7b84a9b6c3b687cde8"
+    },
+    {
+      "file": "assets/runtime/original/meter-empty.webp",
+      "before": 8856,
+      "after": 8856,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 316,
+      "height": 48,
+      "alphaSha256": "8ade8c75caba3a54b8c34ca24c2ea6cf59c2d91c1e9c3501e89ae4be9dfc59d4"
+    },
+    {
+      "file": "assets/runtime/original/meter-flag.webp",
+      "before": 3228,
+      "after": 3228,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 40,
+      "height": 36,
+      "alphaSha256": "8d1994954888740352e98bf3ae56e49e1261025054c2e64de913c646b95b38c2"
+    },
+    {
+      "file": "assets/runtime/original/meter-full.webp",
+      "before": 13342,
+      "after": 13342,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 316,
+      "height": 48,
+      "alphaSha256": "8ade8c75caba3a54b8c34ca24c2ea6cf59c2d91c1e9c3501e89ae4be9dfc59d4"
+    },
+    {
+      "file": "assets/runtime/original/meter-head.webp",
+      "before": 5022,
+      "after": 5010,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 48,
+      "height": 48,
+      "alphaSha256": "c2887ebae8a37bdc22423d47dfbb50c089afb43454f7412150e2a14d0e4ae5a5"
+    },
+    {
+      "file": "assets/runtime/original/mower.webp",
+      "before": 16956,
+      "after": 16956,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 140,
+      "height": 114,
+      "alphaSha256": "1059d4b89bcd281b78665e87d64b61aa4fb370b38690926c61c0593dbbd2ab0e"
+    },
+    {
+      "file": "assets/runtime/original/night.webp",
+      "before": 290862,
+      "after": 290862,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2800,
+      "height": 1200,
+      "alphaSha256": "9f6291e9c891edcb9e5d71cd359d88fa30f2ba99a1e2ea593036313a472ddaad"
+    },
+    {
+      "file": "assets/runtime/original/peashooter.webp",
+      "before": 25254,
+      "after": 24668,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 142,
+      "height": 142,
+      "alphaSha256": "a9240dd7a2c60105beb4526a934747955d5e250a40f25a5249f63788546f7de8"
+    },
+    {
+      "file": "assets/runtime/original/plantern.webp",
+      "before": 26760,
+      "after": 26130,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 162,
+      "height": 176,
+      "alphaSha256": "0bd187c205991c866c1bf590c3cefbd49f7a3e3e28373b677f41cd68df02f9c3"
+    },
+    {
+      "file": "assets/runtime/original/pool-cleaner.webp",
+      "before": 14700,
+      "after": 14534,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 94,
+      "height": 128,
+      "alphaSha256": "97def44f6eec16214a1d679470a6d9f3a0e460554eafc86db4871e4b32f9195c"
+    },
+    {
+      "file": "assets/runtime/original/pool.webp",
+      "before": 473708,
+      "after": 473708,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2800,
+      "height": 1200,
+      "alphaSha256": "9f6291e9c891edcb9e5d71cd359d88fa30f2ba99a1e2ea593036313a472ddaad"
+    },
+    {
+      "file": "assets/runtime/original/potatomine.webp",
+      "before": 21980,
+      "after": 6110,
+      "mode": "webp-q97",
+      "ssim": 0.986196,
+      "width": 150,
+      "height": 110,
+      "alphaSha256": "ef7d62c04aa6e7555fa7bd29d304d1c2af5507ecd286063c0ceb77cc960ca369"
+    },
+    {
+      "file": "assets/runtime/original/puff.webp",
+      "before": 5664,
+      "after": 5502,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 64,
+      "height": 54,
+      "alphaSha256": "955d76365097cadba21aee1eb2baf4211d4406392905dbf26c5c2b85c4577e7e"
+    },
+    {
+      "file": "assets/runtime/original/puffshroom.webp",
+      "before": 10584,
+      "after": 10584,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 80,
+      "height": 132,
+      "alphaSha256": "90ef2d28d103e30a557e413e6af1ec4e5714dbc59ffd9d783825ea35c84df168"
+    },
+    {
+      "file": "assets/runtime/original/pumpkin.webp",
+      "before": 42280,
+      "after": 41806,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 194,
+      "height": 134,
+      "alphaSha256": "2de0fa48b0a718a92152319503c6d7c521686bb0b698f2a015cb10d997c63c63"
+    },
+    {
+      "file": "assets/runtime/original/repeater.webp",
+      "before": 29356,
+      "after": 29042,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 146,
+      "height": 142,
+      "alphaSha256": "0118a702de7087de190d10786ffc3551344cce64482e4ee1ac25385cf1fb7027"
+    },
+    {
+      "file": "assets/runtime/original/roof.webp",
+      "before": 301458,
+      "after": 301458,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2800,
+      "height": 1200,
+      "alphaSha256": "9f6291e9c891edcb9e5d71cd359d88fa30f2ba99a1e2ea593036313a472ddaad"
+    },
+    {
+      "file": "assets/runtime/original/scaredyshroom.webp",
+      "before": 17024,
+      "after": 17004,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 114,
+      "height": 162,
+      "alphaSha256": "a53b9471e5e4b323cdc8c3cb648d9c56a4f3c40fd232155d3868950a2cbaa40d"
+    },
+    {
+      "file": "assets/runtime/original/seashroom.webp",
+      "before": 11844,
+      "after": 11700,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 96,
+      "height": 198,
+      "alphaSha256": "eab2dc3f84adf45b022ee05386d3dbbf4d6e332b5dd63a9e88b273859e19fa21"
+    },
+    {
+      "file": "assets/runtime/original/seed-packet.webp",
+      "before": 66940,
+      "after": 66940,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 200,
+      "height": 280,
+      "alphaSha256": "b6065252a73db79d325a15669506e5f7e1377e9530a51d7e4be8e94734d5364e"
+    },
+    {
+      "file": "assets/runtime/original/seedbank.webp",
+      "before": 76136,
+      "after": 75964,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 892,
+      "height": 174,
+      "alphaSha256": "217c4f097c6686d5479d6a803cb693c2c53469fccd25bf113ee649562f53c1dd"
+    },
+    {
+      "file": "assets/runtime/original/shovel.webp",
+      "before": 17258,
+      "after": 17204,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 160,
+      "height": 160,
+      "alphaSha256": "67edf6ccddc5173619e3f5208cb39a0c14c9532c406b1a06f53c8e60b0cd7ca6"
+    },
+    {
+      "file": "assets/runtime/original/shovelbank.webp",
+      "before": 22804,
+      "after": 22804,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 140,
+      "height": 144,
+      "alphaSha256": "64c4cbe67a3489f1d1de0f0544b76dc24dd7a29b6f2b1c10f27360d4f2b56181"
+    },
+    {
+      "file": "assets/runtime/original/sled.webp",
+      "before": 125928,
+      "after": 29528,
+      "mode": "webp-q94",
+      "ssim": 0.986371,
+      "width": 632,
+      "height": 208,
+      "alphaSha256": "14a863f1e1332d56a7fa4597f6a0fb213eaff2789a538d6957cdfedd33329a1f"
+    },
+    {
+      "file": "assets/runtime/original/snow-pea.webp",
+      "before": 5660,
+      "after": 5660,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 56,
+      "height": 56,
+      "alphaSha256": "3697c6cbacacf2ab0d4a2633c88ed6f2ce4fb5348019153d881dea2c840b8579"
+    },
+    {
+      "file": "assets/runtime/original/snowpea.webp",
+      "before": 26816,
+      "after": 26438,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 142,
+      "height": 142,
+      "alphaSha256": "c47a3c97544d54d7fba56f3cb2b8be373e7bc6ca43aa365524ff5eb4d7620492"
+    },
+    {
+      "file": "assets/runtime/original/spike.webp",
+      "before": 3650,
+      "after": 3650,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 60,
+      "height": 32,
+      "alphaSha256": "f988d0e57c6599f73c76d70ab8d101ecead293028915291673b34f2b3bcc4e3e"
+    },
+    {
+      "file": "assets/runtime/original/spikeweed.webp",
+      "before": 15610,
+      "after": 15610,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 170,
+      "height": 70,
+      "alphaSha256": "d227b6a7f5224716b9dda19696a3e4546ee639d30d98257bebeb0a973df71a21"
+    },
+    {
+      "file": "assets/runtime/original/splitpea.webp",
+      "before": 32966,
+      "after": 32154,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 184,
+      "height": 144,
+      "alphaSha256": "f92348080610d99bad124a590aff5226b9000185b4029444d04eebd282f3cd34"
+    },
+    {
+      "file": "assets/runtime/original/squash.webp",
+      "before": 35032,
+      "after": 9298,
+      "mode": "webp-q97",
+      "ssim": 0.986861,
+      "width": 136,
+      "height": 164,
+      "alphaSha256": "afa3bf95cc6efa68247c1026a4edded5f61348422a29d879b74b5d58c8cd8b6b"
+    },
+    {
+      "file": "assets/runtime/original/star.webp",
+      "before": 5768,
+      "after": 5624,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 60,
+      "height": 60,
+      "alphaSha256": "191023b446cdc042d77cd7193a413413c07c9c83452b27e07b3ca0d887e47eed"
+    },
+    {
+      "file": "assets/runtime/original/starfruit.webp",
+      "before": 26442,
+      "after": 25936,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 154,
+      "height": 140,
+      "alphaSha256": "9700181a2a205d25e2c71addf4d7cb59cb0bbaa81d6044d3b1c3859b5ad8ce7d"
+    },
+    {
+      "file": "assets/runtime/original/sun.webp",
+      "before": 22892,
+      "after": 22358,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 156,
+      "height": 156,
+      "alphaSha256": "7545674cc6feee3d998241ec805ae33e5bfc2d9964eb8d3b2ccae9591c3d5234"
+    },
+    {
+      "file": "assets/runtime/original/sunflower.webp",
+      "before": 31850,
+      "after": 30644,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 146,
+      "height": 148,
+      "alphaSha256": "fdcfb2e0338a1432691f8de91c910f92887a6ec0924c05a5aad947bc996b9614"
+    },
+    {
+      "file": "assets/runtime/original/sunshroom.webp",
+      "before": 10172,
+      "after": 10124,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 118,
+      "height": 122,
+      "alphaSha256": "ee10f9d28f79b39b6639a875c1132b81509637f4883f02b3b832ee1a3e416680"
+    },
+    {
+      "file": "assets/runtime/original/tallnut.webp",
+      "before": 46030,
+      "after": 45954,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 166,
+      "height": 238,
+      "alphaSha256": "45b7dc507695dd16cdaa67f5d5b8b165c6760b08c242f96a0f18c6c5fe0de926"
+    },
+    {
+      "file": "assets/runtime/original/tanglekelp.webp",
+      "before": 37758,
+      "after": 36988,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 180,
+      "height": 144,
+      "alphaSha256": "fda64ca0e687d4273107e84911ce6705df3ffe389b5f9bd707b70b28a0ad03c6"
+    },
+    {
+      "file": "assets/runtime/original/threepeater.webp",
+      "before": 37282,
+      "after": 36644,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 146,
+      "height": 160,
+      "alphaSha256": "eb8d80080e498847d503b397bb74769a98f71a2d0ee32a83929cd728393cdb59"
+    },
+    {
+      "file": "assets/runtime/original/torchwood.webp",
+      "before": 36398,
+      "after": 36080,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 146,
+      "height": 174,
+      "alphaSha256": "dd2fab6753bb9952f0df52d3fc5c8cdfed02942e54bafe2a2bdd1814de9eca92"
+    },
+    {
+      "file": "assets/runtime/original/trophy.webp",
+      "before": 343386,
+      "after": 114896,
+      "mode": "webp-q97",
+      "ssim": 0.986267,
+      "width": 628,
+      "height": 538,
+      "alphaSha256": "e5949880e50fb176efa2b8f9d3b4be1f43c2c0edaae4a70057438b7df98e24e3"
+    },
+    {
+      "file": "assets/runtime/original/twinsunflower.webp",
+      "before": 31130,
+      "after": 31130,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 173,
+      "height": 161,
+      "alphaSha256": "ba15a5e516e0dc4e0fdf4d61c01acabef0243c6b3667e59e40ed6817bffd3202"
+    },
+    {
+      "file": "assets/runtime/original/umbrella.webp",
+      "before": 28970,
+      "after": 28970,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 156,
+      "height": 132,
+      "alphaSha256": "a5675e562685da25dff17d72cfb4fd63e23348400d7ddb3994f3ce1db89b0448"
+    },
+    {
+      "file": "assets/runtime/original/vases.webp",
+      "before": 249946,
+      "after": 43662,
+      "mode": "webp-q94",
+      "ssim": 0.987423,
+      "width": 480,
+      "height": 404,
+      "alphaSha256": "7ecdb761cfec0714709169ea23430605c7a4ecc012f5a71953fe14957cab3732"
+    },
+    {
+      "file": "assets/runtime/original/wallnut.webp",
+      "before": 26700,
+      "after": 26700,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 130,
+      "height": 146,
+      "alphaSha256": "fae865739854800b30b1bf9af603712cbf9ac93ee217de4008beca6bf31d8bf8"
+    },
+    {
+      "file": "assets/runtime/original/wintermelon-projectile.webp",
+      "before": 13900,
+      "after": 13900,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 110,
+      "height": 96,
+      "alphaSha256": "ac8e38e57830933b6e02c5c74cf38c62e5ebb78d0f0e791ad28b28d34ddcad36"
+    },
+    {
+      "file": "assets/runtime/original/wintermelon.webp",
+      "before": 39726,
+      "after": 39312,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 193,
+      "height": 194,
+      "alphaSha256": "bbb6ca39f02bdfb1d66a6e014e4a40673874fd57dc084e197a48bd3d8e1ab5c7"
+    },
+    {
+      "file": "assets/runtime/pea.webp",
+      "before": 4914,
+      "after": 4914,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 56,
+      "height": 56,
+      "alphaSha256": "b86716ec3753b2a97ab4f660fcbb71d2498b063cb2a6112dd4b7df52748d6923"
+    },
+    {
+      "file": "assets/runtime/plant-motion/cabbagepult.webp",
+      "before": 94822,
+      "after": 94822,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1024,
+      "height": 98,
+      "alphaSha256": "95298b509cde91684bf07274191ce406b4c5acce97cea8cb760dba36b2db7736"
+    },
+    {
+      "file": "assets/runtime/plant-motion/gatlingpea.webp",
+      "before": 154056,
+      "after": 47376,
+      "mode": "webp-q94",
+      "ssim": 0.989707,
+      "width": 1024,
+      "height": 220,
+      "alphaSha256": "0b312075700d792efa29101b447680bf76333e88d9744f5d736c4cb2a43fea90"
+    },
+    {
+      "file": "assets/runtime/plant-motion/kernelpult.webp",
+      "before": 104562,
+      "after": 37264,
+      "mode": "webp-q94",
+      "ssim": 0.989589,
+      "width": 1024,
+      "height": 188,
+      "alphaSha256": "e9c543ceb3c56c82ffa986170574108dede1381fd3829f9056fe796fd4aef12b"
+    },
+    {
+      "file": "assets/runtime/plant-motion/melonpult.webp",
+      "before": 107124,
+      "after": 107124,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1024,
+      "height": 100,
+      "alphaSha256": "4e56e88b805ae61d933e004aab814ce5bc35f6bf438b281ca9537353d21da97f"
+    },
+    {
+      "file": "assets/runtime/plant-motion/peashooter.webp",
+      "before": 98708,
+      "after": 98708,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1024,
+      "height": 134,
+      "alphaSha256": "36850f9090acccb52c039b32dd69a3678867384447d3a91a5e4eee67a446555e"
+    },
+    {
+      "file": "assets/runtime/plant-motion/sunflower.webp",
+      "before": 85412,
+      "after": 85412,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1024,
+      "height": 116,
+      "alphaSha256": "d854f21ab4c2a35ade607de3c8840edff839a13c81daca4354bb6632d4a6d6b0"
+    },
+    {
+      "file": "assets/runtime/plant-motion/threepeater.webp",
+      "before": 76654,
+      "after": 27510,
+      "mode": "webp-q94",
+      "ssim": 0.987228,
+      "width": 1024,
+      "height": 142,
+      "alphaSha256": "58d96211fee4879857edd985c6b955b69b970cec7a7beb50dce7aea343ea9eb8"
+    },
+    {
+      "file": "assets/runtime/plant-motion/twinsunflower.webp",
+      "before": 98620,
+      "after": 98620,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1024,
+      "height": 122,
+      "alphaSha256": "0e9fadf355269c4f8c51a1ba85953be38b325b1613797b0675ef6e2a14434850"
+    },
+    {
+      "file": "assets/runtime/plant-motion/wintermelon.webp",
+      "before": 120936,
+      "after": 120936,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1024,
+      "height": 104,
+      "alphaSha256": "7a4e0958a8a6e54b8b79a9700a786b3fac174b91ff38dfea645040cf3b12f5c1"
+    },
+    {
+      "file": "assets/runtime/previews/day.jpg",
+      "before": 171907,
+      "after": 171907,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 1400,
+      "height": 600,
+      "alphaSha256": "7d62bf9208316cb2f8171f950b06091e3bfaab7ce5268eb16ae7f238a298f66c"
+    },
+    {
+      "file": "assets/runtime/previews/fog.webp",
+      "before": 324340,
+      "after": 324340,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 800,
+      "height": 343,
+      "alphaSha256": "2f8b5183f2caf2d283161e44d5acfb89a615cf6ebe2d856dfbbf94ca3bffce80"
+    },
+    {
+      "file": "assets/runtime/previews/night.webp",
+      "before": 324278,
+      "after": 324230,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 800,
+      "height": 343,
+      "alphaSha256": "2f8b5183f2caf2d283161e44d5acfb89a615cf6ebe2d856dfbbf94ca3bffce80"
+    },
+    {
+      "file": "assets/runtime/previews/pool.webp",
+      "before": 398166,
+      "after": 398166,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 800,
+      "height": 343,
+      "alphaSha256": "2f8b5183f2caf2d283161e44d5acfb89a615cf6ebe2d856dfbbf94ca3bffce80"
+    },
+    {
+      "file": "assets/runtime/previews/roof.webp",
+      "before": 293236,
+      "after": 293236,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 800,
+      "height": 343,
+      "alphaSha256": "2f8b5183f2caf2d283161e44d5acfb89a615cf6ebe2d856dfbbf94ca3bffce80"
+    },
+    {
+      "file": "assets/runtime/ui/almanac-card.webp",
+      "before": 21528,
+      "after": 21528,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 324,
+      "height": 484,
+      "alphaSha256": "7612296eb6cc940eb1b9e021aa944cc8a0109ab01b1b5b2fef37cb0bc7630063"
+    },
+    {
+      "file": "assets/runtime/ui/challenge-background.webp",
+      "before": 23176,
+      "after": 23176,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 800,
+      "height": 600,
+      "alphaSha256": "fd3df91fd84ccf152312658b574cb0215e3bca334105a24ecc48f7f4f0a92261"
+    },
+    {
+      "file": "assets/runtime/ui/challenge-window.webp",
+      "before": 3756,
+      "after": 3754,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 118,
+      "height": 120,
+      "alphaSha256": "9aeda25c783d10944b4add074d8eacf76f3444859b9635081c39c78612aae740"
+    },
+    {
+      "file": "assets/runtime/ui/checkbox-off.webp",
+      "before": 1914,
+      "after": 1914,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 42,
+      "height": 39,
+      "alphaSha256": "982071cf0a2886af975e3c7b391b61605f20515542357b2a0a9a051af4e01286"
+    },
+    {
+      "file": "assets/runtime/ui/checkbox-on.webp",
+      "before": 2452,
+      "after": 2448,
+      "mode": "lossless",
+      "ssim": 1.0,
+      "width": 42,
+      "height": 39,
+      "alphaSha256": "db75b69979604fafa4d32d0b4785b086cba1fb3d00cb62b6c6d07583912dd0ed"
+    },
+    {
+      "file": "assets/runtime/ui/parchment-button.webp",
+      "before": 2326,
+      "after": 2326,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 111,
+      "height": 26,
+      "alphaSha256": "8c0a85f9e8f26a3999f452bed9b34654e6f743f6221ed90e8b164c56f95e985c"
+    },
+    {
+      "file": "assets/runtime/ui/seed-chooser.webp",
+      "before": 8720,
+      "after": 8720,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 465,
+      "height": 513,
+      "alphaSha256": "6db4dde118873a53a1d62631a113f98a222ff8456195199e3da1b70c5ed42bc5"
+    },
+    {
+      "file": "assets/runtime/ui/seed-silhouette.webp",
+      "before": 120,
+      "after": 120,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 50,
+      "height": 70,
+      "alphaSha256": "ca14536f1d660560b7182fe6f86095586537deba5a3177fade42e19d360364fc"
+    },
+    {
+      "file": "assets/runtime/ui/seed-start-disabled.webp",
+      "before": 792,
+      "after": 792,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 156,
+      "height": 42,
+      "alphaSha256": "12eca222a63ce50a72585a69891eaddc9785f4e06965b50cd1a6e04075df213d"
+    },
+    {
+      "file": "assets/runtime/ui/seed-start.webp",
+      "before": 892,
+      "after": 892,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 156,
+      "height": 42,
+      "alphaSha256": "12eca222a63ce50a72585a69891eaddc9785f4e06965b50cd1a6e04075df213d"
+    },
+    {
+      "file": "assets/runtime/ui/stone-panel.webp",
+      "before": 30918,
+      "after": 30918,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 360,
+      "height": 320,
+      "alphaSha256": "d714820c021655dc653160ce9c1177efbb832517d72900a5d03bc0d17ca49075"
+    },
+    {
+      "file": "assets/runtime/yard.webp",
+      "before": 285726,
+      "after": 285726,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 2800,
+      "height": 1200,
+      "alphaSha256": "9f6291e9c891edcb9e5d71cd359d88fa30f2ba99a1e2ea593036313a472ddaad"
+    },
+    {
+      "file": "icons/apple-touch-icon.png",
+      "before": 47106,
+      "after": 47106,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 180,
+      "height": 180,
+      "alphaSha256": "682a387ec62c4338e6ba238c81587700231b5c74329714310ddd41a72c10de09"
+    },
+    {
+      "file": "icons/favicon.ico",
+      "before": 7864,
+      "after": 7864,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 48,
+      "height": 48,
+      "alphaSha256": "adea5e0a9361c2700525b2452f81230a0f5c1fb310669e1a5b1d779143b9e297"
+    },
+    {
+      "file": "icons/icon-16.png",
+      "before": 737,
+      "after": 737,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 16,
+      "height": 16,
+      "alphaSha256": "3d6876a0146de8576eb2395a858de1213d1b92c65b779df3a331cfd5a4584546"
+    },
+    {
+      "file": "icons/icon-192.png",
+      "before": 52586,
+      "after": 52586,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 192,
+      "height": 192,
+      "alphaSha256": "93c11643664e45d5c0698eb690c9162789f01ba58f36b09ba1bc9cd3b9d49603"
+    },
+    {
+      "file": "icons/icon-32.png",
+      "before": 2315,
+      "after": 2315,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 32,
+      "height": 32,
+      "alphaSha256": "5f4ecdb7b71c3e403983fe405cddcdc2f2576b655fdb3e80d94a6f7c32e58bc2"
+    },
+    {
+      "file": "icons/icon-512.png",
+      "before": 295981,
+      "after": 295981,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 512,
+      "height": 512,
+      "alphaSha256": "3b874d3ba46c638fc3094f8e92fb744ca974893873f8885f54e23760f9b6311b"
+    },
+    {
+      "file": "icons/maskable-512.png",
+      "before": 136081,
+      "after": 136081,
+      "mode": "unchanged",
+      "ssim": 1.0,
+      "width": 512,
+      "height": 512,
+      "alphaSha256": "3b874d3ba46c638fc3094f8e92fb744ca974893873f8885f54e23760f9b6311b"
+    }
+  ]
+}

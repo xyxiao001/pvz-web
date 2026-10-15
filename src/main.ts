@@ -2,6 +2,7 @@ import { PLANT_DESCRIPTIONS } from './game/plant-descriptions';
 import './style.css';
 import './ui.css';
 import './mobile.css';
+import './hud-skin.css';
 import { registerPwa, showPwa } from './platform/pwa';
 void registerPwa();
 import { ZOMBIE_NAMES } from './game/survival';
@@ -314,7 +315,7 @@ function survivalPicker(mode: SurvivalMode) {
 }
 $('#endless').onclick = () => survivalPicker('endless');
 $('#almanac').onclick = () => {
-  panel(`<span class="kicker">植物图鉴</span><h2>认识你的守护者</h2><div class="almanac-grid">${(Object.keys(PLANTS) as PlantKind[]).map(kind => `<article><img loading="lazy" src="${asset(`${kind}.png`)}" alt=""/><div><h3>${PLANTS[kind].name}<span>${kind === 'explodenut' ? '传送带专用' : `${PLANTS[kind].cost} 阳光`}</span></h3><p>${PLANT_DESCRIPTIONS[kind]}</p></div></article>`).join('')}</div><button id="close" class="wood-button">返回主菜单</button>`, 'paper-panel wide-panel'); $('#close').onclick = closeMenuPanel;
+  panel(`<span class="kicker">植物图鉴</span><h2>认识你的守护者</h2><div class="almanac-grid">${(Object.keys(PLANTS) as PlantKind[]).map(kind => `<article><img loading="lazy" src="${asset(`${kind}.png`)}" alt=""/><div><h3>${PLANTS[kind].name}<span>${kind === 'explodenut' ? '传送带专用' : `${PLANTS[kind].cost} 阳光`}</span></h3><p>${PLANT_DESCRIPTIONS[kind]}</p></div></article>`).join('')}</div><button id="close" class="wood-button">返回主菜单</button>`, 'paper-panel wide-panel almanac-panel'); $('#close').onclick = closeMenuPanel;
 };
 $('#achievements').onclick = () => {
   panel(`<span class="kicker">庭院荣誉</span><h2>成就</h2><p>已达成 ${Object.keys(achievements.earned).length} / ${ACHIEVEMENTS.length} · 记录保存在当前浏览器</p><div class="achievement-list">${ACHIEVEMENTS.map(item => {
@@ -334,7 +335,7 @@ document.addEventListener('fullscreenchange', () => {
 });
 function toggleFullscreen() { if (document.fullscreenElement) void document.exitFullscreen(); else void $('.page').requestFullscreen(); }
 $('#settings').onclick = () => {
-  panel(`<span class="kicker">庭院设置</span><h2>准备好出发</h2><button id="fullscreen" class="wood-button large">${fullscreenLabel()}</button><button id="zombie-health" class="wood-button large">僵尸血条：${showZombieHealth ? '开启' : '关闭'}</button><button id="sound" class="wood-button large">音效：${audio.muted ? '关闭' : '开启'}</button><button id="music" class="wood-button large">背景音乐：${music.enabled ? '开启' : '关闭'}</button><button id="pwa" class="wood-button large">安装与离线</button><button id="close" class="text-button">返回主菜单</button>`);
+  panel(`<span class="kicker">庭院设置</span><h2>准备好出发</h2><div class="settings-controls"><button id="fullscreen" class="wood-button large">${fullscreenLabel()}</button><button id="zombie-health" class="wood-button large">僵尸血条：${showZombieHealth ? '开启' : '关闭'}</button><button id="sound" class="wood-button large">音效：${audio.muted ? '关闭' : '开启'}</button><button id="music" class="wood-button large">背景音乐：${music.enabled ? '开启' : '关闭'}</button><button id="pwa" class="wood-button large">安装与离线</button></div><button id="close" class="text-button">返回主菜单</button>`, 'paper-panel settings-panel');
   $('#pwa').onclick = showPwa;
   $('#music').onclick = () => { music.enabled = !music.enabled; $('#music').textContent = `背景音乐：${music.enabled ? '开启' : '关闭'}`; };
   $('#sound').onclick = () => { audio.muted = !audio.muted; $('#sound').textContent = `音效：${audio.muted ? '关闭' : '开启'}`; };
