@@ -2,6 +2,15 @@ import { createHash } from 'node:crypto';
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve, relative } from 'node:path';
 import type { Plugin } from 'vite';
+import actorMotion from '../src/rendering/actor-motion-index.json';
+
+const nativeClips = new Set(Object.keys(actorMotion));
+function replacedAnimationPage(path: string): boolean {
+  return path.startsWith('assets/runtime/clips/') && (
+    nativeClips.has(path.slice(path.lastIndexOf('/') + 1).replace(/-\d+\.webp$/, '')) ||
+    /\/(?:gargantuar-.+|peashooter|sunflower|threepeater|gatlingpea|twinsunflower|wintermelon|(?:cabbagepult|kernelpult|melonpult)(?:-attack)?)-\d+\.webp$/.test(path)
+  );
+}
 
 // Same build-time shell/content revision split as KR, scoped to this game's assets.
 export function pwa(): Plugin {
@@ -24,7 +33,9 @@ export function pwa(): Plugin {
       const files = (await readdir(out, { recursive: true, withFileTypes: true }))
         .filter(e => e.isFile()).map(e => relative(out, resolve(e.parentPath, e.name)).replaceAll('\\', '/'))
         .filter(p => p === 'index.html' || p === 'manifest.webmanifest' || p.startsWith('icons/') && p !== 'icons/icon-master.png'
-          || /^assets\/[^/]+\.(js|css)$/.test(p) || p.startsWith('assets/runtime/') || (/^assets\/(original|music)\/[^/]+\.(mp3|ogg)$/.test(p))).sort();
+          || /^assets\/[^/]+\.(js|css)$/.test(p) || p.startsWith('assets/runtime/') || (/^assets\/(original|music)\/[^/]+\.(mp3|ogg)$/.test(p)))
+        // Retain old URLs on the server without downloading unused baked pages in new installs.
+        .filter(p => !replacedAnimationPage(p)).sort();
       const assets: Record<string, { revision: string; size: number }> = {};
       for (const path of files) { const body = await readFile(resolve(out, path)); assets[path] = { revision: createHash('sha256').update(body).digest('hex'), size: body.length }; }
       const shell = files.filter(p => p === 'index.html' || p === 'manifest.webmanifest' || p.startsWith('icons/') || p.endsWith('.css') || startup.has(p));
