@@ -9,6 +9,7 @@ import './ui.css';
 import './mobile.css';
 import './hud-skin.css';
 import './interaction.css';
+import './widescreen.css';
 import { registerPwa, showPwa } from './platform/pwa';
 void registerPwa();
 import { ZOMBIE_NAMES } from './game/survival';
@@ -104,8 +105,9 @@ function placementFeedback(message: string, x: number, y: number) {
   const tip = $('#planting-feedback');
   clearTimeout(feedbackTimer);
   tip.textContent = message;
-  tip.style.left = `${Math.max(17,Math.min(83,x/BOARD.width*100))}%`;
-  tip.style.top = `${Math.max(20,Math.min(88,y/BOARD.height*100-12))}%`;
+  const position = scene.toScreen(x,y), host = $('#canvas-host');
+  tip.style.left = `${Math.max(17,Math.min(83,position.x/host.clientWidth*100))}%`;
+  tip.style.top = `${Math.max(20,Math.min(88,position.y/host.clientHeight*100-12))}%`;
   tip.hidden = false;
   feedbackTimer = setTimeout(clearPlacementFeedback, 1600);
   if (message === '阳光不足' && !matchMedia('(prefers-reduced-motion: reduce)').matches)
@@ -508,7 +510,7 @@ async function ensureScene() {
     await scene.init($('#canvas-host'));
     const canvas = scene.app.canvas;
     canvas.addEventListener('webglcontextlost', () => showDiagnostic(new Error('WebGL context lost: GPU rendering context was lost.')));
-    const point = (event: PointerEvent) => { const bounds = canvas.getBoundingClientRect(); return { x: (event.clientX - bounds.left) * BOARD.width / bounds.width, y: (event.clientY - bounds.top) * BOARD.height / bounds.height }; };
+    const point = (event: PointerEvent) => { const bounds = canvas.getBoundingClientRect(); return scene.toWorld(event.clientX - bounds.left, event.clientY - bounds.top); };
     const operate = (x: number, y: number) => {
       const sun = [...game.suns].reverse().find(sun => Math.hypot(sun.x-x,sun.y-y)<=35);
       const column = Math.floor((x - BOARD.left) / BOARD.cellWidth), row = game.rowAt(y,x);

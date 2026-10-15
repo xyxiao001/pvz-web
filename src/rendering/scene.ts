@@ -3,6 +3,7 @@ import { ZombieHealthBar } from './zombie-health';
 import { GiantMotion, hasGiantMotion, type GiantRig } from './giant-motion';
 import { hasPlantMotion, hasPlantMotionClip, PlantMotion, type PlantRig } from './plant-motion';
 import { renderResolution } from './resolution';
+import { battleViewport, viewportToWorld, worldToViewport } from './viewport';
 import { stormOpacity } from './storm';
 import firePea from './fire-pea.json';
 import { firePeaFrame } from './projectiles';
@@ -55,16 +56,40 @@ export class Scene {
   private vaseFrames: Texture[] = [];
   private explosions: { x: number; y: number }[] = [];
 
+  private viewport = battleViewport(BOARD.width, BOARD.height);
+  private sceneryEdges: Sprite[] = [];
+  private sceneryTextures: Texture[] = [];
+
+  toWorld(x: number, y: number) { return viewportToWorld(this.viewport, x, y); }
+  toScreen(x: number, y: number) { return worldToViewport(this.viewport, x, y); }
+
+  private resizeScenery() {
+    const extra = this.viewport.x / this.viewport.scale;
+    // The source already includes 220 px of house and 380 px of entrance.
+    // Only scenery beyond the playable board stretches on ultra-wide displays.
+    if (this.sceneryEdges.length) {
+      this.sceneryEdges[0].width = Math.max(220, extra);
+      this.sceneryEdges[1].width = Math.max(380, extra);
+    }
+  }
+
   async init(host: HTMLElement) {
-    await this.app.init({ width: BOARD.width, height: BOARD.height, backgroundAlpha: 0, antialias: true,
-      resolution: renderResolution(host.clientWidth, window.devicePixelRatio), autoDensity: true, autoStart: false });
+    this.viewport = battleViewport(host.clientWidth, host.clientHeight);
+    await this.app.init({ width: host.clientWidth, height: host.clientHeight, backgroundAlpha: 0, antialias: true,
+      resolution: renderResolution(BOARD.width * this.viewport.scale, window.devicePixelRatio) / this.viewport.scale, autoDensity: true, autoStart: false });
     host.appendChild(this.app.canvas);
     this.app.canvas.style.width = '100%';
     this.app.canvas.style.height = '100%';
     this.app.canvas.setAttribute('aria-label', '庭院战场。先选植物，再点击草地种植；点击阳光收集。');
-    // Keep the 800×600 world and match display density up to the 2× source artwork.
     new ResizeObserver(([entry]) => {
-      this.app.renderer.resize(BOARD.width, BOARD.height, renderResolution(entry.contentRect.width, window.devicePixelRatio));
+      const { width, height } = entry.contentRect;
+      this.viewport = battleViewport(width, height);
+      const { scale, x, y } = this.viewport;
+      // Cap physical pixels per source pixel even when the canvas grows wider.
+      this.app.renderer.resize(width, height, renderResolution(BOARD.width * scale, window.devicePixelRatio) / scale);
+      this.app.stage.scale.set(scale);
+      this.app.stage.position.set(x, y);
+      this.resizeScenery();
       this.app.canvas.style.width = '100%'; this.app.canvas.style.height = '100%';
       this.app.render();
     }).observe(host);
@@ -185,6 +210,9 @@ export class Scene {
   }
 
   private clearObjects() {
+    this.sceneryEdges = [];
+    for (const texture of this.sceneryTextures) texture.destroy();
+    this.sceneryTextures = [];
     for (const child of this.app.stage.removeChildren()) {
       if (child !== this.world && child !== this.hover && child !== this.target && child !== this.health && child !== this.fog && child !== this.weather) child.destroy({ children: true });
     }
@@ -202,6 +230,12 @@ export class Scene {
     this.clearObjects();
     const yard = new Sprite(game.boss ? this.textures.bossBackground : game.config.environment === 'day' ? this.textures.yard : this.textures[game.config.environment]); yard.x = -220;
     this.app.stage.addChild(yard);
+    this.sceneryTextures = [new Rectangle(0, 0, 220, 600), new Rectangle(1020, 0, 380, 600)]
+      .map(frame => new Texture({ source: yard.texture.source, frame }));
+    const left = new Sprite(this.sceneryTextures[0]); left.anchor.x = 1;
+    const right = new Sprite(this.sceneryTextures[1]); right.x = BOARD.width;
+    this.sceneryEdges = [left, right];
+    this.app.stage.addChild(left, right); this.resizeScenery();
     for (const row of game.config.environment === 'day' ? game.config.rows : []) {
       const lawn = new Sprite(this.lawnTextures[row]);
       lawn.y = BOARD.top + row * 100; this.app.stage.addChild(lawn);
@@ -591,8 +625,8 @@ export class Scene {
       for(let i=0;i<35;i++){const x=(i*139+game.ticks*1.2)%850,y=80+(i*73+game.ticks*6)%520;this.weather.moveTo(x,y).lineTo(x-8,y+22);}
       this.weather.stroke({color:0xa9c8de,alpha:.3,width:1});
       const flash = stormOpacity(game.stormFlash, game.stormIn, game.ticks);
-      this.weather.rect(0,80,800,520).fill({color:0x000000,alpha:flash.dark});
-      this.weather.rect(0,80,800,520).fill({color:0xffffff,alpha:flash.white});
+      this.weather.rect(-this.viewport.x / this.viewport.scale,0,this.viewport.width / this.viewport.scale,600).fill({color:0x000000,alpha:flash.dark});
+      this.weather.rect(-this.viewport.x / this.viewport.scale,0,this.viewport.width / this.viewport.scale,600).fill({color:0xffffff,alpha:flash.white});
     }
     this.effects = this.effects.filter(effect => {
       const age = this.time - effect.born;

@@ -52,7 +52,7 @@ export class Hud {
     for (const { kind, packet, button, cover, number, price, shortcut } of this.seeds) {
       if (game.hasConveyor) {
         const position = game.conveyor.find(p => p.id === packet)!.x;
-        this.write(button, 'position', String(position), () => { button.style.left = `${position / 8}cqw`; });
+        this.write(button, 'position', String(position), () => { button.style.left = `calc(${position / 8} * var(--conveyor-unit))`; });
       }
       const remaining = game.cooldown(kind); const selected = game.hasConveyor ? game.selectedPacket === packet : game.selected === kind;
       if (isUpgrade(kind)) {
