@@ -57,21 +57,10 @@ export class Scene {
   private explosions: { x: number; y: number }[] = [];
 
   private viewport = battleViewport(BOARD.width, BOARD.height);
-  private sceneryEdges: Sprite[] = [];
   private sceneryTextures: Texture[] = [];
 
   toWorld(x: number, y: number) { return viewportToWorld(this.viewport, x, y); }
   toScreen(x: number, y: number) { return worldToViewport(this.viewport, x, y); }
-
-  private resizeScenery() {
-    const extra = this.viewport.x / this.viewport.scale;
-    // The source already includes 220 px of house and 380 px of entrance.
-    // Only scenery beyond the playable board stretches on ultra-wide displays.
-    if (this.sceneryEdges.length) {
-      this.sceneryEdges[0].width = Math.max(220, extra);
-      this.sceneryEdges[1].width = Math.max(380, extra);
-    }
-  }
 
   async init(host: HTMLElement) {
     this.viewport = battleViewport(host.clientWidth, host.clientHeight);
@@ -89,7 +78,6 @@ export class Scene {
       this.app.renderer.resize(width, height, renderResolution(BOARD.width * scale, window.devicePixelRatio) / scale);
       this.app.stage.scale.set(scale);
       this.app.stage.position.set(x, y);
-      this.resizeScenery();
       this.app.canvas.style.width = '100%'; this.app.canvas.style.height = '100%';
       this.app.render();
     }).observe(host);
@@ -210,7 +198,6 @@ export class Scene {
   }
 
   private clearObjects() {
-    this.sceneryEdges = [];
     for (const texture of this.sceneryTextures) texture.destroy();
     this.sceneryTextures = [];
     for (const child of this.app.stage.removeChildren()) {
@@ -228,14 +215,11 @@ export class Scene {
 
   setLevel(game: Game) {
     this.clearObjects();
-    const yard = new Sprite(game.boss ? this.textures.bossBackground : game.config.environment === 'day' ? this.textures.yard : this.textures[game.config.environment]); yard.x = -220;
-    this.app.stage.addChild(yard);
-    this.sceneryTextures = [new Rectangle(0, 0, 220, 600), new Rectangle(1020, 0, 380, 600)]
-      .map(frame => new Texture({ source: yard.texture.source, frame }));
-    const left = new Sprite(this.sceneryTextures[0]); left.anchor.x = 1;
-    const right = new Sprite(this.sceneryTextures[1]); right.x = BOARD.width;
-    this.sceneryEdges = [left, right];
-    this.app.stage.addChild(left, right); this.resizeScenery();
+    const texture = game.boss ? this.textures.bossBackground : game.config.environment === 'day' ? this.textures.yard : this.textures[game.config.environment];
+    // Only the original playable camera is visible. The street is never sampled.
+    const boardTexture = new Texture({ source: texture.source, frame: new Rectangle(220, 0, BOARD.width, BOARD.height) });
+    this.sceneryTextures = [boardTexture];
+    this.app.stage.addChild(new Sprite(boardTexture));
     for (const row of game.config.environment === 'day' ? game.config.rows : []) {
       const lawn = new Sprite(this.lawnTextures[row]);
       lawn.y = BOARD.top + row * 100; this.app.stage.addChild(lawn);
