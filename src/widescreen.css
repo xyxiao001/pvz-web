@@ -6,8 +6,8 @@
   .page .game-frame,.page:fullscreen .game-frame,.page.in-battle:fullscreen .game-frame{width:100%;height:100%;aspect-ratio:auto;border-width:2px;border-radius:6px;container-type:size;--hud-height:clamp(54px,12dvh,100px);--conveyor-unit:calc(var(--hud-height)*.1)}
   .page #canvas-host{inset:0;width:100%;height:100%;transform:none}
   .page.in-battle #canvas-host{top:var(--hud-height);left:0;width:100%;height:calc(100% - var(--hud-height));transform:none}
-  .page .game-frame #battle-hud:before{content:'';position:absolute;inset:0 0 auto;width:100%;height:var(--hud-height);border:0;background:#35431f url('/assets/runtime/ui/stone-panel.webp') center / 100% 100% no-repeat}
-  .page .game-frame .seed-bank{left:0;top:0;width:calc(var(--hud-height)*7.5);height:var(--hud-height);background:none;border:0;border-image:url('/assets/runtime/original/seedbank.webp') 0 20 0 150 fill / 0 calc(var(--hud-height)*.115) 0 calc(var(--hud-height)*.862) / 0 stretch}
+  .page .game-frame #battle-hud:before{content:'';position:absolute;inset:0 0 auto;width:100%;height:var(--hud-height);border:0;background:#35431f var(--hd-ui-stone-panel) center / 100% 100% no-repeat}
+  .page .game-frame .seed-bank{left:0;top:0;width:calc(var(--hud-height)*7.5);height:var(--hud-height);background:none;border:0;border-image:var(--hd-original-seedbank) 0 2.242152% 0 16.816144% fill / 0 calc(var(--hud-height)*.115) 0 calc(var(--hud-height)*.862) / 0 stretch}
   .page .game-frame .seed-bank strong{left:calc(var(--hud-height)*.2);top:69%;width:calc(var(--hud-height)*.62);height:auto;padding:0;border:0;border-radius:0;background:none;font-size:calc(var(--hud-height)*.25);line-height:1.1}
   .page .game-frame .seed-bank #seed-cards{display:flex;left:calc(var(--hud-height)*.92);top:8%;width:calc(100% - var(--hud-height));height:82%;gap:calc(var(--hud-height)*.035);align-items:stretch}
   .page .game-frame .seed-card{flex:none;width:calc(var(--hud-height)*.82*5/7);height:100%;max-height:none;max-width:none;aspect-ratio:5/7}
@@ -26,7 +26,7 @@
   .page .game-frame .wave-meter{height:clamp(20px,3dvh,30px)}
   .page .game-frame .wave-meter #wave-fill{background-size:clamp(140px,22dvh,240px) 100%}
   .page .game-frame .meter-flag{width:20px;top:-6px}.page .game-frame .wave-meter #meter-head{width:24px}
-  .page .game-frame .conveyor-bank{background:url('/assets/runtime/original/conveyor-back.webp') center/100% 100%;border-image:none}
+  .page .game-frame .conveyor-bank{background:var(--hd-original-conveyor-back) center/100% 100%;border-image:none}
   .page .game-frame .conveyor-bank #seed-cards{left:1.8%;width:97%;top:4%;height:69%;gap:0}
   .page .game-frame .conveyor-card{position:absolute;width:calc(var(--hud-height)*.69*5/7)}
   .page .game-frame .conveyor-bank #conveyor-belt{display:block}
@@ -35,7 +35,7 @@
   .overlay:before{content:'';position:absolute;top:0;bottom:0;left:calc((100% - 100vw)/2);width:100vw;z-index:-1}
   .overlay.chooser-overlay{background:#101d1255}
   .page .choosing .seed-bank{visibility:hidden}
-  .seed-chooser:before{content:'';position:absolute;inset:0 0 auto;height:14.5%;border:0 solid transparent;border-image:url('/assets/runtime/original/seedbank.webp') 0 20 0 150 fill / 0 1.5cqh 0 12.5cqh / 0 stretch}
+  .seed-chooser:before{content:'';position:absolute;inset:0 0 auto;height:14.5%;border:0 solid transparent;border-image:var(--hd-original-seedbank) 0 2.242152% 0 16.816144% fill / 0 1.5cqh 0 12.5cqh / 0 stretch}
   .seed-chooser .chooser-back{top:auto;bottom:8px;right:12px;height:34px;font-size:14px}
   .seed-chooser .chooser-details{max-height:calc(100% - 120px)}
   .main-menu{background-size:cover;background-position:center}

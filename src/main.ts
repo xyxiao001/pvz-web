@@ -11,6 +11,7 @@ import './mobile.css';
 import './hud-skin.css';
 import './interaction.css';
 import './widescreen.css';
+import './display-hd.css';
 import { registerPwa, showPwa } from './platform/pwa';
 void registerPwa();
 import { ZOMBIE_NAMES } from './game/survival';
@@ -26,7 +27,7 @@ import { clearSurvival, loadSurvival, saveSurvival, completeLevel, allLevelsEnab
 
 import { ACHIEVEMENTS, Achievements } from './platform/achievements';
 
-const asset = (file: string) => `${import.meta.env.BASE_URL}assets/runtime/original/${file.replace(/\.png$/, ".webp")}`;
+const asset = (file: string) => `${import.meta.env.BASE_URL}assets/runtime/hd4/original/${file.replace(/\.png$/, ".webp")}`;
 const lastLevel = LEVEL_IDS[LEVEL_IDS.length - 1];
 // Composed packets use the original empty packet and plant portrait; prices stay crisp in the DOM.
 const composedPacket = (kind: PlantKind) => isUpgrade(kind) || kind==='imitater' || ['wintermelon','gatlingpea','twinsunflower','fumeshroom','gravebuster','iceshroom','doomshroom','lilypad','squash','threepeater','plantern','tanglekelp','jalapeno','spikeweed','torchwood','tallnut','seashroom','cactus','blover','splitpea','starfruit','pumpkin','magnetshroom','cabbagepult','flowerpot','kernelpult','coffeebean','garlic','umbrella','marigold','melonpult'].includes(kind);

@@ -3,6 +3,7 @@ import { ZombieHealthBar } from './zombie-health';
 import { GIANT_CLIPS, GiantMotion, hasGiantMotion, type GiantRig } from './giant-motion';
 import { hasPlantMotion, hasPlantMotionClip, PlantMotion, type PlantRig } from './plant-motion';
 import { renderResolution } from './resolution';
+import { sceneryPlan } from './scenery';
 import { battleViewport, viewportToWorld, worldToViewport, type BattleDisplayMode } from './viewport';
 import { stormOpacity } from './storm';
 import firePea from './fire-pea.json';
@@ -61,6 +62,7 @@ export class Scene {
 
   private viewport = battleViewport(BOARD.width, BOARD.height);
   private sceneryTextures: Texture[] = [];
+  private scenerySourceX = 220;
 
   toWorld(x: number, y: number) { return viewportToWorld(this.viewport, x, y); }
   toScreen(x: number, y: number) { return worldToViewport(this.viewport, x, y); }
@@ -118,9 +120,9 @@ export class Scene {
     await this.clearResources();
     const files: Record<string, string> = { mower: 'original/mower.webp' };
     const environment = game.config.environment;
-    if (environment === 'day') { files.yard = 'yard.webp'; files.lawn = 'lawn.webp'; }
-    else files[environment] = `original/${environment}.webp`;
-    if(game.boss)files.bossBackground='boss/background.webp';
+    const scenery = sceneryPlan(environment, !!game.boss, this.app.renderer.resolution * Math.max(this.viewport.scaleX, this.viewport.scaleY));
+    Object.assign(files, scenery.files);
+    this.scenerySourceX = scenery.sourceX;
     if (environment === 'roof') files.flowerpot = 'original/flowerpot.webp';
     if (environment === 'night') files.grave = 'original/grave.webp';
     if(environment==='roof' && game.campaign?.roofCleaner)files.roofCleaner='original/roof-cleaner.webp';
@@ -135,14 +137,14 @@ export class Scene {
     await this.prepareTextures(files, progress);
     if (game.config.mode === 'vase' && this.vaseFrames.length === 0) this.vaseFrames = [0,1].map(i => new Texture({ source:this.textures.vases.source, frame:new Rectangle(i*80,101,80,101) }));
     if (environment === 'fog' && this.fogFrames.length === 0) this.fogFrames = Array.from({length:8}, (_,i) => new Texture({source:this.textures.fogCloud.source,frame:new Rectangle(i*210,0,210,190)}));
-    if (environment === 'day' && this.lawnTextures.length === 0) this.lawnTextures = Array.from({length:5}, (_,row) => new Texture({source:this.textures.lawn.source,frame:new Rectangle(220,BOARD.top+row*100,800,100)}));
+    if (environment === 'day' && this.lawnTextures.length === 0) this.lawnTextures = Array.from({length:5}, (_,row) => new Texture({source:this.textures.lawn.source,frame:new Rectangle(this.scenerySourceX,BOARD.top+row*100,800,100)}));
   }
 
   private async prepareTextures(files: Record<string, string>, progress: (done: number, total: number) => void) {
     const pending = Object.entries(files).filter(([key]) => !this.textures[key]);
     let done = 0; progress(done, pending.length);
     await loadInBatches(pending, 4, async ([key, file]) => {
-      this.textures[key] = await Assets.load<Texture>({ src: `${import.meta.env.BASE_URL}assets/runtime/${file}`, data: { resolution: 2 } });
+      this.textures[key] = await Assets.load<Texture>({ src: `${import.meta.env.BASE_URL}assets/runtime/${file}`, data: { resolution: file.startsWith('hd4/') ? 4 : 2 } });
       this.textureFiles.push(`${import.meta.env.BASE_URL}assets/runtime/${file}`);
       await this.app.renderer.prepare.upload(this.textures[key]);
       progress(++done, pending.length);
@@ -242,7 +244,7 @@ export class Scene {
     this.clearObjects();
     const texture = game.boss ? this.textures.bossBackground : game.config.environment === 'day' ? this.textures.yard : this.textures[game.config.environment];
     // Only the original playable camera is visible. The street is never sampled.
-    const boardTexture = new Texture({ source: texture.source, frame: new Rectangle(220, 0, BOARD.width, BOARD.height) });
+    const boardTexture = new Texture({ source: texture.source, frame: new Rectangle(this.scenerySourceX, 0, BOARD.width, BOARD.height) });
     this.sceneryTextures = [boardTexture];
     this.app.stage.addChild(new Sprite(boardTexture));
     for (const row of game.config.environment === 'day' ? game.config.rows : []) {

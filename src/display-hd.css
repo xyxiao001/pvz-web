@@ -1,0 +1,54 @@
+/* Density variants preserve the original HUD geometry. */
+:root{
+  --hd-original-adventure-hover:image-set(url('/assets/runtime/original/adventure-hover.webp') 1x,url('/assets/runtime/hd4/original/adventure-hover.webp') 2x);
+  --hd-original-button:image-set(url('/assets/runtime/original/button.webp') 1x,url('/assets/runtime/hd4/original/button.webp') 2x);
+  --hd-original-conveyor-back:image-set(url('/assets/runtime/original/conveyor-back.webp') 1x,url('/assets/runtime/hd4/original/conveyor-back.webp') 2x);
+  --hd-original-conveyor:image-set(url('/assets/runtime/original/conveyor.webp') 1x,url('/assets/runtime/hd4/original/conveyor.webp') 2x);
+  --hd-original-dave-bubble:image-set(url('/assets/runtime/original/dave-bubble.webp') 1x,url('/assets/runtime/hd4/original/dave-bubble.webp') 4x);
+  --hd-original-dialog:image-set(url('/assets/runtime/original/dialog.webp') 1x,url('/assets/runtime/hd4/original/dialog.webp') 2x);
+  --hd-original-menu:image-set(url('/assets/runtime/original/menu.webp') 1x,url('/assets/runtime/hd4/original/menu.webp') 2x);
+  --hd-original-meter-empty:image-set(url('/assets/runtime/original/meter-empty.webp') 1x,url('/assets/runtime/hd4/original/meter-empty.webp') 2x);
+  --hd-original-meter-full:image-set(url('/assets/runtime/original/meter-full.webp') 1x,url('/assets/runtime/hd4/original/meter-full.webp') 2x);
+  --hd-original-seedbank:image-set(url('/assets/runtime/original/seedbank.webp') 1x,url('/assets/runtime/hd4/original/seedbank.webp') 2x);
+  --hd-original-shop-background:image-set(url('/assets/runtime/original/shop-background.webp') 1x,url('/assets/runtime/hd4/original/shop-background.webp') 4x);
+  --hd-original-shovelbank:image-set(url('/assets/runtime/original/shovelbank.webp') 1x,url('/assets/runtime/hd4/original/shovelbank.webp') 2x);
+  --hd-original-trophy:image-set(url('/assets/runtime/original/trophy.webp') 1x,url('/assets/runtime/hd4/original/trophy.webp') 2x);
+  --hd-ui-almanac-card:image-set(url('/assets/runtime/ui/almanac-card.webp') 1x,url('/assets/runtime/hd4/ui/almanac-card.webp') 4x);
+  --hd-ui-challenge-background:image-set(url('/assets/runtime/ui/challenge-background.webp') 1x,url('/assets/runtime/hd4/ui/challenge-background.webp') 4x);
+  --hd-ui-challenge-window:image-set(url('/assets/runtime/ui/challenge-window.webp') 1x,url('/assets/runtime/hd4/ui/challenge-window.webp') 4x);
+  --hd-ui-checkbox-off:image-set(url('/assets/runtime/ui/checkbox-off.webp') 1x,url('/assets/runtime/hd4/ui/checkbox-off.webp') 4x);
+  --hd-ui-checkbox-on:image-set(url('/assets/runtime/ui/checkbox-on.webp') 1x,url('/assets/runtime/hd4/ui/checkbox-on.webp') 4x);
+  --hd-ui-parchment-button:image-set(url('/assets/runtime/ui/parchment-button.webp') 1x,url('/assets/runtime/hd4/ui/parchment-button.webp') 4x);
+  --hd-ui-seed-chooser:image-set(url('/assets/runtime/ui/seed-chooser.webp') 1x,url('/assets/runtime/hd4/ui/seed-chooser.webp') 4x);
+  --hd-ui-seed-silhouette:image-set(url('/assets/runtime/ui/seed-silhouette.webp') 1x,url('/assets/runtime/hd4/ui/seed-silhouette.webp') 4x);
+  --hd-ui-seed-start-disabled:image-set(url('/assets/runtime/ui/seed-start-disabled.webp') 1x,url('/assets/runtime/hd4/ui/seed-start-disabled.webp') 4x);
+  --hd-ui-seed-start:image-set(url('/assets/runtime/ui/seed-start.webp') 1x,url('/assets/runtime/hd4/ui/seed-start.webp') 4x);
+  --hd-ui-stone-panel:image-set(url('/assets/runtime/ui/stone-panel.webp') 1x,url('/assets/runtime/hd4/ui/stone-panel.webp') 4x);
+}
+/* A wide 1x desktop also enlarges the original HUD/background artwork. */
+@media(min-width:1600px){:root{
+  --hd-original-adventure-hover:url('/assets/runtime/hd4/original/adventure-hover.webp');
+  --hd-original-button:url('/assets/runtime/hd4/original/button.webp');
+  --hd-original-conveyor-back:url('/assets/runtime/hd4/original/conveyor-back.webp');
+  --hd-original-conveyor:url('/assets/runtime/hd4/original/conveyor.webp');
+  --hd-original-dave-bubble:url('/assets/runtime/hd4/original/dave-bubble.webp');
+  --hd-original-dialog:url('/assets/runtime/hd4/original/dialog.webp');
+  --hd-original-menu:url('/assets/runtime/hd4/original/menu.webp');
+  --hd-original-meter-empty:url('/assets/runtime/hd4/original/meter-empty.webp');
+  --hd-original-meter-full:url('/assets/runtime/hd4/original/meter-full.webp');
+  --hd-original-seedbank:url('/assets/runtime/hd4/original/seedbank.webp');
+  --hd-original-shop-background:url('/assets/runtime/hd4/original/shop-background.webp');
+  --hd-original-shovelbank:url('/assets/runtime/hd4/original/shovelbank.webp');
+  --hd-original-trophy:url('/assets/runtime/hd4/original/trophy.webp');
+  --hd-ui-almanac-card:url('/assets/runtime/hd4/ui/almanac-card.webp');
+  --hd-ui-challenge-background:url('/assets/runtime/hd4/ui/challenge-background.webp');
+  --hd-ui-challenge-window:url('/assets/runtime/hd4/ui/challenge-window.webp');
+  --hd-ui-checkbox-off:url('/assets/runtime/hd4/ui/checkbox-off.webp');
+  --hd-ui-checkbox-on:url('/assets/runtime/hd4/ui/checkbox-on.webp');
+  --hd-ui-parchment-button:url('/assets/runtime/hd4/ui/parchment-button.webp');
+  --hd-ui-seed-chooser:url('/assets/runtime/hd4/ui/seed-chooser.webp');
+  --hd-ui-seed-silhouette:url('/assets/runtime/hd4/ui/seed-silhouette.webp');
+  --hd-ui-seed-start-disabled:url('/assets/runtime/hd4/ui/seed-start-disabled.webp');
+  --hd-ui-seed-start:url('/assets/runtime/hd4/ui/seed-start.webp');
+  --hd-ui-stone-panel:url('/assets/runtime/hd4/ui/stone-panel.webp');
+}}

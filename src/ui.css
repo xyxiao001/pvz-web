@@ -16,7 +16,7 @@ footer{color:#8d9d76;font-size:11px}
 .defender-sunflower{left:0;width:36%;height:80%;animation-delay:-1.4s!important}.defender-pea{left:27%;width:48%;height:100%;z-index:1}.defender-wallnut{right:0;width:32%;height:64%;animation-delay:-2.8s!important}
 @keyframes garden-sway{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
 .menu-modes{position:absolute;left:52%;top:22%;width:40%;display:flex;flex-direction:column;gap:1.5cqw;transform:rotate(2deg)}
-.mode-button{position:relative;width:100%;border:0;padding:1.5cqw 2.5cqw;color:#f5e8bb;background:url('/assets/runtime/original/button.webp') center/100% 100% no-repeat;filter:drop-shadow(0 .5cqw .25cqw #1d211b88);text-shadow:0 .25cqw #30362e;transition:transform .15s,filter .15s}
+.mode-button{position:relative;width:100%;border:0;padding:1.5cqw 2.5cqw;color:#f5e8bb;background:var(--hd-original-button) center/100% 100% no-repeat;filter:drop-shadow(0 .5cqw .25cqw #1d211b88);text-shadow:0 .25cqw #30362e;transition:transform .15s,filter .15s}
 .mode-button:hover{transform:translateY(-.3cqw) rotate(-1deg);filter:brightness(1.15) drop-shadow(0 .7cqw .3cqw #1d211b88)}.mode-button:active{transform:translateY(.2cqw)}
 .mode-button strong{display:block;font-size:3.8cqw;letter-spacing:.3cqw;font-weight:900;line-height:1.2}.mode-button small{display:block;font-size:1.35cqw;color:#d3d8b7;margin-top:.5cqw;letter-spacing:.1cqw}
 .mode-adventure{min-height:13.7cqw;padding:1.6cqw 3cqw 2.3cqw;color:#e7f294}.mode-adventure strong{font-size:4.8cqw;text-shadow:0 .3cqw #283517,0 0 1cqw #24351b}.mode-eyebrow{display:block;margin-bottom:.6cqw;font-size:1.2cqw;color:#e0e2c5;letter-spacing:.45cqw}.mode-detail{display:block;font-size:1.4cqw;color:#e7deb9;margin-top:.8cqw}.mode-detail b{margin-left:1cqw;color:#d9ed80}
@@ -39,11 +39,11 @@ footer{color:#8d9d76;font-size:11px}
 .reward-panel{background:radial-gradient(ellipse at 50% 25%,#827339,#482b16 80%)}
 .auto-sun{background:linear-gradient(#626e47,#354527);border:.2cqw solid #252f1c;box-shadow:inset 0 .2cqw #a1aa73,0 .25cqw #172115;color:#f4ecc7;border-radius:.45cqw}
 .pause-content h2{color:#ffedaf}.pause-content .text-button{color:#e1dbb3}
-.pwa-panel{background:linear-gradient(120deg,#79502b,#482b16);border:6px solid #a6783e;box-shadow:0 0 0 2px #d7b777,0 20px 80px #0008,inset 0 0 0 2px #34200c;color:#f3e2b3;border-radius:14px}.pwa-panel button{background:url('/assets/runtime/original/button.webp') center/100% 100%;border:0;border-radius:0;color:#ffedb8;padding:14px 22px;font-weight:bold}.pwa-panel p{color:#e0cda1}.pwa-panel progress{accent-color:#b6d766}
+.pwa-panel{background:linear-gradient(120deg,#79502b,#482b16);border:6px solid #a6783e;box-shadow:0 0 0 2px #d7b777,0 20px 80px #0008,inset 0 0 0 2px #34200c;color:#f3e2b3;border-radius:14px}.pwa-panel button{background:var(--hd-original-button) center/100% 100%;border:0;border-radius:0;color:#ffedb8;padding:14px 22px;font-weight:bold}.pwa-panel p{color:#e0cda1}.pwa-panel progress{accent-color:#b6d766}
 @media(prefers-reduced-motion:reduce){.garden-defenders img{animation:none}.mode-button,.wood-button{transition:none}}
 @media(max-width:650px){.game-frame{border-width:3px;border-radius:7px}.page-top{font-size:8px}.page-top span:first-child{font-size:11px}footer{font-size:9px}.page{padding-top:8px}}
 
-.menu-trophy{display:block;flex:none;width:3.8cqw;height:6.5cqw;background:url('/assets/runtime/original/trophy.webp') right center/200% 100% no-repeat;filter:drop-shadow(0 .2cqw .2cqw #1b241c)}
+.menu-trophy{display:block;flex:none;width:3.8cqw;height:6.5cqw;background:var(--hd-original-trophy) right center/200% 100% no-repeat;filter:drop-shadow(0 .2cqw .2cqw #1b241c)}
 /* Keep all migrated night/fog cards and the start control within the tray. */
 .night-chooser .seed-options{grid-template-columns:repeat(7,1fr);gap:.6cqw;padding:.8cqw}
 .night-chooser .seed-option>img,.night-chooser .seed-option .packet-art{width:5.5cqw;height:7.4cqw;margin:0 auto}
@@ -72,7 +72,7 @@ footer{color:#8d9d76;font-size:11px}
 .seed-chooser .chosen-seed,.seed-chooser .empty-seed{width:6.5cqw;height:9cqw;border:0;border-radius:0;box-shadow:none;background:none}
 .seed-chooser .empty-seed{background:#301c0d66;box-shadow:inset 0 0 0 .15cqw #a7793677}
 .seed-chooser .packet-art{margin:0}
-.seed-chooser .chooser-catalog{position:absolute;left:0;top:14.5%;width:58.125%;height:85.5%;background:url('/assets/runtime/ui/seed-chooser.webp') center/100% 100% no-repeat}
+.seed-chooser .chooser-catalog{position:absolute;left:0;top:14.5%;width:58.125%;height:85.5%;background:var(--hd-ui-seed-chooser) center/100% 100% no-repeat}
 .chooser-catalog h2{height:4cqw;margin:.2cqw 0 .6cqw;display:grid;place-items:center;font-size:2.2cqw;letter-spacing:.2cqw;color:#f5d785}
 .seed-chooser .seed-options{display:grid;grid-template-columns:repeat(8,6.25cqw);grid-auto-rows:8.8cqw;align-content:start;gap:.325cqw .375cqw;padding:0;margin:0 2.75cqw;max-height:47cqw;overflow-y:auto;border-radius:0;background:none;box-shadow:none;scrollbar-width:thin}
 .seed-chooser .seed-option{width:6.25cqw;height:8.8cqw;padding:0;font-size:1cqw;transition:filter .12s}
@@ -86,8 +86,8 @@ footer{color:#8d9d76;font-size:11px}
 .seed-chooser .seed-option:hover:not(:disabled){transform:none;outline:.2cqw solid #ffe472;outline-offset:-.2cqw}
 .seed-chooser .chooser-footer{position:absolute;bottom:2cqw;left:0;right:0;display:flex;align-items:center;flex-direction:column;gap:.6cqw}
 .seed-chooser #choice-count{font-size:1.35cqw;color:#f1d48f}
-.seed-start{background:url('/assets/runtime/ui/seed-start.webp') center/100% 100%;width:19.5cqw;height:5.25cqw;border:0;padding:0;color:#ffe6b1;font-weight:bold;font-size:1.9cqw;text-shadow:0 .2cqw #42210a}
-.seed-start:disabled{background-image:url('/assets/runtime/ui/seed-start-disabled.webp');color:#9d967a;text-shadow:none}
+.seed-start{background:var(--hd-ui-seed-start) center/100% 100%;width:19.5cqw;height:5.25cqw;border:0;padding:0;color:#ffe6b1;font-weight:bold;font-size:1.9cqw;text-shadow:0 .2cqw #42210a}
+.seed-start:disabled{background-image:var(--hd-ui-seed-start-disabled);color:#9d967a;text-shadow:none}
 .seed-start:hover:not(:disabled){filter:brightness(1.2)}
 .chooser-details{position:absolute;left:65%;right:4%;top:23%;padding:1.5cqw;background:#1c2b19d9;border:.25cqw solid #b0ae76;border-radius:.5cqw;box-shadow:0 .5cqw 1.5cqw #10200e66;text-align:center}
 .chooser-details h3{font-size:2.2cqw;margin:1cqw 0}.chooser-details p{font-size:1.4cqw;line-height:1.7;margin:.6cqw 0;color:#e1dbaf}.chooser-details .kicker{font-size:1.15cqw;letter-spacing:.1cqw;padding:.3cqw}
@@ -99,7 +99,7 @@ footer{color:#8d9d76;font-size:11px}
 .achievement-medal{font-size:5cqw;color:#897a56}.earned .achievement-medal{color:#f6d05a}.achievement-list h3{font-size:1.8cqw;margin:0;color:#f3dd9a}.achievement-list small{display:block;font-size:1.1cqw;color:#c6ba90;margin-top:.25cqw}.achievement-list p{font-size:1.25cqw;margin:.5cqw 0}.achievement-list article div>span{font-size:1.1cqw;color:#b1c784}
 .achievement-toast{position:absolute;right:2%;top:17%;max-width:40%;padding:1.5cqw 2cqw;z-index:20;border:.3cqw solid #d6bd69;border-radius:.6cqw;background:#344721f2;color:#ffedb6;box-shadow:0 .5cqw 2cqw #0007;font-weight:bold;font-size:1.7cqw;pointer-events:none}
 @container(max-width:600px){.achievements-panel{width:90%}.achievement-list h3{font-size:14px}.achievement-list small,.achievement-list p,.achievement-list article div>span{font-size:10px}.all-levels-toggle{font-size:12px}.all-levels-toggle input{width:16px;height:16px}.level-panel #level-access{font-size:10px}.menu-tools .wood-button{min-width:11cqw;font-size:10px}}
-.seed-silhouette{width:6.25cqw;height:8.8cqw;background:url('/assets/runtime/ui/seed-silhouette.webp') center/100% 100%;opacity:.55}
+.seed-silhouette{width:6.25cqw;height:8.8cqw;background:var(--hd-ui-seed-silhouette) center/100% 100%;opacity:.55}
 .seed-chooser .seed-option,.seed-chooser .chosen-seed{transform-origin:top left}
 .seed-chooser .chosen-seeds{z-index:1}
 
@@ -115,7 +115,7 @@ footer{color:#8d9d76;font-size:11px}
 
 /* Endless keeps ten visible packets in the same HUD strip, with controls stacked beside it. */
 /* Widen the card well only; the sun counter keeps the original 150×174 px slice. */
-.endless-game .seed-bank{width:76%;background:none;border:0 solid transparent;border-image:url('/assets/runtime/original/seedbank.webp') 0 20 0 150 fill / 0 1.25cqw 0 9.375cqw / 0 stretch}
+.endless-game .seed-bank{width:76%;background:none;border:0 solid transparent;border-image:var(--hd-original-seedbank) 0 2.242152% 0 16.816144% fill / 0 1.25cqw 0 9.375cqw / 0 stretch}
 .endless-game .seed-bank strong{left:2.23cqw;width:6.69cqw}
 .endless-game #seed-cards{left:9.4775cqw;gap:.3cqw}
 .endless-game .seed-card{width:5.9cqw}
