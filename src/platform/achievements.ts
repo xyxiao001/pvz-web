@@ -7,12 +7,12 @@ export const ACHIEVEMENTS = [
   { id: 'immortal', name: '不朽防线', original: 'Immortal', description: '在任一场景的无尽生存中守住 20 面旗帜。', achieved: (game: Game) => game.scenario === 'endless' && game.survivalFlags >= 20 },
 ] as const;
 export type AchievementId = typeof ACHIEVEMENTS[number]['id'];
-const KEY = 'pvz-web:achievements:v1';
+export const ACHIEVEMENTS_KEY = 'pvz-web:achievements:v1';
 
 export class Achievements {
   readonly earned: Partial<Record<AchievementId, number>>;
   constructor(private storage: Storage) {
-    const record = storage.getItem(KEY);
+    const record = storage.getItem(ACHIEVEMENTS_KEY);
     this.earned = record === null ? {} : JSON.parse(record);
   }
   update(game: Game) {
@@ -21,7 +21,7 @@ export class Achievements {
     if (unlocked.length) {
       const now = Date.now();
       for (const item of unlocked) this.earned[item.id] = now;
-      this.storage.setItem(KEY, JSON.stringify(this.earned));
+      this.storage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(this.earned));
     }
     return unlocked;
   }

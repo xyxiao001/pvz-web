@@ -22,11 +22,11 @@ export interface ProfileData {
   run: number; nextLevel: LevelId; completed: number; money: number;
   purchases: Record<ShopItem, number>; declinedSlots: number; sawYeti: boolean; tacoReceived:boolean; tacoPending:boolean; storeIntroduced:boolean;
 }
-const KEY = 'pvz-web:profile:v1';
+export const PROFILE_KEY = 'pvz-web:profile:v1';
 export class PlayerProfile {
   data: ProfileData;
   constructor(private storage: Pick<Storage,'getItem'|'setItem'>) {
-    const saved = storage.getItem(KEY);
+    const saved = storage.getItem(PROFILE_KEY);
     if (saved !== null) this.data = JSON.parse(saved);
     else {
       // One-time import of the existing adventure progress, not a new/free completion.
@@ -38,7 +38,7 @@ export class PlayerProfile {
       this.save();
     }
   }
-  save() { this.storage.setItem(KEY,JSON.stringify(this.data)); }
+  save() { this.storage.setItem(PROFILE_KEY,JSON.stringify(this.data)); }
   get storeOpen() { return this.data.run > 1 || this.data.nextLevel >= 25; }
   price(id: ShopItem) { return id === 'slots' ? [750,5000,20000,80000][this.data.purchases.slots] : SHOP.find(item=>item.id===id)!.price; }
   available(id: ShopItem) { return this.data.run > 1 || this.data.nextLevel >= SHOP.find(item=>item.id===id)!.level; }

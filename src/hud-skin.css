@@ -46,6 +46,24 @@ input[type=checkbox]{appearance:none;-webkit-appearance:none;background:url('/as
 }
 
 .settings-controls #pwa{grid-column:1 / -1;width:65%;justify-self:center}
+.settings-controls #save-management{grid-column:1 / -1}
+.save-panel{width:min(760px,92%);text-align:center}
+.save-panel h2{font-size:clamp(22px,2.6cqw,34px);margin:8px 0 16px}
+.save-panel p{font-size:clamp(13px,1.35cqw,17px);line-height:1.6}
+.save-actions{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0}
+.save-actions section{border:12px solid transparent;border-image:var(--hud-stone) 97 120 114 107 fill / 12px;padding:8px 12px;display:flex;flex-direction:column}
+.save-actions h3{font-size:clamp(17px,1.8cqw,23px);margin:4px 0;color:#fff0bc}
+.save-actions p{flex:1;text-align:left}
+.save-panel .wood-button{min-height:44px;padding:10px 18px;font-size:clamp(14px,1.4cqw,18px)}
+.save-confirm-actions{display:flex;justify-content:center;gap:16px;margin:20px 0 8px}
+.save-panel .save-warning{color:#ffd18a}
+@container(max-width:600px){.save-actions{grid-template-columns:1fr;gap:10px;margin:12px 0}.save-confirm-actions{gap:8px}.save-panel .wood-button{padding:10px 12px}}
+@media(orientation:landscape) and (max-height:600px) and (max-width:1100px){
+ .save-panel h2{font-size:22px;margin:0 0 8px}.save-panel p{margin:6px 0}
+ .save-actions{margin:8px 0;gap:10px}.save-actions section{padding:4px 10px}.save-actions h3{font-size:17px;margin:0}
+ .save-panel #save-back{margin:2px 0}
+ .save-confirm-actions{margin:12px 0 4px}
+}
 
 /* Keep challenge titles in the engraved strip; only the catalogue scrolls. */
 .level-panel,.almanac-panel,.achievements-panel{height:94%;display:flex;flex-direction:column}

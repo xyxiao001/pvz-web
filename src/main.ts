@@ -1,6 +1,7 @@
 import { bindBattlePointer } from './platform/battle-pointer';
 import { bindSeedInspection } from './platform/seed-inspection';
 import { PlayerProfile, SHOP, type ShopItem } from './platform/profile';
+import { resetProgress, type ProgressReset } from './platform/save-management';
 import { DIALOGUE, adventureDialogue, bossHint, tutorialHighlight, tutorialHint } from './game/dialogue';
 import './campaign.css';
 import { PLANT_DESCRIPTIONS } from './game/plant-descriptions';
@@ -82,8 +83,8 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 <footer><span>点击选卡、种植与收集阳光</span><span><kbd>1</kbd>–<kbd>6</kbd> 选卡　<kbd>Esc</kbd> 取消 / 暂停</span></footer>
 </main>`;
 const overlay = $('#overlay'); const audio = new GameAudio();
-const achievements = new Achievements(localStorage);
-const profile = new PlayerProfile(localStorage);
+let achievements = new Achievements(localStorage);
+let profile = new PlayerProfile(localStorage);
 let dialogueAdvance: (() => void) | null = null;
 let introShown = false;
 let tutorialTarget: string | null = null;
@@ -482,16 +483,46 @@ document.addEventListener('fullscreenchange', () => {
   document.querySelectorAll<HTMLButtonElement>('#fullscreen, #pause-fullscreen').forEach(button => { button.textContent = fullscreenLabel(); });
 });
 function toggleFullscreen() { if (document.fullscreenElement) void document.exitFullscreen(); else void $('.page').requestFullscreen(); }
-$('#settings').onclick = () => {
-  panel(`<span class="kicker">庭院设置</span><h2>准备好出发</h2><div class="settings-controls"><button id="fullscreen" class="wood-button large">${fullscreenLabel()}</button><button id="zombie-health" class="wood-button large">僵尸血条：${showZombieHealth ? '开启' : '关闭'}</button><button id="sound" class="wood-button large">音效：${audio.muted ? '关闭' : '开启'}</button><button id="music" class="wood-button large">背景音乐：${music.enabled ? '开启' : '关闭'}</button><button id="battle-display" class="wood-button large" title="等比保留战场比例；铺满展开草坪，角色保持比例">${battleDisplayLabel()}</button><button id="pwa" class="wood-button large">安装与离线</button></div><button id="close" class="text-button">返回主菜单</button>`, 'paper-panel settings-panel');
+function saveManagementPanel() {
+  panel(`<span class="kicker">庭院设置 · 存档管理</span><h2>你的庭院记录</h2>
+    <p>第 ${profile.data.run} 周目 · 下一关 ${LEVELS[profile.data.nextLevel].label} · 金币 ${profile.data.money}</p>
+    <p>存档保存在当前浏览器，不会在设备之间同步。</p>
+    <div class="save-actions"><section><h3>重新开始一周目</h3><p>冒险从 1–1 开始，重新体验教学和剧情。保留金币、商店购买、成就及全部生存存档。</p><button id="restart-adventure" class="wood-button">重新开始一周目</button></section>
+    <section><h3>清空游戏进度</h3><p>清除冒险进度、金币、商店购买、成就，以及五个场景的普通、困难和无尽存档。</p><button id="clear-progress" class="wood-button">清空游戏进度</button></section></div>
+    <p>两种操作都会恢复按进度解锁关卡。显示设置和已下载的离线资源保留。</p>
+    <button id="save-back" class="text-button">返回设置</button>`, 'paper-panel save-panel');
+  $('#restart-adventure').onclick = () => confirmProgressReset('adventure');
+  $('#clear-progress').onclick = () => confirmProgressReset('all');
+  $('#save-back').onclick = settingsPanel;
+}
+function confirmProgressReset(scope: ProgressReset) {
+  const adventure = scope === 'adventure';
+  panel(`<span class="kicker">存档管理</span><h2>${adventure ? '重新开始一周目？' : '清空游戏进度？'}</h2>
+    <p>${adventure ? '冒险周目、通关进度及剧情记录将重置，从 1–1 重新开始。金币、商店购买、成就和生存存档保留。' : '冒险周目、通关进度、金币、商店购买、成就和全部生存存档将被清除，从第一周目 1–1 开始。'}</p>
+    <p>关卡恢复按进度解锁。显示设置和离线资源保留。</p><p class="save-warning">此操作无法撤销。</p>
+    <div class="save-confirm-actions"><button id="save-cancel" class="wood-button">取消</button><button id="save-confirm" class="wood-button">${adventure ? '确认重新开始' : '确认清空进度'}</button></div>`, 'paper-panel save-panel');
+  $('#save-cancel').onclick = saveManagementPanel;
+  $('#save-confirm').onclick = () => {
+    profile = resetProgress(localStorage, scope);
+    achievements = new Achievements(localStorage);
+    clearTimeout(achievementToastTimer); $('#achievement-toast').hidden = true;
+    // Discard the previous battle before showMenu can bank its money or yeti record.
+    game = new Game(1, Date.now());
+    showMenu();
+  };
+}
+function settingsPanel() {
+  panel(`<span class="kicker">庭院设置</span><h2>准备好出发</h2><div class="settings-controls"><button id="fullscreen" class="wood-button large">${fullscreenLabel()}</button><button id="zombie-health" class="wood-button large">僵尸血条：${showZombieHealth ? '开启' : '关闭'}</button><button id="sound" class="wood-button large">音效：${audio.muted ? '关闭' : '开启'}</button><button id="music" class="wood-button large">背景音乐：${music.enabled ? '开启' : '关闭'}</button><button id="battle-display" class="wood-button large" title="等比保留战场比例；铺满展开草坪，角色保持比例">${battleDisplayLabel()}</button><button id="pwa" class="wood-button large">安装与离线</button><button id="save-management" class="wood-button large">存档管理</button></div><button id="close" class="text-button">返回主菜单</button>`, 'paper-panel settings-panel');
   $('#battle-display').onclick = toggleBattleDisplay;
   $('#pwa').onclick = showPwa;
+  $('#save-management').onclick = saveManagementPanel;
   $('#music').onclick = () => { music.enabled = !music.enabled; $('#music').textContent = `背景音乐：${music.enabled ? '开启' : '关闭'}`; };
   $('#sound').onclick = () => { audio.muted = !audio.muted; $('#sound').textContent = `音效：${audio.muted ? '关闭' : '开启'}`; };
   $('#fullscreen').onclick = toggleFullscreen;
   $('#zombie-health').onclick = toggleZombieHealth;
   $('#close').onclick = closeMenuPanel;
-};
+}
+$('#settings').onclick = settingsPanel;
 $('#help').onclick = () => {
   panel('<span class="kicker">庭院指南</span><h2>种下你的第一道防线</h2><ol class="help-list"><li>点击植物卡片，再点击草地种植。</li><li>点击阳光收集，也可勾选右上角“自动收集阳光”；植物需要阳光和冷却时间。</li><li>向日葵放后方，坚果挡前方；樱桃应对密集僵尸。</li><li>保龄球关从传送带取卡，在红线左侧滚出坚果。</li><li>1–8 起在战前选择六张植物卡；1–10 从传送带取卡种植，无需阳光。</li><li>2–5 点击僵尸挥动木槌，路障两次、铁桶三次。选取辅助植物时切换到种植，右键回到木槌。</li><li>夜晚没有天空阳光；小喷菇射程短，大喷菇能穿门盾，墓碑吞噬者只能种在墓碑上。</li><li>每排割草机只能使用一次。消灭所有波次即可通关。</li></ol><p>数字 1–6 选卡（无尽可用 1–9、0，传送带可用 1–8） · 右键取消选卡 · Esc 暂停</p><button id="close" class="wood-button">返回主菜单</button>'); $('#close').onclick = closeMenuPanel;
 };
