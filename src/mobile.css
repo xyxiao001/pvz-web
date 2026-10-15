@@ -1,0 +1,47 @@
+/* Landscape phones use the side margins for controls, preserving the 800×600 world. */
+@media (orientation:landscape) and (max-height:600px) and (max-width:1100px){
+  .page,.page.in-battle,.page:fullscreen,.page.in-battle:fullscreen{width:100%;height:100dvh;margin:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);display:block}
+  .page-top,footer{display:none}
+  .page .game-frame,.page:fullscreen .game-frame,.page.in-battle:fullscreen .game-frame{width:100%;height:100%;aspect-ratio:auto;border-width:2px;border-radius:6px}
+  .game-frame{--field-height:min(calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 4px),calc((100dvw - env(safe-area-inset-left) - env(safe-area-inset-right) - 204px)*.75));--field-width:calc(var(--field-height)*4/3);--rail:calc((100% - var(--field-width))/2)}
+  .page.in-battle #canvas-host{top:50%;left:50%;width:var(--field-width);height:var(--field-height);transform:translate(-50%,-50%)}
+  .page.in-battle #battle-hud:before{content:"";position:absolute;right:0;top:0;bottom:0;width:var(--rail);background:linear-gradient(90deg,#31220f,#72502c);border-left:2px solid #ad8648}
+  .page.in-battle .seed-bank{left:0;top:0;width:var(--rail);height:100%;background:linear-gradient(90deg,#72502c,#31220f);border-right:2px solid #ad8648}
+  .page.in-battle .seed-bank strong{top:7px;left:10px;width:calc(100% - 20px);height:39px;border:2px solid #8f7138;border-radius:5px;background:#eadb9e;color:#2b3014;font-size:23px;line-height:35px}
+  .page.in-battle .seed-bank #seed-cards{top:54px;left:6px;width:calc(100% - 12px);height:calc(100% - 62px);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr));justify-items:center;align-items:center;gap:3px}
+  .page.in-battle .seed-card{height:100%;max-height:65px;width:auto;aspect-ratio:50/70;max-width:100%;border-radius:2px}
+  .page.in-battle .packet-price{font-size:11px}.page.in-battle .cooldown-number{font-size:15px}
+  .page.in-battle .battle-controls{position:absolute;right:0;top:10px;width:var(--rail);padding:0 12px;display:flex;flex-direction:column;align-items:stretch;gap:8px}
+  .page.in-battle .battle-controls #speed,.page.in-battle .battle-controls #pause{position:static;width:100%;height:36px;min-width:0;font-size:17px;padding:0}
+  .page.in-battle .auto-sun{height:42px;min-height:42px;width:100%;padding:0 3px;font-size:11px;gap:4px;justify-content:center;white-space:normal;text-align:center}
+  .page.in-battle .auto-sun input{width:16px;height:16px;flex:none}
+  .page.in-battle .shovel-button{left:auto;right:calc((var(--rail) - 48px)/2);top:164px;width:48px;height:54px}
+  .page.in-battle .wave-hud{right:10px;bottom:57px;width:calc(var(--rail) - 20px)}
+  .page.in-battle .wave-hud>span{font-size:11px}.page.in-battle .wave-meter{height:18px}
+  .page.in-battle .wave-meter #wave-fill{background-size:calc(var(--rail) - 20px) 100%}
+  .page.in-battle .meter-flag{width:16px;top:-5px}.page.in-battle .wave-meter #meter-head{width:20px}
+  .page.in-battle .level-caption{left:auto;right:8px;bottom:8px;width:calc(var(--rail) - 16px);font-size:11px;line-height:1.5;text-align:center}
+  .page.in-battle .advice{left:var(--rail);width:var(--field-width);top:8%;font-size:20px}
+  .page.in-battle .conveyor-bank #seed-cards{top:10px;height:calc(100% - 20px)}
+  .page.in-battle .conveyor-bank #conveyor-belt{display:none}
+  .page.in-battle .conveyor-card{position:relative;left:auto!important}
+  .game-logo{width:40%;top:4%}.garden-sign{top:29%}.garden-defenders{bottom:21%;height:30%}
+  .menu-modes{top:9%;gap:1cqw}.mode-adventure{min-height:10cqw;padding:1cqw 2cqw}.mode-adventure strong{font-size:4cqw}
+  .mode-levels,.mode-endless{min-height:8cqw;padding:1cqw 2cqw}.mode-button strong{font-size:3.3cqw}
+  .menu-tools{bottom:8%}.almanac-menu{height:7cqw}.garden-note{bottom:1.5%;font-size:10px}
+  .paper-panel{max-height:94%;overflow-y:auto}.paper-panel h2{font-size:24px}.paper-panel p{font-size:12px}
+  .pause-panel{width:370px;max-width:90%;height:96%}.pause-content{top:16%}.pause-content h2{font-size:22px;margin:8px 0}.pause-content p{font-size:12px;margin:5px 0}
+  .pause-content .wood-button.large{height:34px;min-width:150px;font-size:15px;margin:5px auto}.pause-audio{gap:8px;flex-wrap:wrap}.pause-audio .text-button{font-size:11px;margin:0;padding:5px}
+  .seed-chooser .chosen-seeds,.endless-game .seed-chooser .chosen-seeds{top:5px;left:10%;height:54px;gap:3px}
+  .seed-chooser .chosen-seed,.seed-chooser .empty-seed,.endless-game .seed-chooser .chosen-seed,.endless-game .seed-chooser .empty-seed{width:38px;height:54px}
+  .seed-chooser .chooser-catalog{top:64px;height:calc(100% - 64px);width:62%}
+  .chooser-catalog h2{font-size:18px;height:25px;margin:4px 0}
+  .seed-chooser .seed-options{grid-template-columns:repeat(8,minmax(0,1fr));grid-auto-rows:auto;gap:4px;margin:0 20px;max-height:calc(100% - 106px)}
+  .seed-chooser .seed-option,.seed-chooser .seed-silhouette{width:100%;height:auto;aspect-ratio:50/70}
+  .seed-chooser .packet-price{font-size:11px}.seed-chooser .chooser-footer{bottom:7px;gap:3px}
+  .seed-chooser #choice-count{font-size:12px}.seed-chooser #clear-seeds{font-size:11px;padding:2px 8px}
+  .seed-start{width:150px;height:34px;font-size:16px}
+  .chooser-details{left:65%;right:3%;top:65px;max-height:calc(100% - 75px);padding:10px}.chooser-details h3{font-size:18px}.chooser-details p{font-size:12px}
+  .chooser-details .kicker,.chooser-details .chooser-tip,.plant-detail small{font-size:11px}.chooser-enemies h4,.plant-detail h4{font-size:13px}.plant-detail p{font-size:12px}
+  .chooser-back{font-size:14px;min-width:110px;height:36px}
+}

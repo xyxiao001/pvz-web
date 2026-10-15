@@ -7,6 +7,7 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "orientation": "landscape",
   "background_color": "#1b271d",
   "theme_color": "#263c2e",
   "icons": [

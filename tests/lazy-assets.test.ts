@@ -13,6 +13,7 @@ test('first-level combat preparation excludes unrelated projectiles and special 
   const game = new Game(1, 1);
   assert.deepEqual(combatTextureFiles(game), { pea: 'pea.webp' });
   assert.deepEqual(Object.keys(soundFiles(game)), ['plant', 'sun', 'mower', 'wave', 'flag', 'win', 'lose']);
+  assert.equal(soundFiles(game).win, 'winmusic-web.mp3');
 });
 test('survival preparation includes retained defenses, projectiles and craters after repicking', () => {
   const game = new Game(9, 1, 'endless', 'night');
@@ -36,7 +37,7 @@ test('special modes and newly chosen plants load their own combat resources', ()
   const bowling = new Game(5, 1);
   assert.equal(soundFiles(bowling).explode, 'cherrybomb.mp3');
   assert.deepEqual(combatTextureFiles(bowling), {});
-  assert.equal(soundFiles(new Game(15, 1)).whack, 'bonk.ogg');
+  assert.equal(soundFiles(new Game(15, 1)).whack, 'bonk.mp3');
   const game = new Game(9, 1, 'endless', 'fog');
   game.seeds = ['snowpea', 'puffshroom', 'doomshroom', 'chomper', 'fumeshroom', 'iceshroom'];
   assert.deepEqual(Object.keys(combatTextureFiles(game)), ['ice', 'puff', 'crater']);

@@ -67,6 +67,8 @@ test('every plant image track resolves to its own atlas and complete pose sequen
 });
 test('framebuffer matches small displays and stops at native 2x detail on high density fullscreen', () => {
   assert.equal(renderResolution(400, 1), .5);
+  assert.equal(renderResolution(400, 3), 1);
+  assert.equal(renderResolution(520, 3), 1.3);
   assert.equal(renderResolution(800, 2), 2);
   assert.equal(renderResolution(1920, 2), 2);
   assert.equal(renderResolution(1280, 1), 1.6);

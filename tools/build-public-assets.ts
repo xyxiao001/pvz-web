@@ -14,7 +14,7 @@ export function runtimePublicAssets(): Plugin {
         // Giant states now share one native part atlas; retain baked art only for authoring comparisons.
         filter: file => !(file.startsWith(resolve(source, 'assets/runtime/clips/gargantuar-')) && file.endsWith('.webp')),
       }); };
-      const sounds = (await readdir(resolve(source, 'assets/original'))).filter(file => /\.(mp3|ogg)$/.test(file));
+      const sounds = (await readdir(resolve(source, 'assets/original'))).filter(file => /\.mp3$/.test(file) && file !== 'winmusic.mp3');
       const icons = (await readdir(resolve(source, 'icons'))).filter(file => file !== 'icon-master.png');
       await Promise.all(['assets/runtime', 'assets/music', 'manifest.webmanifest', ...sounds.map(file => `assets/original/${file}`), ...icons.map(file => `icons/${file}`)].map(copy));
     },

@@ -1,6 +1,7 @@
 import { PLANT_DESCRIPTIONS } from './game/plant-descriptions';
 import './style.css';
 import './ui.css';
+import './mobile.css';
 import { registerPwa, showPwa } from './platform/pwa';
 void registerPwa();
 import { ZOMBIE_NAMES } from './game/survival';
@@ -23,6 +24,24 @@ const seedImage = (kind: PlantKind, cost: number = PLANTS[kind].cost) => compose
   ? `<span class="packet-art"><img loading="lazy" src="${asset('seed-packet.png')}" alt=""/><img loading="lazy" class="packet-portrait" src="${asset(`${kind}.png`)}" alt=""/><b class="packet-price">${cost}</b></span>`
   : `<img loading="lazy" src="${asset(`card-${kind}.png`)}" alt=""/>`;
 const $ = <T extends HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
+// Local diagnostics: preserve the browser's normal error reporting and failure behavior.
+const diagnostics = document.createElement('details');
+diagnostics.hidden = true; diagnostics.open = true;
+diagnostics.style.cssText = 'position:fixed;z-index:1000;left:2vw;bottom:2vh;width:min(640px,96vw);max-height:45dvh;overflow:auto;background:#241712;color:#fff0c5;border:2px solid #d3a864;padding:10px;border-radius:8px;font:13px/1.5 monospace;';
+const diagnosticSummary = document.createElement('summary');
+diagnosticSummary.textContent = '游戏运行错误（展开后可长按复制）';
+const diagnosticText = document.createElement('textarea');
+diagnosticText.readOnly = true; diagnosticText.setAttribute('aria-label', '游戏错误详情');
+diagnosticText.style.cssText = 'box-sizing:border-box;width:100%;height:25dvh;margin-top:8px;background:#130e0b;color:#fff0c5;font:12px/1.5 monospace;user-select:text;';
+diagnostics.append(diagnosticSummary, diagnosticText); document.body.append(diagnostics);
+function showDiagnostic(error: unknown) {
+  const message = error instanceof Error ? `${error.name}: ${error.message}\n${error.stack}` : String(error);
+  diagnosticText.value += `${navigator.userAgent}\nViewport ${innerWidth}×${innerHeight}, DPR ${devicePixelRatio}\n${message}\n\n`;
+  diagnostics.hidden = false;
+}
+window.addEventListener('error', event => showDiagnostic(event.error ?? event.message));
+window.addEventListener('unhandledrejection', event => showDiagnostic(event.reason));
+
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 <main class="page"><div class="page-top"><span>植物大战僵尸</span><span>WEB · 冒险与生存</span></div>
 <section id="game-frame" class="game-frame" aria-label="植物大战僵尸游戏">
@@ -203,7 +222,7 @@ function phasePanel() {
     else panel(`<span class="kicker">冒险模式 ${game.config.label}</span><img loading="lazy" class="intro-plant" src="${asset(`${game.config.seeds.at(-1)}.png`)}" alt=""/><h2>${game.config.title}</h2><p>${game.config.description}</p><div class="facts">${game.config.rows.length} 条草坪　·　${game.boss ? '僵王博士' : game.config.mode === 'vase' ? '三轮砸罐子' : `${game.config.waveCount} 波僵尸`}　·　${game.hasConveyor ? '传送带供应 · 无需阳光' : `${game.config.initialSun} 初始阳光`}</div><button id="start" class="wood-button large">${game.config.mode === 'vase' ? '开始砸罐子' : game.config.mode === 'whack' ? '拿起木槌' : game.config.mode === 'bowling' ? '开始保龄球' : game.config.mode === 'conveyor' ? '开始传送带决战' : '开始种植'}</button><button class="text-button back-menu">${backLabel()}</button>`);
     $('#start').onclick = async () => { $<HTMLButtonElement>('#start').disabled = true; $('#start').textContent = '准备角色…'; await Promise.all([audio.unlock(game), scene.prepareActors(game, (done,total) => { $('#start').textContent = `准备角色 ${done} / ${total}`; })]); game.start(); updateHud(); };
   } else if (game.phase === 'paused') {
-    panel(`<div class="pause-content"><h2>庭院休息中</h2><p>准备好了，就继续守护草坪。</p><button id="resume" class="wood-button large">继续游戏</button><button id="restart" class="wood-button large">重新开始</button><button class="wood-button large back-menu">${game.isSurvival ? '保存退出' : '返回主菜单'}</button><div class="pause-audio"><button id="pause-fullscreen" class="text-button">切换全屏</button><button id="pause-sound" class="text-button">音效：${audio.muted ? '关闭' : '开启'}</button><button id="pause-music" class="text-button">音乐：${music.enabled ? '开启' : '关闭'}</button></div></div>`, 'pause-panel');
+    panel(`<div class="pause-content"><h2>庭院休息中</h2><p>准备好了，就继续守护草坪。</p><button id="resume" class="wood-button large">继续游戏</button><button id="restart" class="wood-button large">重新开始</button><button class="wood-button large back-menu">${game.isSurvival ? '保存退出' : '返回主菜单'}</button><div class="pause-audio"><button id="pause-fullscreen" class="text-button">${fullscreenLabel()}</button><button id="pause-sound" class="text-button">音效：${audio.muted ? '关闭' : '开启'}</button><button id="pause-music" class="text-button">音乐：${music.enabled ? '开启' : '关闭'}</button></div></div>`, 'pause-panel');
     $('#resume').onclick = async () => { await audio.unlock(game); game.resume(); updateHud(); }; $('#restart').onclick = () => { if(game.isSurvival)clearSurvival(game.survivalScene, game.scenario); setLevel(game.level, game.scenario, game.survivalScene); };
     $('#pause-fullscreen').onclick = toggleFullscreen;
     $('#pause-music').onclick = () => { music.enabled = !music.enabled; $('#pause-music').textContent = `音乐：${music.enabled ? '开启' : '关闭'}`; };
@@ -302,9 +321,13 @@ $('#achievements').onclick = () => {
   }).join('')}</div><button id="close" class="wood-button">返回主菜单</button>`, 'paper-panel wide-panel achievements-panel');
   $('#close').onclick = closeMenuPanel;
 };
+function fullscreenLabel() { return document.fullscreenElement ? '退出全屏' : '进入全屏'; }
+document.addEventListener('fullscreenchange', () => {
+  document.querySelectorAll<HTMLButtonElement>('#fullscreen, #pause-fullscreen').forEach(button => { button.textContent = fullscreenLabel(); });
+});
 function toggleFullscreen() { if (document.fullscreenElement) void document.exitFullscreen(); else void $('.page').requestFullscreen(); }
 $('#settings').onclick = () => {
-  panel(`<span class="kicker">庭院设置</span><h2>准备好出发</h2><button id="sound" class="wood-button large">音效：${audio.muted ? '关闭' : '开启'}</button><button id="music" class="wood-button large">背景音乐：${music.enabled ? '开启' : '关闭'}</button><button id="fullscreen" class="wood-button large">切换全屏</button><button id="pwa" class="wood-button large">安装与离线</button><button id="close" class="text-button">返回主菜单</button>`);
+  panel(`<span class="kicker">庭院设置</span><h2>准备好出发</h2><button id="fullscreen" class="wood-button large">${fullscreenLabel()}</button><button id="sound" class="wood-button large">音效：${audio.muted ? '关闭' : '开启'}</button><button id="music" class="wood-button large">背景音乐：${music.enabled ? '开启' : '关闭'}</button><button id="pwa" class="wood-button large">安装与离线</button><button id="close" class="text-button">返回主菜单</button>`);
   $('#pwa').onclick = showPwa;
   $('#music').onclick = () => { music.enabled = !music.enabled; $('#music').textContent = `背景音乐：${music.enabled ? '开启' : '关闭'}`; };
   $('#sound').onclick = () => { audio.muted = !audio.muted; $('#sound').textContent = `音效：${audio.muted ? '关闭' : '开启'}`; };
@@ -339,6 +362,7 @@ async function ensureScene() {
     scene = new Scene();
     await scene.init($('#canvas-host'));
     const canvas = scene.app.canvas;
+    canvas.addEventListener('webglcontextlost', () => showDiagnostic(new Error('WebGL context lost: GPU rendering context was lost.')));
     const point = (event: PointerEvent) => { const bounds = canvas.getBoundingClientRect(); return { x: (event.clientX - bounds.left) * BOARD.width / bounds.width, y: (event.clientY - bounds.top) * BOARD.height / bounds.height }; };
     canvas.addEventListener('pointermove', event => scene.setPointer(point(event))); canvas.addEventListener('pointerleave', () => scene.setPointer(null));
     canvas.addEventListener('pointerdown', event => {
