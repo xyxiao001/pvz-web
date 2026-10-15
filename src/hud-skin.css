@@ -5,6 +5,7 @@
 .paper-panel h2,.pause-content h2{color:#fff1ba;text-shadow:0 2px #141823;letter-spacing:.08em}
 .paper-panel p,.paper-panel .facts,.help-list{color:#e5ddbd}.kicker{color:#b9cc76;border:0;letter-spacing:.18em}
 .wood-button,.text-button,.survival-play,.pwa-panel button{border:0;border-radius:0;background:var(--hud-button) center/100% 100% no-repeat;color:#fff0bc;font-weight:bold;text-shadow:0 2px #282b35;box-shadow:none;text-decoration:none}
+.menu-tools .wood-button:focus-visible{outline:none;color:#fff8d3;filter:brightness(1.18) drop-shadow(0 0 2px #ffe793) drop-shadow(0 0 6px #c2a64b99)}
 .text-button,.paper-panel .text-button{width:auto;min-height:3.8cqw;padding:.7cqw 1.8cqw;border:0;color:#e6dfbf;display:inline-block;margin:.7cqw auto;font-size:1.35cqw}
 button:hover:not(:disabled){filter:brightness(1.15)}button:active:not(:disabled){transform:translateY(1px)}button:disabled{filter:brightness(.65);cursor:default}
 .settings-panel{width:62%;padding:1.8cqw 2.5cqw}.settings-panel h2{font-size:3cqw;margin:.8cqw 0 1.8cqw}.settings-controls{display:grid;grid-template-columns:1fr 1fr;gap:1cqw}
