@@ -2,6 +2,12 @@ import lines from './data/adventure-dialogue.json';
 import type { Game } from './model';
 import type { ProfileData } from '../platform/profile';
 export const DIALOGUE = lines as Record<string,{text:string;original:string}>;
+export function bossHint(game: Game) {
+  if (!game.boss || game.phase !== 'playing') return '';
+  if (game.boss.ball) return game.boss.ball.kind === 'fire' ? '火球来袭！使用寒冰菇消除' : '冰球来袭！在同排使用火爆辣椒';
+  if (['headBefore','spit','headAfter'].includes(game.boss.phase)) return '僵王低头了！集中攻击，寒冰菇可以延长攻击时间';
+  return game.ticks < 800 ? '传送带供应植物 · 保留寒冰菇与辣椒应对冰火球' : '';
+}
 // CutScene::StartLevelIntro, in original branch priority order.
 export function adventureDialogue(game: Game, profile: ProfileData) {
   if (game.isSurvival) return null;

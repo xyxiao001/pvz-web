@@ -1,7 +1,7 @@
 import { bindBattlePointer } from './platform/battle-pointer';
 import { bindSeedInspection } from './platform/seed-inspection';
 import { PlayerProfile, SHOP, type ShopItem } from './platform/profile';
-import { DIALOGUE, adventureDialogue, tutorialHighlight, tutorialHint } from './game/dialogue';
+import { DIALOGUE, adventureDialogue, bossHint, tutorialHighlight, tutorialHint } from './game/dialogue';
 import './campaign.css';
 import { PLANT_DESCRIPTIONS } from './game/plant-descriptions';
 import './style.css';
@@ -401,7 +401,7 @@ function updateHud() {
     else if (game.flagWarningIn > 0) advice = '一大波僵尸即将来袭！';
     else if (game.digging) advice = '点击铲除高亮植物 · 触屏可按住滑动预览';
     else if (game.config.mode === 'bowling' && (game.selected || game.planted === 0)) advice = '选择传送带上的坚果，在红线左侧滚出';
-    else if (game.boss) advice = game.boss.ball ? (game.boss.ball.kind==='fire'?'火球来袭！使用寒冰菇消除':'冰球来袭！在同排使用火爆辣椒') : ['headBefore','spit','headAfter'].includes(game.boss.phase)?'僵王低头了！集中攻击，寒冰菇可以延长攻击时间':'传送带供应植物 · 保留寒冰菇与辣椒应对冰火球';
+    else if (game.boss) advice = bossHint(game);
     else if (game.config.mode === 'conveyor' && (game.selected || game.planted === 0)) advice = '从传送带取卡，种在空草地上，无需阳光';
     else if (game.config.mode === 'vase') advice = game.selected ? '选择空格种植这张植物卡 · 无需阳光' : '点击罐子打碎 · 点击掉落的卡片再种植 · 绿罐中一定是植物';
     else if (game.config.mode === 'whack' && !game.selected) advice = '点击僵尸挥动木槌 · 路障两次、铁桶三次';

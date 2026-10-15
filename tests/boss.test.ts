@@ -7,9 +7,20 @@ import { GameClock } from '../src/game/clock';
 import { survivalRoster, generateSurvivalWaves } from '../src/game/survival';
 import { animationNames, combatTextureFiles } from '../src/rendering/asset-plan';
 import data from '../src/game/data/portable-adventure.json';
+import { bossHint } from '../src/game/dialogue';
 import clips from '../src/game/data/boss-clips.json';
 const tick=(g:Game,n:number)=>{for(let i=0;i<n;i++){g.step();g.drainEvents();}};
 const packet=(g:Game,kind:PlantKind,column:number,row:number)=>{const id=10000+g.ticks;g.conveyor.push({id,kind,x:0});g.selectPacket(id);assert.ok(g.plant(column,row));};
+test('boss introduction expires without hiding active attack instructions',()=>{
+ const g=new Game(50,1);assert.equal(bossHint(g),'');g.start();
+ assert.match(bossHint(g),/传送带/);g.ticks=799;assert.match(bossHint(g),/传送带/);
+ g.ticks=800;assert.equal(bossHint(g),'');
+ g.boss!.ball={kind:'fire',row:1,x:600,age:0};assert.match(bossHint(g),/火球来袭/);
+ g.boss!.ball.kind='ice';assert.match(bossHint(g),/冰球来袭/);
+ g.boss!.ball=null;g.boss!.phase='headBefore';assert.match(bossHint(g),/僵王低头/);
+ g.boss!.phase='idle';assert.equal(bossHint(g),'');
+ g.pause();assert.equal(bossHint(g),'');g.resume();assert.equal(bossHint(g),'');
+});
 test('adventure finale uses a boss controller and source conveyor, with no ordinary wave victory',()=>{
  assert.equal(LEVEL_IDS.at(-1),50);assert.equal(LEVELS[50].waveCount,0);
  const g=new Game(50,1);g.start();assert.deepEqual(g.waves,[]);assert.equal(g.boss!.health,40000);assert.equal(g.needsSeedChoice,false);
