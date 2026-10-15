@@ -58,20 +58,23 @@
 
 /* Battle keeps its familiar top bank and one proportional, street-free camera. */
 @media (min-aspect-ratio:3/2) {
-  .page.in-battle{--battle-hud-height:clamp(60px,10dvh,96px)}
-  .page.in-battle .game-frame,.page.in-battle:fullscreen .game-frame{--hud-height:var(--battle-hud-height);background:radial-gradient(ellipse at center,#3e5636,#1b271d 80%)}
+  .page.in-battle{--battle-hud-height:clamp(84px,14dvh,144px)}
+  .page.in-battle .game-frame,.page.in-battle:fullscreen .game-frame{--tool-width:clamp(156px,20cqw,240px);--shovel-width:clamp(44px,5cqw,64px);--hud-height:var(--battle-hud-height);background:radial-gradient(ellipse at center,#3e5636,#1b271d 80%)}
   .page.in-battle .game-frame #canvas-host{left:50%;top:var(--hud-height);width:min(100%,calc((100cqh - var(--hud-height))*4/3));height:calc(100% - var(--hud-height));transform:translateX(-50%)}
-  .page .game-frame #battle-hud{left:50%;width:min(100%,max(760px,calc((100cqh - var(--hud-height))*4/3)));transform:translateX(-50%)}
-  .page .game-frame .seed-bank{width:calc(100% - var(--hud-height)*3.9 - 16px)}
+  .page .game-frame #battle-hud{left:50%;width:min(100%,max(1100px,calc((100cqh - var(--hud-height))*4/3)));transform:translateX(-50%)}
+  .page .game-frame .seed-bank{width:calc(100% - var(--tool-width) - var(--shovel-width) - 24px)}
   .page .game-frame .seed-bank #seed-cards{gap:calc(var(--hud-height)*.025)}
   .page .game-frame .seed-card{flex:0 1 calc(var(--hud-height)*.82*5/7);min-width:0;width:calc(var(--hud-height)*.82*5/7);height:auto;max-height:100%;align-self:center}
   .page .game-frame .seed-card img{object-fit:contain}
   .page .game-frame .conveyor-card{position:absolute;height:100%;width:calc(var(--hud-height)*.69*5/7)}
-  .page .game-frame .conveyor-bank{width:calc(100% - var(--hud-height)*3.9 - 16px)}
-  .page .game-frame .battle-controls{flex-direction:row;align-items:stretch}
+  .page .game-frame .conveyor-bank{width:calc(100% - var(--tool-width) - var(--shovel-width) - 24px)}
+  .page .game-frame .battle-controls{width:var(--tool-width);top:6px;flex-direction:row;align-items:stretch;gap:4px}
+  .page .game-frame .battle-controls #speed,.page .game-frame .battle-controls #pause{height:calc((var(--hud-height) - 16px)/2);font-size:clamp(16px,2cqh,24px)}
+  .page .game-frame .auto-sun{height:calc((var(--hud-height) - 16px)/2);font-size:clamp(12px,1.7cqh,18px)}
+  .page .game-frame .shovel-button{right:calc(var(--tool-width) + 16px);width:var(--shovel-width);height:calc(var(--shovel-width)*1.2);top:6px}
   .page .game-frame .auto-sun{width:100%;min-height:0}
   .page .game-frame .seed-bank strong{transform:none}
-  .overlay{top:50%;bottom:auto;width:min(100%,133.333cqh,1040px);height:min(100%,780px);transform:translate(-50%,-50%)}
+  .overlay{top:50%;bottom:auto;width:min(100%,160cqh,1280px);height:min(100%,960px);transform:translate(-50%,-50%)}
   .overlay:before{top:calc((100% - 100dvh)/2);bottom:auto;height:100dvh}
   .seed-chooser:before{border-image-width:0 1.25cqw 0 9.375cqw}
   .game-logo{left:calc(25% - min(20%,260px));top:10%;width:min(40%,520px);max-height:140px}
@@ -94,9 +97,60 @@
 }
 @media (min-aspect-ratio:3/2) and (max-height:500px) {
   .game-logo{top:4%;max-height:90px}.menu-modes{top:43%;gap:8px}.garden-sign{top:29%;padding:6px 14px}.menu-tools,.almanac-menu{bottom:10%}
-  .page .game-frame .battle-controls{width:125px;top:4px;right:4px;gap:2px}
-  .page .game-frame .battle-controls #speed,.page .game-frame .battle-controls #pause{height:25px;font-size:13px}
-  .page .game-frame .auto-sun{height:22px;font-size:10px}
-  .page .game-frame .shovel-button{right:134px;top:4px;width:32px;height:42px}
-  .page .game-frame .seed-bank,.page .game-frame .conveyor-bank{width:calc(100% - 174px)}
+
+}
+
+/* Larger packets use the card well instead of leaving most of it empty. */
+@media (min-aspect-ratio:3/2) {
+  .overlay.chooser-overlay{width:min(100%,1440px);height:min(100%,960px);--chooser-bank-height:clamp(84px,16cqh,144px);--chooser-footer-height:104px}
+  .seed-chooser:before{height:var(--chooser-bank-height);border-image-width:0 calc(var(--chooser-bank-height)*.115) 0 calc(var(--chooser-bank-height)*.862)}
+  .seed-chooser .chosen-seeds,.endless-game .seed-chooser .chosen-seeds{left:calc(var(--chooser-bank-height)*.94);right:16px;top:6px;height:calc(var(--chooser-bank-height) - 12px);gap:6px}
+  .seed-chooser .chosen-seed,.seed-chooser .empty-seed,.endless-game .seed-chooser .chosen-seed,.endless-game .seed-chooser .empty-seed{flex:0 1 auto;width:calc((var(--chooser-bank-height) - 12px)*5/7);height:auto;max-height:100%;align-self:center;aspect-ratio:5/7;min-width:0;max-width:calc((100% - 54px)/10)}
+  .seed-chooser .chooser-catalog{top:var(--chooser-bank-height);width:68%;height:calc(100% - var(--chooser-bank-height))}
+  .seed-chooser .chooser-catalog h2{height:48px;margin:4px 0 8px;font-size:clamp(22px,2.3cqw,32px)}
+  .seed-chooser .seed-options{grid-template-columns:repeat(6,minmax(0,1fr));grid-auto-rows:auto;gap:10px;margin:0 24px;max-height:calc(100% - 60px - var(--chooser-footer-height));padding:3px}
+  .seed-chooser .seed-option,.seed-chooser .seed-silhouette{width:100%;height:auto;aspect-ratio:5/7}
+  .seed-chooser .packet-price{font-size:clamp(14px,2cqw,26px)}
+  .seed-chooser .chooser-footer{bottom:12px;left:20px;right:20px;display:grid;grid-template-columns:1fr 1.6fr;gap:6px 12px}
+  .seed-chooser #choice-count{grid-column:1/-1;grid-row:1;text-align:center;font-size:clamp(13px,1.5cqw,20px)}
+  .seed-chooser #clear-seeds{height:48px;font-size:clamp(14px,1.5cqw,20px);padding:0 8px}
+  .seed-chooser .seed-start{width:100%;height:54px;font-size:clamp(18px,2cqw,26px)}
+  .seed-chooser .chooser-details{left:70%;right:1%;top:calc(var(--chooser-bank-height) + 12px);max-height:calc(100% - var(--chooser-bank-height) - 84px);padding:12px}
+  .seed-chooser .chooser-details h3{font-size:clamp(18px,2cqw,28px)}
+  .seed-chooser .chooser-details p,.seed-chooser .chooser-details .chooser-tip,.seed-chooser .plant-detail p{font-size:clamp(13px,1.3cqw,18px);line-height:1.6}
+  .seed-chooser .chooser-details .kicker,.seed-chooser .plant-detail small{font-size:clamp(12px,1.1cqw,16px)}
+  .seed-chooser .chooser-enemies h4,.seed-chooser .plant-detail h4{font-size:clamp(15px,1.5cqw,21px)}
+  .seed-chooser .chooser-back{height:48px;min-width:150px;max-width:28%;font-size:clamp(16px,1.6cqw,22px);right:12px;bottom:12px}
+  .paper-panel .wood-button,.paper-panel .text-button,.pause-content .text-button{min-height:44px;font-size:clamp(15px,1.6cqw,22px)}
+  .pause-content .wood-button.large{height:48px;font-size:clamp(18px,2cqw,26px)}
+  .level-panel .level-grid{grid-template-columns:repeat(auto-fit,minmax(136px,1fr))}
+  .level-panel .level-card strong{font-size:clamp(12px,1.15cqw,17px)}
+  .level-panel .level-card small{font-size:clamp(10px,.9cqw,14px)}
+}
+@media (min-aspect-ratio:3/2) and (max-height:600px) {
+  .overlay{width:100%;height:100%}
+  .page .game-frame .battle-controls #speed,.page .game-frame .battle-controls #pause{height:40px}
+  .page .game-frame .auto-sun{height:30px;font-size:13px}
+  .page .game-frame .auto-sun input{width:18px;height:18px}
+  .survival-play,.survival-modes .wood-button{min-height:44px;font-size:15px}
+  .survival-scenes .survival-restart{min-height:40px;font-size:13px}
+  .survival-panel{padding:10px 22px}
+  .survival-panel>h2{height:30px;min-height:30px;margin-bottom:4px}
+  .survival-modes{margin:4px 0}
+  .survival-panel>p{margin:3px 0}
+  .survival-panel>#close{margin-top:6px}
+  .survival-preview{height:48px}
+  .survival-scenes .survival-card-body p{font-size:12px;min-height:0}
+  .overlay.chooser-overlay{--chooser-footer-height:78px}
+  .seed-chooser .chooser-catalog h2{height:30px;margin:3px 0 6px;font-size:20px}
+  .seed-chooser .seed-options{gap:7px;margin:0 16px;max-height:calc(100% - 39px - var(--chooser-footer-height))}
+  .seed-chooser .chooser-footer{bottom:8px;left:16px;right:16px;gap:3px 10px}
+  .seed-chooser #clear-seeds,.seed-chooser .seed-start,.seed-chooser .chooser-back{height:44px}
+  .seed-chooser .chooser-details{border-width:10px;border-image-width:10px;padding:6px;max-height:calc(100% - var(--chooser-bank-height) - 70px)}
+  .seed-chooser .chooser-back{bottom:8px;min-width:0;width:28%;right:1%;font-size:15px}
+  .pause-panel{width:min(520px,90%);height:100%}
+  .pause-content{bottom:8%;overflow-y:auto}
+  .pause-content h2{margin:4px 0;font-size:22px}
+  .pause-content .wood-button.large{height:44px;margin:4px auto}
+  .menu-tools .wood-button{min-height:44px;font-size:14px}
 }
