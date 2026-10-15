@@ -1,0 +1,14 @@
+/* Use the existing stone HUD skin for transient actions. No extra image downloads. */
+.planting-feedback{position:absolute;z-index:2;transform:translate(-50%,-100%);width:max-content;max-width:66%;padding:1cqw 1.8cqw;background:url('/assets/runtime/original/button.webp') center/100% 100% no-repeat;color:#fff0bc;text-shadow:0 2px 1px #342312;font-size:clamp(11px,1.6cqw,20px);font-weight:bold;text-align:center;pointer-events:none}
+.action-cancel{position:absolute;right:2%;top:23%;pointer-events:auto;min-width:11cqw;height:5cqw;font-size:1.6cqw}
+.seed-chooser .chosen-seed.replace-target{outline:.3cqw solid #ffe36a;outline-offset:.2cqw;filter:brightness(1.15)}
+.seed-chooser .seed-option{touch-action:pan-y;user-select:none;-webkit-touch-callout:none}
+.seed-chooser .seed-option.dave-picked::after{content:'戴夫';top:auto;left:auto;font-size:1.1cqw;text-shadow:none}
+@media (pointer:coarse){.action-cancel{min-height:38px;min-width:64px;font-size:14px}}
+@media (orientation:landscape) and (max-height:600px) and (max-width:1100px){
+  .page.in-battle .action-cancel{right:12px;top:226px;width:calc(var(--rail) - 24px);height:36px;min-width:0;min-height:0;font-size:14px}
+  .planting-feedback{font-size:13px;padding:8px 14px}
+}
+@media (orientation:landscape) and (max-height:600px) and (max-width:1100px){
+  .seed-chooser .seed-options{max-height:calc(100% - 136px)}
+}

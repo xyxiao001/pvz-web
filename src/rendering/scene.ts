@@ -40,6 +40,7 @@ export class Scene {
   private animationData?: Promise<{ animations: Record<string, ClipData> }>;
   private clips: Record<string, Clip> = {};
   private hover = new Graphics();
+  private target = new Graphics();
   private health = new Graphics();
   private fog = new Container();
   private weather = new Graphics();
@@ -185,7 +186,7 @@ export class Scene {
 
   private clearObjects() {
     for (const child of this.app.stage.removeChildren()) {
-      if (child !== this.world && child !== this.hover && child !== this.health && child !== this.fog && child !== this.weather) child.destroy({ children: true });
+      if (child !== this.world && child !== this.hover && child !== this.target && child !== this.health && child !== this.fog && child !== this.weather) child.destroy({ children: true });
     }
     for (const actor of this.actors.values()) actor.root.destroy({ children: true });
     for (const effect of this.effects) effect.node.destroy({ children: true });
@@ -194,7 +195,7 @@ export class Scene {
     for (const layer of this.projectileLayers.values()) layer.destroy();
     this.projectileLayers.clear();
     this.actors.clear(); this.effects = []; this.explosions = []; this.time = 0; this.healthKey = ''; this.hoverKey = '';
-    this.hover.clear(); this.health.clear(); this.fog.removeChildren().forEach(child=>child.destroy()); this.fogKey = '';
+    this.hover.clear(); this.target.clear(); this.health.clear(); this.fog.removeChildren().forEach(child=>child.destroy()); this.fogKey = '';
   }
 
   setLevel(game: Game) {
@@ -206,7 +207,7 @@ export class Scene {
       lawn.y = BOARD.top + row * 100; this.app.stage.addChild(lawn);
     }
     if (game.config.mode === 'bowling') { const stripe = new Sprite(this.textures.stripe); stripe.position.set(268, 77); this.app.stage.addChild(stripe); }
-    this.app.stage.addChild(this.hover, this.world, this.health, this.fog, this.weather); this.pointer = null;
+    this.app.stage.addChild(this.hover, this.world, this.health, this.fog, this.weather, this.target); this.pointer = null;
   }
 
   setPointer(pointer: { x: number; y: number } | null) { this.pointer = pointer; }
@@ -364,6 +365,10 @@ export class Scene {
     if (game.phase === 'playing') this.time = game.ticks + alpha;
     else if (game.phase === 'won' || game.phase === 'lost') this.time += elapsed / 10;
     this.stamp++;
+    const aiming = game.phase === 'playing' && this.pointer !== null;
+    const column = aiming ? Math.floor((this.pointer!.x - BOARD.left) / BOARD.cellWidth) : -1;
+    const row = aiming ? game.rowAt(this.pointer!.y, this.pointer!.x) : -1;
+    const digTarget = aiming && game.digging ? game.digTarget(column, row) : undefined;
     if(game.boss)this.bossArt?.render(game,alpha);
     for (const ice of game.iceTrails) {
       const actor = this.actor(`ice${ice.row}`, ice.row * 100 + 1);
@@ -416,6 +421,7 @@ export class Scene {
       const actionDuration=clip==='gloomshroom-attack'?200:clip==='cattail-attack'?50:clip==='cobcannon-attack'?350:clip==='cobcannon-charge'?125:119;
       this.animate(actor, clip, !oneShot && plant.kind !== 'cherrybomb' && clip !== 'chomper-bite' && clip !== 'umbrella-block', sleeping ? 0 : this.time, oneShot ? this.clipDuration(clip)/actionDuration : clip === 'chomper-bite' ? this.clipDuration(clip) / 70 : clip==='umbrella-block'?this.clipDuration(clip)/65:1, (plant.kind==='wintermelon' && plant.winterLaunchIn!==undefined || ['cabbagepult','kernelpult','melonpult'].includes(plant.kind)) && !sleeping ? game.ticks+(game.phase==='playing'?alpha:0)-plant.shotAt : undefined);
       actor.root.position.set(cellX(plant.column), game.rowY(plant.row,cellX(plant.column)));
+      actor.root.tint = plant === digTarget ? 0xffd36b : 0xffffff;
       if(game.config.environment==='roof'&&plant.kind!=='flowerpot')actor.root.y-=12;
       (actor.nativeRig?.root ?? actor.rig?.root ?? actor.art).tint=sleeping?0xa3a1be:plant.imitated?0xbfbfbf:0xffffff;
       if (sleeping) {
@@ -514,6 +520,35 @@ export class Scene {
       if (actor.clip !== 'mower') { actor.clip = 'mower'; actor.art.texture = game.config.environment==='roof'?this.textures.roofCleaner:game.waterRow(mower.row) && (!game.campaign || game.campaign.poolCleaner) ? this.textures.poolCleaner : this.textures.mower; actor.art.anchor.set(.5, 1); }
       this.move(actor, mower, game.rowY(mower.row) + 5, alpha);
     }
+    let hoverKey = '';
+    if (aiming && game.cannonTarget !== null) {
+      const {x, y} = this.pointer!;
+      hoverKey = `cannon:${x}:${y}`;
+      if (hoverKey !== this.hoverKey) {
+        this.hover.clear(); this.target.clear().circle(x,y,18).stroke({color:0xffef85,width:2});
+        this.target.moveTo(x-26,y).lineTo(x-8,y).moveTo(x+8,y).lineTo(x+26,y)
+          .moveTo(x,y-26).lineTo(x,y-8).moveTo(x,y+8).lineTo(x,y+26).stroke({color:0xffef85,width:2});
+      }
+    } else if (aiming && (game.selected || game.digging) && column >= 0 && column < BOARD.columns && game.config.rows.includes(row)) {
+      const allowed = game.digging ? !!digTarget : game.canPlant(game.selected!,column,row);
+      const color = allowed ? 0xfcf4bb : 0xe46647;
+      hoverKey = `${column}:${row}:${color}:${digTarget?.id}`;
+      if (hoverKey !== this.hoverKey) {
+        this.hover.clear().rect(BOARD.left + column*80+2, BOARD.top+row*game.cellHeight+game.slope(cellX(column))+(game.config.environment==='roof'?-10:0)+2,76,game.cellHeight-4).fill({color,alpha:.2});
+        this.target.clear();
+        if (digTarget) this.target.ellipse(cellX(digTarget.column)+(digTarget.kind==='cobcannon'?40:0),game.rowY(row,cellX(digTarget.column)),digTarget.kind==='cobcannon'?75:36,10).stroke({color:0xffd36b,width:2});
+      }
+      if (game.selected) {
+        const kind = game.selected === 'imitater' ? game.imitaterTarget! : game.selected;
+        const preview = this.actor(`preview-${kind}`, 1000);
+        // One static pose reuses the battle's loaded rigs; it does not animate or load new assets.
+        if (!preview.clip) this.animate(preview,kind,true,0);
+        preview.root.position.set(cellX(column),game.rowY(row,cellX(column))-(game.config.environment==='roof'&&kind!=='flowerpot'?12:0));
+        preview.root.alpha = .45; preview.root.tint = allowed ? 0xffffff : 0xf59483;
+      }
+    }
+    if (!hoverKey && this.hoverKey) { this.hover.clear(); this.target.clear(); }
+    this.hoverKey = hoverKey;
     for (const [key, actor] of this.actors) if (actor.seen !== this.stamp) {
       if (key.startsWith('z')) {
         if (actor.healthBar) actor.healthBar.root.visible = false;
@@ -537,19 +572,6 @@ export class Scene {
         this.health.rect(cellX(plant.column) - 19, game.rowY(plant.row,cellX(plant.column)) + 5, 38 * plant.health / PLANTS[plant.kind].health, 3).fill(0xb7e458);
       }
     }
-    let hoverKey = '';
-    if ((game.selected || game.digging) && game.phase === 'playing' && this.pointer) {
-      const column = Math.floor((this.pointer.x - BOARD.left) / 80); const row = game.rowAt(this.pointer.y,this.pointer.x);
-      if (column >= 0 && column < 9 && game.config.rows.includes(row)) {
-        const color = (game.digging || game.canPlant(game.selected!, column, row)) ? 0xfcf4bb : 0xe46647;
-        hoverKey = `${column}:${row}:${color}`;
-        if (hoverKey !== this.hoverKey) {
-          this.hover.clear().rect(BOARD.left + column * 80 + 2, BOARD.top + row * game.cellHeight + game.slope(cellX(column)) + (game.config.environment==='roof'?-10:0) + 2, 76, game.cellHeight - 4).fill({ color, alpha: .2 });
-        }
-      }
-    }
-    if (!hoverKey && this.hoverKey) this.hover.clear();
-    this.hoverKey = hoverKey;
     if(game.config.environment==='fog'&&game.level!==40) {
       this.fog.visible = game.fogBlownIn === 0;
       const lamps=game.plants.filter(p=>p.kind==='plantern'&&p.health>0);

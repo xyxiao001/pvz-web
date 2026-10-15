@@ -206,6 +206,12 @@ export class Game {
     if (index !== -1) this.seeds.splice(index, 1);
     else if (this.seeds.length < this.seedCapacity) this.seeds.push(kind);
   }
+  replaceSeed(previous: PlantKind, next: PlantKind) {
+    if (this.phase !== 'ready' || !this.needsSeedChoice || !this.config.seeds.includes(next)
+      || this.davePicks.includes(previous) || this.seeds.includes(next)) return;
+    const index = this.seeds.indexOf(previous);
+    if (index !== -1) this.seeds[index] = next;
+  }
   start() {
     if (!this.canStart) return;
     this.phase = 'playing';
@@ -252,10 +258,13 @@ export class Game {
     this.cannonTarget=null;
     this.digging = !this.digging; this.selected = null; this.selectedPacket = null; this.selectedDrop = null;
   }
+  digTarget(column: number, row: number) {
+    const occupants = this.plants.filter(plant => (plant.column === column || plant.kind==='cobcannon'&&plant.column+1===column) && plant.row === row);
+    return occupants.find(p => p.kind === 'pumpkin') || occupants.find(plant => !['lilypad','flowerpot'].includes(plant.kind)) || occupants[0];
+  }
   dig(column: number, row: number) {
     if (this.phase !== 'playing' || !this.digging) return;
-    const occupants = this.plants.filter(plant => (plant.column === column || plant.kind==='cobcannon'&&plant.column+1===column) && plant.row === row);
-    const target = occupants.find(p => p.kind === 'pumpkin') || occupants.find(plant => !['lilypad','flowerpot'].includes(plant.kind)) || occupants[0];
+    const target = this.digTarget(column, row);
     if (target) this.ladders = this.ladders.filter(l => l.column !== column || l.row !== row);
     if (target?.kelp) { const caught = this.zombies.find(z => z.id === target.kelp!.target); if (caught) caught.health = 0; }
     this.plants = this.plants.filter(plant => plant !== target);
@@ -264,19 +273,23 @@ export class Game {
   }
 
   canPlant(kind: PlantKind, column: number, row: number) {
+    return this.plantingIssue(kind, column, row) === null;
+  }
+  // Feedback and placement share the existing rules, including conveyor/vase exceptions.
+  plantingIssue(kind: PlantKind, column: number, row: number): string | null {
     const card=kind;
-    if (kind==='imitater') { if(this.imitaterTarget===null)return false; kind=this.imitaterTarget; }
+    if (kind==='imitater') { if(this.imitaterTarget===null)return '先选择模仿的植物'; kind=this.imitaterTarget; }
     if (this.phase !== 'playing' || this.tutorial === 'shovel' || !this.seeds.includes(card)
-      || !this.config.rows.includes(row) || !(column >= 0 && column < (this.boss ? 8 : BOARD.columns))) return false;
-    if (this.vases.some(v => v.column === column && v.row === row) || this.iceTrails.some(ice => ice.row === row && cellX(column) + 30 >= ice.x)) return false;
-    if (this.craters.some(c => c.column === column && c.row === row)) return false;
+      || !this.config.rows.includes(row) || !(column >= 0 && column < (this.boss ? 8 : BOARD.columns))) return '请选择可种植的草地';
+    if (this.vases.some(v => v.column === column && v.row === row) || this.iceTrails.some(ice => ice.row === row && cellX(column) + 30 >= ice.x)) return '这里被罐子或冰道占用了';
+    if (this.craters.some(c => c.column === column && c.row === row)) return '弹坑还没有恢复';
     const occupants = this.plants.filter(p => p.column === column && p.row === row);
-    if ((kind === 'lilypad' || kind === 'tanglekelp' || kind === 'seashroom') && (!this.waterRow(row) || occupants.length > 0)) return false;
-    if (this.waterRow(row) && kind !== 'lilypad' && kind !== 'tanglekelp' && kind !== 'seashroom' && (kind === 'potatomine' || kind === 'spikeweed' || kind==='spikerock' || !occupants.some(p => p.kind === 'lilypad' || p.kind==='cattail'))) return false;
-    if (this.config.environment === 'roof' && (['spikeweed','spikerock','lilypad','seashroom','tanglekelp','gravebuster'].includes(kind) || kind !== 'flowerpot' && !occupants.some(p => p.kind === 'flowerpot'))) return false;
-    if (kind==='cattail' && occupants.some(p=>!['lilypad','pumpkin'].includes(p.kind))) return false;
-    if (kind==='cobcannon' && (column>=7 && this.boss || column>=8 || !this.plants.some(p=>p.kind==='kernelpult' && p.column===column+1 && p.row===row) || occupants.some(p=>p.kind==='pumpkin') || this.plants.some(p=>p.column===column+1 && p.row===row && p.kind==='pumpkin'))) return false;
-    if (this.plants.some(p=>p.kind==='cobcannon'&&p.row===row&&(p.column===column||p.column+1===column))) return false;
+    if ((kind === 'lilypad' || kind === 'tanglekelp' || kind === 'seashroom') && (!this.waterRow(row) || occupants.length > 0)) return '请种在空的水面上';
+    if (this.waterRow(row) && kind !== 'lilypad' && kind !== 'tanglekelp' && kind !== 'seashroom' && (kind === 'potatomine' || kind === 'spikeweed' || kind==='spikerock' || !occupants.some(p => p.kind === 'lilypad' || p.kind==='cattail'))) return ['potatomine','spikeweed','spikerock'].includes(kind) ? '这种植物不能种在水上' : '先在这里放一片睡莲';
+    if (this.config.environment === 'roof' && (['spikeweed','spikerock','lilypad','seashroom','tanglekelp','gravebuster'].includes(kind) || kind !== 'flowerpot' && !occupants.some(p => p.kind === 'flowerpot'))) return ['spikeweed','spikerock','lilypad','seashroom','tanglekelp','gravebuster'].includes(kind) ? '这种植物不能种在屋顶' : '先在这里放一个花盆';
+    if (kind==='cattail' && occupants.some(p=>!['lilypad','pumpkin'].includes(p.kind))) return '香蒲需要没有其他植物的睡莲';
+    if (kind==='cobcannon' && (column>=7 && this.boss || column>=8 || !this.plants.some(p=>p.kind==='kernelpult' && p.column===column+1 && p.row===row) || occupants.some(p=>p.kind==='pumpkin') || this.plants.some(p=>p.column===column+1 && p.row===row && p.kind==='pumpkin'))) return '需要左右相邻的两株玉米投手，且不能带南瓜';
+    if (this.plants.some(p=>p.kind==='cobcannon'&&p.row===row&&(p.column===column||p.column+1===column))) return '这两格已被玉米加农炮占用';
     const repair = this.campaign?.firstAid && ['wallnut','tallnut','pumpkin'].includes(kind) && occupants.some(p=>p.kind===kind && p.health < PLANTS[kind].health*2/3);
     const occupied = repair ? false : isUpgrade(kind) ? !occupants.some(p => p.kind === UPGRADES[kind])
       : kind === 'coffeebean' ? !occupants.some(p => this.sleeping(p)) || occupants.some(p => p.kind === 'coffeebean')
@@ -284,13 +297,16 @@ export class Game {
       : kind === 'flowerpot' ? occupants.length > 0
       : occupants.some(p => kind === 'lilypad' || !['lilypad','flowerpot','pumpkin'].includes(p.kind));
     const grave = this.graves.some(grave => grave.column === column && grave.row === row);
-    if (kind === 'gravebuster' ? !grave : grave) return false;
-    if (this.config.mode === 'bowling') return column < 3 && this.conveyor.some(packet => packet.id === this.selectedPacket && packet.kind === kind);
-    if (this.config.mode === 'conveyor') return this.conveyor.some(packet => packet.id === this.selectedPacket && packet.kind === kind)
-      && !occupied;
-    if (this.config.mode === 'vase') return !occupied && this.seedDrops.some(drop => drop.id === this.selectedDrop && drop.kind === kind);
-    return this.sun >= this.plantCost(card) && this.cooldown(card) === 0
-      && !occupied;
+    if (kind === 'gravebuster' ? !grave : grave) return kind === 'gravebuster' ? '墓碑吞噬者需要种在墓碑上' : '先清除这里的墓碑';
+    if (this.config.mode === 'bowling') return column < 3 && this.conveyor.some(packet => packet.id === this.selectedPacket && packet.kind === kind) ? null : '请在红线左侧滚出坚果';
+    if (this.config.mode === 'conveyor' && !this.conveyor.some(packet => packet.id === this.selectedPacket && packet.kind === kind)) return '先选择传送带上的卡片';
+    if (this.config.mode === 'vase' && !this.seedDrops.some(drop => drop.id === this.selectedDrop && drop.kind === kind)) return '先选择掉落的卡片';
+    if (this.config.mode !== 'conveyor' && this.config.mode !== 'vase') {
+      if (!(this.sun >= this.plantCost(card))) return '阳光不足';
+      if (this.cooldown(card) !== 0) return '这张卡片还在冷却';
+    }
+    if (occupied) return isUpgrade(kind) ? `需要种在${PLANTS[UPGRADES[kind]].name}上` : kind === 'coffeebean' ? '咖啡豆需要种在睡着的蘑菇上' : '这里已经有植物了';
+    return null;
   }
 
   plant(column: number, row: number) {
@@ -883,10 +899,11 @@ export class Game {
     }
   }
 
-  chooseImitater(kind: PlantKind) {
+  chooseImitater(kind: PlantKind, replacing?: PlantKind) {
     if (this.phase!=='ready' || !this.config.seeds.includes('imitater') || isUpgrade(kind) || kind==='imitater' || kind==='explodenut' || !this.config.seeds.includes(kind)) return;
     this.imitaterTarget=kind;
-    if (!this.seeds.includes('imitater')) this.chooseSeed('imitater');
+    if (replacing !== undefined) this.replaceSeed(replacing, 'imitater');
+    else if (!this.seeds.includes('imitater')) this.chooseSeed('imitater');
   }
   aimCannon(column: number,row: number) {
     const plant=this.plants.find(p=>p.kind==='cobcannon'&&p.row===row&&(p.column===column||p.column+1===column));

@@ -1,3 +1,5 @@
+import { bindBattlePointer } from './platform/battle-pointer';
+import { bindSeedInspection } from './platform/seed-inspection';
 import { PlayerProfile, SHOP, type ShopItem } from './platform/profile';
 import { DIALOGUE, adventureDialogue, tutorialHint } from './game/dialogue';
 import './campaign.css';
@@ -6,6 +8,7 @@ import './style.css';
 import './ui.css';
 import './mobile.css';
 import './hud-skin.css';
+import './interaction.css';
 import { registerPwa, showPwa } from './platform/pwa';
 void registerPwa();
 import { ZOMBIE_NAMES } from './game/survival';
@@ -49,12 +52,12 @@ window.addEventListener('unhandledrejection', event => showDiagnostic(event.reas
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 <main class="page"><div class="page-top"><span>植物大战僵尸</span><span>WEB · 冒险与生存</span></div>
 <section id="game-frame" class="game-frame" aria-label="植物大战僵尸游戏">
-  <div id="canvas-host"></div>
+  <div id="canvas-host"><div id="planting-feedback" class="planting-feedback" role="status" hidden></div></div>
   <div id="battle-hud" hidden>
     <div class="seed-bank"><div id="conveyor-belt"></div><strong id="sun-total">150</strong><div id="seed-cards"></div></div>
     <button id="shovel" class="shovel-button" hidden title="铲除植物（不返还阳光）" aria-label="铲子" aria-pressed="false"><img loading="lazy" src="${asset('shovel.png')}" alt=""/></button>
     <div class="battle-controls"><label class="auto-sun"><input id="auto-sun" type="checkbox"/>自动收集阳光</label><button id="speed" class="wood-button" title="切换游戏速度：1× / 2× / 4×" aria-label="游戏速度 1 倍">1×</button><button id="pause" class="wood-button">菜单</button></div>
-    <div id="advice" class="advice" role="status"></div>
+    <div id="advice" class="advice" role="status"></div><button id="cancel-action" class="wood-button action-cancel" hidden>取消</button>
     <div class="level-caption" id="level-label"></div>
     <div class="wave-hud"><span id="wave-label"></span><div class="wave-meter"><div id="wave-fill"></div><img loading="lazy" class="meter-flag" src="${asset('meter-flag.png')}" alt="最终波次"/><img loading="lazy" id="meter-head" src="${asset('meter-head.png')}" alt=""/></div></div>
   </div>
@@ -93,9 +96,25 @@ const clock = new GameClock();
 const hud = new Hud($('#battle-hud'));
 let packetKey = '';
 let lastPhase = ''; let messageUntil = 0;
+let feedbackTimer: ReturnType<typeof setTimeout>;
+function clearPlacementFeedback() {
+  clearTimeout(feedbackTimer); $('#planting-feedback').hidden = true;
+}
+function placementFeedback(message: string, x: number, y: number) {
+  const tip = $('#planting-feedback');
+  clearTimeout(feedbackTimer);
+  tip.textContent = message;
+  tip.style.left = `${Math.max(17,Math.min(83,x/BOARD.width*100))}%`;
+  tip.style.top = `${Math.max(20,Math.min(88,y/BOARD.height*100-12))}%`;
+  tip.hidden = false;
+  feedbackTimer = setTimeout(clearPlacementFeedback, 1600);
+  if (message === '阳光不足' && !matchMedia('(prefers-reduced-motion: reduce)').matches)
+    $('#sun-total').animate([{color:'#a12c18',transform:'scale(1.15)'},{color:'#17160c',transform:'scale(1)'}], {duration:350});
+}
 const backLabel = () => game.isSurvival && game.phase !== 'lost' && game.phase !== 'won' ? '保存退出' : '返回主菜单';
 
 function showMenu() {
+  clearPlacementFeedback();
   $('.page').classList.remove('in-battle', 'endless-game');
   bankCoins(); dialogueAdvance=null; game.pause(); screen = 'menu'; clock.reset(); if (scene) void scene.release();
   $('#menu').hidden = false; $('#battle-hud').hidden = true; overlay.hidden = true;
@@ -173,6 +192,7 @@ function shopPanel(close: () => void) {
   render();
 }
 function setLevel(level: LevelId, scenario: Game['scenario'] = 'adventure', survivalScene: SurvivalScene = 'day') {
+  clearPlacementFeedback();
   game = new Game(level, Date.now(), scenario, survivalScene, scenario === 'adventure' ? profile.rules() : null);
   introShown=false;
   game.autoCollectSun = $<HTMLInputElement>('#auto-sun').checked;
@@ -203,7 +223,7 @@ async function mountGame() {
 }
 function renderSeedBank() {
   $('#seed-cards').innerHTML = (!game.hasConveyor && game.config.mode !== 'vase' ? game.seeds : []).map((kind, index) => `<button class="seed-card" data-plant="${kind}" title="${PLANTS[kind].name} · ${game.plantCost(kind)} 阳光 · 快捷键 ${(index + 1) % 10}" aria-label="${PLANTS[kind].name}，${game.plantCost(kind)} 阳光">${seedImage(kind, game.plantCost(kind))}<span class="cooldown-cover"></span><span class="cooldown-number"></span></button>`).join('');
-  document.querySelectorAll<HTMLButtonElement>('#seed-cards [data-plant]').forEach(button => button.onclick = () => { game.select(button.dataset.plant as PlantKind); updateHud(); });
+  document.querySelectorAll<HTMLButtonElement>('#seed-cards [data-plant]').forEach(button => button.onclick = () => { clearPlacementFeedback(); game.select(button.dataset.plant as PlantKind); updateHud(); });
   hud.bindSeeds(); tutorialTarget=null;
 }
 function seedChooser() {
@@ -213,12 +233,13 @@ function seedChooser() {
       <div class="seed-options">${game.config.seeds.map(kind => `<button class="seed-option" data-choice="${kind}" title="${PLANTS[kind].name} · ${game.plantCost(kind)} 阳光" aria-label="选择${PLANTS[kind].name}" aria-pressed="false">${seedImage(kind, game.plantCost(kind))}</button>`).join('')}${Array.from({ length: Math.max(0, 48 - game.config.seeds.length) }, () => '<span class="seed-silhouette" aria-hidden="true"></span>').join('')}</div>
       <div class="chooser-footer"><button id="clear-seeds" class="text-button">清空选卡</button><span id="choice-count" role="status"></span><button id="start" class="seed-start" disabled>一起摇滚吧！</button></div>
     </section>
-    <aside class="chooser-details"><span class="kicker">${game.isSurvival ? `生存 · ${SURVIVAL_MODE_NAMES[game.scenario as SurvivalMode]} · 第 ${game.survivalStage + 1} 轮` : `冒险模式 ${game.config.label}`}</span><h3>${game.config.title}</h3><p>${game.isSurvival ? `已守住 ${game.survivalFlags} 旗 · ${game.sun} 阳光` : SCENE_NAMES[game.config.environment]}</p><div class="chooser-enemies"><h4>${game.isSurvival ? '本轮僵尸' : '本关僵尸'}</h4><p>${enemies.map(kind => ZOMBIE_NAMES[kind]).join(' · ')}</p></div><p class="chooser-tip">${game.isSurvival ? '可携带 6–10 张植物卡' : `可携带 ${game.seedCapacity} 张植物卡${game.repeatAdventure?' · 戴夫指定三张':''}`}<br/>点击上方卡片可放回</p>${game.campaign&&profile.storeOpen?'<button id="chooser-shop" class="wood-button">戴夫商店</button>':''}<div id="plant-detail" class="plant-detail"><h4>了解你的植物</h4><p>悬停或聚焦卡片，查看用途与种植条件。</p></div></aside>
+    <aside class="chooser-details"><span class="kicker">${game.isSurvival ? `生存 · ${SURVIVAL_MODE_NAMES[game.scenario as SurvivalMode]} · 第 ${game.survivalStage + 1} 轮` : `冒险模式 ${game.config.label}`}</span><h3>${game.config.title}</h3><p>${game.isSurvival ? `已守住 ${game.survivalFlags} 旗 · ${game.sun} 阳光` : SCENE_NAMES[game.config.environment]}</p><div class="chooser-enemies"><h4>${game.isSurvival ? '本轮僵尸' : '本关僵尸'}</h4><p>${enemies.map(kind => ZOMBIE_NAMES[kind]).join(' · ')}</p></div><p class="chooser-tip">${game.isSurvival ? '可携带 6–10 张植物卡' : `可携带 ${game.seedCapacity} 张植物卡${game.repeatAdventure?' · 戴夫指定三张':''}`}<br/>点击上方卡片，再选新卡替换；再点一次放回</p>${game.campaign&&profile.storeOpen?'<button id="chooser-shop" class="wood-button">戴夫商店</button>':''}<div id="plant-detail" class="plant-detail"><h4>了解你的植物</h4><p>悬停或长按卡片查看；点击选入。选满后仍可查看。</p></div></aside>
     <button class="wood-button chooser-back back-menu">${backLabel()}</button>`, 'seed-chooser');
   if(game.campaign&&profile.storeOpen)$('#chooser-shop').onclick=()=>shopPanel(()=>{game.applyPurchases(profile.rules());$('.page').classList.toggle('endless-game',game.seedCapacity>6);phasePanel();});
   overlay.classList.add('chooser-overlay'); $('#battle-hud').classList.add('choosing');
   const chosen = $('#chosen-seeds');
   const chosenCards = new Map<PlantKind, HTMLButtonElement>();
+  let replacing: PlantKind | null = null;
   const emptySlots = Array.from({ length: game.seedCapacity }, (_, index) => {
     const slot = document.createElement('span'); slot.className = 'empty-seed';
     slot.setAttribute('aria-label', `空槽位 ${index + 1}`); return slot;
@@ -241,8 +262,15 @@ function seedChooser() {
         card.querySelectorAll('img').forEach(image => { image.loading = 'eager'; });
         card.disabled=game.davePicks.includes(kind);
         if (card.disabled) { card.classList.add('dave-picked'); card.title='戴夫为你选择的植物，不能放回'; }
-        card.onclick = () => choose(kind); chosenCards.set(kind, card);
+        card.onclick = () => {
+          if (replacing === kind) { game.chooseSeed(kind); replacing = null; }
+          else replacing = kind;
+          update();
+        }; chosenCards.set(kind, card);
       }
+      card.classList.toggle('replace-target', replacing === kind);
+      card.setAttribute('aria-pressed', String(replacing === kind));
+      card.setAttribute('aria-label', `${PLANTS[kind].name}，${replacing === kind ? '再次点击放回' : '点击选择替换'}`);
       return card;
     });
     slots.forEach((slot, index) => {
@@ -252,21 +280,25 @@ function seedChooser() {
     document.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach(button => {
       const selected = game.seeds.includes(button.dataset.choice as PlantKind);
       button.setAttribute('aria-pressed', String(selected));
-      button.disabled = game.davePicks.includes(button.dataset.choice as PlantKind) || game.seeds.length === game.seedCapacity && !selected;
+      button.classList.toggle('dave-picked', game.davePicks.includes(button.dataset.choice as PlantKind));
     });
-    $('#choice-count').textContent = game.canStart ? `准备出发！已选 ${game.seeds.length} / ${game.seedCapacity}` : `选择植物 ${game.seeds.length} / ${game.seedCapacity} · ${game.campaign?'请填满卡槽':'至少 6 张'}`;
+    $('#choice-count').textContent = replacing ? `正在替换${PLANTS[replacing].name} · 请选择新卡` : game.canStart ? `准备出发！已选 ${game.seeds.length} / ${game.seedCapacity}` : `选择植物 ${game.seeds.length} / ${game.seedCapacity} · ${game.campaign?'请填满卡槽':'至少 6 张'}`;
     $<HTMLButtonElement>('#clear-seeds').disabled = game.seeds.length === game.davePicks.length;
     $<HTMLButtonElement>('#start').disabled = !game.canStart;
     renderSeedBank(); hud.update(game, '');
   };
   const choose = (kind: PlantKind) => {
+    if (game.davePicks.includes(kind)) return;
+    if (!game.seeds.includes(kind) && game.seeds.length === game.seedCapacity && replacing === null) { $('#choice-count').textContent='卡槽已满 · 点击上方卡片选择替换'; return; }
     if(kind==='imitater'&&!game.seeds.includes(kind)){
       $('#plant-detail').innerHTML=`<h4>模仿哪一种植物？</h4><div class=imitater-options>${game.config.seeds.filter(k=>!isUpgrade(k)&&k!=='imitater').map(k=>`<button class=text-button data-imitate="${k}">${PLANTS[k].name}</button>`).join('')}</div>`;
-      document.querySelectorAll<HTMLButtonElement>('[data-imitate]').forEach(b=>b.onclick=()=>{game.chooseImitater(b.dataset.imitate as PlantKind);update();$('#plant-detail').innerHTML=`<h4>模仿者 · ${PLANTS[game.imitaterTarget!].name}</h4><p>独立冷却，种下后变身。</p>`;});return;
+      document.querySelectorAll<HTMLButtonElement>('[data-imitate]').forEach(b=>b.onclick=()=>{game.chooseImitater(b.dataset.imitate as PlantKind,replacing ?? undefined);replacing=null;update();$('#plant-detail').innerHTML=`<h4>模仿者 · ${PLANTS[game.imitaterTarget!].name}</h4><p>独立冷却，种下后变身。</p>`;});return;
     }
     const removing = game.seeds.includes(kind);
     const from = $(removing ? `[data-remove="${kind}"]` : `[data-choice="${kind}"]`).getBoundingClientRect();
-    game.chooseSeed(kind); update();
+    if (!removing && replacing !== null) game.replaceSeed(replacing,kind);
+    else game.chooseSeed(kind);
+    replacing = null; update();
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
       const target = $(removing ? `[data-choice="${kind}"]` : `[data-remove="${kind}"]`);
       const to = target.getBoundingClientRect();
@@ -276,10 +308,9 @@ function seedChooser() {
   document.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach(button => {
     const kind = button.dataset.choice as PlantKind;
     const detail = () => { $('#plant-detail').innerHTML = `<h4>${PLANTS[kind].name} · ${game.plantCost(kind)} 阳光</h4><p>${PLANT_DESCRIPTIONS[kind]}</p><small>冷却 ${PLANTS[kind].cooldown / 100} 秒</small>`; };
-    button.onpointerenter = detail; button.onfocus = detail;
-    button.onclick = () => { detail(); choose(kind); };
+    bindSeedInspection(button, detail, () => choose(kind));
   });
-  $('#clear-seeds').onclick = () => { for (const kind of [...game.seeds]) game.chooseSeed(kind); update(); };
+  $('#clear-seeds').onclick = () => { replacing=null; for (const kind of [...game.seeds]) game.chooseSeed(kind); update(); };
   update();
 }
 function updateConveyor() {
@@ -362,7 +393,7 @@ function updateHud() {
   if (game.phase === 'playing') {
     if(game.cannonTarget!==null)advice='点击庭院中的目标位置，发射玉米加农炮 · 右键取消';
     else if (game.flagWarningIn > 0) advice = '一大波僵尸即将来袭！';
-    else if (game.digging) advice = '点击要铲除的植物，右键取消';
+    else if (game.digging) advice = '点击铲除高亮植物 · 触屏可按住滑动预览';
     else if (game.config.mode === 'bowling' && (game.selected || game.planted === 0)) advice = '选择传送带上的坚果，在红线左侧滚出';
     else if (game.boss) advice = game.boss.ball ? (game.boss.ball.kind==='fire'?'火球来袭！使用寒冰菇消除':'冰球来袭！在同排使用火爆辣椒') : ['headBefore','spit','headAfter'].includes(game.boss.phase)?'僵王低头了！集中攻击，寒冰菇可以延长攻击时间':'传送带供应植物 · 保留寒冰菇与辣椒应对冰火球';
     else if (game.config.mode === 'conveyor' && (game.selected || game.planted === 0)) advice = '从传送带取卡，种在空草地上，无需阳光';
@@ -376,7 +407,8 @@ function updateHud() {
     else if (game.ticks < messageUntil) advice = game.wave === game.config.waveCount ? game.isSurvival ? '本轮最后一波！' : '最后一波！' : '僵尸来了！';
     else if (game.selected) advice = `把${PLANTS[game.selected].name}种在草地上`;
   }
-  advice=tutorialHint(game)||(game.cannonTarget!==null?'点击战场选择炮击位置 · Esc 取消':advice);
+  advice=tutorialHint(game)||(game.cannonTarget!==null?'点击目标发射 · 触屏可按住滑动瞄准':advice);
+  $('#cancel-action').hidden = game.phase !== 'playing' || !(game.selected || game.digging || game.cannonTarget !== null);
   updateConveyor(); hud.update(game, advice);
   const target=game.tutorial==='shovel'&&!game.digging?'#shovel':game.tutorial==='pea'&&!game.selected?'[data-plant=peashooter]':(game.tutorial==='sunflower'||game.tutorial==='more-sun')&&!game.selected?'[data-plant=sunflower]':null;
   if(target!==tutorialTarget){document.querySelector('.tutorial-target')?.classList.remove('tutorial-target');if(target)document.querySelector(target)?.classList.add('tutorial-target');tutorialTarget=target;}
@@ -393,7 +425,8 @@ function pause() {
 }
 $('#pause').onclick = pause;
 $<HTMLInputElement>('#auto-sun').onchange = () => { game.autoCollectSun = $<HTMLInputElement>('#auto-sun').checked; };
-$('#shovel').onclick = () => { game.toggleShovel(); updateHud(); };
+$('#shovel').onclick = () => { clearPlacementFeedback(); game.toggleShovel(); updateHud(); };
+$('#cancel-action').onclick = () => { clearPlacementFeedback(); game.cancelSelection(); scene.setPointer(null); updateHud(); };
 $('#speed').onclick = () => {
   clock.speed = (clock.speed === 1 ? 2 : clock.speed === 2 ? 4 : 1) as GameSpeed;
   $('#speed').textContent = `${clock.speed}×`;
@@ -450,12 +483,13 @@ $('#help').onclick = () => {
 window.addEventListener('keydown', event => {
   if (dialogueAdvance && ['Enter',' '].includes(event.key)) { event.preventDefault(); dialogueAdvance(); return; }
   if (event.repeat || screen === 'loading') return;
-  if (event.key === 'Escape') { if (screen === 'menu') closeMenuPanel(); else if (game.selected || game.digging || game.cannonTarget!==null) { game.cancelSelection(); updateHud(); } else pause(); }
+  if (event.key === 'Escape') { clearPlacementFeedback(); if (screen === 'menu') closeMenuPanel(); else if (game.selected || game.digging || game.cannonTarget!==null) { game.cancelSelection(); updateHud(); } else pause(); }
   if (screen === 'battle' && ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].includes(event.key)) {
     if (game.hasConveyor) {
       const packet = game.conveyor[Number(event.key) - 1]; if (packet) { game.selectPacket(packet.id); updateHud(); }
       return;
     }
+    clearPlacementFeedback();
     const kind = game.seeds[event.key === '0' ? 9 : Number(event.key) - 1]; if (kind) { game.select(kind); updateHud(); }
   }
 });
@@ -475,10 +509,8 @@ async function ensureScene() {
     const canvas = scene.app.canvas;
     canvas.addEventListener('webglcontextlost', () => showDiagnostic(new Error('WebGL context lost: GPU rendering context was lost.')));
     const point = (event: PointerEvent) => { const bounds = canvas.getBoundingClientRect(); return { x: (event.clientX - bounds.left) * BOARD.width / bounds.width, y: (event.clientY - bounds.top) * BOARD.height / bounds.height }; };
-    canvas.addEventListener('pointermove', event => scene.setPointer(point(event))); canvas.addEventListener('pointerleave', () => scene.setPointer(null));
-    canvas.addEventListener('pointerdown', event => {
-      if (screen !== 'battle' || game.phase !== 'playing' || event.button !== 0) return;
-      const { x, y } = point(event); const sun = [...game.suns].reverse().find(sun => Math.hypot(sun.x - x, sun.y - y) <= 35);
+    const operate = (x: number, y: number) => {
+      const sun = [...game.suns].reverse().find(sun => Math.hypot(sun.x-x,sun.y-y)<=35);
       const column = Math.floor((x - BOARD.left) / BOARD.cellWidth), row = game.rowAt(y,x);
       const drop = game.seedDrops.find(d => Math.abs(x - (BOARD.left + d.column * 80 + 40)) < 27 && Math.abs(y - (game.rowY(d.row) - 40)) < 38);
       const coin=[...game.coins].reverse().find(coin=>Math.hypot(coin.x-x,coin.y-y)<=22);
@@ -488,10 +520,23 @@ async function ensureScene() {
       else if(!game.selected&&!game.digging&&game.aimCannon(column,row)){}
       else if (game.config.mode === 'vase' && !game.selected && drop) game.selectDrop(drop.id);
       else if (game.config.mode === 'vase' && !game.selected && game.vases.some(v => v.column === column && v.row === row)) game.openVase(column,row);
-      else if (game.config.mode === 'whack' && !game.selected && !game.digging) game.whack(x, y); else if (game.digging) game.dig(Math.floor((x - BOARD.left) / BOARD.cellWidth), game.rowAt(y,x)); else game.plant(Math.floor((x - BOARD.left) / BOARD.cellWidth), game.rowAt(y,x));
+      else if (game.config.mode === 'whack' && !game.selected && !game.digging) game.whack(x, y);
+      else if (game.digging) game.dig(column,row);
+      else if (game.selected) {
+        const kind = game.selected;
+        if (game.plant(column,row)) clearPlacementFeedback();
+        else placementFeedback(game.plantingIssue(kind,column,row)!,x,y);
+      }
       updateHud();
+    };
+    bindBattlePointer(canvas, {
+      point,
+      enabled: () => screen === 'battle' && game.phase === 'playing',
+      action: () => game.selected || game.digging || game.cannonTarget !== null ? `${game.selected}:${game.selectedPacket}:${game.selectedDrop}:${game.digging}:${game.cannonTarget}` : null,
+      collecting: (x,y) => game.suns.some(sun=>Math.hypot(sun.x-x,sun.y-y)<=35) || game.coins.some(coin=>Math.hypot(coin.x-x,coin.y-y)<=22),
+      preview: pointer => scene.setPointer(pointer), operate,
     });
-    canvas.addEventListener('contextmenu', event => { event.preventDefault(); game.cancelSelection(); updateHud(); });
+    canvas.addEventListener('contextmenu', event => { event.preventDefault(); clearPlacementFeedback(); game.cancelSelection(); updateHud(); });
     scene.app.ticker.add(ticker => {
       if (screen === 'battle') clock.advance(game, ticker.deltaMS, () => scene.captureMovement());
       for (const event of game.drainEvents()) {
