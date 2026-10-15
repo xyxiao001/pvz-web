@@ -41,6 +41,8 @@ def convert(path):
 with ThreadPoolExecutor(max_workers=4) as pool:
     list(pool.map(convert,static_files))
 (output/'animations.json').write_text(json.dumps({'animations':animations},separators=(',',':')))
+frame_effects = {'sun','fume-cloud','jalapeno-fire','wallnut-roll','explodenut'}
+(output/'effects.json').write_text(json.dumps({'animations':{name:clip for name,clip in animations.items() if name in frame_effects}},separators=(',',':')))
 # Remove pages superseded by the new layout from this generated directory.
 used={p for clip in animations.values() for p in clip['pages']}
 for page in (output/'clips').glob('*.webp'):

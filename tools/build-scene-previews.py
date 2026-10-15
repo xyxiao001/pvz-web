@@ -18,6 +18,6 @@ for scene in ['day','night','pool','fog','roof']:
     image = Image.open(source)
     image.thumbnail((800,800), Image.Resampling.LANCZOS)
     target = out / (scene+'.webp')
-    image.save(target, lossless=True, quality=90, method=6, exact=True)
+    image.save(target, quality=98, method=6, exact=True)
     report.append({'scene':scene,'sourceBytes':source.stat().st_size,'previewBytes':target.stat().st_size,'size':image.size})
 print(json.dumps(report,indent=2))

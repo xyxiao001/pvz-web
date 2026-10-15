@@ -12,3 +12,6 @@
 @media (orientation:landscape) and (max-height:600px) and (max-width:1100px){
   .seed-chooser .seed-options{max-height:calc(100% - 136px)}
 }
+
+/* Cooldown animates in the compositor without resizing the card overlay. */
+.cooldown-cover{height:100%;transform:scaleY(0);transform-origin:top}

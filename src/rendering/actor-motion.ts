@@ -11,6 +11,24 @@ export type ActorMotionClip = { duration: number; origin: [number, number]; scal
 export type ActorDefinition = { clips: Record<string, ActorMotionClip>; frames: Record<string, [number, number, number, number]> };
 type Loaded = { definition: ActorDefinition; textures: Record<string, Texture> };
 
+type RigLayout = { partCounts: number[]; bound: Map<Group, Matrix> };
+// Damage/attack clips share one immutable allocation layout per loaded family.
+// Spawning another zombie only creates its display objects, not this metadata.
+const layouts = new WeakMap<ActorDefinition, RigLayout>();
+function rigLayout(definition: ActorDefinition): RigLayout {
+  let layout = layouts.get(definition);
+  if (!layout) {
+    const clips = Object.values(definition.clips);
+    const partCounts = Array.from({ length: Math.max(...clips.map(c => c.groups.length)) }, (_, i) =>
+      Math.max(...clips.map(c => c.groups[i]?.tracks.length ?? 0)));
+    const bound = new Map<Group, Matrix>();
+    for (const clip of clips) for (const group of clip.groups) if (group.attachment)
+      bound.set(group, poseMatrix(new Matrix(), group.attachment[0], group.attachment[0], 0).invert());
+    layout = { partCounts, bound }; layouts.set(definition, layout);
+  }
+  return layout;
+}
+
 // One sprite per source image track; never cross-fade entire silhouettes.
 // Parts are allocated once per actor, including slots needed by later damage/death states.
 export class ActorRig {
@@ -20,19 +38,17 @@ export class ActorRig {
   private lastLoop = false;
   private matrix = new Matrix();
   private groups: { root: Container; parts: Sprite[] }[];
-  private bound = new Map<Group, Matrix>();
+  private bound: Map<Group, Matrix>;
   constructor(readonly family: string, private loaded: Loaded) {
-    const clips = Object.values(loaded.definition.clips);
-    this.groups = Array.from({ length: Math.max(...clips.map(c => c.groups.length)) }, (_, i) => {
+    const layout = rigLayout(loaded.definition);
+    this.bound = layout.bound;
+    this.groups = layout.partCounts.map(count => {
       const root = new Container(); this.root.addChild(root);
-      const parts = Array.from({ length: Math.max(...clips.map(c => c.groups[i]?.tracks.length ?? 0)) }, () => {
+      const parts = Array.from({ length: count }, () => {
         const sprite = new Sprite(); root.addChild(sprite); return sprite;
       });
       return { root, parts };
     });
-    for (const clip of clips) for (const group of clip.groups) if (group.attachment) {
-      this.bound.set(group, poseMatrix(new Matrix(), group.attachment[0], group.attachment[0], 0).invert());
-    }
   }
   healthTop(clip: string) { return this.loaded.definition.clips[clip].healthTop; }
   render(name: string, ticks: number, loop: boolean) {

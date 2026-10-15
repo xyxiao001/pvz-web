@@ -77,3 +77,19 @@ test('binary animation selection preserves exact frame boundaries and sub-tick s
     for(let t=0;t<total;t+=.25)assert.equal(animationFrame(ends,t),ends.findIndex(end=>t<end));
   }
 });
+
+import effects from '../public/assets/runtime/effects.json';
+import { ACTOR_MOTION } from '../src/rendering/actor-motion';
+import { GIANT_CLIPS } from '../src/rendering/giant-motion';
+import { hasPlantMotionClip } from '../src/rendering/plant-motion';
+test('small effects manifest preserves every frame and all adventure/survival animation dependencies', () => {
+  assert.deepEqual(Object.keys(effects.animations).sort(), ['explodenut','fume-cloud','jalapeno-fire','sun','wallnut-roll']);
+  for (const [name, clip] of Object.entries(effects.animations))
+    assert.deepEqual(clip, runtime.animations[name as keyof typeof runtime.animations]);
+  const available = [...new Set([...Object.keys(effects.animations), ...Object.keys(ACTOR_MOTION), ...GIANT_CLIPS])];
+  for (const game of [...LEVEL_IDS.map(l=>new Game(l,1)), ...SURVIVAL_SCENES.map(s=>new Game(9,1,'endless',s))]) {
+    game.seeds=[...game.config.seeds];
+    const previous=animationNames(game,[...new Set([...names,...Object.keys(ACTOR_MOTION)])]).filter(n=>!hasPlantMotionClip(n));
+    assert.deepEqual(animationNames(game,available).sort(),previous.sort(),game.config.title);
+  }
+});

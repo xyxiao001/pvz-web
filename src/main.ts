@@ -1,7 +1,7 @@
 import { bindBattlePointer } from './platform/battle-pointer';
 import { bindSeedInspection } from './platform/seed-inspection';
 import { PlayerProfile, SHOP, type ShopItem } from './platform/profile';
-import { DIALOGUE, adventureDialogue, tutorialHint } from './game/dialogue';
+import { DIALOGUE, adventureDialogue, tutorialHighlight, tutorialHint } from './game/dialogue';
 import './campaign.css';
 import { PLANT_DESCRIPTIONS } from './game/plant-descriptions';
 import './style.css';
@@ -416,7 +416,7 @@ function updateHud() {
   advice=tutorialHint(game)||(game.cannonTarget!==null?'点击目标发射 · 触屏可按住滑动瞄准':advice);
   $('#cancel-action').hidden = game.phase !== 'playing' || !(game.selected || game.digging || game.cannonTarget !== null);
   updateConveyor(); hud.update(game, advice);
-  const target=game.tutorial==='shovel'&&!game.digging?'#shovel':game.tutorial==='pea'&&!game.selected?'[data-plant=peashooter]':(game.tutorial==='sunflower'||game.tutorial==='more-sun')&&!game.selected?'[data-plant=sunflower]':null;
+  const target=tutorialHighlight(game);
   if(target!==tutorialTarget){document.querySelector('.tutorial-target')?.classList.remove('tutorial-target');if(target)document.querySelector(target)?.classList.add('tutorial-target');tutorialTarget=target;}
   if (lastPhase !== game.phase) {
     lastPhase = game.phase; phasePanel();

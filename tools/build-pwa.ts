@@ -35,7 +35,7 @@ export function pwa(): Plugin {
         .filter(p => p === 'index.html' || p === 'manifest.webmanifest' || p.startsWith('icons/') && p !== 'icons/icon-master.png'
           || /^assets\/[^/]+\.(js|css)$/.test(p) || p.startsWith('assets/runtime/') || (/^assets\/(original|music)\/[^/]+\.(mp3|ogg)$/.test(p)))
         // Retain old URLs on the server without downloading unused baked pages in new installs.
-        .filter(p => !replacedAnimationPage(p)).sort();
+        .filter(p => !replacedAnimationPage(p) && p !== 'assets/runtime/animations.json').sort();
       const assets: Record<string, { revision: string; size: number }> = {};
       for (const path of files) { const body = await readFile(resolve(out, path)); assets[path] = { revision: createHash('sha256').update(body).digest('hex'), size: body.length }; }
       const shell = files.filter(p => p === 'index.html' || p === 'manifest.webmanifest' || p.startsWith('icons/') || p.endsWith('.css') || startup.has(p));

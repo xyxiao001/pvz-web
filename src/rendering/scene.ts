@@ -1,6 +1,6 @@
 import { ACTOR_MOTION, ActorMotion, hasActorMotion, type ActorRig } from './actor-motion';
 import { ZombieHealthBar } from './zombie-health';
-import { GiantMotion, hasGiantMotion, type GiantRig } from './giant-motion';
+import { GIANT_CLIPS, GiantMotion, hasGiantMotion, type GiantRig } from './giant-motion';
 import { hasPlantMotion, hasPlantMotionClip, PlantMotion, type PlantRig } from './plant-motion';
 import { renderResolution } from './resolution';
 import { battleViewport, viewportToWorld, worldToViewport, type BattleDisplayMode } from './viewport';
@@ -12,7 +12,7 @@ import { BossArt } from './boss';
 import 'pixi.js/prepare';
 import { Application, Assets, Container, Graphics, Rectangle, Sprite, Text, Texture } from 'pixi.js';
 import { BOARD, cellX, PLANTS, isPool } from '../game/config';
-import { headless, type Game, type GameEvent } from '../game/model';
+import { headless, type Game, type GameEvent, type Plant } from '../game/model';
 import { walkingCycleTicks } from '../game/zombie-motion';
 
 import { animationNames, animationFrame, combatTextureFiles } from './asset-plan';
@@ -56,6 +56,7 @@ export class Scene {
   private hoverKey = '';
   private lawnTextures: Texture[] = [];
   private vaseFrames: Texture[] = [];
+  private kelpTargets = new Map<number, NonNullable<Plant['kelp']>>();
   private explosions: { x: number; y: number }[] = [];
 
   private viewport = battleViewport(BOARD.width, BOARD.height);
@@ -94,6 +95,9 @@ export class Scene {
     this.viewport = battleViewport(host.clientWidth, host.clientHeight, this.displayMode);
     await this.app.init({ width: host.clientWidth, height: host.clientHeight, backgroundAlpha: 0, antialias: true,
       resolution: renderResolution(BOARD.width * this.viewport.scale, window.devicePixelRatio) / this.viewport.scale, autoDensity: true, autoStart: false });
+    // Pointer handling uses the canvas DOM listener and world-coordinate picking.
+    // Pixi's scene-graph hit testing would traverse every animated part needlessly.
+    this.app.stage.eventMode = 'none';
     host.appendChild(this.app.canvas);
     this.app.canvas.style.width = '100%';
     this.app.canvas.style.height = '100%';
@@ -161,9 +165,9 @@ export class Scene {
     await this.plantMotion.prepare([...new Set([...game.seeds, ...(game.imitaterTarget?[game.imitaterTarget]:[]), ...game.plants.map(p => p.kind)])].filter(hasPlantMotion), progress, texture => this.app.renderer.prepare.upload(texture));
     if(game.boss&&!this.bossArt){const bossArt=new BossArt();await bossArt.load(progress);bossArt.setViewport(this.viewport);bossArt.root.zIndex=590;this.world.addChild(bossArt.root);this.bossArt=bossArt;}
     const base = `${import.meta.env.BASE_URL}assets/runtime/`;
-    this.animationData ??= fetch(base + 'animations.json').then(response => response.json());
+    this.animationData ??= fetch(base + 'effects.json').then(response => response.json());
     const { animations } = await this.animationData;
-    const needed = new Set(animationNames(game, [...new Set([...Object.keys(animations),...Object.keys(ACTOR_MOTION)])]).filter(name => !hasPlantMotionClip(name)));
+    const needed = new Set(animationNames(game, [...new Set([...Object.keys(animations),...Object.keys(ACTOR_MOTION),...GIANT_CLIPS])]).filter(name => !hasPlantMotionClip(name)));
     for (const effect of this.effects) if (effect.actor) needed.add(effect.actor.clip);
     for (const [name, clip] of Object.entries(this.clips)) if (!needed.has(name)) {
       for (const texture of clip.frames) texture.destroy();
@@ -229,6 +233,7 @@ export class Scene {
     this.projectilePool = [];
     for (const layer of this.projectileLayers.values()) layer.destroy();
     this.projectileLayers.clear();
+    this.kelpTargets.clear();
     this.actors.clear(); this.effects = []; this.explosions = []; this.time = 0; this.healthKey = ''; this.hoverKey = '';
     this.hover.clear(); this.target.clear(); this.health.clear(); this.fog.removeChildren().forEach(child=>child.destroy()); this.fogKey = '';
   }
@@ -448,7 +453,8 @@ export class Scene {
       actor.root.position.set(cellX(crater.column),game.rowY(crater.row));
       actor.root.alpha=crater.remaining<9000?.6:1;
     }
-    const kelpTargets = new Map(game.plants.filter(p => p.kelp).map(p => [p.kelp!.target, p.kelp!]));
+    const kelpTargets = this.kelpTargets; kelpTargets.clear();
+    for (const plant of game.plants) if (plant.kelp) kelpTargets.set(plant.kelp.target, plant.kelp);
     for (const plant of game.plants) {
       const sleeping = game.sleeping(plant);
       const key = `p${plant.id}`; const actor = this.actor(key, plant.row * 100 + (['lilypad','flowerpot'].includes(plant.kind) ? 7 : plant.kind==='pumpkin'?18:plant.kind==='coffeebean'?19:10));
@@ -602,7 +608,7 @@ export class Scene {
       } else actor.root.destroy({ children: true });
       this.actors.delete(key);
     }
-    this.explosions = [];
+    this.explosions.length = 0;
     let healthKey = '';
     for (const plant of game.plants) if (plant.health < PLANTS[plant.kind].health) healthKey += `${plant.id}:${plant.health};`;
     if (healthKey !== this.healthKey) {
@@ -634,12 +640,14 @@ export class Scene {
       this.weather.rect(-this.viewport.x / this.viewport.scaleX,0,this.viewport.width / this.viewport.scaleX,600).fill({color:0x000000,alpha:flash.dark});
       this.weather.rect(-this.viewport.x / this.viewport.scaleX,0,this.viewport.width / this.viewport.scaleX,600).fill({color:0xffffff,alpha:flash.white});
     }
-    this.effects = this.effects.filter(effect => {
+    let remainingEffects = 0;
+    for (const effect of this.effects) {
       const age = this.time - effect.born;
       if (effect.actor) this.animate(effect.actor, effect.actor.clip, false);
       else effect.node.alpha = 1 - age / effect.duration;
-      if (age >= effect.duration) { effect.node.destroy({ children: true }); return false; }
-      return true;
-    });
+      if (age >= effect.duration) effect.node.destroy({ children: true });
+      else this.effects[remainingEffects++] = effect;
+    }
+    this.effects.length = remainingEffects;
   }
 }

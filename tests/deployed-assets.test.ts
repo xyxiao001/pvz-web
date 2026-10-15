@@ -31,13 +31,15 @@ test('deployment keeps old animation URLs while new offline downloads use native
       );
     }
     assert.ok(pages.has('clips/sunshroom-0.webp'));
+    assert.deepEqual(JSON.parse(await readFile(join(output, 'assets/runtime/effects.json'), 'utf8')).animations.sun, manifest.animations.sun);
 
     const worker = await readFile(join(output, 'sw.js'), 'utf8');
     const assets = runInNewContext(`${worker.split('\n')[0]}; ASSETS;`) as Record<string, unknown>;
+    assert.ok(!('assets/runtime/animations.json' in assets));
     for (const path of ['clips/sunshroom-0.webp', 'clips/peashooter-0.webp', 'clips/melonpult-attack-0.webp']) {
       assert.ok(!(`assets/runtime/${path}` in assets), `New offline bundle must not download replaced clip: ${path}`);
     }
-    for (const path of ['actor-motion/sunshroom.json', 'actor-motion/sunshroom.webp', 'plant-motion/melonpult.json', 'plant-motion/melonpult.webp', 'clips/sun-0.webp']) {
+    for (const path of ['actor-motion/sunshroom.json', 'actor-motion/sunshroom.webp', 'plant-motion/melonpult.json', 'plant-motion/melonpult.webp', 'clips/sun-0.webp', 'effects.json']) {
       assert.ok(`assets/runtime/${path}` in assets, `Current renderer resource must remain offline: ${path}`);
     }
   } finally {

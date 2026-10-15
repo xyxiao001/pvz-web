@@ -26,15 +26,28 @@ export function adventureDialogue(game: Game, profile: ProfileData) {
   if (level===50) return 2300;
   return null;
 }
+// Hints and highlights describe the same currently available action.
+export function tutorialHighlight(game: Game): string | null {
+  if (game.phase !== 'playing') return null;
+  if (game.tutorial === 'shovel') return game.digging ? null : '#shovel';
+  const kind = game.tutorial === 'pea' ? 'peashooter' : game.tutorial === 'sunflower' || game.tutorial === 'more-sun' ? 'sunflower' : null;
+  if (!kind || game.selected || game.sun < game.plantCost(kind) || game.cooldown(kind) > 0) return null;
+  return `[data-plant=${kind}]`;
+}
 export function tutorialHint(game: Game) {
+  if (game.phase !== 'playing') return '';
   if (game.tutorial==='shovel') return game.digging ? '点击豌豆射手，把草坪上的三株植物全部铲掉！' : '点击铲子，清理草坪上的三株植物！';
   if (game.tutorial==='pea') {
-    if (game.selected==='peashooter') return '点击中间的草坪，种下豌豆射手！';
-    if (game.planted===0) return '点击上方的豌豆射手种子包！';
     if (game.sun<100) return '点击落下的阳光，收集到 100 阳光再种一株！';
     if (game.cooldown('peashooter')>0) return '种得不错！等种子包恢复后，再种一株豌豆射手。';
+    if (game.selected==='peashooter') return '点击中间的草坪，种下豌豆射手！';
+    if (game.planted===0) return '点击上方的豌豆射手种子包！';
     return '阳光够了！点击种子包，再种一株豌豆射手！';
   }
-  if (game.tutorial==='sunflower'||game.tutorial==='more-sun') return game.selected==='sunflower' ? '点击空草地种下向日葵。试着种至少三株！' : '向日葵非常重要！试着种至少三株，为防线提供阳光。';
+  if (game.tutorial==='sunflower'||game.tutorial==='more-sun') {
+    if (game.sun<50) return '先收集阳光，凑够 50 阳光再种向日葵。';
+    if (game.cooldown('sunflower')>0) return '等向日葵种子包恢复后，继续种植。试着种至少三株！';
+    return game.selected==='sunflower' ? '点击空草地种下向日葵。试着种至少三株！' : '向日葵非常重要！试着种至少三株，为防线提供阳光。';
+  }
   return '';
 }

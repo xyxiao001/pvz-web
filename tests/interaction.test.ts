@@ -108,3 +108,20 @@ test('touching a ready cannon selects it without firing on the same gesture',()=
   const t=input();t.action=null;t.canvas.pointer('pointerdown');t.action='cannon-12';t.canvas.pointer('pointerup');assert.equal(t.calls.length,1);
   t.canvas.pointer('pointerdown');assert.equal(t.calls.length,1);t.canvas.pointer('pointerup');assert.equal(t.calls.length,2);
 });
+
+import { tutorialHighlight, tutorialHint } from '../src/game/dialogue';
+test('tutorial highlights only the action its hint requests, including cooldown and pause', () => {
+  const g = new Game(1, 42); g.phase='playing'; g.tutorial='pea';
+  assert.equal(tutorialHighlight(g),'[data-plant=peashooter]');
+  g.sun=50;g.planted=1;g.cooldowns.peashooter=700;
+  assert.equal(tutorialHighlight(g),null);assert.match(tutorialHint(g),/收集/);
+  g.selected='peashooter';assert.match(tutorialHint(g),/收集/);
+  g.sun=100;assert.match(tutorialHint(g),/恢复/);assert.equal(tutorialHighlight(g),null);
+  g.cooldowns.peashooter=0;assert.match(tutorialHint(g),/中间的草坪/);
+  g.selected=null;assert.equal(tutorialHighlight(g),'[data-plant=peashooter]');
+  g.phase='paused';assert.equal(tutorialHint(g),'');assert.equal(tutorialHighlight(g),null);
+  g.phase='playing';g.tutorial='sunflower';g.sun=25;
+  assert.match(tutorialHint(g),/50 阳光/);assert.equal(tutorialHighlight(g),null);
+  g.sun=50;g.cooldowns.sunflower=100;assert.match(tutorialHint(g),/恢复/);assert.equal(tutorialHighlight(g),null);
+  g.cooldowns.sunflower=0;assert.equal(tutorialHighlight(g),'[data-plant=sunflower]');
+});

@@ -80,3 +80,23 @@ test('frozen actor pose is reused, then resumes and changes clips without stale 
   updates=0;rig.render('zombie-eat',16,true);assert.ok(updates>0);
   rig.root.destroy({children:true});
 });
+
+test('shared attachment layout keeps flag animations independent between zombies',()=>{
+  const definition=definitions.zombie;
+  const textures=Object.fromEntries(Object.keys(definition.frames).map(name=>[name,Texture.WHITE]));
+  const first=new ActorRig('zombie',{definition,textures});
+  const second=new ActorRig('zombie',{definition,textures});
+  const pose=(rig:ActorRig)=>rig.root.children.map(group=>{
+    group.updateLocalTransform();
+    const m=group.localTransform;
+    return [m.a,m.b,m.c,m.d,m.tx,m.ty];
+  });
+  first.render('flag-walk',15,true);const expected=pose(first);
+  second.render('flag-eat',60,true);
+  assert.deepEqual(pose(first),expected);
+  first.render('flag-walk',40,true);first.render('flag-walk',15,true);
+  assert.deepEqual(pose(first),expected);
+  first.root.destroy({children:true});
+  second.render('flag-walk',15,true);assert.deepEqual(pose(second),expected);
+  second.root.destroy({children:true});
+});
