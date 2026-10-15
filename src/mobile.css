@@ -6,7 +6,7 @@
   .game-frame{--field-height:min(calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 4px),calc((100dvw - env(safe-area-inset-left) - env(safe-area-inset-right) - 204px)*.75));--field-width:calc(var(--field-height)*4/3);--rail:calc((100% - var(--field-width))/2)}
   .page.in-battle #canvas-host{top:50%;left:50%;width:var(--field-width);height:var(--field-height);transform:translate(-50%,-50%)}
   .page.in-battle #battle-hud:before{content:"";position:absolute;right:0;top:0;bottom:0;width:var(--rail);background:linear-gradient(90deg,#31220f,#72502c);border-left:2px solid #ad8648}
-  .page.in-battle .seed-bank{left:0;top:0;width:var(--rail);height:100%;background:linear-gradient(90deg,#72502c,#31220f);border-right:2px solid #ad8648}
+  .page.in-battle .seed-bank{border-image:none;left:0;top:0;width:var(--rail);height:100%;background:linear-gradient(90deg,#72502c,#31220f);border-right:2px solid #ad8648}
   .page.in-battle .seed-bank strong{top:7px;left:10px;width:calc(100% - 20px);height:39px;border:2px solid #8f7138;border-radius:5px;background:#eadb9e;color:#2b3014;font-size:23px;line-height:35px}
   .page.in-battle .seed-bank #seed-cards{top:54px;left:6px;width:calc(100% - 12px);height:calc(100% - 62px);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr));justify-items:center;align-items:center;gap:3px}
   .page.in-battle .seed-card{height:100%;max-height:65px;width:auto;aspect-ratio:50/70;max-width:100%;border-radius:2px}

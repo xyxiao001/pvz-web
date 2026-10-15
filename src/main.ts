@@ -162,12 +162,35 @@ function seedChooser() {
     <aside class="chooser-details"><span class="kicker">${game.isSurvival ? `生存 · ${SURVIVAL_MODE_NAMES[game.scenario as SurvivalMode]} · 第 ${game.survivalStage + 1} 轮` : `冒险模式 ${game.config.label}`}</span><h3>${game.config.title}</h3><p>${game.isSurvival ? `已守住 ${game.survivalFlags} 旗 · ${game.sun} 阳光` : SCENE_NAMES[game.config.environment]}</p><div class="chooser-enemies"><h4>${game.isSurvival ? '本轮僵尸' : '本关僵尸'}</h4><p>${enemies.map(kind => ZOMBIE_NAMES[kind]).join(' · ')}</p></div><p class="chooser-tip">${game.isSurvival ? '可携带 6–10 张植物卡' : '选满六张卡片后出发'}<br/>点击上方卡片可放回</p><div id="plant-detail" class="plant-detail"><h4>了解你的植物</h4><p>悬停或聚焦卡片，查看用途与种植条件。</p></div></aside>
     <button class="wood-button chooser-back back-menu">${backLabel()}</button>`, 'seed-chooser');
   overlay.classList.add('chooser-overlay'); $('#battle-hud').classList.add('choosing');
+  const chosen = $('#chosen-seeds');
+  const chosenCards = new Map<PlantKind, HTMLButtonElement>();
+  const emptySlots = Array.from({ length: game.seedCapacity }, (_, index) => {
+    const slot = document.createElement('span'); slot.className = 'empty-seed';
+    slot.setAttribute('aria-label', `空槽位 ${index + 1}`); return slot;
+  });
   const update = () => {
-    $('#chosen-seeds').innerHTML = Array.from({ length: game.seedCapacity }, (_, index) => {
+    // Keep decoded images and in-flight animations on cards already selected.
+    for (const [kind, card] of chosenCards) if (!game.seeds.includes(kind)) {
+      card.remove(); chosenCards.delete(kind);
+    }
+    const slots = Array.from({ length: game.seedCapacity }, (_, index) => {
       const kind = game.seeds[index];
-      return kind ? `<button class="chosen-seed" data-remove="${kind}" aria-label="放回${PLANTS[kind].name}">${seedImage(kind, game.plantCost(kind))}</button>` : `<span class="empty-seed" aria-label="空槽位 ${index + 1}"></span>`;
-    }).join('');
-    document.querySelectorAll<HTMLButtonElement>('[data-remove]').forEach(button => button.onclick = () => { choose(button.dataset.remove as PlantKind); });
+      if (!kind) return emptySlots[index];
+      let card = chosenCards.get(kind);
+      if (!card) {
+        card = document.createElement('button'); card.className = 'chosen-seed';
+        card.dataset.remove = kind; card.setAttribute('aria-label', `放回${PLANTS[kind].name}`);
+        card.innerHTML = seedImage(kind, game.plantCost(kind));
+        // Selected cards are visible immediately and may fly from below the viewport.
+        card.querySelectorAll('img').forEach(image => { image.loading = 'eager'; });
+        card.onclick = () => choose(kind); chosenCards.set(kind, card);
+      }
+      return card;
+    });
+    slots.forEach((slot, index) => {
+      if (chosen.children[index] !== slot) chosen.insertBefore(slot, chosen.children[index] ?? null);
+    });
+    while (chosen.children.length > slots.length) chosen.lastElementChild!.remove();
     document.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach(button => {
       const selected = game.seeds.includes(button.dataset.choice as PlantKind);
       button.setAttribute('aria-pressed', String(selected));

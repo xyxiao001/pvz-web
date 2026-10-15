@@ -114,10 +114,12 @@ footer{color:#8d9d76;font-size:11px}
 @media(max-width:650px){.page.in-battle{width:100%}}
 
 /* Endless keeps ten visible packets in the same HUD strip, with controls stacked beside it. */
-.endless-game .seed-bank{width:76%}
-.endless-game #seed-cards{gap:.3cqw}
+/* Widen the card well only; the sun counter keeps the original 150×174 px slice. */
+.endless-game .seed-bank{width:76%;background:none;border:0 solid transparent;border-image:url('/assets/runtime/original/seedbank.webp') 0 20 0 150 fill / 0 1.25cqw 0 9.375cqw / 0 stretch}
+.endless-game .seed-bank strong{left:2.23cqw;width:6.69cqw}
+.endless-game #seed-cards{left:9.4775cqw;gap:.3cqw}
 .endless-game .seed-card{width:5.9cqw}
-.endless-game .seed-chooser .chosen-seeds{left:14.17%;gap:.3cqw;top:1.16%}
+.endless-game .seed-chooser .chosen-seeds{left:10.7275%;gap:.3cqw;top:1.16%}
 .endless-game .seed-chooser .chosen-seed,.endless-game .seed-chooser .empty-seed{width:5.9cqw;height:8.9cqw}
 .endless-game .shovel-button{left:78%;width:6%;height:7.5cqw}
 .endless-game .battle-controls{width:15%;display:grid;grid-template-columns:5cqw 9cqw;gap:.4cqw}
