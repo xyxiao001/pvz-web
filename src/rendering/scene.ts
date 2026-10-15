@@ -76,8 +76,8 @@ export class Scene {
 
   private resize(width: number, height: number) {
     this.viewport = battleViewport(width, height, this.displayMode);
-    const { scale, scaleX, scaleY, x, y } = this.viewport;
-    this.app.renderer.resize(width, height, renderResolution(BOARD.width * scale, window.devicePixelRatio) / scale);
+    const { scaleX, scaleY, x, y } = this.viewport;
+    this.app.renderer.resize(width, height, renderResolution(width, height, window.devicePixelRatio));
     this.app.stage.scale.set(scaleX, scaleY);
     this.app.stage.position.set(x, y);
     this.app.canvas.style.width = '100%'; this.app.canvas.style.height = '100%';
@@ -94,7 +94,7 @@ export class Scene {
     this.host = host;
     this.viewport = battleViewport(host.clientWidth, host.clientHeight, this.displayMode);
     await this.app.init({ width: host.clientWidth, height: host.clientHeight, backgroundAlpha: 0, antialias: true,
-      resolution: renderResolution(BOARD.width * this.viewport.scale, window.devicePixelRatio) / this.viewport.scale, autoDensity: true, autoStart: false });
+      resolution: renderResolution(host.clientWidth, host.clientHeight, window.devicePixelRatio), autoDensity: true, autoStart: false });
     // Pointer handling uses the canvas DOM listener and world-coordinate picking.
     // Pixi's scene-graph hit testing would traverse every animated part needlessly.
     this.app.stage.eventMode = 'none';

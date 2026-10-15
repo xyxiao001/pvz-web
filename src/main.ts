@@ -30,9 +30,8 @@ const asset = (file: string) => `${import.meta.env.BASE_URL}assets/runtime/origi
 const lastLevel = LEVEL_IDS[LEVEL_IDS.length - 1];
 // Composed packets use the original empty packet and plant portrait; prices stay crisp in the DOM.
 const composedPacket = (kind: PlantKind) => isUpgrade(kind) || kind==='imitater' || ['wintermelon','gatlingpea','twinsunflower','fumeshroom','gravebuster','iceshroom','doomshroom','lilypad','squash','threepeater','plantern','tanglekelp','jalapeno','spikeweed','torchwood','tallnut','seashroom','cactus','blover','splitpea','starfruit','pumpkin','magnetshroom','cabbagepult','flowerpot','kernelpult','coffeebean','garlic','umbrella','marigold','melonpult'].includes(kind);
-const seedImage = (kind: PlantKind, cost: number = PLANTS[kind].cost) => composedPacket(kind)
-  ? `<span class="packet-art"><img loading="lazy" src="${asset('seed-packet.png')}" alt=""/><img loading="lazy" class="packet-portrait" src="${asset(`${kind}.png`)}" alt=""/><b class="packet-price">${cost}</b></span>`
-  : `<img loading="lazy" src="${asset(`card-${kind}.png`)}" alt=""/>`;
+const seedImage = (kind: PlantKind, cost: number = PLANTS[kind].cost) =>
+  `<span class="packet-art"><img loading="lazy" src="${asset('seed-packet.png')}" alt=""/><img loading="lazy" class="packet-portrait" src="${asset(`${kind}.png`)}" alt=""/><b class="packet-price">${cost}</b></span>`;
 const $ = <T extends HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
 // Local diagnostics: preserve the browser's normal error reporting and failure behavior.
 const diagnostics = document.createElement('details');

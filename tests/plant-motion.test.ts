@@ -68,13 +68,20 @@ test('every plant image track resolves to its own atlas and complete pose sequen
     }
   }
 });
-test('framebuffer matches small displays and stops at native 2x detail on high density fullscreen', () => {
-  assert.equal(renderResolution(400, 1), .5);
-  assert.equal(renderResolution(400, 3), 1);
-  assert.equal(renderResolution(520, 3), 1.3);
-  assert.equal(renderResolution(800, 2), 2);
-  assert.equal(renderResolution(1920, 2), 2);
-  assert.equal(renderResolution(1280, 1), 1.6);
+test('framebuffer preserves display pixels on desktop and the 2x DPR limit on phones', () => {
+  assert.equal(renderResolution(400, 300, 1), 1);
+  assert.equal(renderResolution(400, 300, 3), 2);
+  assert.equal(renderResolution(520, 390, 3), 2);
+  assert.equal(renderResolution(800, 600, 2), 2);
+  assert.equal(renderResolution(1920, 1080, 2), 2);
+  assert.equal(renderResolution(3840, 2160, 1), 1);
+  assert.equal(renderResolution(3840, 2160, 2), 1);
+  // Both the 4:3 camera and ultrawide fill mode respect the same pixel budget.
+  for (const [width, height] of [[2560,1920], [3840,2160], [5120,1440]]) {
+    const resolution = renderResolution(width, height, 2);
+    assert.ok(width * height * resolution ** 2 <= 3840 * 2160 + 1);
+    assert.ok(resolution >= 1);
+  }
 });
 
 test('lobber motion preserves idle cycles and completes each existing attack window', () => {
