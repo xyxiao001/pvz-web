@@ -3,6 +3,16 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 const source=readFileSync(new URL('../tools/pwa-worker.js',import.meta.url),'utf8');
+test('PVZ1 root worker leaves PVZ2 navigation and assets to its independent app',()=>{
+ const callbacks=new Map<string,(event:any)=>void>();
+ const self={location:{href:'https://example.test/sw.js'},addEventListener:(type:string,fn:(event:any)=>void)=>callbacks.set(type,fn)};
+ runInNewContext(source,{self,URL,caches:{open:async()=>({})},ASSETS:{'index.html':{revision:'a',size:5},'assets/game.js':{revision:'a',size:10}},SHELL:['index.html'],RELEASE:'a'});
+ for(const [path,mode] of [['pvz2/','navigate'],['pvz2/index.html','navigate'],['pvz2/assets/egypt/lawn.webp','cors'],['pvz2/assets/index.js','cors']]){
+  let intercepted=false;
+  callbacks.get('fetch')!({request:{url:`https://example.test/${path}`,mode,method:'GET'},respondWith:()=>{intercepted=true;}});
+  assert.equal(intercepted,false,path);
+ }
+});
 const saved=new Map<string,Map<string,Response>>();
 function worker(revision='a',online=true){
  const callbacks=new Map<string,(event:any)=>void>();let requests=0,activated=0;

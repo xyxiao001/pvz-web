@@ -6,10 +6,15 @@
   "packageManager": "pnpm@11.0.9",
   "engines": { "node": "24.x" },
   "scripts": {
-    "dev": "vite --host 127.0.0.1",
-    "build": "tsc --noEmit && vite build",
+    "dev": "node tools/dev-games.mjs",
+    "dev:pvz1": "vite --host 127.0.0.1",
+    "dev:pvz2": "pnpm --filter pvz2-web dev",
+    "build": "node tools/build-games.mjs",
+    "build:pvz1": "tsc --noEmit && vite build",
+    "build:pvz2": "pnpm --filter pvz2-web build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "tsx --test tests/*.test.ts"
+    "test": "tsx --test tests/*.test.ts",
+    "test:pvz2": "pnpm --filter pvz2-web test"
   },
   "dependencies": { "pixi.js": "^8.14.0" },
   "devDependencies": {

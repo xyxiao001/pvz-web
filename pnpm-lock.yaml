@@ -25,6 +25,28 @@ importers:
         specifier: ^7.1.5
         version: 7.3.7(@types/node@24.19.2)(tsx@4.23.15)
 
+  apps/pvz2:
+    dependencies:
+      pixi-dragonbones-runtime:
+        specifier: 8.0.3
+        version: 8.0.3(pixi.js@8.22.0)
+      pixi.js:
+        specifier: ^8.14.0
+        version: 8.22.0
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.19.2
+      tsx:
+        specifier: ^4.20.0
+        version: 4.23.15
+      typescript:
+        specifier: ^5.9.0
+        version: 5.9.3
+      vite:
+        specifier: ^7.1.5
+        version: 7.3.7(@types/node@24.19.2)(tsx@4.23.15)
+
 packages:
 
   '@esbuild/aix-ppc64@0.28.2':
@@ -397,6 +419,11 @@ packages:
     resolution: {integrity: sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==}
     engines: {node: '>=12'}
 
+  pixi-dragonbones-runtime@8.0.3:
+    resolution: {integrity: sha512-BuDo8NsrVoFFza7iH427D+MLsVHTEoFUv/v2wnrhOofILXupAY4bVcqvgCR4HekyQx/eRc82fP7+LGAgf7v8EQ==}
+    peerDependencies:
+      pixi.js: ^8.0.0
+
   pixi.js@8.22.0:
     resolution: {integrity: sha512-QbTANHMZ751MIjLiLSUSM8a7LNMWwMIf0KbRCqlW+SPS9hNLfSVS+cl1O2SEp9g1K/wyLzj/OJHv+1TUfiPr/w==}
 
@@ -703,6 +730,10 @@ snapshots:
   picocolors@1.1.1: {}
 
   picomatch@4.0.7: {}
+
+  pixi-dragonbones-runtime@8.0.3(pixi.js@8.22.0):
+    dependencies:
+      pixi.js: 8.22.0
 
   pixi.js@8.22.0:
     dependencies:
