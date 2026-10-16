@@ -23,8 +23,12 @@
   --hd-ui-seed-silhouette:image-set(url('/assets/runtime/ui/seed-silhouette.webp') 1x,url('/assets/runtime/hd4/ui/seed-silhouette.webp') 4x);
   --hd-ui-seed-start-disabled:image-set(url('/assets/runtime/ui/seed-start-disabled.webp') 1x,url('/assets/runtime/hd4/ui/seed-start-disabled.webp') 4x);
   --hd-ui-seed-start:image-set(url('/assets/runtime/ui/seed-start.webp') 1x,url('/assets/runtime/hd4/ui/seed-start.webp') 4x);
-  --hd-ui-stone-panel:image-set(url('/assets/runtime/ui/stone-panel.webp') 1x,url('/assets/runtime/hd4/ui/stone-panel.webp') 4x);
+  --hd-ui-stone-panel:url('/assets/runtime/ui/stone-panel.webp');
 }
+/* WebKit loses border-image edges and fill with image-set at high density. */
+@media(resolution > 1dppx){:root{
+  --hd-ui-stone-panel:url('/assets/runtime/hd4/ui/stone-panel.webp');
+}}
 /* A wide 1x desktop also enlarges the original HUD/background artwork. */
 @media(min-width:1600px){:root{
   --hd-original-adventure-hover:url('/assets/runtime/hd4/original/adventure-hover.webp');
