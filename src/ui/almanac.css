@@ -1,0 +1,57 @@
+/* Two pages of a field guide, using the existing wood, stone and parchment art. */
+.almanac-book{width:96%;height:94%;min-height:0;display:flex;flex-direction:column;padding:18px 24px;color:#f6e7b1;background:var(--hd-ui-challenge-background) center/100% 100% no-repeat;box-shadow:0 12px 28px #0008}
+.almanac-header{display:flex;align-items:center;gap:16px;flex:none;height:64px}
+.almanac-header h2{margin:0;font-size:clamp(20px,2.5cqw,32px);text-shadow:0 2px #382514;white-space:nowrap}
+.almanac-header nav{display:flex;gap:8px;flex:1;justify-content:center}
+.almanac-book .wood-button{min-width:0;height:44px;font-size:16px;padding:0 18px}
+.almanac-book button[aria-pressed=true]{filter:brightness(1.16);color:#fff99b;box-shadow:inset 0 -3px #ead16b}
+.almanac-book button:focus-visible{outline:3px solid #ffe67b;outline-offset:-3px}
+.almanac-filters{display:flex;gap:6px;overflow-x:auto;flex:none;padding:4px 0 12px;scrollbar-width:thin}
+.almanac-filters .wood-button{flex:none;font-size:14px;height:38px;padding:0 14px}
+.almanac-spread{display:grid;grid-template-columns:1.15fr 1fr;gap:18px;flex:1;min-height:0;padding-bottom:8px}
+.almanac-catalog{min-width:0;min-height:0;display:flex;flex-direction:column;background:#24180e66;border:2px solid #ab7c3c;padding:10px}
+.almanac-count{height:28px;flex:none;color:#f4d58a;font-size:13px}
+.almanac-portraits{min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-content:start;gap:8px;padding:3px;scrollbar-width:thin;touch-action:pan-y}
+.almanac-entry{border:0;background:var(--hd-ui-almanac-card) center/100% 100% no-repeat;padding:10px 5px 12px;display:flex;align-items:center;flex-direction:column;gap:6px;color:#51351f;min-width:0;min-height:118px;touch-action:pan-y}
+.almanac-entry img{width:100%;height:82px;object-fit:contain;filter:drop-shadow(0 2px 1px #34210d55)}
+.almanac-entry span{font-size:13px;font-weight:bold;line-height:18px;text-align:center}
+.almanac-book .almanac-entry[aria-pressed=true]{outline:3px solid #ffdf6a;outline-offset:-3px;color:#51351f;box-shadow:inset 0 0 16px #ffe77a88}
+.almanac-entry:hover{filter:brightness(1.08)}
+.almanac-detail{min-width:0;min-height:0;overflow-y:auto;scrollbar-width:thin;background:#eddbab;color:#48321e;border:5px solid #866030;box-shadow:inset 0 0 25px #aa824744}
+.almanac-stage{height:clamp(110px,22cqh,220px);display:flex;justify-content:center;align-items:center;padding:12px;background:radial-gradient(ellipse at bottom,#b0c67b,#4e6936);border-bottom:3px solid #947444}
+.almanac-stage.zombies{background:radial-gradient(ellipse at bottom,#8b92a0,#353d4a)}
+.almanac-stage img{width:85%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 2px #15201355)}
+.almanac-description{padding:16px 20px 20px}
+.almanac-kind{font-size:12px;color:#79603f}
+.almanac-description h3{font-size:26px;margin:6px 0 12px}
+.almanac-description dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 14px;padding:12px 0;border-top:1px solid #ac8b50;border-bottom:1px solid #ac8b50}
+.almanac-description dt{font-size:12px;color:#7b6240}
+.almanac-description dd{font-size:16px;font-weight:bold;margin:5px 0 0}
+.almanac-description p{font-size:15px;line-height:1.75;margin:8px 0 14px}
+.almanac-description h4{margin:12px 0 4px;font-size:16px;color:#526132}
+.almanac-description small{display:block;font-size:11px;line-height:1.6;color:#79603f}
+@media (orientation:landscape) and (max-height:600px){
+  .almanac-book{height:98%;width:98%;padding:8px 14px}
+  .almanac-header{height:46px;gap:8px}.almanac-header h2{font-size:21px}
+  .almanac-book .wood-button{height:38px;font-size:14px;padding:0 14px}
+  .almanac-filters{padding:2px 0 6px}.almanac-filters .wood-button{height:34px;font-size:12px;padding:0 12px}
+  .almanac-spread{gap:10px;padding-bottom:0;grid-template-columns:1.1fr 1fr}
+  .almanac-catalog{padding:6px}.almanac-count{height:22px;font-size:11px}
+  .almanac-portraits{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .almanac-entry{min-height:92px;padding:7px 3px;gap:3px}.almanac-entry img{height:60px}.almanac-entry span{font-size:11px;line-height:16px}
+  .almanac-stage{height:96px;padding:8px}.almanac-description{padding:10px 14px}
+  .almanac-description h3{font-size:20px;margin:4px 0 8px}.almanac-description dl{padding:8px 0;margin-bottom:8px}
+  .almanac-description p{font-size:13px;line-height:1.6}.almanac-description dd{font-size:14px}
+}
+@media (max-width:650px) and (orientation:portrait){
+  .overlay.almanac-overlay{position:fixed;inset:0;width:100%;height:100dvh;transform:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+  .almanac-book{width:100%;height:100%;padding:10px}
+  .almanac-header{height:auto;min-height:94px;flex-wrap:wrap;gap:6px;justify-content:space-between}
+  .almanac-header h2{font-size:22px}.almanac-header nav{order:3;flex:0 0 100%}.almanac-header nav button{flex:1}
+  .almanac-header .almanac-close{height:38px}
+  .almanac-filters{padding:8px 0}.almanac-filters .wood-button{height:36px;font-size:13px;padding:0 12px}
+  .almanac-spread{grid-template-columns:1fr;grid-template-rows:minmax(140px,.85fr) minmax(180px,1.15fr);gap:10px;padding:0}
+  .almanac-catalog{padding:6px}.almanac-count{height:22px}.almanac-portraits{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .almanac-entry{min-height:96px;padding:7px 3px;gap:3px}.almanac-entry img{height:62px}.almanac-entry span{font-size:11px;line-height:16px}
+  .almanac-stage{height:110px}.almanac-description{padding:12px}.almanac-description h3{font-size:22px}.almanac-description p{font-size:14px}
+}

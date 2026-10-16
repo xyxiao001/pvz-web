@@ -74,7 +74,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
       <button id="levels" class="mode-button mode-levels"><img src="${asset('shovel.png')}" alt=""/><span><strong>关卡选择</strong><small>白天 · 夜晚 · 泳池 · 迷雾 · 屋顶</small></span></button>
       <button id="endless" class="mode-button mode-endless"><span class="menu-trophy" aria-hidden="true"></span><span><strong>生存模式</strong><small>普通 · 困难 · 无尽挑战</small></span></button>
     </nav>
-    <button id="almanac" class="almanac-menu"><img src="${asset('seed-packet.png')}" alt=""/><img class="almanac-portrait" src="${asset('peashooter.png')}" alt=""/><span>植物图鉴<small>认识你的庭院守护者</small></span></button>
+    <button id="almanac" class="almanac-menu"><img src="${asset('seed-packet.png')}" alt=""/><img class="almanac-portrait" src="${asset('peashooter.png')}" alt=""/><span>庭院图鉴<small>植物与僵尸 · 知己知彼</small></span></button>
     <div class="menu-tools"><button id="shop" class="wood-button">戴夫商店</button><button id="achievements" class="wood-button">成就</button><button id="settings" class="wood-button">设置</button><button id="help" class="wood-button">帮助</button></div>
     <span class="garden-note">准备好了吗？僵尸就要来了！</span>
   </div>
@@ -133,10 +133,10 @@ function updateMusic() {
   music.setPaused(document.hidden || screen === 'battle' && game.phase === 'paused');
 }
 function panel(content: string, className = 'paper-panel') {
-  overlay.classList.remove('chooser-overlay'); $('#battle-hud').classList.remove('choosing');
+  overlay.classList.remove('chooser-overlay', 'almanac-overlay'); $('#battle-hud').classList.remove('choosing');
   overlay.hidden = false; overlay.innerHTML = `<div class="${className}">${content}</div>`;
 }
-function closeMenuPanel() { overlay.hidden = true; }
+function closeMenuPanel() { overlay.hidden = true; overlay.classList.remove('almanac-overlay'); }
 function levelPicker() {
   panel(`<span class="kicker">冒险模式 · 第 ${profile.data.run} 周目</span><h2>选择你的庭院</h2><p>共 50 关 · 通关记录保存在当前浏览器。</p><label class="all-levels-toggle"><input id="all-levels" type="checkbox" ${allLevelsEnabled() ? 'checked' : ''}/>开启全部关卡</label><p id="level-access"></p>
     <div class="level-grid">${LEVEL_IDS.map(level => `<button class="level-card" data-level="${level}"><b>${LEVELS[level].label}</b><img loading="lazy" src="${asset(`${LEVELS[level].seeds.at(-1)}.png`)}" alt=""/><strong>${LEVELS[level].title}</strong><small>${level === 50 ? '僵王博士 · 传送带决战' : level === 35 ? '三轮砸罐子' : `${LEVELS[level].rows.length} 条草坪 · ${LEVELS[level].waveCount} 波`}</small></button>`).join('')}</div><button id="close" class="wood-button">返回主菜单</button>`, 'paper-panel wide-panel level-panel');
@@ -456,8 +456,10 @@ function survivalPicker(mode: SurvivalMode) {
   $('#close').onclick = closeMenuPanel;
 }
 $('#endless').onclick = () => survivalPicker('endless');
-$('#almanac').onclick = () => {
-  panel(`<span class="kicker">植物图鉴</span><h2>认识你的守护者</h2><div class="almanac-grid">${(Object.keys(PLANTS) as PlantKind[]).map(kind => `<article><img loading="lazy" src="${asset(`${kind}.png`)}" alt=""/><div><h3>${PLANTS[kind].name}<span>${kind === 'explodenut' ? '传送带专用' : `${PLANTS[kind].cost} 阳光`}</span></h3><p>${PLANT_DESCRIPTIONS[kind]}</p></div></article>`).join('')}</div><button id="close" class="wood-button">返回主菜单</button>`, 'paper-panel wide-panel almanac-panel'); $('#close').onclick = closeMenuPanel;
+$('#almanac').onclick = async () => {
+  const { openAlmanac } = await import('./ui/almanac');
+  panel('', 'almanac-loading');
+  openAlmanac(overlay, closeMenuPanel);
 };
 $('#achievements').onclick = () => {
   panel(`<span class="kicker">庭院荣誉</span><h2>成就</h2><p>已达成 ${Object.keys(achievements.earned).length} / ${ACHIEVEMENTS.length} · 记录保存在当前浏览器</p><div class="achievement-list">${ACHIEVEMENTS.map(item => {
