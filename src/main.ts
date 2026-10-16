@@ -77,7 +77,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     </nav>
     <button id="almanac" class="almanac-menu"><img src="${asset('seed-packet.png')}" alt=""/><img class="almanac-portrait" src="${asset('peashooter.png')}" alt=""/><span>庭院图鉴<small>植物与僵尸 · 知己知彼</small></span></button>
     <div class="menu-tools"><button id="shop" class="wood-button">戴夫商店</button><button id="achievements" class="wood-button">成就</button><button id="settings" class="wood-button">设置</button><button id="help" class="wood-button">帮助</button></div>
-    <span class="garden-note">准备好了吗？僵尸就要来了！</span>
+    <span class="garden-note">点击屏幕开启音乐</span>
   </div>
   <div id="achievement-toast" class="achievement-toast" role="status" hidden></div>
   <div id="overlay" class="overlay"><div class="paper-panel"><h2>正在准备庭院…</h2></div></div>
@@ -544,12 +544,14 @@ window.addEventListener('keydown', event => {
   }
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden && game.phase === 'playing') { game.pause(); clock.reset(); updateHud(); } updateMusic(); });
-const activateMusic = () => {
-  window.removeEventListener('pointerdown', activateMusic, true);
+// Touch activates audio on release, including taps on non-button areas of the menu.
+const activateMusic = async () => {
+  window.removeEventListener('pointerup', activateMusic, true);
   window.removeEventListener('keydown', activateMusic, true);
-  void music.activate();
+  await music.activate();
+  $('.garden-note').textContent = '准备好了吗？僵尸就要来了！';
 };
-window.addEventListener('pointerdown', activateMusic, true);
+window.addEventListener('pointerup', activateMusic, true);
 window.addEventListener('keydown', activateMusic, true);
 async function ensureScene() {
   sceneLoading ??= (async () => {

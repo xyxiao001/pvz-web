@@ -1,3 +1,6 @@
+/* Keep touch scrolling, but prevent double-tap and pinch page zoom throughout the game. */
+:where(html,body,body *){touch-action:pan-x pan-y}
+
 /* Use the existing stone HUD skin for transient actions. No extra image downloads. */
 .planting-feedback{position:absolute;z-index:2;transform:translate(-50%,-100%);width:max-content;max-width:66%;padding:1cqw 1.8cqw;background:var(--hd-original-button) center/100% 100% no-repeat;color:#fff0bc;text-shadow:0 2px 1px #342312;font-size:clamp(11px,1.6cqw,20px);font-weight:bold;text-align:center;pointer-events:none}
 .action-cancel{position:absolute;right:2%;top:23%;pointer-events:auto;min-width:11cqw;height:5cqw;font-size:1.6cqw}
