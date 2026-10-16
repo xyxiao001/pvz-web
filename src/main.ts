@@ -13,6 +13,7 @@ import './interaction.css';
 import './widescreen.css';
 import './mobile-battle.css';
 import './display-hd.css';
+import './pickers.css';
 import { registerPwa, showPwa } from './platform/pwa';
 void registerPwa();
 import { ZOMBIE_NAMES } from './game/survival';
@@ -138,8 +139,8 @@ function panel(content: string, className = 'paper-panel') {
 }
 function closeMenuPanel() { overlay.hidden = true; overlay.classList.remove('almanac-overlay'); }
 function levelPicker() {
-  panel(`<span class="kicker">冒险模式 · 第 ${profile.data.run} 周目</span><h2>选择你的庭院</h2><p>共 50 关 · 通关记录保存在当前浏览器。</p><label class="all-levels-toggle"><input id="all-levels" type="checkbox" ${allLevelsEnabled() ? 'checked' : ''}/>开启全部关卡</label><p id="level-access"></p>
-    <div class="level-grid">${LEVEL_IDS.map(level => `<button class="level-card" data-level="${level}"><b>${LEVELS[level].label}</b><img loading="lazy" src="${asset(`${LEVELS[level].seeds.at(-1)}.png`)}" alt=""/><strong>${LEVELS[level].title}</strong><small>${level === 50 ? '僵王博士 · 传送带决战' : level === 35 ? '三轮砸罐子' : `${LEVELS[level].rows.length} 条草坪 · ${LEVELS[level].waveCount} 波`}</small></button>`).join('')}</div><button id="close" class="wood-button">返回主菜单</button>`, 'paper-panel wide-panel level-panel');
+  panel(`<header class="picker-header"><div><h2>选择你的庭院</h2><small>第 ${profile.data.run} 周目 · 50 关 · 进度自动保存</small></div><button id="close" class="wood-button">返回</button></header><div class="level-toolbar"><label class="all-levels-toggle"><input id="all-levels" type="checkbox" ${allLevelsEnabled() ? 'checked' : ''}/>开启全部关卡</label><p id="level-access"></p></div>
+    <div class="level-grid">${LEVEL_IDS.map(level => `<button class="level-card" data-level="${level}"><b>${LEVELS[level].label}</b><img loading="lazy" src="${asset(`${LEVELS[level].seeds.at(-1)}.png`)}" alt=""/><strong>${LEVELS[level].title}</strong><small>${level === 50 ? '僵王博士 · 传送带决战' : level === 35 ? '三轮砸罐子' : `${LEVELS[level].rows.length} 条草坪 · ${LEVELS[level].waveCount} 波`}</small></button>`).join('')}</div>`, 'paper-panel wide-panel level-panel picker-panel');
   document.querySelectorAll<HTMLButtonElement>('[data-level]').forEach(button => button.onclick = () => setLevel(Number(button.dataset.level) as LevelId));
   const updateAccess = () => {
     const all = allLevelsEnabled();
@@ -446,10 +447,10 @@ $('#levels').onclick = levelPicker;
 function survivalPicker(mode: SurvivalMode) {
   const goal = mode === 'survival-normal' ? 5 : 10;
   const waves = mode === 'survival-normal' ? 10 : 20;
-  panel(`<span class="kicker">生存模式</span><h2>选择你的生存挑战</h2><div class="survival-modes" role="group" aria-label="生存难度">${SURVIVAL_MODES.map(item => `<button class="wood-button" data-survival-mode="${item}" aria-pressed="${item === mode}">${SURVIVAL_MODE_NAMES[item]}${item === 'endless' ? '' : item === 'survival-normal' ? ' · 5 旗' : ' · 10 旗'}</button>`).join('')}</div><p>${mode === 'endless' ? '没有终点，挑战更多旗帜。' : `五个场景各有独立关卡；守住 ${goal} 面旗帜获胜。`}<br/>每轮 ${waves} 波，可携带 6–10 张植物卡，轮间可换卡。暂停可保存退出，各难度与场景的存档互不覆盖。</p><div class="survival-scenes">${SURVIVAL_SCENES.map((scene, index) => {
+  panel(`<header class="picker-header"><h2>选择你的生存挑战</h2><button id="close" class="wood-button">返回</button></header><div class="survival-toolbar"><div class="survival-modes" role="group" aria-label="生存难度">${SURVIVAL_MODES.map(item => `<button class="wood-button" data-survival-mode="${item}" aria-pressed="${item === mode}">${SURVIVAL_MODE_NAMES[item]}${item === 'endless' ? '' : item === 'survival-normal' ? ' · 5 旗' : ' · 10 旗'}</button>`).join('')}</div><p>${mode === 'endless' ? '没有终点，挑战更多旗帜。' : `五个场景各有独立关卡；守住 ${goal} 面旗帜获胜。`}</p></div><p class="survival-rules">每轮 ${waves} 波 · 6–10 张卡 · 轮间换卡 · 暂停可存档，各场景与难度独立保存</p><div class="survival-scenes">${SURVIVAL_SCENES.map((scene, index) => {
     const saved = loadSurvival(scene, mode);
     return `<article class="survival-card survival-card-${scene}"><div class="survival-preview"><img loading="lazy" src="${import.meta.env.BASE_URL}assets/runtime/previews/${scene}.${scene === 'day' ? 'jpg' : 'webp'}" alt=""/><span class="survival-number" aria-hidden="true">0${index + 1}</span><span class="survival-badge">${SURVIVAL_MODE_NAMES[mode]}</span><h3>${SCENE_NAMES[scene]}</h3></div><div class="survival-card-body"><p>${scene==='day'?'五行草坪 · 天空阳光':scene==='night'?'五行夜晚 · 墓碑与蘑菇':scene==='pool'?'六行泳池 · 睡莲与水路':scene==='roof'?'五行屋顶 · 花盆与投手':'六行迷雾 · 无天空阳光 · 路灯花照明'}</p><div class="survival-actions">${saved ? `<button class="survival-play" data-continue="${scene}">继续第 ${saved.game.survivalStage+1} 轮<span aria-hidden="true">▶</span></button>` : ''}<button class="${saved ? 'text-button survival-restart' : 'survival-play'}" data-survival="${scene}">${saved ? '新开一局（替换此存档）' : '开始挑战<span aria-hidden="true">▶</span>'}</button></div></div></article>`;
-  }).join('')}</div><button id="close" class="wood-button">返回主菜单</button>`, 'paper-panel wide-panel survival-panel');
+  }).join('')}</div>`, 'paper-panel wide-panel survival-panel picker-panel');
   document.querySelectorAll<HTMLButtonElement>('[data-survival-mode]').forEach(button => button.onclick = () => survivalPicker(button.dataset.survivalMode as SurvivalMode));
   document.querySelectorAll<HTMLButtonElement>('[data-survival]').forEach(button => button.onclick = () => { const scene = button.dataset.survival as SurvivalScene; clearSurvival(scene, mode); setLevel(9, mode, scene); });
   document.querySelectorAll<HTMLButtonElement>('[data-continue]').forEach(button => button.onclick = () => { const saved=loadSurvival(button.dataset.continue as SurvivalScene, mode)!; game=Game.restore(saved.game); clock.speed=saved.speed; mountGame(); });
