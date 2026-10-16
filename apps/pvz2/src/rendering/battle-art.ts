@@ -3,23 +3,28 @@ import { PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbo
 import { assetUrl, json, loadInBatches } from '../assets/load';
 import type { PlantKind } from '../game/level';
 import type { SpriteArt } from '../shell/types';
+import type { CameraIntro } from './presentation';
 interface Rig { rig: string; armature: string; animation: string; group?: string }
-export interface NarrativeStep { Character: 'crazydave'|'winnie'; Action: string; Lines?: {zh:string;en:string} }
-export interface BattleCatalog { intro: NarrativeStep[]; sounds: Record<string,string[]>; ui: Record<string, SpriteArt>; rigs: Record<string, Rig> }
+export interface NarrativeStep { Character: 'crazydave'|'winnie'; Action: string; Lines?: {zh:string;en:string}; Animation?: string; Voice?: string }
+export interface BattleCatalog { intro: NarrativeStep[]; sounds: Record<string,string[]>; ui: Record<string, SpriteArt>; rigs: Record<string, Rig>; presentation: {camera:CameraIntro;seedChoosingCameraX:number;corpseFadeDuration:number;mowerDeathDuration:number;armDropHealthFraction:number;readySetPlant:number[]} }
 
 export class BattleArt {
   catalog!: BattleCatalog;
   private factory = new PixiFactory(null, false);
   readonly clock = new WorldClock();
-  async init(app: Application) {
+  async init(app: Application, progress: (done:number,total:number)=>void) {
     this.catalog = await json<BattleCatalog>('battle/catalog.json');
-    await loadInBatches(Object.values(this.catalog.rigs), 2, async rig => {
+    const rigs=[...new Map(Object.values(this.catalog.rigs).map(rig=>[rig.rig,rig])).values()];
+    let done=0;progress(done,rigs.length);
+    await loadInBatches(rigs, 2, async rig => {
       const base = `${rig.group ?? 'battle'}/rigs/${rig.rig}`;
       const [skeleton, atlas, texture] = await Promise.all([json<object>(`${base}/skeleton.json`), json<object>(`${base}/atlas.json`), Assets.load<Texture>(assetUrl(`${base}/texture.webp`))]);
       this.factory.parseDragonBonesData(skeleton, rig.rig);
       this.factory.parseTextureAtlasData(atlas, texture, rig.rig);
       await app.renderer.prepare.upload(texture);
+      progress(++done,rigs.length);
     });
+    return rigs.length;
   }
   build(name: string, animation?: string, armature?: string) {
     const spec = this.catalog.rigs[name];

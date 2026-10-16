@@ -228,6 +228,10 @@ def main():
     subsetter = subset.Subsetter(options=options)
     text = ''.join(chr(code) for code in range(32,127)) + ''.join(w['name']+w['description'] for w in worlds)
     text += (c.ROOT/'apps/pvz2/src/shell/controller.ts').read_text()
+    text += (c.ROOT/'apps/pvz2/src/battle.ts').read_text() + (c.ROOT/'apps/pvz2/src/game/level.ts').read_text()
+    narratives=read('json/Objects/NarrativeList').objects[0]['json']['objects']
+    intro=next(o['objdata']['Flow'] for o in narratives if 'EGYPT_INTRO_FIRSTLEVEL' in o.get('aliases',[]))
+    text += ''.join(step['Lines']['zh'] for step in intro if 'Lines' in step)
     subsetter.populate(text=text)
     subsetter.subset(font)
     font.flavor = 'woff2'

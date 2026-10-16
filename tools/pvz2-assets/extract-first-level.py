@@ -2,6 +2,7 @@
 import hashlib
 import importlib.util
 import json
+import math
 from pathlib import Path
 import cocos as c
 
@@ -35,6 +36,12 @@ narrative=e.read('json/Objects/NarrativeList').objects[0]['json']['objects']
 intro=next(o['objdata']['Flow'] for o in narrative if 'EGYPT_INTRO_FIRSTLEVEL' in o.get('aliases',[]))
 # Cards reuse the atlas already required by the world map.
 rigs['cards']={'rig':'91731241-49e8-4db3-bb69-f04d4f4762d6','armature':'plants','animation':'peashooter','group':'shell'}
+# First-level presentation uses the original particle rigs, including all pea-hit variants.
+particles=e.read('resouce_prefabs/ParticlesRP').objects[1]['_components'][0]
+pea=e.read('projectiles/Pea0PRJ')
+rigs['pea']=rig_node(pea,1)
+for name,path in {'plantDirt':particles['plantDirts']['asset'],'spudow':particles['spudowExplosion']['asset'],'peaHit':'8dcdd279-33b2-4ed6-9be5-266beb26e7f7'}.items():
+    rigs[name]=rig_node(e.read(path),1)
 for name,rig in rigs.items():
     if name != 'cards': print(name,e.rigs[rig['rig']]['armatures'])
 modules=e.read('json/Objects/LevelModules').objects[0]['json']['objects']
@@ -47,7 +54,23 @@ sound_asset=e.read('resouce_prefabs/SoundsRP')
 sound_props=sound_asset.objects[1]['_components'][0]
 sound_props['shoot']=[{'asset':'d552833f-d03f-4f93-8377-c7ff7fbfcba4'}]
 sound_props['collect']=[{'asset':uuid} for uuid in ['3473f3c0-cb03-4c91-8bf8-f9f048b56fc4','6090751a-f6a6-4ec5-b7c0-200bfd27aa29','ff4b9476-3eec-4532-90d6-7085710e5770','19b86297-d8d4-458f-a122-9723f11dc6df']]
-for name in ['shoot','collect','plantOnFloor','spudow','awooga','finalWave','readySetPlant','cardChosen','cardCancel','pause','shovelDig','letsRock']:
+sound_props['peaHit']=pea.objects[1]['_components'][1]['PopSound']
+sound_names=['shoot','collect','plantOnFloor','spudow','awooga','finalWave','readySetPlant','cardChosen','cardCancel','pause','shovelDig','letsRock','cameraMove','zombieLie','zombieLimbPop','peaHit']
+# NPC.ts chooses a voice by action and graphical line length (ZH multiplier 3.1).
+for step in intro:
+    if 'Lines' in step:
+        length=max(1,min(3,math.floor(len(step['Lines']['zh'])*3.1/21+.5)))
+        step['Animation']=['Say_Small','Say_Medium','Say_Long'][length-1]
+        step['Voice']=step['Character']+'/'+('Say' if step['Action']=='SAY' else 'Playful')+'_'+['Short','Med','Long'][length-1]
+for character,index in [('crazydave',35),('winnie',39)]:
+    keys={s['Voice'].split('/')[1] for s in intro if s.get('Character')==character and 'Voice' in s}
+    keys.update(['Enter','Exit'])
+    if character=='winnie':keys.update(['Enter_Brake','Enter_Shake','Exit_Brake','Exit_Shake'])
+    for key in sorted(keys):
+        name=character+'/'+key
+        sound_props[name]=npc.objects[index][key]
+        sound_names.append(name)
+for name in sound_names:
     value=sound_props[name]
     ids=value if isinstance(value,list) else [value]
     sounds[name]=[]
@@ -56,6 +79,11 @@ for name in ['shoot','collect','plantOnFloor','spudow','awooga','finalWave','rea
         target=e.OUT/'audio'/(ref['asset']+ext);target.parent.mkdir(exist_ok=True)
         target.write_bytes(c.native(ref['asset'],ext.lstrip('.')))
         sounds[name].append(str(target.relative_to(c.OUT)))
-c.write_json(e.OUT/'catalog.json',{'ui':ui,'rigs':rigs,'modules':modules,'sounds':sounds,'intro':intro})
+# These constants come from levelController.ts, Character.ts and Zombie.ts in this build.
+c.download('docs/assets/main/index.js')
+presentation={'camera':next(m['objdata'] for m in modules if m['objclass']=='LevelIntroProperties'),
+              'seedChoosingCameraX':230,'corpseFadeDuration':.5,'mowerDeathDuration':.5,
+              'armDropHealthFraction':.5,'readySetPlant':[.6,.6,1]}
+c.write_json(e.OUT/'catalog.json',{'ui':ui,'rigs':rigs,'modules':modules,'sounds':sounds,'intro':intro,'presentation':presentation})
 files=[p for p in e.OUT.rglob('*') if p.is_file()]
 c.write_json(c.ROOT/'apps/pvz2/battle-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in files}})

@@ -2,16 +2,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { Game, type Zombie } from '../src/game/model';
-import { cellX, readLevel, type Properties, type SourceLevel } from '../src/game/level';
+import { cellX, rowY, readLevel, type Properties, type SourceLevel } from '../src/game/level';
 
 const read = (name: string) => JSON.parse(readFileSync(new URL(`../public/assets/${name}`, import.meta.url), 'utf8'));
 const props: Properties = read('levels/properties.json');
 props.zombies.mummy_flag=read('battle/flag.json');
 const source: SourceLevel = read('levels/egypt1.source.json');
-const timing = { shoot: 15 / 30, shootDuration: 26 / 30, produce: 23 / 30, produceDuration: 40 / 30 };
-const create = () => new Game(readLevel(source), props, timing, 1234);
+const timing = { shoot: 15 / 30, shootDuration: 26 / 30, produce: 23 / 30, produceDuration: 40 / 30, mineGrow:18/30,mineExplode:14/30,mineDeath:15/30,raStart:25/30,raEnd:25/30 };
+const create = () => new Game(readLevel(source), props, timing, zombie=>({x:zombie.x-25,y:rowY(zombie.row)-95}), 1234);
 const tick = (game: Game, seconds: number) => { for (let i = 0; i < Math.round(seconds * 60); i++) game.tick(1 / 60); };
-const mummy = (x: number, armor = 0): Zombie => ({ id: 9000, kind: 'mummy', row: 2, x, hp: 190, armor, eating: false, absorbed: 0, absorbUntil: 0 });
+const mummy = (x: number, armor = 0): Zombie => ({ id: 9000, kind: 'mummy', row: 2, x, hp: 190, armor, eating: false, absorbed: 0, absorbUntil: 0,absorbState:'idle',absorbAt:0,deathCause:'normal' });
 
 test('Egypt 1 retains all ten explicit spawn waves and the three source zombie types', () => {
   const level = readLevel(source);
@@ -66,15 +66,19 @@ test('potato mine needs its charge time, then explodes against nearby zombies', 
   tick(game, 13); assert.equal(game.plants.length, 1);
   game.zombies.push(mummy(cellX(0) + 30));
   tick(game, .5); assert.equal(game.kills, 0);
-  tick(game, .6); assert.equal(game.plants.length, 0); assert.equal(game.kills, 1);
+  tick(game, .6); assert.equal(game.plants[0].action,'grow');assert.equal(game.kills,0);
+  tick(game, .6);assert.equal(game.plants[0].action,'explode');assert.equal(game.kills,0);
+  tick(game, .5); assert.equal(game.plants.length, 0); assert.equal(game.kills, 1);
+  assert.equal(game.deaths[0].cause,'potato');
   assert.ok(game.effects.some(e => e.kind === 'explode'));
 });
 
-test('ra steals nearby uncollected sun and releases it when killed', () => {
+test('ra steals uncollected sun across the lawn and releases it when killed', () => {
   const game = create();
   game.zombies.push({ ...mummy(600), kind: 'ra' });
-  game.suns.push({ id: 999, x: 600, y: 400, targetY: 400, value: 50, age: 3, from: 'sky' });
-  tick(game, .1); assert.equal(game.zombies[0].absorbed, 50); assert.equal(game.suns.length, 0);
+  game.suns.push({ id: 999, x: 300, y: 400, targetY: 400, value: 50, age: 3, from: 'sky',vx:0,vy:0,groundAge:0,absorber:null,absorbAge:0 });
+  tick(game, .1); assert.equal(game.zombies[0].absorbed, 0);assert.equal(game.zombies[0].absorbState,'start');assert.equal(game.suns[0].absorber,9000);
+  tick(game, 1.5);assert.equal(game.zombies[0].absorbed,50);assert.equal(game.suns.length,0);
   game.zombies[0].hp = 0; tick(game, .1);
   assert.equal(game.suns[0].value, 50); assert.equal(game.suns[0].from, 'ra');
 });
@@ -82,8 +86,37 @@ test('ra steals nearby uncollected sun and releases it when killed', () => {
 test('mower clears its lane once; a later breach ends the game', () => {
   const game = create(); game.zombies.push(mummy(170)); tick(game, .1);
   assert.equal(game.kills, 1); assert.equal(game.mowers[2].active, true);
+  assert.equal(game.deaths[0].cause,'mower');
   tick(game, 2); assert.equal(game.mowers[2].spent, true);
   game.zombies.push(mummy(85)); tick(game, .1); assert.equal(game.phase, 'lost');
+});
+
+test('dead zombies leave combat once while their complete visual snapshot remains available',()=>{
+  const game=create(),zombie=mummy(600);zombie.hp=20;game.zombies.push(zombie);
+  game.peas.push({id:8000,row:2,x:575,y:388,damage:20,powered:false});
+  tick(game,.1);assert.equal(game.zombies.length,0);assert.equal(game.kills,1);
+  assert.equal(game.deaths[0].cause,'normal');assert.equal(game.deaths[0].zombie.id,9000);
+  const snapshot=JSON.stringify(game.deaths[0]);tick(game,3);
+  assert.equal(game.kills,1);assert.equal(game.deaths.length,1);assert.equal(JSON.stringify(game.deaths[0]),snapshot);
+});
+
+test('sun production arcs upward and falling sun expires after landing, not while airborne',()=>{
+  const game=create();game.plant('sunflower',2,0);
+  game.plants[0].nextAction=0;tick(game,.85);
+  const produced=game.suns.find(s=>s.from==='plant')!;
+  assert.ok(produced);assert.ok(produced.x!==cellX(0));assert.ok(produced.y<rowY(2)-65);assert.ok(produced.vy<0);
+  tick(game,10);
+  const sky=game.suns.find(s=>s.from==='sky')!;
+  assert.ok(sky.groundAge<sky.age);
+  const id=sky.id;tick(game,9);assert.ok(!game.suns.some(s=>s.id===id));
+});
+
+test('collecting a sun targeted by Ra cancels that target without giving Ra its value',()=>{
+  const game=create();game.zombies.push({...mummy(800),kind:'ra'});
+  game.suns.push({id:999,x:300,y:400,targetY:400,value:50,age:0,from:'sky',vx:0,vy:0,groundAge:0,absorber:null,absorbAge:0});
+  tick(game,.1);assert.equal(game.suns[0].absorber,9000);
+  game.collect(999);tick(game,1);
+  assert.equal(game.zombies[0].absorbed,0);assert.equal(game.zombies[0].absorbState,'idle');assert.equal(game.sun,100);
 });
 
 test('a legal planting and collection strategy can finish all ten waves', () => {
@@ -127,4 +160,13 @@ test('old-wave survivors do not hold the next wave, and cone armor is not wave h
   game.zombies.push({...mummy(1000),id:8000,hp:10000});
   game.zombies[0].hp=1;game.zombies[0].armor=10000;
   tick(game,6);assert.equal(game.wave,2);
+});
+
+test('sun attraction follows a moving staff target supplied by the animation scene',()=>{
+  const point={x:800,y:250};
+  const game=new Game(readLevel(source),props,timing,()=>point,1234);
+  game.zombies.push({...mummy(850),kind:'ra'});
+  game.suns.push({id:999,x:400,y:400,targetY:400,value:50,age:0,from:'sky',vx:0,vy:0,groundAge:0,absorber:null,absorbAge:0});
+  tick(game,.2);const y=game.suns[0].y;assert.ok(y<400);
+  point.y=550;tick(game,.2);assert.ok(game.suns[0].y>y);
 });

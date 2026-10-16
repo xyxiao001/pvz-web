@@ -38,5 +38,5 @@ export function readLevel(source: SourceLevel): Level {
   };
 }
 
-export interface AnimationTiming { shoot: number; shootDuration: number; produce: number; produceDuration: number }
+export interface AnimationTiming { shoot: number; shootDuration: number; produce: number; produceDuration: number; mineGrow:number; mineExplode:number; mineDeath:number; raStart:number; raEnd:number }
 export const plantLabels: Record<PlantKind, string> = { peashooter: '豌豆射手', sunflower: '向日葵', wallnut: '坚果', potatomine: '土豆地雷' };

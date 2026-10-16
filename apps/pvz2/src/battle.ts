@@ -5,6 +5,7 @@ import { BOARD, PLANT_KINDS, plantLabels, readLevel, type PlantKind, type Proper
 import { Game } from './game/model';
 import { COMPLETE_KEY } from './shell/navigation';
 import type { Scene } from './rendering/scene';
+import { cubicInOut, introCamera } from './rendering/presentation';
 
 const DESCRIPTIONS: Record<PlantKind,string> = {
   peashooter:'豌豆射手向前发射豌豆，攻击所在行的僵尸。',
@@ -41,9 +42,11 @@ export function createBattle(host: HTMLElement, onReturn: () => void) {
 
   let scene: Scene, properties: Properties, source: SourceLevel, game: Game;
   let selected: PlantKind | 'shovel' | null = null;
-  let screen: 'menu'|'loading'|'narrative'|'choosing'|'countdown'|'playing'|'pause'|'result' = 'menu';
+  let screen: 'menu'|'loading'|'npc-enter'|'narrative'|'npc-exit'|'survey'|'returning'|'choosing'|'countdown'|'playing'|'pause'|'ending'|'result' = 'menu';
   let deck: PlantKind[] = [];
   let narrativeIndex=0;
+  let transitionTime=0;
+  let voice:HTMLAudioElement|null=null;
   let accumulator = 0, countdown = 0, speed = 1, warningUntil = 0;
   let preferences = readAudio();
   const cards = new Map<PlantKind,string>();
@@ -58,6 +61,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void) {
     const variants = clips.get(name)!;
     const clip = variants[Math.floor(Math.random()*variants.length)];
     clip.volume=preferences.effects; clip.currentTime=0; if (clip.volume>0) void clip.play();
+    return clip;
   };
   const playMusic = () => { music.volume=preferences.music; if(music.volume>0) void music.play(); };
 
@@ -77,6 +81,11 @@ export function createBattle(host: HTMLElement, onReturn: () => void) {
         const progress=$<HTMLProgressElement>('#load-progress');progress.max=total;progress.value=done;
       });
       scene.onPoint=interact;scene.onHover=hover;scene.onTick=tick;
+      scene.onSound=sound;
+      scene.onNPCEvent=(character,event)=>{
+        const sounds:Record<string,string>={enter:'Enter',exit:'Exit',enter_brake:'Enter_Brake',exit_brake:'Exit_Brake',enter_shake:'Enter_Shake',exit_shake:'Exit_Shake'};
+        if(event in sounds)sound(character+'/'+sounds[event]);
+      };
       for(const [name,art] of Object.entries(scene.art.catalog.ui)) host.style.setProperty(`--art-${name}`,`url('${assetUrl(art.image)}')`);
       host.style.setProperty('--art-emptySlot',`url('${scene.art.image(scene.app,'cards','emptyslot','emptyslot')}')`);
       for(const kind of PLANT_KINDS) {cards.set(kind,scene.art.card(scene.app,kind));portraits.set(kind,scene.portrait(kind));}
@@ -89,15 +98,22 @@ export function createBattle(host: HTMLElement, onReturn: () => void) {
       for(const [name,paths] of Object.entries(scene.art.catalog.sounds)) clips.set(name,paths.map(path=>{const audio=new Audio(assetUrl(path));audio.preload='none';return audio;}));
       music.src=assetUrl('egypt/music.mp3');
     }
-    if(localStorage.getItem(COMPLETE_KEY)==='1')chooseSeeds();else {narrativeIndex=0;nextNarrative();}
+    $('#overlay').hidden=true;
+    if(localStorage.getItem(COMPLETE_KEY)==='1')survey();else {narrativeIndex=0;screen='npc-enter';host.dataset.screen=screen;scene.enterNarrative();}
   }
   function nextNarrative() {
+    voice?.pause();voice=null;
     const lines=scene.art.catalog.intro.filter(step=>step.Lines);
     const step=lines[narrativeIndex++];
-    if(!step){$('#narrative').hidden=true;chooseSeeds();return;}
+    if(!step){$('#narrative').hidden=true;screen='npc-exit';host.dataset.screen=screen;scene.exitNarrative();return;}
     screen='narrative';host.dataset.screen=screen;$('#overlay').hidden=true;$('#hud').hidden=true;
     $('#narrative').hidden=false;$('#narrative').dataset.character=step.Character;
-    $('#speech-line').textContent=step.Lines!.zh;scene.narrative(step.Character,step.Lines!.zh);
+    $('#speech-line').textContent=step.Lines!.zh;scene.narrative(step.Character,step.Animation!);voice=sound(step.Voice!);
+  }
+  function survey() {
+    screen='survey';host.dataset.screen=screen;transitionTime=0;
+    $('#hud').hidden=true;$('#overlay').hidden=true;$('#seed-chooser').hidden=true;
+    scene.preview();scene.start();playMusic();
   }
   function describe(kind: PlantKind) {
     $('#plant-name').textContent=plantLabels[kind];$('#plant-description').textContent=DESCRIPTIONS[kind];
@@ -118,18 +134,20 @@ export function createBattle(host: HTMLElement, onReturn: () => void) {
     $<HTMLButtonElement>('#start').disabled=deck.length===0;
   }
   function chooseSeeds() {
+    scene.preview();scene.setCamera(scene.art.catalog.presentation.seedChoosingCameraX);scene.start();openChooser();
+  }
+  function openChooser() {
     screen='choosing';deck=[];selected=null;speed=1;
     $('#overlay').hidden=true;$('#hud').hidden=false;$('#seed-chooser').hidden=false;$('#battle-announcement').hidden=true;
     host.dataset.screen=screen;$('#sun-count').textContent='50';
-    scene.preview();scene.start();describe('peashooter');updateDeck();
+    describe('peashooter');updateDeck();
     sound('cardChosen');playMusic();
   }
   function start() {
-    game=new Game(readLevel(source),properties,scene.timing,Date.now()>>>0);
-    selected=null;accumulator=0;countdown=0;speed=1;screen='countdown';host.dataset.screen=screen;
-    $('#seed-chooser').hidden=true;$('#overlay').hidden=true;$('#battle-announcement').hidden=false;
-    $('#battle-announcement').textContent='准备…';$('#speed').setAttribute('aria-pressed','false');
-    scene.reset();scene.sync(game,0);updateHud();scene.start();sound('readySetPlant');playMusic();
+    game=new Game(readLevel(source),properties,scene.timing,zombie=>scene.absorptionTarget(zombie),Date.now()>>>0);
+    selected=null;accumulator=0;countdown=0;speed=1;screen='returning';transitionTime=0;host.dataset.screen=screen;
+    $('#seed-chooser').hidden=true;$('#overlay').hidden=true;$('#battle-announcement').hidden=true;
+    $('#speed').setAttribute('aria-pressed','false');sound('letsRock');sound('cameraMove');
   }
   function menu() {
     scene.stop();scene.reset();music.pause();screen='menu';selected=null;
@@ -155,13 +173,30 @@ export function createBattle(host: HTMLElement, onReturn: () => void) {
     updateHud();
   }
   function tick(dt: number) {
+    if(screen==='npc-enter'||screen==='npc-exit') {
+      if(scene.narrativeTick(dt)){if(screen==='npc-enter')nextNarrative();else survey();}return;
+    }
     if(screen==='narrative'){scene.narrativeTick(dt);return;}
+    if(screen==='survey') {
+      const intro=scene.art.catalog.presentation.camera,previous=transitionTime;transitionTime+=dt;
+      if(previous<intro.PanLeftDuration&&transitionTime>=intro.PanLeftDuration)sound('cameraMove');
+      scene.setCamera(introCamera(transitionTime,intro,scene.art.catalog.presentation.seedChoosingCameraX));scene.previewTick(dt);
+      if(transitionTime>=intro.PanLeftDuration+intro.PanMoveRightTime+intro.PanRightDuration+intro.PanMoveLeftTime)openChooser();return;
+    }
+    if(screen==='returning') {
+      const presentation=scene.art.catalog.presentation;transitionTime+=dt;
+      const t=Math.min(1,transitionTime/presentation.camera.PanMoveLeftTime);
+      scene.setCamera(presentation.seedChoosingCameraX*(1-cubicInOut(t)));scene.previewTick(dt);
+      if(t===1){scene.reset();scene.setCamera(0);scene.sync(game,0);updateHud();screen='countdown';host.dataset.screen=screen;$('#battle-announcement').hidden=false;$('#battle-announcement').textContent='准备…';scene.start();sound('readySetPlant');playMusic();}return;
+    }
     if(screen==='choosing'){scene.previewTick(dt);return;}
     if(screen==='countdown') {
-      countdown+=dt;$('#battle-announcement').textContent=countdown<.8?'准备…':countdown<1.6?'安放…':'种植！';
-      if(countdown>=2.4){screen='playing';host.dataset.screen=screen;$('#battle-announcement').hidden=true;}
+      const [ready,set,plant]=scene.art.catalog.presentation.readySetPlant;
+      countdown+=dt;$('#battle-announcement').textContent=countdown<ready?'准备…':countdown<ready+set?'安放…':'种植！';scene.sync(game,dt);
+      if(countdown>=ready+set+plant){screen='playing';host.dataset.screen=screen;$('#battle-announcement').hidden=true;}
       return;
     }
+    if(screen==='ending'){scene.sync(game,dt);if(!scene.hasDeathAnimations)finish();return;}
     if(screen!=='playing')return;
     accumulator+=Math.min(dt,.1)*speed;let advanced=0;
     while(accumulator>=1/60&&game.phase==='playing'){game.tick(1/60);accumulator-=1/60;advanced+=1/60;}
@@ -178,7 +213,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void) {
     }
     if(game.time>warningUntil)$('#battle-announcement').hidden=true;
     game.events.length=0;
-    if(game.phase==='won'||game.phase==='lost')finish();
+    if(game.phase==='won'){screen='ending';host.dataset.screen=screen;}else if(game.phase==='lost')finish();
   }
   function bindAudio() {
     for(const input of host.querySelectorAll<HTMLInputElement>('[data-volume]'))input.oninput=()=>{
