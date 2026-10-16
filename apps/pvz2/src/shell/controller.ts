@@ -1,3 +1,4 @@
+import { readAudio, saveAudio, audioControls } from '../audio';
 import { assetUrl, json } from '../assets/load';
 import { COMPLETE_KEY, NAVIGATION_KEY, LEVEL_ROUTES, initialNavigation, islandStates, type Navigation } from './navigation';
 import type { Catalog, Island, World, WorldMap } from './types';
@@ -9,8 +10,9 @@ export class WorldShell {
   private navigation: Navigation;
   private map: WorldMap | null = null;
   private busy = true;
-  private sound = true;
+  private audio = readAudio();
   private music = new Audio();
+  private musicPlay: Promise<void> | null = null;
   private currentWorld!: World;
   private cameraLayout = NaN;
   private clickSounds = new Map<string, HTMLAudioElement>();
@@ -24,7 +26,7 @@ export class WorldShell {
       <button class="map-arrow map-arrow-left" aria-label="向左浏览"><span></span></button><button class="map-arrow map-arrow-right" aria-label="向右浏览"><span></span></button>
       <div class="map-modal" hidden></div><div class="map-loading" role="status"><span class="loading-flower">✿</span><span>正在准备世界地图…</span></div></div>
       <div class="world-caption"><a href="/">‹ 植物大战僵尸 1</a><span class="map-caption">世界地图 · 关卡逐步接入</span><span>外层移植预览</span></div>`;
-    this.music.loop = true; this.music.preload = 'none'; this.music.volume = .25;
+    this.music.loop = true; this.music.preload = 'none'; this.music.volume = this.audio.music;
   }
   async init() {
     const [{ MapRenderer }, catalog] = await Promise.all([import('./renderer'), json<Catalog>('shell/catalog.json')]);
@@ -68,24 +70,23 @@ export class WorldShell {
     this.host.style.setProperty('--button-art',`url('${assetUrl(skin.PlayButton.image)}')`);
   }
   private clickSound(name: string) {
-    if (!this.sound || this.busy) return;
-    const clip = this.clickSounds.get(name)!; clip.currentTime = 0; void clip.play();
+    if (this.audio.effects === 0 || this.busy) return;
+    const clip = this.clickSounds.get(name)!; clip.volume = this.audio.effects; clip.currentTime = 0; void clip.play();
   }
   private startMusic() {
-    if (!this.sound) return;
+    if (this.audio.music === 0) return;
     if (!this.music.src) this.music.src = assetUrl(this.catalog.music);
-    void this.music.play();
+    if(!this.musicPlay)this.musicPlay=this.music.play();
   }
   private async choose(index: number) {
     if (this.busy || !this.$('.map-modal').hidden) return;
-    this.startMusic();
     if (index !== this.navigation.chooser) {
       this.navigation.chooser = index; this.renderer.selectWorld(index); this.save(); return;
     }
     const world = this.catalog.worlds[index];
     if (!world.enterable) return;
     if (world.id === 'egypt') await this.openWorld(world);
-    else this.worldDescription(world);
+    else await this.worldDescription(world);
   }
   private step(direction: number) {
     if (this.busy || !this.$('.map-modal').hidden) return;
@@ -111,7 +112,7 @@ export class WorldShell {
     this.map = await json<WorldMap>(`shell/maps/${world.id}.json`); this.navigation.world = world.id;
     this.$('.world-labels').innerHTML = '';
     const states = islandStates(this.map,this.completed());
-    this.$('.map-level-targets').innerHTML = this.map.islands.filter(n=>n.kind===0).map(n=>`<button class="level-target" data-level-node="${n.node}" aria-label="${world.name} 第 ${n.name} 关 · ${states.get(n.node)==='finished'?'已完成':states.get(n.node)==='open'?'可进入':'未解锁'}${n.levels.some(id=>LEVEL_ROUTES[id])?' · 首关原型':' · 尚未接入'}"></button>`).join('');
+    this.$('.map-level-targets').innerHTML = this.map.islands.filter(n=>n.kind===0).map(n=>`<button class="level-target" data-level-node="${n.node}" aria-label="${world.name} 第 ${n.name} 关 · ${states.get(n.node)==='finished'?'已完成':states.get(n.node)==='open'?'可进入':'未解锁'}${n.levels.some(id=>LEVEL_ROUTES[id])?'':' · 尚未接入'}"></button>`).join('');
     for (const button of this.host.querySelectorAll<HTMLButtonElement>('[data-level-node]')) button.onclick = () => { void this.selectLevel(this.map!.islands.find(n=>n.node===Number(button.dataset.levelNode))!); };
     const camera = Object.hasOwn(this.navigation.cameras,world.id) ? this.navigation.cameras[world.id] : 0;
     await this.renderer.showMap(this.map,camera,this.completed(),world.night);
@@ -138,14 +139,17 @@ export class WorldShell {
     if (this.busy || !this.$('.map-modal').hidden) return;
     const state = islandStates(this.map!,this.completed()).get(island.node)!;
     const id=island.levels.find(id=>LEVEL_ROUTES[id]);
-    this.startMusic();
     if (id && state !== 'locked') {
-      this.save(); this.renderer.stop(); this.music.pause(); this.host.hidden=true; await this.play(id); return;
+      this.save(); this.renderer.stop(); if(this.musicPlay) await this.musicPlay; this.music.pause(); this.musicPlay=null; this.host.hidden=true; await this.play(id); return;
     }
     this.modal(`${this.currentWorld.name} · 第 ${island.name} 关`, `<p>${state==='locked'?'此关卡尚未解锁。':'此关卡尚未接入。'}</p><p class="port-note">当前先还原地图与选关流程，后续按原关卡逐一移植。</p><button class="native-button close-dialog">返回地图</button>`);
   }
-  private worldDescription(world: World) {
-    this.modal(world.name,`<p>${world.description}</p><p class="port-note">世界尚未解锁。当前可以预览原生地图，关卡战斗待接入。</p><button class="native-button preview-world">查看地图</button>`);
+  private async worldDescription(world: World) {
+    this.loading(true);
+    const art=await this.renderer.worldDetails(world.id);
+    this.loading(false);
+    this.modal(world.name,`<p>${world.description}</p><img class="world-banner" src="${art.background}" alt="${world.name}"><button class="native-button" disabled>世界钥匙 × 1 · 尚未获得</button><div class="world-plant-cards" aria-label="本世界植物">${art.cards.map(image=>`<img src="${image}" alt="本世界植物卡片">`).join('')}</div><button class="preview-world">预览地图 · 关卡尚未接入</button>`);
+    this.$('.native-window').classList.add('world-description');
     this.$('.preview-world').onclick=()=>{void this.openWorld(world);};
   }
   private modal(title: string, content: string) {
@@ -157,13 +161,16 @@ export class WorldShell {
   }
   private closeModal() { this.$('.map-modal').hidden=true; this.$('.map-modal').innerHTML=''; }
   private settings() {
-    this.modal('设置',`<button class="native-button toggle-music">声音：${this.sound?'开启':'关闭'}</button><p class="port-note">外层地图还原中。商店、图鉴、花园与小游戏尚未接入。</p><a class="native-button" href="/">切换到植物大战僵尸 1</a>`);
-    this.$('.toggle-music').onclick=()=>{this.sound=!this.sound;this.$('.toggle-music').textContent=`声音：${this.sound?'开启':'关闭'}`;if(this.sound)this.startMusic();else this.music.pause();};
+    this.modal('设置',`${audioControls(this.audio)}<button class="native-button close-dialog">返回游戏</button><a class="switch-version" href="/">植物大战僵尸 1</a>`);
+    for (const input of this.host.querySelectorAll<HTMLInputElement>('[data-volume]')) input.oninput=()=>{
+      this.audio[input.dataset.volume as 'music'|'effects']=Number(input.value);saveAudio(this.audio);
+      this.music.volume=this.audio.music;if(this.audio.music>0)this.startMusic();
+    };
   }
   private async back() {
     if(this.busy)return;
     if(!this.$('.map-modal').hidden){this.closeModal();return;}
     this.save();if(this.map)await this.showChooser();else location.href='/';
   }
-  async resume() { this.host.hidden=false; await this.openWorld(this.currentWorld); this.startMusic(); }
+  async resume() { this.audio=readAudio(); this.music.volume=this.audio.music; this.host.hidden=false; await this.openWorld(this.currentWorld); this.startMusic(); }
 }

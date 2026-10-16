@@ -137,100 +137,105 @@ def flat_draws(asset, root=1, overrides=None):
     return draws
 
 
-lyrics=read('json/multilanguages/InGameLyrics').objects[0]['json']
-features=read('json/Features/WorldmapFeatures').objects[0]['json']['WORLDMAPS']
-chooser=read('worldmaps/WorldmapChooserWORLDMAP')
-chooser_comp=component(chooser,chooser.objects[1],'0afd7/QFy1OXrADNpaZkrno')
-chooser_draws=flat_draws(chooser)
-worlds=[]
-for index,icon in enumerate(chooser_comp['icons']):
-    node=chooser.ref(icon['node']);draw=next(d for d in chooser_draws if d['owner']==icon['node']['ref'] and d['kind']=='rig')
-    if not icon.get('enterable',True):
-        worlds.append({'id':node['_name'].lower(),'name':'未知世界','description':'','difficulty':0,'enterable':False,'draw':draw,'night':False})
-        continue
-    feature=features[icon.get('enterTo',1)]
-    strings=lyrics['WorldMapScene']['World'][{'LostCity':'Lostcity','IceAge':'Iceage'}.get(node['_name'],node['_name'])]
-    worlds.append({'id':feature['CODENAME'],'name':strings['Name']['zh'],'description':strings['Description']['zh'],'difficulty':feature['DIFFICULTY'],'enterable':True,'night':icon.get('atNight',False),'draw':draw,'levels':feature['LEVELS']})
+def main():
+    lyrics=read('json/multilanguages/InGameLyrics').objects[0]['json']
+    features=read('json/Features/WorldmapFeatures').objects[0]['json']['WORLDMAPS']
+    chooser=read('worldmaps/WorldmapChooserWORLDMAP')
+    chooser_comp=component(chooser,chooser.objects[1],'0afd7/QFy1OXrADNpaZkrno')
+    chooser_draws=flat_draws(chooser)
+    worlds=[]
+    for index,icon in enumerate(chooser_comp['icons']):
+        node=chooser.ref(icon['node']);draw=next(d for d in chooser_draws if d['owner']==icon['node']['ref'] and d['kind']=='rig')
+        if not icon.get('enterable',True):
+            worlds.append({'id':node['_name'].lower(),'name':'未知世界','description':'','difficulty':0,'enterable':False,'draw':draw,'night':False})
+            continue
+        feature=features[icon.get('enterTo',1)]
+        strings=lyrics['WorldMapScene']['World'][{'LostCity':'Lostcity','IceAge':'Iceage'}.get(node['_name'],node['_name'])]
+        worlds.append({'id':feature['CODENAME'],'name':strings['Name']['zh'],'description':strings['Description']['zh'],'difficulty':feature['DIFFICULTY'],'enterable':True,'night':icon.get('atNight',False),'draw':draw,'levels':feature['LEVELS']})
 
-scene=read('scenes/worldMapScene')
-background=component(scene,scene.objects[12],'dragonBones.ArmatureDisplay')
-background_key=rig(background['_dragonAsset']['asset'],background['_dragonAtlasAsset']['asset'])
-buttons={}
-for idx in [3,4,5,6,7,8]:
-    node=scene.objects[idx];sp=component(scene,node,'cc.Sprite');bt=component(scene,node,'cc.Button');pos=node['_lpos'];ui=component(scene,node,'cc.UITransform')['_contentSize']
-    buttons[node['_name']]={'x':512+pos[1],'y':320-pos[2],'w':ui[1]*.4,'h':ui[2]*.4,'normal':sprite(sp['_spriteFrame']['asset']), 'hover':sprite(bt['_hoverSprite']['asset']),'pressed':sprite(bt['_pressedSprite']['asset'])}
-# The original world-description window artwork, with its nine-slice border.
-window_asset=read('a332a35e-0622-46cd-9528-151a1eea3820')
-window_art={}
-for idx in [2,3,4,5]:
-    node=window_asset.objects[idx];window_art[node['_name']]=sprite(component(window_asset,node,'cc.Sprite')['_spriteFrame']['asset'])
-lock=flat_draws(read(chooser_comp['lockPF']['asset']))
-node_resources=read('resouce_prefabs/LevelNodesRP').objects[1]['_components'][0]
-node_styles={key:flat_draws(read(node_resources[key]['asset'])) for key in ['normalNode','minigameNode','gargantuarNode','path','giftbox','epicPortal','zombossHead']}
-font=read('86615cb2-9939-4358-b8e2-ec2d020efeea').objects[0]
-font_bytes = c.download('docs/assets/resources/native/86/86615cb2-9939-4358-b8e2-ec2d020efeea/'+font['_native'])
+    scene=read('scenes/worldMapScene')
+    background=component(scene,scene.objects[12],'dragonBones.ArmatureDisplay')
+    background_key=rig(background['_dragonAsset']['asset'],background['_dragonAtlasAsset']['asset'])
+    buttons={}
+    for idx in [3,4,5,6,7,8]:
+        node=scene.objects[idx];sp=component(scene,node,'cc.Sprite');bt=component(scene,node,'cc.Button');pos=node['_lpos'];ui=component(scene,node,'cc.UITransform')['_contentSize']
+        buttons[node['_name']]={'x':512+pos[1],'y':320-pos[2],'w':ui[1]*.4,'h':ui[2]*.4,'normal':sprite(sp['_spriteFrame']['asset']), 'hover':sprite(bt['_hoverSprite']['asset']),'pressed':sprite(bt['_pressedSprite']['asset'])}
+    # The original world-description window artwork, with its nine-slice border.
+    window_asset=read('a332a35e-0622-46cd-9528-151a1eea3820')
+    window_art={}
+    for idx in [2,3,4,5]:
+        node=window_asset.objects[idx];window_art[node['_name']]=sprite(component(window_asset,node,'cc.Sprite')['_spriteFrame']['asset'])
+    lock=flat_draws(read(chooser_comp['lockPF']['asset']))
+    node_resources=read('resouce_prefabs/LevelNodesRP').objects[1]['_components'][0]
+    node_styles={key:flat_draws(read(node_resources[key]['asset'])) for key in ['normalNode','minigameNode','gargantuarNode','path','giftbox','epicPortal','zombossHead']}
+    font=read('86615cb2-9939-4358-b8e2-ec2d020efeea').objects[0]
+    font_bytes = c.download('docs/assets/resources/native/86/86615cb2-9939-4358-b8e2-ec2d020efeea/'+font['_native'])
 
-def audio(path, name):
-    clip = read(path)
-    uuid = c.decode_uuid(c.config['uuids'][c.path_index[path]]) if path in c.path_index else path
-    target = OUT / (name + clip.objects[0]['_native'])
-    target.write_bytes(c.native(uuid, clip.objects[0]['_native'].lstrip('.')))
-    return str(target.relative_to(c.OUT))
+    def audio(path, name):
+        clip = read(path)
+        uuid = c.decode_uuid(c.config['uuids'][c.path_index[path]]) if path in c.path_index else path
+        target = OUT / (name + clip.objects[0]['_native'])
+        target.write_bytes(c.native(uuid, clip.objects[0]['_native'].lstrip('.')))
+        return str(target.relative_to(c.OUT))
 
-music = audio('music/worldMap/WorldMapMusic', 'world-map')
-sounds = {key: audio(chooser_comp[key]['asset'], key) for key in ['touchStartSound','touchEndSound']}
-toolbar = [draw for idx in [14,24,25,26] for draw in flat_draws(scene,root=idx)]
-# Accounts are independent: render the original counters with this port's zero balances.
-for draw in toolbar:
-    if draw['kind'] == 'label': draw['text'] = '0'
-plant_features = read('03000899-5d49-4cef-a2b6-3b1b17f96c65').objects[0]['json']['PLANTS']
-card = flat_draws(read('f5b49039-25f1-495b-ab19-afac972d1467'))
-node_styles['plantCard'] = [d for d in card if d['name'] in ['Background','Plant']]
-node_styles['upgrade'] = flat_draws(read('8f6593f6-cd95-472c-a334-f9093e24256a'))
-upgrades = read('1f3bc896-e45b-4497-92b6-be280652a736').objects[0]['json']['UPGRADES']
-arrow = next(d for d in flat_draws(read('worldmaps/EgyptWORLDMAP')) if d['name']=='DeltaArrow')
-catalog={'worlds':worlds,'chooser':chooser_draws,'background':background_key,'buttons':buttons,'window':window_art,'lock':lock,'nodes':node_styles,'music':music,'sounds':sounds,'toolbar':toolbar,'arrow':arrow,'plantCards':{str(i):{'animation':f['_CARDSPRITENAME'],'background':{'market':'prenium','water':'beach'}.get(f['OBTAINWORLD'],f['OBTAINWORLD'])} for i,f in enumerate(plant_features)},'upgrades':[u['SPRITENAME'] for u in upgrades]}
-c.write_json(OUT/'catalog.json',catalog)
+    music = audio('music/worldMap/WorldMapMusic', 'world-map')
+    sounds = {key: audio(chooser_comp[key]['asset'], key) for key in ['touchStartSound','touchEndSound']}
+    toolbar = [draw for idx in [14,24,25,26] for draw in flat_draws(scene,root=idx)]
+    # Accounts are independent: render the original counters with this port's zero balances.
+    for draw in toolbar:
+        if draw['kind'] == 'label': draw['text'] = '0'
+    plant_features = read('03000899-5d49-4cef-a2b6-3b1b17f96c65').objects[0]['json']['PLANTS']
+    card = flat_draws(read('f5b49039-25f1-495b-ab19-afac972d1467'))
+    node_styles['plantCard'] = [d for d in card if d['name'] in ['Background','Plant']]
+    node_styles['upgrade'] = flat_draws(read('8f6593f6-cd95-472c-a334-f9093e24256a'))
+    upgrades = read('1f3bc896-e45b-4497-92b6-be280652a736').objects[0]['json']['UPGRADES']
+    arrow = next(d for d in flat_draws(read('worldmaps/EgyptWORLDMAP')) if d['name']=='DeltaArrow')
+    catalog={'worlds':worlds,'chooser':chooser_draws,'background':background_key,'buttons':buttons,'window':window_art,'lock':lock,'nodes':node_styles,'music':music,'sounds':sounds,'toolbar':toolbar,'arrow':arrow,'plantCards':{str(i):{'animation':f['_CARDSPRITENAME'],'background':{'market':'prenium','water':'beach'}.get(f['OBTAINWORLD'],f['OBTAINWORLD'])} for i,f in enumerate(plant_features)},'upgrades':[u['SPRITENAME'] for u in upgrades]}
+    c.write_json(OUT/'catalog.json',catalog)
 
-for world in worlds:
-    if not world['enterable']:continue
-    feature=next(f for f in features if f['CODENAME']==world['id'])
-    asset=read('worldmaps/'+feature['RESNAME']+'WORLDMAP')
-    config=component(asset,asset.objects[1],'c950fgYqFxBG7Ic+A1nhlTR')
-    def position(ref):
-        obj=asset.ref(ref);p=obj.get('_lpos',[1,0,0,0]);return [p[1],-p[2]]
-    islands=[]
-    for item in config['levelIslands']:
-        node=asset.ref(item['islandNode']);xy=position(item['islandNode'])
-        next_islands=([item['nextIsland']['ref']] if item.get('nextIsland') else [])+[ref['ref'] for ref in item.get('otherNextIslands',[])]
-        islands.append({'node':item['islandNode']['ref'],'name':item.get('levelNodeName',''),'kind':item.get('islandDisplay',0),'appearance':item.get('levelNodeAppearance',0),'levels':item.get('levelJsonsID',[]),'plant':item.get('plantDisplayed',0),'upgrade':item.get('upgradeDisplayed',0),'x':xy[0],'y':xy[1],'next':next_islands,'affectsBounds':item.get('affectsMaxX',True)})
-    draws=flat_draws(asset)
-    parents={i:o.get('_parent',{}).get('ref') for i,o in enumerate(asset.objects) if isinstance(o,dict) and o['type']=='cc.Node'}
-    far={f['islandNode']['ref']:f.get('offsetScale',1) for f in config.get('farIslands',[])}
-    moving={config['islandParent']['ref'],config['levelParent']['ref']}
-    for draw in draws:
-        owner=draw['owner'];draw['parallax']=0
-        while owner is not None:
-            if owner in far:draw['parallax']=far[owner];break
-            if owner in moving:draw['parallax']=1;break
-            owner=parents.get(owner)
-    used=sorted({d['rig'] for d in draws if d['kind']=='rig'})
-    c.write_json(OUT/'maps'/f"{world['id']}.json",{'id':world['id'],'draws':draws,'islands':islands,'rigs':used,'startingLevels':config['startingLevels']})
-    print('map',world['id'],len(islands),'nodes',len(draws),'draws',flush=True)
+    for world in worlds:
+        if not world['enterable']:continue
+        feature=next(f for f in features if f['CODENAME']==world['id'])
+        asset=read('worldmaps/'+feature['RESNAME']+'WORLDMAP')
+        config=component(asset,asset.objects[1],'c950fgYqFxBG7Ic+A1nhlTR')
+        def position(ref):
+            obj=asset.ref(ref);p=obj.get('_lpos',[1,0,0,0]);return [p[1],-p[2]]
+        islands=[]
+        for item in config['levelIslands']:
+            node=asset.ref(item['islandNode']);xy=position(item['islandNode'])
+            next_islands=([item['nextIsland']['ref']] if item.get('nextIsland') else [])+[ref['ref'] for ref in item.get('otherNextIslands',[])]
+            islands.append({'node':item['islandNode']['ref'],'name':item.get('levelNodeName',''),'kind':item.get('islandDisplay',0),'appearance':item.get('levelNodeAppearance',0),'levels':item.get('levelJsonsID',[]),'plant':item.get('plantDisplayed',0),'upgrade':item.get('upgradeDisplayed',0),'x':xy[0],'y':xy[1],'next':next_islands,'affectsBounds':item.get('affectsMaxX',True)})
+        draws=flat_draws(asset)
+        parents={i:o.get('_parent',{}).get('ref') for i,o in enumerate(asset.objects) if isinstance(o,dict) and o['type']=='cc.Node'}
+        far={f['islandNode']['ref']:f.get('offsetScale',1) for f in config.get('farIslands',[])}
+        moving={config['islandParent']['ref'],config['levelParent']['ref']}
+        for draw in draws:
+            owner=draw['owner'];draw['parallax']=0
+            while owner is not None:
+                if owner in far:draw['parallax']=far[owner];break
+                if owner in moving:draw['parallax']=1;break
+                owner=parents.get(owner)
+        used=sorted({d['rig'] for d in draws if d['kind']=='rig'})
+        c.write_json(OUT/'maps'/f"{world['id']}.json",{'id':world['id'],'draws':draws,'islands':islands,'rigs':used,'startingLevels':config['startingLevels']})
+        print('map',world['id'],len(islands),'nodes',len(draws),'draws',flush=True)
 
-# Keep the upstream glyphs, subset to the shell's actual UI and world descriptions.
-from fontTools import subset
-from fontTools.ttLib import TTFont
-font = TTFont(io.BytesIO(font_bytes), recalcTimestamp=False)
-options = subset.Options()
-options.flavor = 'woff2'
-subsetter = subset.Subsetter(options=options)
-text = ''.join(chr(code) for code in range(32,127)) + ''.join(w['name']+w['description'] for w in worlds)
-text += (c.ROOT/'apps/pvz2/src/shell/controller.ts').read_text()
-subsetter.populate(text=text)
-subsetter.subset(font)
-font.flavor = 'woff2'
-font.save(OUT/'map-font.woff2')
+    # Keep the upstream glyphs, subset to the shell's actual UI and world descriptions.
+    from fontTools import subset
+    from fontTools.ttLib import TTFont
+    font = TTFont(io.BytesIO(font_bytes), recalcTimestamp=False)
+    options = subset.Options()
+    options.flavor = 'woff2'
+    subsetter = subset.Subsetter(options=options)
+    text = ''.join(chr(code) for code in range(32,127)) + ''.join(w['name']+w['description'] for w in worlds)
+    text += (c.ROOT/'apps/pvz2/src/shell/controller.ts').read_text()
+    subsetter.populate(text=text)
+    subsetter.subset(font)
+    font.flavor = 'woff2'
+    font.save(OUT/'map-font.woff2')
 
-c.write_json(OUT/'rigs.json',rigs)
-c.write_json(c.ROOT/'apps/pvz2/shell-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(OUT.rglob('*')) if p.is_file()}})
+    c.write_json(OUT/'rigs.json',rigs)
+    c.write_json(c.ROOT/'apps/pvz2/shell-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(OUT.rglob('*')) if p.is_file()}})
+
+
+if __name__ == '__main__':
+    main()

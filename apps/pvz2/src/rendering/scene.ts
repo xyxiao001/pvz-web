@@ -1,6 +1,7 @@
 import 'pixi.js/prepare';
+import { BattleArt } from './battle-art';
 import { Application, Assets, Container, Graphics, Sprite, Texture, type Ticker } from 'pixi.js';
-import { PixiFactory, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
+import { PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
 import { assetUrl, json, loadInBatches } from '../assets/load';
 import { BOARD, cellX, rowY, type AnimationTiming, type PlantKind } from '../game/level';
 import type { Game, Plant } from '../game/model';
@@ -19,6 +20,10 @@ interface Actor { root: Container; rig: PixiArmatureDisplay; animation: string; 
 
 export class Scene {
   readonly app = new Application();
+  readonly art = new BattleArt();
+  private clock = new WorldClock();
+  private npcs = new Map<string,PixiArmatureDisplay>();
+  private objects = new Map<string, PixiArmatureDisplay>();
   timing!: AnimationTiming;
   onTick: (dt: number) => void = () => {};
   onPoint: (x: number, y: number) => void = () => {};
@@ -43,6 +48,7 @@ export class Scene {
     const lawn = new Sprite(await Assets.load<Texture>(assetUrl('egypt/lawn.webp')));
     lawn.position.set(-340, -40); this.world.addChild(lawn, this.highlight, this.actorLayer, this.effects);
     this.actorLayer.sortableChildren = true;
+    await this.art.init(this.app);
     let done = 1; progress(done, 7);
     const skeletons = new Map<RigName, Skeleton>();
     await loadInBatches(Object.keys(RIGS) as RigName[], 2, async name => {
@@ -83,7 +89,8 @@ export class Scene {
   }
 
   private rig(name: RigName, armature = RIGS[name].armature) {
-    return this.factory.buildArmatureDisplay(armature, name, '', name)!;
+    const rig = this.factory.buildArmatureDisplay(armature, name)!;
+    rig.armature.clock = this.clock; return rig;
   }
 
   portrait(kind: PlantKind): string {
@@ -102,10 +109,10 @@ export class Scene {
       BOARD.cellWidth, BOARD.cellHeight).fill({ color, alpha: .22 }).stroke({ color, alpha: .6, width: 2 });
   }
 
-  private addActor(id: number, name: RigName) {
+  private addActor(id: number, name: RigName, flag = false) {
     const root = new Container();
     const shade = new Graphics().ellipse(0, 2, name === 'mummy' || name === 'ra' ? 23 : 25, 8).fill({ color: '#302d20', alpha: .2 });
-    const rig = this.rig(name); rig.scale.set(RIGS[name].scale);
+    const rig = this.rig(name, flag ? 'EgyptFlagZombie' : RIGS[name].armature); rig.scale.set(RIGS[name].scale);
     root.addChild(shade, rig); this.actorLayer.addChild(root);
     const actor: Actor = { root, rig, animation: '', actionAt: -1, dying: -1 };
     this.actors.set(id, actor); return actor;
@@ -136,7 +143,7 @@ export class Scene {
     }
     for (const z of game.zombies) {
       alive.add(z.id);
-      const actor = this.actors.get(z.id) ?? this.addActor(z.id, z.kind === 'ra' ? 'ra' : 'mummy');
+      const actor = this.actors.get(z.id) ?? this.addActor(z.id, z.kind === 'ra' ? 'ra' : 'mummy', z.kind === 'mummy_flag');
       actor.root.position.set(z.x, rowY(z.row)); actor.root.zIndex = rowY(z.row) + 1;
       this.animate(actor, z.eating ? 'Eat' : z.absorbUntil > game.time ? 'Absorbing' : 'Walk');
       if (z.armor > 0 && !actor.armor) {
@@ -154,7 +161,7 @@ export class Scene {
       actor.dying += dt; actor.root.alpha = Math.max(0, 1 - actor.dying / .3);
       if (actor.dying >= .3) { actor.rig.dispose(); actor.armor?.dispose(); actor.root.destroy({ children: true }); this.actors.delete(id); }
     }
-    PixiFactory.advanceTime(dt);
+    this.clock.advanceTime(dt); this.art.clock.advanceTime(dt); PixiFactory.advanceTime(0);
     for (const actor of this.actors.values()) if (actor.armor?.visible) {
       const bone = actor.rig.armature.getBone('armorSOCKET')!;
       actor.armor.position.set(bone.global.x * .51, bone.global.y * .51);
@@ -165,27 +172,20 @@ export class Scene {
 
   private drawObjects(game: Game) {
     const g = this.effects; g.clear();
-    for (const mower of game.mowers) if (!mower.spent) {
-      const x = mower.x, y = rowY(mower.row);
-      g.roundRect(x - 23, y - 22, 42, 20, 5).fill('#536b50').stroke({ color: '#263f31', width: 3 });
-      g.moveTo(x - 20, y - 14).lineTo(x - 30, y - 40).lineTo(x - 37, y - 40).stroke({ color: '#594c38', width: 4 });
-      g.circle(x - 13, y, 8).circle(x + 12, y, 8).fill('#303c32');
-      g.circle(x - 13, y, 3).circle(x + 12, y, 3).fill('#d1bb79');
-    }
+    const alive = new Set<string>();
+    const object = (key: string, name: string, animation: string, x: number, y: number, scale: number) => {
+      alive.add(key);
+      let rig = this.objects.get(key);
+      if (!rig) { rig = this.art.build(name,animation); this.objects.set(key,rig); this.actorLayer.addChild(rig); }
+      if (rig.animation.lastAnimationName !== animation) rig.animation.play(animation,0);
+      rig.position.set(x,y); rig.scale.set(scale); rig.zIndex = name === 'sun' ? 1000 : y;
+    };
+    for (const mower of game.mowers) if (!mower.spent) object(`mower-${mower.row}`,'mower',mower.active?'Attack':'Idle',mower.x,rowY(mower.row),.5);
+    for (const sun of game.suns) object(`sun-${sun.id}`,'sun','Normal',sun.x,sun.y,.5);
+    for (const [key,rig] of this.objects) if (!alive.has(key)) { rig.removeFromParent(); rig.dispose(); this.objects.delete(key); }
     for (const pea of game.peas) {
       g.circle(pea.x, pea.y, pea.powered ? 8 : 7).fill(pea.powered ? '#c8f968' : '#8bd331').stroke({ color: '#3e761d', width: 1.5 });
       g.circle(pea.x - 2, pea.y - 2, 2).fill('#effcb0');
-    }
-    for (const sun of game.suns) {
-      const radius = 21 + Math.sin(game.time * 3 + sun.id) * 1.5;
-      for (let i = 0; i < 10; i++) {
-        const a = i * Math.PI / 5 + game.time * .25;
-        g.moveTo(sun.x + Math.cos(a - .1) * radius, sun.y + Math.sin(a - .1) * radius)
-          .lineTo(sun.x + Math.cos(a) * (radius + 12), sun.y + Math.sin(a) * (radius + 12))
-          .lineTo(sun.x + Math.cos(a + .1) * radius, sun.y + Math.sin(a + .1) * radius).fill('#ffcf3f');
-      }
-      g.circle(sun.x, sun.y, radius).fill('#ffdf58').stroke({ color: '#fff5b6', width: 3 });
-      g.circle(sun.x - 5, sun.y - 5, 6).fill({ color: '#fffbed', alpha: .55 });
     }
     for (const effect of game.effects) {
       const t = effect.age / .65, r = effect.kind === 'explode' ? 85 : effect.kind === 'food' ? 55 : 23;
@@ -194,12 +194,43 @@ export class Scene {
     }
   }
 
+  narrative(character: string, text: string) {
+    if (!this.npcs.size) {
+      this.reset();
+      for(const [name,x,y] of [['crazydave',175,628],['winnie',990,618]] as const) {
+        const rig=this.art.build(name,'Idle');rig.position.set(x,y);rig.scale.set(.47);
+        this.actorLayer.addChild(rig);this.npcs.set(name,rig);
+      }
+    }
+    for(const [name,rig] of this.npcs) {
+      const size=Math.max(1,Math.min(3,Math.round(text.length*2/21)));
+      rig.animation.play(name===character?['Say_Small','Say_Medium','Say_Long'][size-1]:'Idle',name===character?1:0);
+    }
+    this.render();this.start();
+  }
+  narrativeTick(dt: number) {
+    this.art.clock.advanceTime(dt); PixiFactory.advanceTime(0);
+    for(const rig of this.npcs.values()) if(rig.animation.isCompleted)rig.animation.play('Idle',0);
+  }
+  preview() {
+    this.reset();
+    for (const [index,kind] of ['mummy','ra','mummy'].entries()) {
+      const actor = this.addActor(-index-1,kind as RigName);
+      actor.root.position.set(1040 + index % 2 * 70,300 + index * 110);
+      this.animate(actor,'Idle');
+      actor.rig.armature.advanceTime(.01);
+    }
+    this.render();
+  }
+  previewTick(dt: number) { this.clock.advanceTime(dt); }
   render() { this.app.render(); }
   start() { this.app.start(); }
   stop() { this.app.stop(); }
   reset() {
     this.stop();
     for (const actor of this.actors.values()) { actor.rig.dispose(); actor.armor?.dispose(); actor.root.destroy({ children: true }); }
+    for (const rig of this.objects.values()) {rig.removeFromParent();rig.dispose();} this.objects.clear();
+    for(const rig of this.npcs.values()){rig.removeFromParent();rig.dispose();}this.npcs.clear();
     this.actors.clear(); this.effects.clear(); this.highlight.clear(); PixiFactory.advanceTime(0);
   }
 }

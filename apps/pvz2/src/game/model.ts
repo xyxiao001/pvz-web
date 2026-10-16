@@ -1,3 +1,4 @@
+import { EGYPT_RULES as RULES } from './rules';
 import { BOARD, cellX, rowY, PLANT_KINDS, type AnimationTiming, type Level, type PlantKind, type Properties, type ZombieKind } from './level';
 
 export interface Plant {
@@ -15,8 +16,8 @@ export type GameEvent = { type: 'shot' | 'plant' | 'sun' | 'explode' | 'win' | '
 export class Game {
   phase: 'playing' | 'paused' | 'won' | 'lost' = 'playing';
   time = 0;
-  sun = 150;
-  food = 1;
+  sun: number = RULES.startingSun;
+  food: number = RULES.startingFood;
   wave = 0;
   kills = 0;
   plants: Plant[] = [];
@@ -28,9 +29,12 @@ export class Game {
   cooldowns = Object.fromEntries(PLANT_KINDS.map(kind => [kind, 0])) as Record<PlantKind, number>;
   events: GameEvent[] = [];
   private id = 0;
-  private nextSun = 3;
-  private nextWave = 16;
-  private waveStarted = 0;
+  private nextSun: number = RULES.initialSunDelay;
+  private droppedSuns = 0;
+  private nextWave: number = RULES.firstWaveDelay + RULES.normalWaveEntrance;
+  private waveDeadline = Infinity;
+  private waveDamageDeadline = Infinity;
+  private waveIds = new Set<number>();
   private waveHealth = 0;
   private threshold = 0;
   private pending: { kind: ZombieKind; at: number; row: number }[] = [];
@@ -105,11 +109,15 @@ export class Game {
   }
 
   private startWave() {
-    const kinds = this.level.waves[this.wave];
-    this.wave++; this.waveStarted = this.time; this.nextWave = Infinity;
+    const kinds = [...this.level.waves[this.wave]];
+    if ((this.wave + 1) % this.level.flagInterval === 0) kinds.unshift('mummy_flag');
+    this.wave++; this.nextWave = Infinity;
+    this.waveIds.clear();
+    this.waveDeadline = this.time + RULES.waveDelay + this.random() * RULES.waveDelayRange;
+    this.waveDamageDeadline = this.time + RULES.waveDamageDelay + this.random() * RULES.waveDamageRange;
     this.threshold = this.level.minHealth + this.random() * (this.level.maxHealth - this.level.minHealth);
-    this.waveHealth = kinds.reduce((n, kind) => n + this.props.zombies[kind].Toughness + (kind === 'mummy_armor1' ? this.props.armors.egypt_armor1.Toughness : 0), 0);
-    this.pending = kinds.map((kind, i) => ({ kind, at: this.time + i * 1.2, row: Math.floor(this.random() * BOARD.rows) }));
+    this.waveHealth = kinds.reduce((n, kind) => n + this.props.zombies[kind].Toughness, 0);
+    this.pending = kinds.map(kind => ({ kind, at: this.time, row: Math.floor(this.random() * BOARD.rows) }));
     this.events.push({ type: 'wave' });
   }
 
@@ -117,11 +125,11 @@ export class Game {
     if (this.phase !== 'playing') return;
     this.time += dt;
     for (const kind of PLANT_KINDS) this.cooldowns[kind] = Math.max(0, this.cooldowns[kind] - dt);
-    if (this.time >= this.nextSun) { this.dropSun(BOARD.left + 30 + this.random() * 650, 110, 50, 'sky'); this.nextSun = this.time + 8; }
+    if (this.time >= this.nextSun) { this.dropSun(BOARD.left + 30 + this.random() * 650, 110, 50, 'sky'); this.nextSun = this.time + Math.min(RULES.sunMax, RULES.sunBase + this.droppedSuns * RULES.sunIncrease + this.random() * RULES.sunRange); this.droppedSuns++; }
     if (this.wave < this.level.waves.length && this.time >= this.nextWave) this.startWave();
-    for (const spawn of this.pending.filter(s => s.at <= this.time)) this.zombies.push({ id: ++this.id, kind: spawn.kind, row: spawn.row,
+    for (const spawn of this.pending.filter(s => s.at <= this.time)) { this.waveIds.add(this.id + 1); this.zombies.push({ id: ++this.id, kind: spawn.kind, row: spawn.row,
       x: 1070, hp: this.props.zombies[spawn.kind].Toughness, armor: spawn.kind === 'mummy_armor1' ? this.props.armors.egypt_armor1.Toughness : 0,
-      eating: false, absorbed: 0, absorbUntil: 0 });
+      eating: false, absorbed: 0, absorbUntil: 0 }); }
     this.pending = this.pending.filter(s => s.at > this.time);
 
     for (const p of this.plants) {
@@ -179,7 +187,7 @@ export class Game {
       if (mower.x > 1230) { mower.spent = true; mower.active = false; }
     }
     for (const z of this.zombies) if (z.hp <= 0) {
-      this.kills++; if (this.kills % 6 === 0) this.food++;
+      this.kills++;
       if (z.absorbed) this.dropSun(z.x, rowY(z.row) - 65, z.absorbed, 'ra');
     }
     this.zombies = this.zombies.filter(z => z.hp > 0);
@@ -189,8 +197,10 @@ export class Game {
     for (const effect of this.effects) effect.age += dt;
     this.effects = this.effects.filter(e => e.age < .65);
     if (this.wave > 0 && !this.pending.length && this.wave < this.level.waves.length && this.nextWave === Infinity) {
-      const health = this.zombies.reduce((n, z) => n + z.hp + z.armor, 0);
-      if (health <= this.waveHealth * this.threshold || this.time - this.waveStarted >= 30) this.nextWave = this.time + 5;
+      const health = this.zombies.filter(z => this.waveIds.has(z.id)).reduce((n, z) => n + z.hp, 0);
+      if (this.time >= this.waveDamageDeadline && (health <= this.waveHealth * this.threshold || this.time >= this.waveDeadline)) {
+        this.nextWave = this.time + ((this.wave + 1) % this.level.flagInterval === 0 ? RULES.flagWaveEntrance : RULES.normalWaveEntrance);
+      }
     }
     if (this.wave === this.level.waves.length && !this.pending.length && !this.zombies.length && this.phase === 'playing') { this.phase = 'won'; this.events.push({ type: 'win' }); }
   }

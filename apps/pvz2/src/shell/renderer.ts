@@ -1,5 +1,5 @@
 import 'pixi.js/prepare';
-import { Application, Assets, Container, Sprite, Texture, Text, ColorMatrixFilter } from 'pixi.js';
+import { Application, Assets, Container, Sprite, Texture, Text, ColorMatrixFilter, Rectangle } from 'pixi.js';
 import { PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
 import { assetUrl, json, loadInBatches } from '../assets/load';
 import { clampCamera, islandStates } from './navigation';
@@ -161,6 +161,21 @@ export class MapRenderer {
       }
     }
     this.carousel = this.carouselTarget = index * 264; this.transition = .2; this.positionChooser(); this.setNight(this.catalog.worlds[index].night); this.start();
+  }
+  async worldDetails(id: string) {
+    const data = await json<{rig:string;worlds:Record<string,number[]>}>('shell/window.json');
+    const cardKey = this.catalog.nodes.plantCard.find(d=>d.kind==='rig')!.rig!;
+    await this.load([data.rig,cardKey]);
+    const banner = this.makeRig(data.rig,'BG',id); banner.armature.advanceTime(.001);
+    const background=(this.app.renderer.extract.canvas({target:banner,resolution:1}) as HTMLCanvasElement).toDataURL('image/webp');banner.dispose();
+    const cards=data.worlds[id].map(plant=>{
+      const props=this.catalog.plantCards[plant],root=new Container();
+      const layers=[this.makeRig(cardKey,'background',props.background),this.makeRig(cardKey,'plants',props.animation)];
+      for(const rig of layers){rig.armature.advanceTime(.001);root.addChild(rig);}
+      const image=(this.app.renderer.extract.canvas({target:root,resolution:1,frame:new Rectangle(-119,-75,238,150)}) as HTMLCanvasElement).toDataURL('image/webp');
+      layers.forEach(r=>r.dispose());root.destroy({children:true});return image;
+    });
+    return {background,cards};
   }
   selectWorld(index: number) {
     this.carouselStart = this.carousel; this.carouselTarget = index * 264; this.transition = 0;

@@ -6,6 +6,7 @@ import { cellX, readLevel, type Properties, type SourceLevel } from '../src/game
 
 const read = (name: string) => JSON.parse(readFileSync(new URL(`../public/assets/${name}`, import.meta.url), 'utf8'));
 const props: Properties = read('levels/properties.json');
+props.zombies.mummy_flag=read('battle/flag.json');
 const source: SourceLevel = read('levels/egypt1.source.json');
 const timing = { shoot: 15 / 30, shootDuration: 26 / 30, produce: 23 / 30, produceDuration: 40 / 30 };
 const create = () => new Game(readLevel(source), props, timing, 1234);
@@ -23,7 +24,7 @@ test('Egypt 1 retains all ten explicit spawn waves and the three source zombie t
 test('planting consumes sun once, respects cells and cooldown, and pause freezes combat', () => {
   const game = create();
   assert.equal(game.plant('sunflower', 2, 0), true);
-  assert.equal(game.sun, 100);
+  assert.equal(game.sun, 0);
   assert.equal(game.plant('sunflower', 2, 1), false);
   assert.equal(game.plant('peashooter', 2, 0), false);
   assert.equal(game.plant('wallnut', -1, 0), false);
@@ -34,7 +35,7 @@ test('planting consumes sun once, respects cells and cooldown, and pause freezes
 });
 
 test('peashooter fires at the extracted Shoot event, not when its animation starts', () => {
-  const game = create(); game.plant('peashooter', 2, 0);
+  const game = create(); game.sun=100; game.plant('peashooter', 2, 0);
   game.zombies.push(mummy(700));
   tick(game, .5); assert.equal(game.plants[0].action, 'shoot'); assert.equal(game.peas.length, 0);
   tick(game, .4); assert.equal(game.peas.length, 0);
@@ -51,10 +52,10 @@ test('sunflower first production is relative to planting time and sun collects o
 });
 
 test('cone armor absorbs hits before body health and plant food emits sixty peas', () => {
-  const game = create(); game.plant('peashooter', 2, 0);
+  const game = create(); game.sun=100; game.plant('peashooter', 2, 0);
   game.zombies.push(mummy(700, 370));
   tick(game, 2.5); assert.equal(game.zombies[0].hp, 190); assert.ok(game.zombies[0].armor < 370);
-  game.events.length = 0;
+  game.events.length = 0; game.food=1;
   assert.equal(game.plantFood(2, 0), true); assert.equal(game.food, 0);
   assert.equal(game.plantFood(2, 0), false);
   tick(game, 4); assert.equal(game.events.filter(e => e.type === 'shot').length, 60);
@@ -105,5 +106,25 @@ test('a legal planting and collection strategy can finish all ten waves', () => 
     game.tick(1 / 60); game.events.length = 0;
   }
   assert.equal(game.phase, 'won'); assert.equal(game.wave, 10);
-  assert.equal(game.kills, readLevel(source).waves.flat().length);
+  assert.equal(game.kills, readLevel(source).waves.flat().length + 1);
+});
+
+// These checks distinguish the source level from the earlier prototype tuning.
+test('Egypt 1 starts with 50 sun, no plant food, and the source first-wave delay', () => {
+  const game=create();assert.equal(game.sun,50);assert.equal(game.food,0);
+  tick(game,1.9);assert.equal(game.suns.length,0);
+  tick(game,.2);assert.equal(game.suns.length,1);
+  tick(game,13);assert.equal(game.wave,0);
+  tick(game,.5);assert.equal(game.wave,1);
+});
+test('killing six zombies does not invent a plant-food reward', () => {
+  const game=create();
+  for(let i=0;i<6;i++)game.zombies.push({...mummy(700),id:8000+i,hp:0});
+  tick(game,.1);assert.equal(game.kills,6);assert.equal(game.food,0);
+});
+test('old-wave survivors do not hold the next wave, and cone armor is not wave health', () => {
+  const game=create();tick(game,15.6);
+  game.zombies.push({...mummy(1000),id:8000,hp:10000});
+  game.zombies[0].hp=1;game.zombies[0].armor=10000;
+  tick(game,6);assert.equal(game.wave,2);
 });

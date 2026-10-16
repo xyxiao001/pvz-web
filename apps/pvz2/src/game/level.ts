@@ -1,6 +1,6 @@
 export const PLANT_KINDS = ['sunflower', 'peashooter', 'wallnut', 'potatomine'] as const;
 export type PlantKind = typeof PLANT_KINDS[number];
-export type ZombieKind = 'mummy' | 'mummy_armor1' | 'ra';
+export type ZombieKind = 'mummy' | 'mummy_armor1' | 'mummy_flag' | 'ra';
 export const BOARD = { width: 1200, height: 700, left: 190, top: 160, cellWidth: 82, cellHeight: 98, columns: 9, rows: 5 };
 export const cellX = (column: number) => BOARD.left + (column + .5) * BOARD.cellWidth;
 export const rowY = (row: number) => BOARD.top + row * BOARD.cellHeight + 80;
@@ -21,7 +21,7 @@ export interface Properties {
 export interface SourceLevel {
   objects: { objclass: string; aliases?: string[]; objdata: Record<string, unknown> }[];
 }
-export interface Level { waves: ZombieKind[][]; minHealth: number; maxHealth: number }
+export interface Level { waves: ZombieKind[][]; minHealth: number; maxHealth: number; flagInterval: number }
 const reference = (value: string) => value.slice(5, value.indexOf('@'));
 
 // Interpret the explicit spawn lists of the pinned Egypt 1 level. Other world modules
@@ -34,6 +34,7 @@ export function readLevel(source: SourceLevel): Level {
       (byName.get(reference(action))!.Zombies as { Type: string }[]).map(zombie => reference(zombie.Type) as ZombieKind))),
     minHealth: manager.MinNextWaveHealthPercentage as number,
     maxHealth: manager.MaxNextWaveHealthPercentage as number,
+    flagInterval: manager.FlagWaveInterval as number,
   };
 }
 
