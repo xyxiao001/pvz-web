@@ -12,6 +12,18 @@ import cabbage from '../public/assets/runtime/plant-motion/cabbagepult.json';
 import kernel from '../public/assets/runtime/plant-motion/kernelpult.json';
 import melon from '../public/assets/runtime/plant-motion/melonpult.json';
 import winter from '../public/assets/runtime/plant-motion/wintermelon.json';
+import repeater from '../public/assets/runtime/actor-motion/peashooter.json';
+
+test('ordinary peashooter retains its sprout while repeater retains its eyebrow', () => {
+  const peaParts = pea.groups.flatMap(group => group.tracks.flatMap(track => track.poses.map(pose => pose[8])));
+  const repeaterParts = repeater.clips.repeater.groups.flatMap(group => group.tracks.flatMap(track => track.poses.map(pose => pose[8])));
+  assert.ok(peaParts.includes('ANIM_SPROUT'));
+  assert.ok(!peaParts.includes('PEASHOOTER_EYEBROW'));
+  assert.ok(!peaParts.includes('GATLINGPEA_HELMET2'));
+  assert.ok(repeaterParts.includes('PEASHOOTER_EYEBROW'));
+  assert.equal(pea.duration, 100);
+  assert.deepEqual(pea.origin, [-40, -74]);
+});
 
 test('direct Pixi transforms preserve every native pose, interpolated frame and mirrored scale', () => {
   const part = new Container(), expected = new Matrix();

@@ -1,0 +1,1077 @@
+{
+  "rendering": "Existing Pixi rigs at tick 0, 4 pixels per logical unit; original 2x parts; Q97 WebP with lossless alpha",
+  "files": [
+    {
+      "file": "hd4/original/peashooter.webp",
+      "clip": "peashooter",
+      "sources": {
+        "public/assets/runtime/plant-motion/peashooter.json": "fcc785ca780c5532e84547fe6d4520063abea3edac15cf5e4cb60eb7de4e50df",
+        "public/assets/runtime/plant-motion/peashooter.webp": "4bb3df4daecdd1ea228d7d70828bc88dd9e87bd7e76b3b1d7aca0e4af4522dca"
+      },
+      "size": [
+        268,
+        252
+      ],
+      "master": "public/assets/portraits/hd4/original/peashooter.png",
+      "masterSha256": "21c510187bb00f8b9ce068305dc38f4b3d5abb74d33f21939ecf2c2d37ca1508",
+      "sha256": "57e4b0eb94e7a2ba8f52d7e59595e8ebe06d936a479802293bd16da4864aff8f",
+      "bytes": 19206
+    },
+    {
+      "file": "hd4/original/sunflower.webp",
+      "clip": "sunflower",
+      "sources": {
+        "public/assets/runtime/plant-motion/sunflower.json": "6b6a4f5d4d8c355cb7f3018e652c471c9d79a804957ed0f259e5eab15963e34b",
+        "public/assets/runtime/plant-motion/sunflower.webp": "df641c79a76a1d4d38a905ddd6df40278ecb871d87e27a6a843833cc178cd4fc"
+      },
+      "size": [
+        260,
+        264
+      ],
+      "master": "public/assets/portraits/hd4/original/sunflower.png",
+      "masterSha256": "2a555c3da82feb5874804b8e0222f470cb82e16a348a36ee4bac4a6c346d983e",
+      "sha256": "1dc9980b2b0317972ef0add5f5d67041fb43a0ac8962f09a142d5dcc7e360c8d",
+      "bytes": 23856
+    },
+    {
+      "file": "hd4/original/cherrybomb.webp",
+      "clip": "cherrybomb",
+      "sources": {
+        "public/assets/runtime/actor-motion/cherrybomb.json": "28d93b91ffdd948a91e6423f2a6225122c8be8c7347959d009477319f8d437e3",
+        "public/assets/runtime/actor-motion/cherrybomb.webp": "3b677ebe6e0c263604ec088502e393d0d7e5be0d54c48b9b4893b5473177220a"
+      },
+      "size": [
+        312,
+        252
+      ],
+      "master": "public/assets/portraits/hd4/original/cherrybomb.png",
+      "masterSha256": "c89f7475ecc9165531b1779c8caacdfe9e1c8a3fc29352ae6fe00248adb0164b",
+      "sha256": "4437fa8e9eaefad0d540fb8886d9bf9c5d2ef66496aed5d91278c326ca6b30d3",
+      "bytes": 18512
+    },
+    {
+      "file": "hd4/original/wallnut.webp",
+      "clip": "wallnut",
+      "sources": {
+        "public/assets/runtime/actor-motion/wallnut.json": "2be624509ffabf38f96560a590f0792a41f7eb97b590d10e8885cc226da774b1",
+        "public/assets/runtime/actor-motion/wallnut.webp": "8901caefde0a03869e249e87b42464b89d0b930b6d48e94e52742fead9cfce1c"
+      },
+      "size": [
+        288,
+        300
+      ],
+      "master": "public/assets/portraits/hd4/original/wallnut.png",
+      "masterSha256": "8a68a1cfa73055297f994dca4e0c95eb5ca125548f9b016070343f4a5208bdf6",
+      "sha256": "9d079fd7a8ff0c9e1f959b99a8c9757adfde2c3e37d4dec144d529aaded38c03",
+      "bytes": 17286
+    },
+    {
+      "file": "hd4/original/potatomine.webp",
+      "clip": "potatomine",
+      "sources": {
+        "public/assets/runtime/actor-motion/potatomine.json": "26eb9e10c0a9ee606490fd259ee030a95896dd06ec3af0d5d33d4be891e40bf6",
+        "public/assets/runtime/actor-motion/potatomine.webp": "e207fd030e2f0a63508d4c2157672563b2c5bd057f33b5d5b6fd7cffea913ab3"
+      },
+      "size": [
+        264,
+        212
+      ],
+      "master": "public/assets/portraits/hd4/original/potatomine.png",
+      "masterSha256": "ef23858908410a3723b2b6ae4829fb868eaf4ba14651f943dc8b92ef7e2656d1",
+      "sha256": "a04d2aeb31220661324b86ac72dce7d4fb99dd8b0b1795861be9ff81cadef655",
+      "bytes": 14614
+    },
+    {
+      "file": "hd4/original/snowpea.webp",
+      "clip": "snowpea",
+      "sources": {
+        "public/assets/runtime/actor-motion/snowpea.json": "94edea419864768013bc0178c3452f3f31fdf0e5252e7b549204baa7539fd20c",
+        "public/assets/runtime/actor-motion/snowpea.webp": "e9c15bb7bf8654d3884be442ccc57b00b40806248e2fd5b8c0a825ab156d17c1"
+      },
+      "size": [
+        260,
+        252
+      ],
+      "master": "public/assets/portraits/hd4/original/snowpea.png",
+      "masterSha256": "41cbbda7a5faaf250bbf1c339e100337351a4f02a34854d6d00e9749afc25c1d",
+      "sha256": "8b72287949d068bb99c94c55ec1cc4d98922aa9c738694c15f0d6e2704c014ba",
+      "bytes": 21258
+    },
+    {
+      "file": "hd4/original/chomper.webp",
+      "clip": "chomper",
+      "sources": {
+        "public/assets/runtime/actor-motion/chomper.json": "9d7459074f1b553537b19b9b8afb70e17637ddfe86ddeef8091d8ec1314d0192",
+        "public/assets/runtime/actor-motion/chomper.webp": "e157abd432aa52a696e7b457394cdbadf4f49e0abe31960746a67c1d714cd56f"
+      },
+      "size": [
+        320,
+        384
+      ],
+      "master": "public/assets/portraits/hd4/original/chomper.png",
+      "masterSha256": "01ea48d5b54c8764d3a0868d022cba74b551d04238d35a854f37966695aee8fe",
+      "sha256": "9ea6ac1f911ebff372f4e0fb195245f7bdab4864d769adb48600296d015a996f",
+      "bytes": 35624
+    },
+    {
+      "file": "hd4/original/repeater.webp",
+      "clip": "repeater",
+      "sources": {
+        "public/assets/runtime/actor-motion/peashooter.json": "1abd0e3b0461ccbeba11edb31f2198918ac8628419daddee1b795c3ac1053727",
+        "public/assets/runtime/actor-motion/peashooter.webp": "280814684025aa78df51204794b0365d3a5eedf854958d06f6b6870511ba0bc3"
+      },
+      "size": [
+        272,
+        252
+      ],
+      "master": "public/assets/portraits/hd4/original/repeater.png",
+      "masterSha256": "6221811d5ec7eecb3999dd0bc38623994c61a00614cf2eaf1149fa0fa0e37c47",
+      "sha256": "607794a81031fbfb63fd474cd039678893c500fa5338fc188bdebc468c087224",
+      "bytes": 20152
+    },
+    {
+      "file": "hd4/original/puffshroom.webp",
+      "clip": "puffshroom",
+      "sources": {
+        "public/assets/runtime/actor-motion/puffshroom.json": "865c9c6c5fb8658b266326bb165a63c96f91cb32f2d11e9346607c33c529e992",
+        "public/assets/runtime/actor-motion/puffshroom.webp": "bd2976d0f3a508ce6f15249eb80112909e307384c5e48689c402c33981b7dbc6"
+      },
+      "size": [
+        156,
+        152
+      ],
+      "master": "public/assets/portraits/hd4/original/puffshroom.png",
+      "masterSha256": "621dae992714f8ebbd7bc733a0ff041d028a0caa8c86834920b34ac0e6d37c1e",
+      "sha256": "60e22bcf214188cea01c1cb07e8989defecd9df0613ecdbb3329725ac13db1c2",
+      "bytes": 7572
+    },
+    {
+      "file": "hd4/original/sunshroom.webp",
+      "clip": "sunshroom",
+      "sources": {
+        "public/assets/runtime/actor-motion/sunshroom.json": "3a5ae540ab6bad9fd1c7168041226354c341b592dd78a6dc0ff14ce34052c850",
+        "public/assets/runtime/actor-motion/sunshroom.webp": "a0ec5c22e71ab5720d9c1c34b3a5853f5354610f34b57d843e543218c8959646"
+      },
+      "size": [
+        148,
+        160
+      ],
+      "master": "public/assets/portraits/hd4/original/sunshroom.png",
+      "masterSha256": "f735d62ec9f39daeff260d3f8b0f18a688cc9c094cb96c955823a6be83ed5c4d",
+      "sha256": "6afc6c288e2ee3632a353b66510980f6a4035f8a65377090a0c82ec07c55bdd6",
+      "bytes": 7240
+    },
+    {
+      "file": "hd4/original/fumeshroom.webp",
+      "clip": "fumeshroom",
+      "sources": {
+        "public/assets/runtime/actor-motion/fumeshroom.json": "256f9f466ef1c8d77711d7b8327825e4d25af2f2b23dd779ecbea577ca307d8b",
+        "public/assets/runtime/actor-motion/fumeshroom.webp": "0b3b25f2bbf27ee87415734d298698c675b8d440aafb903f9a9c2a80061a9ccb"
+      },
+      "size": [
+        324,
+        328
+      ],
+      "master": "public/assets/portraits/hd4/original/fumeshroom.png",
+      "masterSha256": "745a0a121412f175e189725539c46bad91532bbd775a92d37c21433cd543ae6e",
+      "sha256": "a3baa359e84d73a8f34d6ba5ff20f03fd24f00f42be5404429c1f8b569a82873",
+      "bytes": 18032
+    },
+    {
+      "file": "hd4/original/gravebuster.webp",
+      "clip": "gravebuster",
+      "sources": {
+        "public/assets/runtime/actor-motion/gravebuster.json": "ae9df704fb3f95f5b994a97aab5e8592385c050b142a843bc3531394e7316f1a",
+        "public/assets/runtime/actor-motion/gravebuster.webp": "5187e2bcbf5a15efbf8c226ac2449ebafae664407424a9d883789f8c9bd77b90"
+      },
+      "size": [
+        392,
+        304
+      ],
+      "master": "public/assets/portraits/hd4/original/gravebuster.png",
+      "masterSha256": "7bd690b53b247b993399ed349666d5bfcdda55cb8db37a545bf70c4f27a50b91",
+      "sha256": "e45c37630e786e3d5a3c07bf6d237bc38a244dd71a1a1a97d80e7dbdb54a28e9",
+      "bytes": 21834
+    },
+    {
+      "file": "hd4/original/hypnoshroom.webp",
+      "clip": "hypnoshroom",
+      "sources": {
+        "public/assets/runtime/actor-motion/hypnoshroom.json": "7ad9e0808b4ef2dc70ebaf880d69d06f9643066d6a6a3980c81f7723f4e07295",
+        "public/assets/runtime/actor-motion/hypnoshroom.webp": "b758b4d3014ea84c3600b6411d4421a5142b5497a865582d7188c4eb617a5b31"
+      },
+      "size": [
+        228,
+        316
+      ],
+      "master": "public/assets/portraits/hd4/original/hypnoshroom.png",
+      "masterSha256": "38d9cce95aa689672613aae6496f56b7624f3a0a9d711e0c6137311cc6f315a9",
+      "sha256": "c2f7114565e412936b705d1b32e5b09dbf43eee6a7ff7d1759a721f591c3bce2",
+      "bytes": 14394
+    },
+    {
+      "file": "hd4/original/scaredyshroom.webp",
+      "clip": "scaredyshroom",
+      "sources": {
+        "public/assets/runtime/actor-motion/scaredyshroom.json": "dc07d0a0ef1c73ef8f5dc0507f227c3d51c5a231f58aef4a35bc0f89d4143d9e",
+        "public/assets/runtime/actor-motion/scaredyshroom.webp": "7c84f5f9db1a0b73e9c6451644dcd9a6ebfe34a10e4129680204bc277581de8d"
+      },
+      "size": [
+        200,
+        280
+      ],
+      "master": "public/assets/portraits/hd4/original/scaredyshroom.png",
+      "masterSha256": "4c3c8d7eeb604e52ba94ccc8f8dded6b2a83ef29320e82db24b50039abecf937",
+      "sha256": "6e6e6872a3c72c1c85ca842f88e9749354b2064e51898467ef9be6a1dc922f40",
+      "bytes": 11808
+    },
+    {
+      "file": "hd4/original/iceshroom.webp",
+      "clip": "iceshroom",
+      "sources": {
+        "public/assets/runtime/actor-motion/iceshroom.json": "a97861a1a362badc5691a015be8efbb657e6446c5ead07d7f5a15d37c787bfa4",
+        "public/assets/runtime/actor-motion/iceshroom.webp": "5f6dd5bfa33f2a1228721b8acfeca14cb68ba670df4087862dc8d451dc0f53e2"
+      },
+      "size": [
+        336,
+        308
+      ],
+      "master": "public/assets/portraits/hd4/original/iceshroom.png",
+      "masterSha256": "4e8d00129f9638a0dfb5b7278da56117259cbb21e27bcb310db70b2bb2276d07",
+      "sha256": "042340332124ede504cafd9f84d037c6dbbbd884dd1472e6d3e6aab096481c63",
+      "bytes": 27754
+    },
+    {
+      "file": "hd4/original/doomshroom.webp",
+      "clip": "doomshroom",
+      "sources": {
+        "public/assets/runtime/actor-motion/doomshroom.json": "4062a1c54fb865dbb117dc98f255528eb5e76e1612e629142df8bc4c948f76cd",
+        "public/assets/runtime/actor-motion/doomshroom.webp": "57d708385f30b996b77b5207305174e8385374fa48d67b4ffdb9e6f3c160ce89"
+      },
+      "size": [
+        336,
+        312
+      ],
+      "master": "public/assets/portraits/hd4/original/doomshroom.png",
+      "masterSha256": "18e2a19c07ba87dd71d206b6373745cee85b7a27bfda5fb5b5c74537fd171c6f",
+      "sha256": "35d2e72e55f83edfabdccd7027b8ed7b7258d1e117670083e2ed8d7dc06156eb",
+      "bytes": 14202
+    },
+    {
+      "file": "hd4/original/lilypad.webp",
+      "clip": "lilypad",
+      "sources": {
+        "public/assets/runtime/actor-motion/lilypad.json": "9e18e7d2b3e4806d72971510a76db569951689d98c6fb622897d3fe50786428c",
+        "public/assets/runtime/actor-motion/lilypad.webp": "445a99d6c595d443ae372eba4309d46e3d7dc173944631ce57613f6fdb1713c2"
+      },
+      "size": [
+        332,
+        332
+      ],
+      "master": "public/assets/portraits/hd4/original/lilypad.png",
+      "masterSha256": "14fd2c75a824a51948faaeb8f8841943622307ee8bd1cfea9d82699e44870be2",
+      "sha256": "d5d43f6b03ea8c2302d7ac0bf49bebb9915e3175928928ed3ea636a6e1e4932e",
+      "bytes": 15914
+    },
+    {
+      "file": "hd4/original/squash.webp",
+      "clip": "squash",
+      "sources": {
+        "public/assets/runtime/actor-motion/squash.json": "e3ef0f846482df1463fa3aedf6d5a8ce5910527181c8a419c58e6f8ab55345f7",
+        "public/assets/runtime/actor-motion/squash.webp": "83a3b3781d49dc67ff6cd71f135e8fb0b75ae8482b0971bcf49e3a7a1d572e9f"
+      },
+      "size": [
+        288,
+        344
+      ],
+      "master": "public/assets/portraits/hd4/original/squash.png",
+      "masterSha256": "7eb2b2530f89c1f90e2f1bc8c33c6ed1d1c6a18faa07004e7d58eb0f244c75b8",
+      "sha256": "85d77c882a9b6535e4bafcb5a90e3bd8215a9c60e1ed394d6192f1a02f98a48a",
+      "bytes": 22404
+    },
+    {
+      "file": "hd4/original/threepeater.webp",
+      "clip": "threepeater",
+      "sources": {
+        "public/assets/runtime/plant-motion/threepeater.json": "760dbc1dfa9eb1efd9502944bb2e918d4aa64828fc2811a25ab74db51de185d7",
+        "public/assets/runtime/plant-motion/threepeater.webp": "bb5297241dbdad7cb7bb7ecf33d584c0249c07e126b81132d2092deb2e3bd315"
+      },
+      "size": [
+        296,
+        320
+      ],
+      "master": "public/assets/portraits/hd4/original/threepeater.png",
+      "masterSha256": "08772bf03438d01d0759f67eab15c3997b38afed1c0adfde93ddd93577a42112",
+      "sha256": "2a72491c3c3e01c2ef205ace1e529f79f80855d230fbeec8ba8c1a0b0ec97625",
+      "bytes": 30756
+    },
+    {
+      "file": "hd4/original/tanglekelp.webp",
+      "clip": "tanglekelp",
+      "sources": {
+        "public/assets/runtime/actor-motion/tanglekelp.json": "c134e6d6e0e3eec127bc49560e8b24bbe20e8bcc6f08a2d3c9c18ce000a06fda",
+        "public/assets/runtime/actor-motion/tanglekelp.webp": "5a7e58cc86d816aa2a7d0f51ee3070025f7f25f71cadc251a841df40f51af2cb"
+      },
+      "size": [
+        340,
+        280
+      ],
+      "master": "public/assets/portraits/hd4/original/tanglekelp.png",
+      "masterSha256": "53801cc54e6923bbeb8408da8ae9db99c4d8bd2b2d104e064ded10aceb970673",
+      "sha256": "2591cfadeb1d3b11bcf044d988c01912f00be95fb1b251130fc953dbc680ce03",
+      "bytes": 33092
+    },
+    {
+      "file": "hd4/original/jalapeno.webp",
+      "clip": "jalapeno",
+      "sources": {
+        "public/assets/runtime/actor-motion/jalapeno.json": "4d4710e1fce26f88ff3f48f70d1ac491a39371de7a31ad58172424f17f22683c",
+        "public/assets/runtime/actor-motion/jalapeno.webp": "c84d00b9f4a36dec5460fcbd6000a0428dfbcb5f05f1b7183782d7e81ac96faa"
+      },
+      "size": [
+        184,
+        308
+      ],
+      "master": "public/assets/portraits/hd4/original/jalapeno.png",
+      "masterSha256": "25a1e86bcc1b2d140639aba2669c7ca8cf8fa25df307858a33dd7a3776d28203",
+      "sha256": "0eaee15debbc20541302aa310de1a996dbec1c9a782e717f92e9baeafc4a97e0",
+      "bytes": 13706
+    },
+    {
+      "file": "hd4/original/spikeweed.webp",
+      "clip": "spikeweed",
+      "sources": {
+        "public/assets/runtime/actor-motion/caltrop.json": "ef611847b26e403a83829cee11f113365b6aa6ab5075832d0c59137f45e56e7a",
+        "public/assets/runtime/actor-motion/caltrop.webp": "6f8a776946aa8984138788bec651c490ef5ff5501fab7b928f3723433e7342ff"
+      },
+      "size": [
+        328,
+        140
+      ],
+      "master": "public/assets/portraits/hd4/original/spikeweed.png",
+      "masterSha256": "bf529e41235176e39087fd0044208114c68cfd87d1370d43a36b66b6212fdbf3",
+      "sha256": "4771687f041817fc2ef3cad2b199a4f0c7a21f144e09a28b28ccdf410617b76a",
+      "bytes": 15092
+    },
+    {
+      "file": "hd4/original/torchwood.webp",
+      "clip": "torchwood",
+      "sources": {
+        "public/assets/runtime/actor-motion/torchwood.json": "f4dec4530de7a18c94cfe74696370a491dfe705fd47683eca1b5f1283ec5446c",
+        "public/assets/runtime/actor-motion/torchwood.webp": "7e8c25cf65ae5216364a16408866b46435543d402f64e6fe221d55c5584a8ad8"
+      },
+      "size": [
+        276,
+        364
+      ],
+      "master": "public/assets/portraits/hd4/original/torchwood.png",
+      "masterSha256": "b1f13f6444ba3ff22c20d927494265bcccfc3f8f0ec308aaa96034b49912d9a3",
+      "sha256": "a6074ed59bec75e4c12d78ca07b0381dabf5b926a7e7c5541b6435835b3e6909",
+      "bytes": 23896
+    },
+    {
+      "file": "hd4/original/tallnut.webp",
+      "clip": "tallnut",
+      "sources": {
+        "public/assets/runtime/actor-motion/tallnut.json": "f8b692e1dc1c6b2e7056edc99f0e205671b8956c0a54f64675f17cadf91092ed",
+        "public/assets/runtime/actor-motion/tallnut.webp": "aeb115f06defda8c8dc3ec21cf5596b114b09ab522505e6e0cef29d7b338f75f"
+      },
+      "size": [
+        324,
+        488
+      ],
+      "master": "public/assets/portraits/hd4/original/tallnut.png",
+      "masterSha256": "126f27828436d9b928fe577f0c0aa5cf066bb3354d549397811f04f949b3e724",
+      "sha256": "6d6c96aa1697b1ddf189a3c964a6be0ce90bdb14bc5d94899a3767bbc8b4378f",
+      "bytes": 24740
+    },
+    {
+      "file": "hd4/original/seashroom.webp",
+      "clip": "seashroom",
+      "sources": {
+        "public/assets/runtime/actor-motion/seashroom.json": "c604130bcb7907c97971d3fd82f31a3bdac116f8ef6c6a46b595a3e499924d46",
+        "public/assets/runtime/actor-motion/seashroom.webp": "e197889239dda9c92f2529f3ecc863082caa096ee7f8624ef5a16e72c3944487"
+      },
+      "size": [
+        144,
+        152
+      ],
+      "master": "public/assets/portraits/hd4/original/seashroom.png",
+      "masterSha256": "bb738e87c5696096a279ef1372f4cfb97e9ced8aed869c354412d3ed07436538",
+      "sha256": "6bac41fa53aa65372399c00f2d481c4e3aa0ce1ef5cdc5b75e4d97c331a28d33",
+      "bytes": 8158
+    },
+    {
+      "file": "hd4/original/plantern.webp",
+      "clip": "plantern",
+      "sources": {
+        "public/assets/runtime/actor-motion/plantern.json": "4e955447deed1812d4d9b35ff78a1551dba8970bcc9b80b78b89eedc16ae7c41",
+        "public/assets/runtime/actor-motion/plantern.webp": "5e7ac3165a86aea7fb28053f89b6121e34c2cc5c9ae4173795b2d0146c3d68c5"
+      },
+      "size": [
+        340,
+        360
+      ],
+      "master": "public/assets/portraits/hd4/original/plantern.png",
+      "masterSha256": "be801c3976ba4d37dbeee39664c62defd0ab09fb452dee9f6c47ac66f4a4b792",
+      "sha256": "75d583f2f356cf0fba7e68580bab77bbb2eb8c31669f6015b6016ce91742838b",
+      "bytes": 24168
+    },
+    {
+      "file": "hd4/original/cactus.webp",
+      "clip": "cactus",
+      "sources": {
+        "public/assets/runtime/actor-motion/cactus.json": "4b047b388f020c78ed9f7ff391c3b354ed9be28c2e3805d093199b167cbd3463",
+        "public/assets/runtime/actor-motion/cactus.webp": "1a26cbac00c0763ef5882dcc31ce409089992368e7cb84545dd2818f74e09999"
+      },
+      "size": [
+        352,
+        320
+      ],
+      "master": "public/assets/portraits/hd4/original/cactus.png",
+      "masterSha256": "28aee3428ac0fb808ac7a86233482bfdb5fbb4b9b9bbf67a773c1dca23f009b7",
+      "sha256": "dffd5c7857ea4ca5e4e893a8d1a4538d0114c5236c3ff9b41c8cb05d264b1d18",
+      "bytes": 26622
+    },
+    {
+      "file": "hd4/original/blover.webp",
+      "clip": "blover",
+      "sources": {
+        "public/assets/runtime/actor-motion/blover.json": "aa38f5e72e1d3c9ce1374b94cffd6e18303e223bbed217017e04553642edb529",
+        "public/assets/runtime/actor-motion/blover.webp": "942b0882a384730f418d7366d4dbbf8ed46140dcb591c90a70da76227c7d1c0c"
+      },
+      "size": [
+        384,
+        348
+      ],
+      "master": "public/assets/portraits/hd4/original/blover.png",
+      "masterSha256": "0cb2f71a147c4336c5d9c3dd6d4595fa8f76f8f1cf13064ccceaaf19bceb923e",
+      "sha256": "248800431a7d9f6847ff950dd76b7f2e463f1456938228f00b9173313bd169c2",
+      "bytes": 22396
+    },
+    {
+      "file": "hd4/original/splitpea.webp",
+      "clip": "splitpea",
+      "sources": {
+        "public/assets/runtime/actor-motion/splitpea.json": "f468edc108477072994759a6184563c378fff460f726751d29ac97f6d5f93bf3",
+        "public/assets/runtime/actor-motion/splitpea.webp": "92ff66a1d6fa077cbe3ad932eaae9ef9eafd4ce224dc9d8e6bcaa8bb16cb29be"
+      },
+      "size": [
+        396,
+        292
+      ],
+      "master": "public/assets/portraits/hd4/original/splitpea.png",
+      "masterSha256": "709d4f4c152b307362b96e223009254c999e42ec544cceb1acf6769f1a41ffad",
+      "sha256": "6a29f6777aa1a9dd46302d6e90bdbc2d86d7c22621d9b9e78573ea3047298cd0",
+      "bytes": 26190
+    },
+    {
+      "file": "hd4/original/starfruit.webp",
+      "clip": "starfruit",
+      "sources": {
+        "public/assets/runtime/actor-motion/starfruit.json": "2e16e8566e51398e781df7c390a31fd0f2b7570fd392bcb64334ab5ae53a2dee",
+        "public/assets/runtime/actor-motion/starfruit.webp": "58d91cf2e58cb0010fa8253b465bb5846cfeb51da53634fe7e819938bd5ce8a8"
+      },
+      "size": [
+        296,
+        272
+      ],
+      "master": "public/assets/portraits/hd4/original/starfruit.png",
+      "masterSha256": "f0418682971f4abe6f07e2805b9ea8ec4f9c55655294f7b79d534f4771af4ac7",
+      "sha256": "012f3e0bcdac8a4c817c5b4f66b8db957f6b4aea74526bd340aa0f28c273f435",
+      "bytes": 17598
+    },
+    {
+      "file": "hd4/original/pumpkin.webp",
+      "clip": "pumpkin",
+      "sources": {
+        "public/assets/runtime/actor-motion/pumpkin.json": "8e0ee7fea4d9da7e5e3e3c1341bbdfc48542fa4be7a49f701578253d8b1484af",
+        "public/assets/runtime/actor-motion/pumpkin.webp": "b1ebffe1641b23cd9c41d67fb7caa7c8ea9c76227d656dffde6a7ebe434c0cb0"
+      },
+      "size": [
+        388,
+        260
+      ],
+      "master": "public/assets/portraits/hd4/original/pumpkin.png",
+      "masterSha256": "72c03ba7e180e5f2af53d3bdcf9835f0a53a16b8a5e9cc2d543d964d3b796642",
+      "sha256": "1f414639cde4257f2f15911f846967bd8b2229d511fd9ef4d0875d70be288d34",
+      "bytes": 27938
+    },
+    {
+      "file": "hd4/original/magnetshroom.webp",
+      "clip": "magnetshroom",
+      "sources": {
+        "public/assets/runtime/actor-motion/magnetshroom.json": "c26053338c819503e22c74aa8e273be89d542ded763c979b7788c0467ba5458c",
+        "public/assets/runtime/actor-motion/magnetshroom.webp": "022049cff1a084e958704181e1b50f6bc6baa0d71482186815df6246e39da9ca"
+      },
+      "size": [
+        288,
+        328
+      ],
+      "master": "public/assets/portraits/hd4/original/magnetshroom.png",
+      "masterSha256": "a6384e6f1300f9a846e709f7ceceb6959e297b1bf5dda1a249e026e548c388a9",
+      "sha256": "0bfa6cee629bdfa38ed613c43ae8915ea189d1267cecf9a91413fb170bce24ed",
+      "bytes": 14184
+    },
+    {
+      "file": "hd4/original/cabbagepult.webp",
+      "clip": "cabbagepult",
+      "sources": {
+        "public/assets/runtime/plant-motion/cabbagepult.json": "4317dd4ca7687a2dcf9aa31c60d0a077aff9246f842a28c794c56ebe0bd2fe89",
+        "public/assets/runtime/plant-motion/cabbagepult.webp": "b1ed55856d7f9b13ab096c0524353006d9dcd2236dd40abb2b752e4ef8e22614"
+      },
+      "size": [
+        364,
+        308
+      ],
+      "master": "public/assets/portraits/hd4/original/cabbagepult.png",
+      "masterSha256": "a2af477bd13b9328682d6f0701068c93df4031f2bda37365805b70df5a413f01",
+      "sha256": "ef8fed74c799644b0aa0ea04cb8556998414a14dd2b6c805b83239ef10e6f802",
+      "bytes": 28654
+    },
+    {
+      "file": "hd4/original/flowerpot.webp",
+      "clip": "flowerpot",
+      "sources": {
+        "public/assets/runtime/actor-motion/pot.json": "5a5a94eccc5a69730b95c10966b0e53f02a258ce68c3b4c749fed0e484eefef2",
+        "public/assets/runtime/actor-motion/pot.webp": "a5d00c4291691f6179688844fdd4ffaf279552bee7a3b2b2cdccbc69bb5c2f9b"
+      },
+      "size": [
+        276,
+        268
+      ],
+      "master": "public/assets/portraits/hd4/original/flowerpot.png",
+      "masterSha256": "384d97f06cd5f81b6b7d8855eb2b5c3db834c4273b369d4be6b9e2ef1b4b41a6",
+      "sha256": "00c2d9ce64f7642e1514371a1919103fbeb1c7214b804c9bd4c2b100c99775aa",
+      "bytes": 18818
+    },
+    {
+      "file": "hd4/original/kernelpult.webp",
+      "clip": "kernelpult",
+      "sources": {
+        "public/assets/runtime/plant-motion/kernelpult.json": "227929f834c45be6624ed9fc2df213a55d0e44647abec80d7fcb61eff21898bb",
+        "public/assets/runtime/plant-motion/kernelpult.webp": "19b0e005806472cd567d73607c718c22b61062f4c0f42943cd334627e82e6d24"
+      },
+      "size": [
+        424,
+        388
+      ],
+      "master": "public/assets/portraits/hd4/original/kernelpult.png",
+      "masterSha256": "64e5dac881475b753ba320b39d3cf1573467f3fe8c9672d07a8f296600d49cf7",
+      "sha256": "e13b52d1e89e17f1a5c32970ed4f9242ac5b9d00954e15dfbbd6cd6cb129ad7d",
+      "bytes": 31552
+    },
+    {
+      "file": "hd4/original/coffeebean.webp",
+      "clip": "coffeebean",
+      "sources": {
+        "public/assets/runtime/actor-motion/coffeebean.json": "a1f487f976f5ce4e41c7caec8434143d519dc763925c99ca65722f6709b4a31c",
+        "public/assets/runtime/actor-motion/coffeebean.webp": "7fd943179a2f5a7dc34affde5b7e684af7b6f326c90c43f7e9008b01987df076"
+      },
+      "size": [
+        152,
+        404
+      ],
+      "master": "public/assets/portraits/hd4/original/coffeebean.png",
+      "masterSha256": "0c939f5aba6e38896c860a30ab33bfe4bc4e193f77a01cd995b71037468e18a5",
+      "sha256": "102e23aade1a1f7d62884fd6673279b43ca2b07d6c9f39719d30ce3bc877d824",
+      "bytes": 9402
+    },
+    {
+      "file": "hd4/original/garlic.webp",
+      "clip": "garlic",
+      "sources": {
+        "public/assets/runtime/actor-motion/garlic.json": "9c169d68406e4c4571dcc71e094b0d533243e00a21e26437087afc716137f91b",
+        "public/assets/runtime/actor-motion/garlic.webp": "9672491b813ca59d08eb73fa5c22f8511604b80b26b62307be958ab123b77fe8"
+      },
+      "size": [
+        228,
+        232
+      ],
+      "master": "public/assets/portraits/hd4/original/garlic.png",
+      "masterSha256": "d7604c084f7c3197acd67426cff172ce0be4c3e07444b6cf21d52970b0cd0270",
+      "sha256": "2d0a333ba9de0c9573061dc941705987547dcd39226d9e786197aced1e1d6463",
+      "bytes": 13910
+    },
+    {
+      "file": "hd4/original/umbrella.webp",
+      "clip": "umbrella",
+      "sources": {
+        "public/assets/runtime/actor-motion/umbrellaleaf.json": "c3853d2e89d8b12130f488b67262f7f34b26f341fcfec34c32472ef25def7261",
+        "public/assets/runtime/actor-motion/umbrellaleaf.webp": "c17b561b1ad912a9df7191e657d2f3d298506c4a01bae1a9a90ccc0627486f8b"
+      },
+      "size": [
+        324,
+        276
+      ],
+      "master": "public/assets/portraits/hd4/original/umbrella.png",
+      "masterSha256": "90a82c4ed76c5dcdb7b514020537a56e9ff077b7b30ff84aae6a6f11edeaa052",
+      "sha256": "0516e239c480473b905189f5c30be404084a7a042cb0928772e1e25660a2253b",
+      "bytes": 22092
+    },
+    {
+      "file": "hd4/original/marigold.webp",
+      "clip": "marigold",
+      "sources": {
+        "public/assets/runtime/actor-motion/marigold.json": "89b2c40ac929ed5fa60c9bb93e624c6c7d1ca6c1811cde9c62487a087a1f15ba",
+        "public/assets/runtime/actor-motion/marigold.webp": "589650d4e6165711e16fc2dcd400551d04076da725609232697f8b3f38043b23"
+      },
+      "size": [
+        220,
+        296
+      ],
+      "master": "public/assets/portraits/hd4/original/marigold.png",
+      "masterSha256": "4f22b18c3df17ee1b3529bdc3b06f1c55e57318a348fd840b61f008a680eb5ec",
+      "sha256": "715f061348850caeb6b01b366542b0977fd38c8cc64d86cc2828ddcc5a683196",
+      "bytes": 20290
+    },
+    {
+      "file": "hd4/original/melonpult.webp",
+      "clip": "melonpult",
+      "sources": {
+        "public/assets/runtime/plant-motion/melonpult.json": "32943739819445615583f4465a675ee5a27b248898b47e93d8775bbdea695fbc",
+        "public/assets/runtime/plant-motion/melonpult.webp": "64caa2b09523ae756376d964229002c02644ccd656439b1a87bd883eecc0c416"
+      },
+      "size": [
+        412,
+        380
+      ],
+      "master": "public/assets/portraits/hd4/original/melonpult.png",
+      "masterSha256": "5b250f143cc428f7fd29dc60d316718b14dd0b82ac18477b5085808fca007eef",
+      "sha256": "0ee8813318794f5060b33dd830e1c6f981d156417f753fd49fc2a44f58a9895c",
+      "bytes": 29954
+    },
+    {
+      "file": "hd4/original/gatlingpea.webp",
+      "clip": "gatlingpea",
+      "sources": {
+        "public/assets/runtime/plant-motion/gatlingpea.json": "43e2275c92ec38e7f161fb585541f55e658827855226c2ad4cae1c505ae8e5bc",
+        "public/assets/runtime/plant-motion/gatlingpea.webp": "3dd16ffc5bb83ad43eac85ecbbb0b0c988ae65719ee0271a50718df345f1b8de"
+      },
+      "size": [
+        320,
+        308
+      ],
+      "master": "public/assets/portraits/hd4/original/gatlingpea.png",
+      "masterSha256": "c492775a726dd97f8a36a6364bc0045bd0f5dd86b536bf0c3edac1d0ab712f76",
+      "sha256": "ec75190cd623f4b8600957e13c0108592b91d300c436a1081c8af81a5675cabe",
+      "bytes": 25820
+    },
+    {
+      "file": "hd4/original/twinsunflower.webp",
+      "clip": "twinsunflower",
+      "sources": {
+        "public/assets/runtime/plant-motion/twinsunflower.json": "c193eb917385eea29f2cacf012c12871f96e459afa88b054e2e427c08c1a2d93",
+        "public/assets/runtime/plant-motion/twinsunflower.webp": "c3987bdb9a6a247b827cd6be1e420de20de8af7f5d78dbeff1c07cbf12f3c5e9"
+      },
+      "size": [
+        356,
+        336
+      ],
+      "master": "public/assets/portraits/hd4/original/twinsunflower.png",
+      "masterSha256": "043f710692fa3f03fb1dce7e3ed7359bbb7ec39c323ba50b192176d8bf5c6f4a",
+      "sha256": "477862ee7949dbb0989fb7264c9df89b21e789b0ccc30a0be87b208f28d2298f",
+      "bytes": 36024
+    },
+    {
+      "file": "hd4/original/wintermelon.webp",
+      "clip": "wintermelon",
+      "sources": {
+        "public/assets/runtime/plant-motion/wintermelon.json": "ba9cb550dcf9df5962829dd5e90bca42349d319ac2c26abbb9e9f7641f4209ad",
+        "public/assets/runtime/plant-motion/wintermelon.webp": "592478fd6110dba737ddb0a0a2181a7831e5d48a448acb70d1eae883e1eb0f9e"
+      },
+      "size": [
+        432,
+        424
+      ],
+      "master": "public/assets/portraits/hd4/original/wintermelon.png",
+      "masterSha256": "14c0ce38df25d14e7c007a88e85ea48168643f8ef0b496ce431ee8dc98b35784",
+      "sha256": "b70c07ed477d32480f3ee78f5e7bc5d383a43d2bdc83cb1dbd759c3578aea676",
+      "bytes": 34810
+    },
+    {
+      "file": "almanac/normal.webp",
+      "clip": "zombie-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie.json": "58835119e9c4c718309162136e2b3c774dbb6b9dcaec2bdfd68e2883c4259639",
+        "public/assets/runtime/actor-motion/zombie.webp": "3aab334edbea85bb115a03a0d565ba949f667673ac61ae2315b0257274963a46"
+      },
+      "size": [
+        320,
+        488
+      ],
+      "master": "public/assets/portraits/almanac/normal.png",
+      "masterSha256": "8630bd6faf701aee641279b2bef013228751fd96cd0599cadbfbb2c3369d08a0",
+      "sha256": "2f03d9c3a84436c62cd0d2b369b00c004d46b8d102aee22b0f6e58eec2a47d02",
+      "bytes": 31206
+    },
+    {
+      "file": "almanac/flag.webp",
+      "clip": "flag-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie.json": "58835119e9c4c718309162136e2b3c774dbb6b9dcaec2bdfd68e2883c4259639",
+        "public/assets/runtime/actor-motion/zombie.webp": "3aab334edbea85bb115a03a0d565ba949f667673ac61ae2315b0257274963a46"
+      },
+      "size": [
+        556,
+        788
+      ],
+      "master": "public/assets/portraits/almanac/flag.png",
+      "masterSha256": "1fe46f053ff4aee37419703011ef1a3dc64d65f4f0f0ee6641a7f108b739aeb3",
+      "sha256": "61e95a48e9b7b4d9e83ac89a7ba0bccfdf23f7d540ea198a9b99b2a43d4d9225",
+      "bytes": 51140
+    },
+    {
+      "file": "almanac/cone.webp",
+      "clip": "cone-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie.json": "58835119e9c4c718309162136e2b3c774dbb6b9dcaec2bdfd68e2883c4259639",
+        "public/assets/runtime/actor-motion/zombie.webp": "3aab334edbea85bb115a03a0d565ba949f667673ac61ae2315b0257274963a46"
+      },
+      "size": [
+        300,
+        588
+      ],
+      "master": "public/assets/portraits/almanac/cone.png",
+      "masterSha256": "afba075a4ca3ec50a58a8a708d5cfc7b02fbaa48e678e84c67739a3cc784f685",
+      "sha256": "9331b06aaa4e4bd83b9959d1ca1439676fb123cb8c22e88f1eef5554a2422a0d",
+      "bytes": 34420
+    },
+    {
+      "file": "almanac/pole.webp",
+      "clip": "pole-run",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie_polevaulter.json": "3f22f4b0cb3357f3126e5aaecf43a85e7a2bf15abd55140e1b14eb79eaee6d15",
+        "public/assets/runtime/actor-motion/zombie_polevaulter.webp": "5c5c582fce249191c3719f714c89ea8695d46e1a890baa6b869f4cafd9211485"
+      },
+      "size": [
+        920,
+        544
+      ],
+      "master": "public/assets/portraits/almanac/pole.png",
+      "masterSha256": "ec88b1e8ac1452046e3f53b331b3428fd399db20270f77b9898c5f266786380b",
+      "sha256": "28f21aa3f9c1e70b449967fecc30bd3aca37d4d375555218eb5f8cbe49ca1f51",
+      "bytes": 53948
+    },
+    {
+      "file": "almanac/bucket.webp",
+      "clip": "bucket-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie.json": "58835119e9c4c718309162136e2b3c774dbb6b9dcaec2bdfd68e2883c4259639",
+        "public/assets/runtime/actor-motion/zombie.webp": "3aab334edbea85bb115a03a0d565ba949f667673ac61ae2315b0257274963a46"
+      },
+      "size": [
+        324,
+        548
+      ],
+      "master": "public/assets/portraits/almanac/bucket.png",
+      "masterSha256": "dcd6a82cfc652d92b8dd32cd259fa7d8ab909abd3939ec97ecca9b3426f548f4",
+      "sha256": "1a32d03dcec01f4e505298ef8b96117a1c0f4b86ae0762b3eb0e3eb217f52088",
+      "bytes": 34596
+    },
+    {
+      "file": "almanac/newspaper.webp",
+      "clip": "newspaper-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie_paper.json": "f37340f04985323a6aa9e07de5e761c1ecccaa46daecbf51e708f3f6c07f6c52",
+        "public/assets/runtime/actor-motion/zombie_paper.webp": "86ba61d11ee5b663704d30691e3b53f411a73eecc8815c5a8abc0dd65ab678d6"
+      },
+      "size": [
+        376,
+        492
+      ],
+      "master": "public/assets/portraits/almanac/newspaper.png",
+      "masterSha256": "7661aa61c6c431dbb1be49c243e4dbbafb3c4e4d4dc14b08756a1840152bbc4d",
+      "sha256": "1faea52f13100050d6d420c6ae7bf4393dc67bf1ebd76acd0eee09885f09f52c",
+      "bytes": 48566
+    },
+    {
+      "file": "almanac/door.webp",
+      "clip": "door-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie.json": "58835119e9c4c718309162136e2b3c774dbb6b9dcaec2bdfd68e2883c4259639",
+        "public/assets/runtime/actor-motion/zombie.webp": "3aab334edbea85bb115a03a0d565ba949f667673ac61ae2315b0257274963a46"
+      },
+      "size": [
+        340,
+        504
+      ],
+      "master": "public/assets/portraits/almanac/door.png",
+      "masterSha256": "52eff2c62bb4258a82597fe0b750c832b0b01a54ebefa5001ecf75d470560f22",
+      "sha256": "9f2cb6777dd5cb0f38cbf8e258b579a49578337cb4cabe0c7d82b8efe3f2a06f",
+      "bytes": 59860
+    },
+    {
+      "file": "almanac/football.webp",
+      "clip": "football-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie_football.json": "c7e17f6826b47b0e6146e1fe78473e879257086a9f3f889a4958cef62e0c201c",
+        "public/assets/runtime/actor-motion/zombie_football.webp": "ce2040f501db916c40c8522184483293c54589630f31e1556600baa7da80e0f4"
+      },
+      "size": [
+        560,
+        508
+      ],
+      "master": "public/assets/portraits/almanac/football.png",
+      "masterSha256": "53f815afb85d872c9d95edf3f4adc0a11dc07b0f8ebfbc714e2cfd0a3a5bdec1",
+      "sha256": "73ca0aab9c75b0b9b88e9b366d1bd8d4b82913b8c70db3d08a70ee14e77a0ece",
+      "bytes": 53956
+    },
+    {
+      "file": "almanac/dancer.webp",
+      "clip": "dancer-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie_disco.json": "7058dcbcffa46e116f84527c5bf79e70f3d03f66417627bab449920b64ef94c7",
+        "public/assets/runtime/actor-motion/zombie_disco.webp": "28b53287f6dffbb4dce1f04dba105a65b851115d3385227ca6e0296d71d27554"
+      },
+      "size": [
+        424,
+        716
+      ],
+      "master": "public/assets/portraits/almanac/dancer.png",
+      "masterSha256": "8e53bc39a7d020adf162c98600953cb4cf63feb9f40c377af7f0186183de89c0",
+      "sha256": "b80a54d1f05f69eb5972666a39f3ec27a23aee99546c4eaeb9e64bc6e46184a8",
+      "bytes": 44194
+    },
+    {
+      "file": "almanac/backup.webp",
+      "clip": "backup-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie_backup.json": "cd0f318dd8f8bc194f80272725ef9796ede8fce696c72a8a7b90e3fb7dc2b67a",
+        "public/assets/runtime/actor-motion/zombie_backup.webp": "0775855c9fc6a1384fb6164f5fd5a40a84485c53063973fd908ade7fe63f7a9d"
+      },
+      "size": [
+        428,
+        684
+      ],
+      "master": "public/assets/portraits/almanac/backup.png",
+      "masterSha256": "5d21fc297007dac0cec2683062c6bd832aebfab40a8b70be11f2decf6b3bf3cc",
+      "sha256": "00b8126801ff8282436cbf2a048c6162e7901cb3c9fdd31926bfa267bda1b52a",
+      "bytes": 59812
+    },
+    {
+      "file": "almanac/ducky.webp",
+      "clip": "ducky1-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie.json": "58835119e9c4c718309162136e2b3c774dbb6b9dcaec2bdfd68e2883c4259639",
+        "public/assets/runtime/actor-motion/zombie.webp": "3aab334edbea85bb115a03a0d565ba949f667673ac61ae2315b0257274963a46"
+      },
+      "size": [
+        368,
+        448
+      ],
+      "master": "public/assets/portraits/almanac/ducky.png",
+      "masterSha256": "744c9f79593c7f28bcba663d1516272b865b04608753e52c9821f0f09a89d795",
+      "sha256": "ef9210f0b74a86a222a68e1a0880334cecd8a81e775c9c39f503673d603ce6aa",
+      "bytes": 35632
+    },
+    {
+      "file": "almanac/snorkel.webp",
+      "clip": "snorkel-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie_snorkle.json": "1d5b94a307f6ea37754db47cc0d33fdd5dbc923f90e3648a2b630d9dcb4f29ce",
+        "public/assets/runtime/actor-motion/zombie_snorkle.webp": "8ea50bea9f4951b0d11d6cd761aac2271334b0cab0b84ccc029e9456d970ed65"
+      },
+      "size": [
+        328,
+        580
+      ],
+      "master": "public/assets/portraits/almanac/snorkel.png",
+      "masterSha256": "063a5f8915faa044a8ccb925a64f50da6b3f73f1e2fc2237ff80f01b48749438",
+      "sha256": "9aa66ce1376c6b96c466131ce7871496d9d6916ee0e5dd6b0872b935e2e1bb69",
+      "bytes": 40056
+    },
+    {
+      "file": "almanac/zomboni.webp",
+      "clip": "zomboni-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie_zamboni.json": "a2cadc9446f8d7d5443f32093e127939e4ca1f23dcce543d9f67cd57afbaf7e0",
+        "public/assets/runtime/actor-motion/zombie_zamboni.webp": "f599e29a15c6e16c91f79242a0abe0b45a668eb001259642463e6c54cac11e56"
+      },
+      "size": [
+        704,
+        680
+      ],
+      "master": "public/assets/portraits/almanac/zomboni.png",
+      "masterSha256": "97d82dd75ce2dac265c6c440cbb92ff2937e86df599b15cb08af7d6fd1c6eeb9",
+      "sha256": "9642a73bc9b9ca8830910ff3879f48abaa336ec25895fb7fc32e72d448ede2df",
+      "bytes": 81260
+    },
+    {
+      "file": "almanac/bobsled.webp",
+      "clip": "bobsled-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie_bobsled.json": "cda6acde1a970e71455e517a02fd10bb0de6a26483275c23586826145b41c4a9",
+        "public/assets/runtime/actor-motion/zombie_bobsled.webp": "68556fe849bf88573d50da81c5bf5137b73b5e837dbc233080fba9a406546d02"
+      },
+      "size": [
+        340,
+        524
+      ],
+      "master": "public/assets/portraits/almanac/bobsled.png",
+      "masterSha256": "591dd25ef37be1a5d93f655d47b2ca224a10ac40aec8332073b8b00455ba3d33",
+      "sha256": "cca298ac95f5e6f6272fb5466c92f68910707e15f86deb54cd8ba7746b5c2aa9",
+      "bytes": 31476
+    },
+    {
+      "file": "almanac/dolphin.webp",
+      "clip": "dolphin-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie_dolphinrider.json": "0edc06eeeca62026d961803788e77a4a772c28272be2431e60f9c23111adaa3d",
+        "public/assets/runtime/actor-motion/zombie_dolphinrider.webp": "411aa145c6871c43c8fd86f9544999ee2cda71a3922338a11a627929d19a6055"
+      },
+      "size": [
+        396,
+        464
+      ],
+      "master": "public/assets/portraits/almanac/dolphin.png",
+      "masterSha256": "b3f2db3984a4e0102987b55a01565802427368a87c9391d6def46a1291b29c33",
+      "sha256": "73ba3aaf9482ee916708e76c9ebd1864357ee39c982394db393e61255a005517",
+      "bytes": 36368
+    },
+    {
+      "file": "almanac/jack.webp",
+      "clip": "jack-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie_jackbox.json": "ddea15aa4d426e6b3cf6b4f9984dbde8ef9dc4caff075441d17b88999373d9cf",
+        "public/assets/runtime/actor-motion/zombie_jackbox.webp": "8d65d99fb0d575401dcf8b721fb3129a01e8ab5b44cfd88c06f75860779b7686"
+      },
+      "size": [
+        428,
+        572
+      ],
+      "master": "public/assets/portraits/almanac/jack.png",
+      "masterSha256": "da94473866b12fe2eeed108495b365111203a9bc671852bd68a6999007cb7be5",
+      "sha256": "90d85576f47006a467f24e00c566caa227189d5829863e75a2eb16f94c68be54",
+      "bytes": 53704
+    },
+    {
+      "file": "almanac/balloon.webp",
+      "clip": "balloon-fly",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie_balloon.json": "3ae25c6ff17363d2a1629e5cd026f09817f241a03807984fde5cf30a91216ab6",
+        "public/assets/runtime/actor-motion/zombie_balloon.webp": "677ca864c17d259dd749ab7a45476756acbc0a2f69a09a6f9a1ce3113c57431c"
+      },
+      "size": [
+        284,
+        460
+      ],
+      "master": "public/assets/portraits/almanac/balloon.png",
+      "masterSha256": "fc7c51cb35a65ceefc41019354e889f84f52499d60f6b20fd3bcd6989d087b21",
+      "sha256": "b4b043b91eebcb497ac6d679492b3d764bb1fe47c31f59ca703a8338f525687a",
+      "bytes": 35162
+    },
+    {
+      "file": "almanac/digger.webp",
+      "clip": "digger-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie_digger.json": "1866f55b3935e84a6a54aaf72a7fc1867d93e124d563cd264d6b5e702e958fa8",
+        "public/assets/runtime/actor-motion/zombie_digger.webp": "0574923e8f52ab3f06bec5ddb8f961af210a66274bde8ddd0644e51920fa46e4"
+      },
+      "size": [
+        460,
+        612
+      ],
+      "master": "public/assets/portraits/almanac/digger.png",
+      "masterSha256": "e71e4d80ce81514e2fa75320c4f21f778d87121b84de279913c355ddde0cc44b",
+      "sha256": "4c06fcc6d622b2b50d60858c943efe3cc9ed5e0e959c2d7f9ebb9357d4ee8525",
+      "bytes": 48262
+    },
+    {
+      "file": "almanac/pogo.webp",
+      "clip": "pogo-bounce",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie_pogo.json": "ddc505336c7904e60ca8e6c1e3a6f811c1375994303e41998952c0df91366405",
+        "public/assets/runtime/actor-motion/zombie_pogo.webp": "3573e5bd13a57fff5160bfd0bc883409c27a280205dc651f99633e8a76a81528"
+      },
+      "size": [
+        308,
+        572
+      ],
+      "master": "public/assets/portraits/almanac/pogo.png",
+      "masterSha256": "98ceeeae68c195f11c04089e61b7fefa843ca55ce609486ad2d73b62bb2c87c5",
+      "sha256": "a381cb2f8200a5d7ef2927e1b2c6983fcb95d8bd7016076326d508234ece69c2",
+      "bytes": 39938
+    },
+    {
+      "file": "almanac/bungee.webp",
+      "clip": "bungee-idle",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie_bungi.json": "c3ed4aae1ad4e10cd2e951375ea0cf64c347e6700ca992d73122c1c3af10296e",
+        "public/assets/runtime/actor-motion/zombie_bungi.webp": "36d59d8998b7d5a522eaa0b47c11af19f30503764bc2ade75d9263138007372f"
+      },
+      "size": [
+        592,
+        416
+      ],
+      "master": "public/assets/portraits/almanac/bungee.png",
+      "masterSha256": "bbd92c7fe026bc35ace84c133bbc925d1e2055c8a568faa9a106532ee7ce278b",
+      "sha256": "5366d12080c303c0cc6b63a1270d6dd265ace1bff42e64daad0d26835ef21790",
+      "bytes": 49892
+    },
+    {
+      "file": "almanac/ladder.webp",
+      "clip": "ladder-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie_ladder.json": "e094efea90034ffe0a5c02c24c4d4af82353db3216b5af8725a215a7c8969dec",
+        "public/assets/runtime/actor-motion/zombie_ladder.webp": "05f4e35f0f9781a5f0cfad877f68b767c43669396bf5a69197a9a6e1ab5b82bc"
+      },
+      "size": [
+        404,
+        536
+      ],
+      "master": "public/assets/portraits/almanac/ladder.png",
+      "masterSha256": "82483dba2e4e15d2aed178c3a763f25e086d9bef13ad8569b467bcf6a88cb632",
+      "sha256": "a0c06a49659d995a211902283e549e8784155fbf7d3e1a7b68acca170e3b3083",
+      "bytes": 55728
+    },
+    {
+      "file": "almanac/catapult.webp",
+      "clip": "catapult-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie_catapult.json": "b7592732f141a0c2591adf7fa8e6880def0b2031a39eeb7971106c6db6003edb",
+        "public/assets/runtime/actor-motion/zombie_catapult.webp": "150dd694502179fd9bfb8b4b46f1069e3fd45d69c972b6deb7be9e75f1bacdcc"
+      },
+      "size": [
+        740,
+        592
+      ],
+      "master": "public/assets/portraits/almanac/catapult.png",
+      "masterSha256": "40ed264aa3e75dbf0d53f803230d62b2c27e77cd9e5a66c432216a677da99211",
+      "sha256": "02436e7d3812d74544c0ff3ba176fba642439da2f54682eeced7d48ef5ae5302",
+      "bytes": 89010
+    },
+    {
+      "file": "almanac/gargantuar.webp",
+      "clip": "gargantuar-walk",
+      "sources": {
+        "public/assets/runtime/giant-motion/gargantuar.json": "84710d7be7e883b789d82f8b62ad96aaf44c41cf84018bc804402fc768e96df0",
+        "public/assets/runtime/giant-motion/gargantuar.webp": "c18162aa0f682991b00c5600fc822c16602802ab46b15cc4ef4b370de54df58e"
+      },
+      "size": [
+        780,
+        896
+      ],
+      "master": "public/assets/portraits/almanac/gargantuar.png",
+      "masterSha256": "66e0c00138ca6726843b17ea8095d38d6053d4743237dd3d0500748811bb0731",
+      "sha256": "644da07431b1bd76878db0ea278bf24f9dab7afe04e3296e6ce248fc7a5c3fe7",
+      "bytes": 108282
+    },
+    {
+      "file": "original/yeti.webp",
+      "clip": "yeti-walk",
+      "sources": {
+        "public/assets/runtime/actor-motion/zombie_yeti.json": "5ae3910705c74e39db388d83bb2f0e07b7731c59af4f8f1790c7ecc4f702195e",
+        "public/assets/runtime/actor-motion/zombie_yeti.webp": "8f2dcc8fdad4a755d2c7b45dcdd6d7efec82bd86dc1cef7ba837b48740895093"
+      },
+      "size": [
+        492,
+        524
+      ],
+      "master": "public/assets/portraits/original/yeti.png",
+      "masterSha256": "52bd39b2e9717c56a80c9bdab97b986b70128cc0c5c6919175332ad95ff7dd24",
+      "sha256": "63c49c99bde0ac40ff3d4ecdcb0350a1bcb8b03516d8498979bc93612375d6da",
+      "bytes": 57916
+    }
+  ]
+}

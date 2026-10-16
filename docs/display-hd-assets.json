@@ -2,7 +2,7 @@
   "model": "realesr-animevideov3-x4",
   "engineSha256": "c1c35d92079085de96b9d547fd7e4464bc8a2e9ccf28d7b8c712d72ade91b7cc",
   "modelSha256": "548a36f9c3f4ab8da56cd3b13badf23968bee207b396dad14d04b830e5f2ab2d",
-  "bytes": 10806518,
+  "bytes": 10585402,
   "files": [
     {
       "file": "original/adventure-hover.webp",
@@ -19,16 +19,16 @@
     },
     {
       "file": "original/blover.webp",
-      "source": "public/assets/original/blover.png",
+      "source": "public/assets/portraits/hd4/original/blover.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        344,
-        336
+        384,
+        348
       ],
-      "bytes": 22786,
-      "sourceSha256": "776e2a5ebf5ac626ca636fc8d3720a995693a97dd867f1868f3f1a1201e26b6a",
-      "sha256": "16a73b3eacd89bd4922336fdb84a8cd72c9394efd88473f27a0f55a49fd8c315"
+      "bytes": 22396,
+      "sourceSha256": "0cb2f71a147c4336c5d9c3dd6d4595fa8f76f8f1cf13064ccceaaf19bceb923e",
+      "sha256": "248800431a7d9f6847ff950dd76b7f2e463f1456938228f00b9173313bd169c2"
     },
     {
       "file": "original/button.webp",
@@ -45,29 +45,29 @@
     },
     {
       "file": "original/cabbagepult.webp",
-      "source": "public/assets/original/cabbagepult.png",
+      "source": "public/assets/portraits/hd4/original/cabbagepult.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        348,
-        288
+        364,
+        308
       ],
-      "bytes": 29512,
-      "sourceSha256": "297b5f4a6de0d0312e8515b74f2f3f2d766ae5430900de7a1ef5fbb3d54b4bbc",
-      "sha256": "8a9f2cf45ddffc6b64fc1db047194a3da915f992137f379106f1ef0616b4e596"
+      "bytes": 28654,
+      "sourceSha256": "a2af477bd13b9328682d6f0701068c93df4031f2bda37365805b70df5a413f01",
+      "sha256": "ef8fed74c799644b0aa0ea04cb8556998414a14dd2b6c805b83239ef10e6f802"
     },
     {
       "file": "original/cactus.webp",
-      "source": "public/assets/original/cactus.png",
+      "source": "public/assets/portraits/hd4/original/cactus.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        336,
-        308
+        352,
+        320
       ],
-      "bytes": 28336,
-      "sourceSha256": "975e65f44030a2acdfd61728f67eba4d5d9a69db190cc46c53c510a56bb48488",
-      "sha256": "fe4789fc2769d5549152cb26894c022e7c5484ef0cac0491662058a5aa41276e"
+      "bytes": 26622,
+      "sourceSha256": "28aee3428ac0fb808ac7a86233482bfdb5fbb4b9b9bbf67a773c1dca23f009b7",
+      "sha256": "dffd5c7857ea4ca5e4e893a8d1a4538d0114c5236c3ff9b41c8cb05d264b1d18"
     },
     {
       "file": "original/card-cherrybomb.webp",
@@ -318,29 +318,29 @@
     },
     {
       "file": "original/cherrybomb.webp",
-      "source": "public/assets/original/cherrybomb.png",
+      "source": "public/assets/portraits/hd4/original/cherrybomb.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        448,
-        324
+        312,
+        252
       ],
-      "bytes": 23258,
-      "sourceSha256": "e82e85f94383c6406975990cc47bcd75a792061b29b42ff1ab87d9f794d4dd18",
-      "sha256": "d0a94c6b85bca392f466fdd90aedb8ea3c047cef5a8a8f9d81131275ed20e882"
+      "bytes": 18512,
+      "sourceSha256": "c89f7475ecc9165531b1779c8caacdfe9e1c8a3fc29352ae6fe00248adb0164b",
+      "sha256": "4437fa8e9eaefad0d540fb8886d9bf9c5d2ef66496aed5d91278c326ca6b30d3"
     },
     {
       "file": "original/chomper.webp",
-      "source": "public/assets/original/chomper.png",
+      "source": "public/assets/portraits/hd4/original/chomper.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        520,
-        456
+        320,
+        384
       ],
-      "bytes": 37512,
-      "sourceSha256": "a7fc6472ec0b00f06a6f056a1d9a313bab45abc0eb9079774cf8b18e485b2d33",
-      "sha256": "e6bd20458166a9a284ec2380941e7012fece80370da8c3f7d0bf3def03b55daf"
+      "bytes": 35624,
+      "sourceSha256": "01ea48d5b54c8764d3a0868d022cba74b551d04238d35a854f37966695aee8fe",
+      "sha256": "9ea6ac1f911ebff372f4e0fb195245f7bdab4864d769adb48600296d015a996f"
     },
     {
       "file": "original/cobcannon.webp",
@@ -357,16 +357,16 @@
     },
     {
       "file": "original/coffeebean.webp",
-      "source": "public/assets/original/coffeebean.png",
+      "source": "public/assets/portraits/hd4/original/coffeebean.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        156,
-        388
+        152,
+        404
       ],
-      "bytes": 8296,
-      "sourceSha256": "f80bc38de60f78d25f6fb69ac964ed0ed15fddefaaa90b2ebee078b5a2d70d83",
-      "sha256": "6d27e7102b6591d6b913ef172c117c36dd9732e841e15f0af48152d0d1c66efc"
+      "bytes": 9402,
+      "sourceSha256": "0c939f5aba6e38896c860a30ab33bfe4bc4e193f77a01cd995b71037468e18a5",
+      "sha256": "102e23aade1a1f7d62884fd6673279b43ca2b07d6c9f39719d30ce3bc877d824"
     },
     {
       "file": "original/conveyor-back.webp",
@@ -435,16 +435,16 @@
     },
     {
       "file": "original/doomshroom.webp",
-      "source": "public/assets/original/doomshroom.png",
+      "source": "public/assets/portraits/hd4/original/doomshroom.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        408,
-        364
+        336,
+        312
       ],
-      "bytes": 11128,
-      "sourceSha256": "f3c0ce3bcb73c367f75fbaa387d22694aaeb2c82dc78a2a066c05dd1f97975e3",
-      "sha256": "7b42fe70de1faba30dd24df9a73a19013d3bb56144490dc7f4b50f801b61ff9f"
+      "bytes": 14202,
+      "sourceSha256": "18e2a19c07ba87dd71d206b6373745cee85b7a27bfda5fb5b5c74537fd171c6f",
+      "sha256": "35d2e72e55f83edfabdccd7027b8ed7b7258d1e117670083e2ed8d7dc06156eb"
     },
     {
       "file": "original/explodenut.webp",
@@ -461,55 +461,55 @@
     },
     {
       "file": "original/flowerpot.webp",
-      "source": "public/assets/original/flowerpot.png",
+      "source": "public/assets/portraits/hd4/original/flowerpot.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        288,
-        272
+        276,
+        268
       ],
-      "bytes": 18382,
-      "sourceSha256": "5fe72ccabaf96d815625d0f7811bb0060f770916097f77cc4cc08051472acc28",
-      "sha256": "d0d8e8770254616bb570ec4abb1cc8d42c2742484cea71ce72a44baccfcb1ec2"
+      "bytes": 18818,
+      "sourceSha256": "384d97f06cd5f81b6b7d8855eb2b5c3db834c4273b369d4be6b9e2ef1b4b41a6",
+      "sha256": "00c2d9ce64f7642e1514371a1919103fbeb1c7214b804c9bd4c2b100c99775aa"
     },
     {
       "file": "original/fumeshroom.webp",
-      "source": "public/assets/original/fumeshroom.png",
+      "source": "public/assets/portraits/hd4/original/fumeshroom.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        400,
-        352
+        324,
+        328
       ],
-      "bytes": 21258,
-      "sourceSha256": "9532f01c147990aca47f86d5bee815ea6ce15ad34cffc1cde0ccc06fc730b1b6",
-      "sha256": "5b89f9596857a6e16e2b400624fcbfb5a3cbfe2167ae662626c2ca9510518b55"
+      "bytes": 18032,
+      "sourceSha256": "745a0a121412f175e189725539c46bad91532bbd775a92d37c21433cd543ae6e",
+      "sha256": "a3baa359e84d73a8f34d6ba5ff20f03fd24f00f42be5404429c1f8b569a82873"
     },
     {
       "file": "original/garlic.webp",
-      "source": "public/assets/original/garlic.png",
+      "source": "public/assets/portraits/hd4/original/garlic.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        240,
-        236
+        228,
+        232
       ],
-      "bytes": 14808,
-      "sourceSha256": "08054a6985f3bd857240883477bdf7b77da434b20d5f27442a38fef24c6559be",
-      "sha256": "9410358106bdea42a2b318c7be979ac6a6157c27c5c03561852929cee0d5e920"
+      "bytes": 13910,
+      "sourceSha256": "d7604c084f7c3197acd67426cff172ce0be4c3e07444b6cf21d52970b0cd0270",
+      "sha256": "2d0a333ba9de0c9573061dc941705987547dcd39226d9e786197aced1e1d6463"
     },
     {
       "file": "original/gatlingpea.webp",
-      "source": "public/assets/runtime/original/gatlingpea.webp",
+      "source": "public/assets/portraits/hd4/original/gatlingpea.png",
       "role": "dom",
-      "density": 4.0,
+      "rendered": true,
       "size": [
-        600,
-        580
+        320,
+        308
       ],
-      "bytes": 84730,
-      "sourceSha256": "8dec2e6e16ca4074b705a26ccd5f4c78677c913e53b3dcb009808b9d39ca9a76",
-      "sha256": "1855008c666af4c915e2f8ae7855f7c0b01e72f73475ff365abb454ca038bab0"
+      "bytes": 25820,
+      "sourceSha256": "c492775a726dd97f8a36a6364bc0045bd0f5dd86b536bf0c3edac1d0ab712f76",
+      "sha256": "ec75190cd623f4b8600957e13c0108592b91d300c436a1081c8af81a5675cabe"
     },
     {
       "file": "original/gloomshroom.webp",
@@ -539,42 +539,42 @@
     },
     {
       "file": "original/gravebuster.webp",
-      "source": "public/assets/original/gravebuster.png",
+      "source": "public/assets/portraits/hd4/original/gravebuster.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        396,
-        424
+        392,
+        304
       ],
-      "bytes": 23132,
-      "sourceSha256": "11e86a4d8d225e368fd93f3d6242150bdaaa4488a611a3ca4220cdfe1fbe9418",
-      "sha256": "52c0e26802b66e91a1a118b2f59bf6282c0700b7d6b46f3434637213b1abbfe3"
+      "bytes": 21834,
+      "sourceSha256": "7bd690b53b247b993399ed349666d5bfcdda55cb8db37a545bf70c4f27a50b91",
+      "sha256": "e45c37630e786e3d5a3c07bf6d237bc38a244dd71a1a1a97d80e7dbdb54a28e9"
     },
     {
       "file": "original/hypnoshroom.webp",
-      "source": "public/assets/original/hypnoshroom.png",
+      "source": "public/assets/portraits/hd4/original/hypnoshroom.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        272,
-        304
+        228,
+        316
       ],
-      "bytes": 15118,
-      "sourceSha256": "e3dfbf8b3ac8c97cda9b82bcb4786bdbdb4eddf027c9819d50cf57cd5e41aafa",
-      "sha256": "8a607401d8585f3132a2181bcc257a80672f9a0d461517d19978a6825279da46"
+      "bytes": 14394,
+      "sourceSha256": "38d9cce95aa689672613aae6496f56b7624f3a0a9d711e0c6137311cc6f315a9",
+      "sha256": "c2f7114565e412936b705d1b32e5b09dbf43eee6a7ff7d1759a721f591c3bce2"
     },
     {
       "file": "original/iceshroom.webp",
-      "source": "public/assets/original/iceshroom.png",
+      "source": "public/assets/portraits/hd4/original/iceshroom.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        332,
-        300
+        336,
+        308
       ],
-      "bytes": 24480,
-      "sourceSha256": "398ca764e8b58fb6d8d2b40e6fafc2744cb0a24037e81208b136757cb025e1db",
-      "sha256": "1800233739643b7576e677496380a4e1cf24cf0d5a6118a3744763ec7ffe8a47"
+      "bytes": 27754,
+      "sourceSha256": "4e8d00129f9638a0dfb5b7278da56117259cbb21e27bcb310db70b2bb2276d07",
+      "sha256": "042340332124ede504cafd9f84d037c6dbbbd884dd1472e6d3e6aab096481c63"
     },
     {
       "file": "original/imitater.webp",
@@ -591,42 +591,42 @@
     },
     {
       "file": "original/jalapeno.webp",
-      "source": "public/assets/original/jalapeno.png",
+      "source": "public/assets/portraits/hd4/original/jalapeno.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        272,
-        356
+        184,
+        308
       ],
-      "bytes": 12122,
-      "sourceSha256": "6bbf215deb9323325b2fa3696368f607004678edb0838bfc6b7b6d70d45fb341",
-      "sha256": "e04a8e83d5e539b5f120c725397b658c719dd0009aecaf7ed23a666def1057e9"
+      "bytes": 13706,
+      "sourceSha256": "25a1e86bcc1b2d140639aba2669c7ca8cf8fa25df307858a33dd7a3776d28203",
+      "sha256": "0eaee15debbc20541302aa310de1a996dbec1c9a782e717f92e9baeafc4a97e0"
     },
     {
       "file": "original/kernelpult.webp",
-      "source": "public/assets/original/kernelpult.png",
+      "source": "public/assets/portraits/hd4/original/kernelpult.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        408,
-        380
+        424,
+        388
       ],
-      "bytes": 34234,
-      "sourceSha256": "ff6d8cfa04b8b0dd886e5d8e7fec0d68312eec3f0ef2d35f0cf0761e96e7b09c",
-      "sha256": "0d2f8bbdd5d5e0150c20d0b0e06581da1033033d82c7d75efb5d1ef5bc08f0b9"
+      "bytes": 31552,
+      "sourceSha256": "64e5dac881475b753ba320b39d3cf1573467f3fe8c9672d07a8f296600d49cf7",
+      "sha256": "e13b52d1e89e17f1a5c32970ed4f9242ac5b9d00954e15dfbbd6cd6cb129ad7d"
     },
     {
       "file": "original/lilypad.webp",
-      "source": "public/assets/original/lilypad.png",
+      "source": "public/assets/portraits/hd4/original/lilypad.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        316,
-        232
+        332,
+        332
       ],
-      "bytes": 14444,
-      "sourceSha256": "e9155689a534c76c3591996f94e1ccedce800440e0e81da35c2e9e043c1ceb5b",
-      "sha256": "dfaea6decbcf9b36809522a1b3eca615643c4737e43c24c0f66b4809255af522"
+      "bytes": 15914,
+      "sourceSha256": "14fd2c75a824a51948faaeb8f8841943622307ee8bd1cfea9d82699e44870be2",
+      "sha256": "d5d43f6b03ea8c2302d7ac0bf49bebb9915e3175928928ed3ea636a6e1e4932e"
     },
     {
       "file": "original/logo.webp",
@@ -643,42 +643,42 @@
     },
     {
       "file": "original/magnetshroom.webp",
-      "source": "public/assets/original/magnetshroom.png",
+      "source": "public/assets/portraits/hd4/original/magnetshroom.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        216,
-        288
+        288,
+        328
       ],
-      "bytes": 15004,
-      "sourceSha256": "a5cb846fc93edbae6a1e056c327aa7ae6702a9260b1ad4fe17e6afa48d5e365c",
-      "sha256": "7dc0fa672a798861315502cdd98ae847493962b458a26ea4592fb19e0e790993"
+      "bytes": 14184,
+      "sourceSha256": "a6384e6f1300f9a846e709f7ceceb6959e297b1bf5dda1a249e026e548c388a9",
+      "sha256": "0bfa6cee629bdfa38ed613c43ae8915ea189d1267cecf9a91413fb170bce24ed"
     },
     {
       "file": "original/marigold.webp",
-      "source": "public/assets/original/marigold.png",
+      "source": "public/assets/portraits/hd4/original/marigold.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        208,
-        288
+        220,
+        296
       ],
-      "bytes": 21700,
-      "sourceSha256": "bdec47c776e4aa311b793eef4325fdb5a6d93245ab46188fa7bb1ab78cb5a286",
-      "sha256": "c7ee460f60d2abc20dbbe7542aaa99c7f800539a002c69c2d3ca336fce261a95"
+      "bytes": 20290,
+      "sourceSha256": "4f22b18c3df17ee1b3529bdc3b06f1c55e57318a348fd840b61f008a680eb5ec",
+      "sha256": "715f061348850caeb6b01b366542b0977fd38c8cc64d86cc2828ddcc5a683196"
     },
     {
       "file": "original/melonpult.webp",
-      "source": "public/assets/original/melonpult.png",
+      "source": "public/assets/portraits/hd4/original/melonpult.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        400,
-        356
+        412,
+        380
       ],
-      "bytes": 33278,
-      "sourceSha256": "f0a3e0633957254ce39afa7ba8f6f61c9f0a8d430ebb27931d927c9821fa81be",
-      "sha256": "9c8e45934f91808c764568c54558afa81f74ac68d565d8fedddcfb7e031ff8cd"
+      "bytes": 29954,
+      "sourceSha256": "5b250f143cc428f7fd29dc60d316718b14dd0b82ac18477b5085808fca007eef",
+      "sha256": "0ee8813318794f5060b33dd830e1c6f981d156417f753fd49fc2a44f58a9895c"
     },
     {
       "file": "original/menu.webp",
@@ -747,29 +747,29 @@
     },
     {
       "file": "original/peashooter.webp",
-      "source": "public/assets/original/peashooter.png",
+      "source": "public/assets/portraits/hd4/original/peashooter.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        284,
-        284
+        268,
+        252
       ],
-      "bytes": 21746,
-      "sourceSha256": "60dac69e72ffba38dcd45bc93bb942062f32852673edca64ec75a2fdb832a22d",
-      "sha256": "af5183e6aed8c7fa2c661868b1b1d978f965cd6dd6a08e17a5cb3046a000ddca"
+      "bytes": 19206,
+      "sourceSha256": "21c510187bb00f8b9ce068305dc38f4b3d5abb74d33f21939ecf2c2d37ca1508",
+      "sha256": "57e4b0eb94e7a2ba8f52d7e59595e8ebe06d936a479802293bd16da4864aff8f"
     },
     {
       "file": "original/plantern.webp",
-      "source": "public/assets/original/plantern.png",
+      "source": "public/assets/portraits/hd4/original/plantern.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        324,
-        352
+        340,
+        360
       ],
-      "bytes": 20938,
-      "sourceSha256": "7e9b98e240cb0b6630c3df68f0d95056e07972bad2d2d4d5a8c8a69dd279806e",
-      "sha256": "7ad8962036f47649ae02692dd7e40a17ed868e9e57aec8cea39517815166bf8c"
+      "bytes": 24168,
+      "sourceSha256": "be801c3976ba4d37dbeee39664c62defd0ab09fb452dee9f6c47ac66f4a4b792",
+      "sha256": "75d583f2f356cf0fba7e68580bab77bbb2eb8c31669f6015b6016ce91742838b"
     },
     {
       "file": "original/pool-cleaner.webp",
@@ -786,81 +786,81 @@
     },
     {
       "file": "original/potatomine.webp",
-      "source": "public/assets/original/potatomine.png",
+      "source": "public/assets/portraits/hd4/original/potatomine.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        300,
-        220
+        264,
+        212
       ],
-      "bytes": 14358,
-      "sourceSha256": "4d562e90cac467a0cdaf1fec1221916772b3c5e5d2a06e3d3d33d58fa847ea5e",
-      "sha256": "82b836074be5e7b4d507caa718b9ca99683c56f1cfa04d5c0576aef104f37326"
+      "bytes": 14614,
+      "sourceSha256": "ef23858908410a3723b2b6ae4829fb868eaf4ba14651f943dc8b92ef7e2656d1",
+      "sha256": "a04d2aeb31220661324b86ac72dce7d4fb99dd8b0b1795861be9ff81cadef655"
     },
     {
       "file": "original/puffshroom.webp",
-      "source": "public/assets/original/puffshroom.png",
+      "source": "public/assets/portraits/hd4/original/puffshroom.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        160,
-        264
+        156,
+        152
       ],
-      "bytes": 7140,
-      "sourceSha256": "34b942b95e19bd75c13e825be9a56da6ee28be00f22bdef1f98a04b54ab3e7be",
-      "sha256": "e11163db597a278156a34007d64a58453b61b64cd47c27e5b997f28b0b5c07ba"
+      "bytes": 7572,
+      "sourceSha256": "621dae992714f8ebbd7bc733a0ff041d028a0caa8c86834920b34ac0e6d37c1e",
+      "sha256": "60e22bcf214188cea01c1cb07e8989defecd9df0613ecdbb3329725ac13db1c2"
     },
     {
       "file": "original/pumpkin.webp",
-      "source": "public/assets/original/pumpkin.png",
+      "source": "public/assets/portraits/hd4/original/pumpkin.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
         388,
-        268
+        260
       ],
-      "bytes": 28198,
-      "sourceSha256": "f25328d80b8c2ac6e375822ad3b14383802fb45dfa57f3353472d0c9bb14ed06",
-      "sha256": "79bbd142bcd15cf079302263b4e1a6dc5f13ab77fa97cc404916ec3dbef69fab"
+      "bytes": 27938,
+      "sourceSha256": "72c03ba7e180e5f2af53d3bdcf9835f0a53a16b8a5e9cc2d543d964d3b796642",
+      "sha256": "1f414639cde4257f2f15911f846967bd8b2229d511fd9ef4d0875d70be288d34"
     },
     {
       "file": "original/repeater.webp",
-      "source": "public/assets/original/repeater.png",
+      "source": "public/assets/portraits/hd4/original/repeater.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        292,
-        284
+        272,
+        252
       ],
-      "bytes": 20580,
-      "sourceSha256": "a79916360aa15d8bbf0fb678f9b01b232a1e1a62601718a95052a1580f282017",
-      "sha256": "66be3ff9d34508ea6f2fdbd989782991c5e1dba0dd7bade041a4f4a373140d89"
+      "bytes": 20152,
+      "sourceSha256": "6221811d5ec7eecb3999dd0bc38623994c61a00614cf2eaf1149fa0fa0e37c47",
+      "sha256": "607794a81031fbfb63fd474cd039678893c500fa5338fc188bdebc468c087224"
     },
     {
       "file": "original/scaredyshroom.webp",
-      "source": "public/assets/original/scaredyshroom.png",
+      "source": "public/assets/portraits/hd4/original/scaredyshroom.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        228,
-        324
+        200,
+        280
       ],
-      "bytes": 11624,
-      "sourceSha256": "6fcc7a14d464ef8dcdf2cebd693b257ab8e0be4e54f5a5ce90e077cca6d1b430",
-      "sha256": "46a5899e480e57a0a504ae9b409da4ed847dd051b3017c358806d2b790c099a1"
+      "bytes": 11808,
+      "sourceSha256": "4c3c8d7eeb604e52ba94ccc8f8dded6b2a83ef29320e82db24b50039abecf937",
+      "sha256": "6e6e6872a3c72c1c85ca842f88e9749354b2064e51898467ef9be6a1dc922f40"
     },
     {
       "file": "original/seashroom.webp",
-      "source": "public/assets/original/seashroom.png",
+      "source": "public/assets/portraits/hd4/original/seashroom.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        192,
-        396
+        144,
+        152
       ],
-      "bytes": 9812,
-      "sourceSha256": "6504765612ea69ef45eb3d00f0aa9217a28ed3b35955b6e5061dca216eceecdf",
-      "sha256": "079b5282d56b80e82c7544b9bec6daa0c8832826e500ac44614921af5619d24c"
+      "bytes": 8158,
+      "sourceSha256": "bb738e87c5696096a279ef1372f4cfb97e9ced8aed869c354412d3ed07436538",
+      "sha256": "6bac41fa53aa65372399c00f2d481c4e3aa0ce1ef5cdc5b75e4d97c331a28d33"
     },
     {
       "file": "original/seed-packet.webp",
@@ -981,16 +981,16 @@
     },
     {
       "file": "original/snowpea.webp",
-      "source": "public/assets/original/snowpea.png",
+      "source": "public/assets/portraits/hd4/original/snowpea.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        284,
-        284
+        260,
+        252
       ],
-      "bytes": 24412,
-      "sourceSha256": "7e906e4548de0b06f5f4cfd01cf88f41d14a2d5670c8da8a4fa156918e9298d0",
-      "sha256": "91d90e57696c7d3bafd9dcb5f05e19d051d964b394d403307c6d072c10016689"
+      "bytes": 21258,
+      "sourceSha256": "41cbbda7a5faaf250bbf1c339e100337351a4f02a34854d6d00e9749afc25c1d",
+      "sha256": "8b72287949d068bb99c94c55ec1cc4d98922aa9c738694c15f0d6e2704c014ba"
     },
     {
       "file": "original/spikerock.webp",
@@ -1007,133 +1007,133 @@
     },
     {
       "file": "original/spikeweed.webp",
-      "source": "public/assets/original/spikeweed.png",
+      "source": "public/assets/portraits/hd4/original/spikeweed.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        340,
+        328,
         140
       ],
-      "bytes": 13006,
-      "sourceSha256": "e302788400585b095bf5fc2163f32f4c1954a8ac04570c1bad8132bd7df00dd3",
-      "sha256": "b69e064d3b93356b8e0379ee78ad35dd3724e6d6a8fdfb37ef76e054b304afad"
+      "bytes": 15092,
+      "sourceSha256": "bf529e41235176e39087fd0044208114c68cfd87d1370d43a36b66b6212fdbf3",
+      "sha256": "4771687f041817fc2ef3cad2b199a4f0c7a21f144e09a28b28ccdf410617b76a"
     },
     {
       "file": "original/splitpea.webp",
-      "source": "public/assets/original/splitpea.png",
+      "source": "public/assets/portraits/hd4/original/splitpea.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        368,
-        288
+        396,
+        292
       ],
-      "bytes": 27594,
-      "sourceSha256": "e7472e46df6c42381dc0f27dc31b3e86605896c69acde2393a7561ca78b14b94",
-      "sha256": "5ac3f1dc7947ea71766c3801587eae13a0726f65b89ecc6437d75b2be841a79c"
+      "bytes": 26190,
+      "sourceSha256": "709d4f4c152b307362b96e223009254c999e42ec544cceb1acf6769f1a41ffad",
+      "sha256": "6a29f6777aa1a9dd46302d6e90bdbc2d86d7c22621d9b9e78573ea3047298cd0"
     },
     {
       "file": "original/squash.webp",
-      "source": "public/assets/original/squash.png",
+      "source": "public/assets/portraits/hd4/original/squash.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        272,
-        328
+        288,
+        344
       ],
-      "bytes": 22794,
-      "sourceSha256": "2d76354b74a6c7969c2ddc4e6641c3d84724953903df150f4e6466b46c104d67",
-      "sha256": "e21b29e93c27685caec2e61058af37f521d345f80d6d1748404c57c25953c9c2"
+      "bytes": 22404,
+      "sourceSha256": "7eb2b2530f89c1f90e2f1bc8c33c6ed1d1c6a18faa07004e7d58eb0f244c75b8",
+      "sha256": "85d77c882a9b6535e4bafcb5a90e3bd8215a9c60e1ed394d6192f1a02f98a48a"
     },
     {
       "file": "original/starfruit.webp",
-      "source": "public/assets/original/starfruit.png",
+      "source": "public/assets/portraits/hd4/original/starfruit.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        308,
-        280
+        296,
+        272
       ],
-      "bytes": 19202,
-      "sourceSha256": "afa375ced3db53ff7d0bc63e9226378597943112281a6e06cb8af9b36f7f0075",
-      "sha256": "2fda684e7712960800eef282fc98b923bf18bef118911c9232f356c950b557f4"
+      "bytes": 17598,
+      "sourceSha256": "f0418682971f4abe6f07e2805b9ea8ec4f9c55655294f7b79d534f4771af4ac7",
+      "sha256": "012f3e0bcdac8a4c817c5b4f66b8db957f6b4aea74526bd340aa0f28c273f435"
     },
     {
       "file": "original/sunflower.webp",
-      "source": "public/assets/original/sunflower.png",
+      "source": "public/assets/portraits/hd4/original/sunflower.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        292,
-        296
+        260,
+        264
       ],
-      "bytes": 27784,
-      "sourceSha256": "5ef8779615ad5d7d967e9b49d648919c58fab87cf3ce9b947e8374ddfb2b3324",
-      "sha256": "4baad887c8aedfb295f56640d2e576e2896bf5719aee858740716ccd74a26585"
+      "bytes": 23856,
+      "sourceSha256": "2a555c3da82feb5874804b8e0222f470cb82e16a348a36ee4bac4a6c346d983e",
+      "sha256": "1dc9980b2b0317972ef0add5f5d67041fb43a0ac8962f09a142d5dcc7e360c8d"
     },
     {
       "file": "original/sunshroom.webp",
-      "source": "public/assets/original/sunshroom.png",
+      "source": "public/assets/portraits/hd4/original/sunshroom.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        236,
-        244
+        148,
+        160
       ],
-      "bytes": 8132,
-      "sourceSha256": "fd49132b648561c871dff73e170a00ce1f96d395587b0e27292dce7d490b1220",
-      "sha256": "d7cfe1f5ab86a6df4daa02402e77e144af00050012708d2aea750a4e59bd27b2"
+      "bytes": 7240,
+      "sourceSha256": "f735d62ec9f39daeff260d3f8b0f18a688cc9c094cb96c955823a6be83ed5c4d",
+      "sha256": "6afc6c288e2ee3632a353b66510980f6a4035f8a65377090a0c82ec07c55bdd6"
     },
     {
       "file": "original/tallnut.webp",
-      "source": "public/assets/original/tallnut.png",
+      "source": "public/assets/portraits/hd4/original/tallnut.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        332,
-        476
+        324,
+        488
       ],
-      "bytes": 23824,
-      "sourceSha256": "8cbe688ae75077e4ab1e09c28d57d6194f7755294065134d6a8fcb0c046466bd",
-      "sha256": "bd0c48cd62c62fd29ed5f70abc33ae726c623a5c279ad285054d78ec3fd5e4f3"
+      "bytes": 24740,
+      "sourceSha256": "126f27828436d9b928fe577f0c0aa5cf066bb3354d549397811f04f949b3e724",
+      "sha256": "6d6c96aa1697b1ddf189a3c964a6be0ce90bdb14bc5d94899a3767bbc8b4378f"
     },
     {
       "file": "original/tanglekelp.webp",
-      "source": "public/assets/original/tanglekelp.png",
+      "source": "public/assets/portraits/hd4/original/tanglekelp.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        360,
-        288
+        340,
+        280
       ],
-      "bytes": 30952,
-      "sourceSha256": "0a0719774a2329acb291644f9679bfa082d204d897ad72b48f6382e4cabbf6c3",
-      "sha256": "c9c604b37441336f3e8f4b005853381db6755bc7ea05328d0cd2892b131c1937"
+      "bytes": 33092,
+      "sourceSha256": "53801cc54e6923bbeb8408da8ae9db99c4d8bd2b2d104e064ded10aceb970673",
+      "sha256": "2591cfadeb1d3b11bcf044d988c01912f00be95fb1b251130fc953dbc680ce03"
     },
     {
       "file": "original/threepeater.webp",
-      "source": "public/assets/original/threepeater.png",
+      "source": "public/assets/portraits/hd4/original/threepeater.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        292,
+        296,
         320
       ],
-      "bytes": 32548,
-      "sourceSha256": "7e6f26e6083e35cb9cc741690b0df996947eae2c6c0723eba618caea6511d554",
-      "sha256": "233824d850f29d1a52e649a1983c99eb8cf02a0fce39661d30a2c640b72c6b85"
+      "bytes": 30756,
+      "sourceSha256": "08772bf03438d01d0759f67eab15c3997b38afed1c0adfde93ddd93577a42112",
+      "sha256": "2a72491c3c3e01c2ef205ace1e529f79f80855d230fbeec8ba8c1a0b0ec97625"
     },
     {
       "file": "original/torchwood.webp",
-      "source": "public/assets/original/torchwood.png",
+      "source": "public/assets/portraits/hd4/original/torchwood.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        292,
-        348
+        276,
+        364
       ],
-      "bytes": 24512,
-      "sourceSha256": "59ed0aaedaba030ba7c57623fd1422e419e8be61233c9854acb6bfaac6024d8a",
-      "sha256": "b93dc94630bb577d07b032322796fcbe1db259ba30ee90fbf17e763a27a9a102"
+      "bytes": 23896,
+      "sourceSha256": "b1f13f6444ba3ff22c20d927494265bcccfc3f8f0ec308aaa96034b49912d9a3",
+      "sha256": "a6074ed59bec75e4c12d78ca07b0381dabf5b926a7e7c5541b6435835b3e6909"
     },
     {
       "file": "original/trophy.webp",
@@ -1150,55 +1150,55 @@
     },
     {
       "file": "original/twinsunflower.webp",
-      "source": "public/assets/runtime/original/twinsunflower.webp",
+      "source": "public/assets/portraits/hd4/original/twinsunflower.png",
       "role": "dom",
-      "density": 4.0,
+      "rendered": true,
       "size": [
-        692,
-        644
+        356,
+        336
       ],
-      "bytes": 108916,
-      "sourceSha256": "a40bfc5390d8d083bfda8a21db3664b127b3fa928fc24d584fdc1d381f961e9d",
-      "sha256": "cc46db1f3102feddbeaa05af1b43047fa26a46c9b3cce7853d49fe996936f439"
+      "bytes": 36024,
+      "sourceSha256": "043f710692fa3f03fb1dce7e3ed7359bbb7ec39c323ba50b192176d8bf5c6f4a",
+      "sha256": "477862ee7949dbb0989fb7264c9df89b21e789b0ccc30a0be87b208f28d2298f"
     },
     {
       "file": "original/umbrella.webp",
-      "source": "public/assets/original/umbrella.png",
+      "source": "public/assets/portraits/hd4/original/umbrella.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        312,
-        264
+        324,
+        276
       ],
-      "bytes": 24834,
-      "sourceSha256": "f88c66868d8e4c4ca17f02e7a1620e65f3ec74acef7ba84b15b268ed3827df11",
-      "sha256": "eedb8b836b887b6c2f9e15bd829bd10b3ba9ac749ebdc95532727691232b4424"
+      "bytes": 22092,
+      "sourceSha256": "90a82c4ed76c5dcdb7b514020537a56e9ff077b7b30ff84aae6a6f11edeaa052",
+      "sha256": "0516e239c480473b905189f5c30be404084a7a042cb0928772e1e25660a2253b"
     },
     {
       "file": "original/wallnut.webp",
-      "source": "public/assets/original/wallnut.png",
+      "source": "public/assets/portraits/hd4/original/wallnut.png",
       "role": "dom",
-      "density": 2.0,
+      "rendered": true,
       "size": [
-        260,
-        292
+        288,
+        300
       ],
-      "bytes": 19916,
-      "sourceSha256": "7ec64625662c7841889739a0c9c7417fba478b7a702ca3ea917879de44f69d61",
-      "sha256": "7b555ff16e5add4b08fe6a35b6b71d49a2713125e918c6d27e684a9a48cb1871"
+      "bytes": 17286,
+      "sourceSha256": "8a68a1cfa73055297f994dca4e0c95eb5ca125548f9b016070343f4a5208bdf6",
+      "sha256": "9d079fd7a8ff0c9e1f959b99a8c9757adfde2c3e37d4dec144d529aaded38c03"
     },
     {
       "file": "original/wintermelon.webp",
-      "source": "public/assets/runtime/original/wintermelon.webp",
+      "source": "public/assets/portraits/hd4/original/wintermelon.png",
       "role": "dom",
-      "density": 4.0,
+      "rendered": true,
       "size": [
-        772,
-        776
+        432,
+        424
       ],
-      "bytes": 96300,
-      "sourceSha256": "6a824f5581dd2d2639621e32c835463509575a96fef92543d76dfd8c18f8db5d",
-      "sha256": "05c9262ceb3a6bcb394791ff64fdddfd23de26d3024b1407faec765662cf1cb2"
+      "bytes": 34810,
+      "sourceSha256": "14c0ce38df25d14e7c007a88e85ea48168643f8ef0b496ce431ee8dc98b35784",
+      "sha256": "b70c07ed477d32480f3ee78f5e7bc5d383a43d2bdc83cb1dbd759c3578aea676"
     },
     {
       "file": "ui/almanac-card.webp",

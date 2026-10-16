@@ -1,0 +1,6783 @@
+{
+  "images": 617,
+  "runtimeImages": 610,
+  "portraitImages": 67,
+  "portraitBeforeBytes": 1544392,
+  "portraitAfterBytes": 2145908,
+  "portraitAlphaMatches": 67,
+  "files": [
+    {
+      "file": "assets/runtime/actor-motion/blover.webp",
+      "size": [
+        398,
+        76
+      ],
+      "bytes": 10788,
+      "sha256": "942b0882a384730f418d7366d4dbbf8ed46140dcb591c90a70da76227c7d1c0c",
+      "beforeBytes": 10788,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/cactus.webp",
+      "size": [
+        958,
+        152
+      ],
+      "bytes": 32078,
+      "sha256": "1a26cbac00c0763ef5882dcc31ce409089992368e7cb84545dd2818f74e09999",
+      "beforeBytes": 32078,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/caltrop.webp",
+      "size": [
+        360,
+        78
+      ],
+      "bytes": 14270,
+      "sha256": "6f8a776946aa8984138788bec651c490ef5ff5501fab7b928f3723433e7342ff",
+      "beforeBytes": 14270,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/cattail.webp",
+      "size": [
+        980,
+        132
+      ],
+      "bytes": 34098,
+      "sha256": "9c96cea6e372348b2db8c0b5e68ce52cf113f0c2b0cba9eaf0ea89486b41ce18",
+      "beforeBytes": 34098,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/cherrybomb.webp",
+      "size": [
+        960,
+        124
+      ],
+      "bytes": 26090,
+      "sha256": "3b677ebe6e0c263604ec088502e393d0d7e5be0d54c48b9b4893b5473177220a",
+      "beforeBytes": 26090,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/chomper.webp",
+      "size": [
+        1394,
+        154
+      ],
+      "bytes": 53886,
+      "sha256": "e157abd432aa52a696e7b457394cdbadf4f49e0abe31960746a67c1d714cd56f",
+      "beforeBytes": 53886,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/cobcannon.webp",
+      "size": [
+        2044,
+        168
+      ],
+      "bytes": 68876,
+      "sha256": "ee42779b74fab0e5aec002e65730288af3144b803ef47ead81931ecb7c629f58",
+      "beforeBytes": 68876,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/coffeebean.webp",
+      "size": [
+        1488,
+        316
+      ],
+      "bytes": 98086,
+      "sha256": "7fd943179a2f5a7dc34affde5b7e684af7b6f326c90c43f7e9008b01987df076",
+      "beforeBytes": 98086,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/doomshroom.webp",
+      "size": [
+        322,
+        114
+      ],
+      "bytes": 9912,
+      "sha256": "57d708385f30b996b77b5207305174e8385374fa48d67b4ffdb9e6f3c160ce89",
+      "beforeBytes": 9912,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/fumeshroom.webp",
+      "size": [
+        476,
+        146
+      ],
+      "bytes": 15792,
+      "sha256": "0b3b25f2bbf27ee87415734d298698c675b8d440aafb903f9a9c2a80061a9ccb",
+      "beforeBytes": 15792,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/garlic.webp",
+      "size": [
+        634,
+        124
+      ],
+      "bytes": 24192,
+      "sha256": "9672491b813ca59d08eb73fa5c22f8511604b80b26b62307be958ab123b77fe8",
+      "beforeBytes": 24192,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/gloomshroom.webp",
+      "size": [
+        1006,
+        140
+      ],
+      "bytes": 36034,
+      "sha256": "4d984c384674fc50925efdc4e41ae964bd15190e0d789866f92e0e5d8aa75c02",
+      "beforeBytes": 36034,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/goldmagnet.webp",
+      "size": [
+        1754,
+        320
+      ],
+      "bytes": 62144,
+      "sha256": "97ab3742fb53d7c049a10c4d395f16eba718a4be1291d14fb434d65f3bcd7645",
+      "beforeBytes": 62144,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/gravebuster.webp",
+      "size": [
+        688,
+        94
+      ],
+      "bytes": 21106,
+      "sha256": "5187e2bcbf5a15efbf8c226ac2449ebafae664407424a9d883789f8c9bd77b90",
+      "beforeBytes": 21106,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/hypnoshroom.webp",
+      "size": [
+        300,
+        144
+      ],
+      "bytes": 12678,
+      "sha256": "b758b4d3014ea84c3600b6411d4421a5142b5497a865582d7188c4eb617a5b31",
+      "beforeBytes": 12678,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/iceshroom.webp",
+      "size": [
+        504,
+        112
+      ],
+      "bytes": 20582,
+      "sha256": "5f6dd5bfa33f2a1228721b8acfeca14cb68ba670df4087862dc8d451dc0f53e2",
+      "beforeBytes": 20582,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/imitater.webp",
+      "size": [
+        1090,
+        198
+      ],
+      "bytes": 58470,
+      "sha256": "f4714a6cdd2e8e51cc0ef01c3bdba14b78f34181e3af5bd73ef52425bff3ae04",
+      "beforeBytes": 58470,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/jalapeno.webp",
+      "size": [
+        406,
+        176
+      ],
+      "bytes": 14516,
+      "sha256": "c84d00b9f4a36dec5460fcbd6000a0428dfbcb5f05f1b7183782d7e81ac96faa",
+      "beforeBytes": 14516,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/lilypad.webp",
+      "size": [
+        208,
+        204
+      ],
+      "bytes": 9680,
+      "sha256": "445a99d6c595d443ae372eba4309d46e3d7dc173944631ce57613f6fdb1713c2",
+      "beforeBytes": 9680,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/magnetshroom.webp",
+      "size": [
+        1418,
+        226
+      ],
+      "bytes": 49750,
+      "sha256": "022049cff1a084e958704181e1b50f6bc6baa0d71482186815df6246e39da9ca",
+      "beforeBytes": 49750,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/marigold.webp",
+      "size": [
+        828,
+        152
+      ],
+      "bytes": 27012,
+      "sha256": "589650d4e6165711e16fc2dcd400551d04076da725609232697f8b3f38043b23",
+      "beforeBytes": 27012,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/peashooter.webp",
+      "size": [
+        954,
+        134
+      ],
+      "bytes": 32580,
+      "sha256": "280814684025aa78df51204794b0365d3a5eedf854958d06f6b6870511ba0bc3",
+      "beforeBytes": 32580,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/plantern.webp",
+      "size": [
+        434,
+        200
+      ],
+      "bytes": 18926,
+      "sha256": "5e7ac3165a86aea7fb28053f89b6121e34c2cc5c9ae4173795b2d0146c3d68c5",
+      "beforeBytes": 18926,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/pot.webp",
+      "size": [
+        394,
+        132
+      ],
+      "bytes": 13392,
+      "sha256": "a5d00c4291691f6179688844fdd4ffaf279552bee7a3b2b2cdccbc69bb5c2f9b",
+      "beforeBytes": 13392,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/potatomine.webp",
+      "size": [
+        856,
+        136
+      ],
+      "bytes": 27478,
+      "sha256": "e207fd030e2f0a63508d4c2157672563b2c5bd057f33b5d5b6fd7cffea913ab3",
+      "beforeBytes": 27478,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/puffshroom.webp",
+      "size": [
+        320,
+        110
+      ],
+      "bytes": 10080,
+      "sha256": "bd2976d0f3a508ce6f15249eb80112909e307384c5e48689c402c33981b7dbc6",
+      "beforeBytes": 10080,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/pumpkin.webp",
+      "size": [
+        980,
+        164
+      ],
+      "bytes": 56064,
+      "sha256": "b1ebffe1641b23cd9c41d67fb7caa7c8ea9c76227d656dffde6a7ebe434c0cb0",
+      "beforeBytes": 56064,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/scaredyshroom.webp",
+      "size": [
+        550,
+        110
+      ],
+      "bytes": 19420,
+      "sha256": "7c84f5f9db1a0b73e9c6451644dcd9a6ebfe34a10e4129680204bc277581de8d",
+      "beforeBytes": 19420,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/seashroom.webp",
+      "size": [
+        452,
+        78
+      ],
+      "bytes": 11134,
+      "sha256": "e197889239dda9c92f2529f3ecc863082caa096ee7f8624ef5a16e72c3944487",
+      "beforeBytes": 11134,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/snowpea.webp",
+      "size": [
+        920,
+        136
+      ],
+      "bytes": 36766,
+      "sha256": "e9c15bb7bf8654d3884be442ccc57b00b40806248e2fd5b8c0a825ab156d17c1",
+      "beforeBytes": 36766,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/spikerock.webp",
+      "size": [
+        488,
+        76
+      ],
+      "bytes": 20496,
+      "sha256": "2297cc336ff041007bc29a74d9955d16a4728114a96773fb5898bc88f409a0b1",
+      "beforeBytes": 20496,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/splitpea.webp",
+      "size": [
+        848,
+        134
+      ],
+      "bytes": 30610,
+      "sha256": "92ff66a1d6fa077cbe3ad932eaae9ef9eafd4ce224dc9d8e6bcaa8bb16cb29be",
+      "beforeBytes": 30610,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/squash.webp",
+      "size": [
+        368,
+        192
+      ],
+      "bytes": 16014,
+      "sha256": "83a3b3781d49dc67ff6cd71f135e8fb0b75ae8482b0971bcf49e3a7a1d572e9f",
+      "beforeBytes": 16014,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/starfruit.webp",
+      "size": [
+        346,
+        180
+      ],
+      "bytes": 13810,
+      "sha256": "58d91cf2e58cb0010fa8253b465bb5846cfeb51da53634fe7e819938bd5ce8a8",
+      "beforeBytes": 13810,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/sunshroom.webp",
+      "size": [
+        322,
+        132
+      ],
+      "bytes": 11368,
+      "sha256": "a0ec5c22e71ab5720d9c1c34b3a5853f5354610f34b57d843e543218c8959646",
+      "beforeBytes": 11368,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/tallnut.webp",
+      "size": [
+        610,
+        296
+      ],
+      "bytes": 41108,
+      "sha256": "aeb115f06defda8c8dc3ec21cf5596b114b09ab522505e6e0cef29d7b338f75f",
+      "beforeBytes": 41108,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/tanglekelp.webp",
+      "size": [
+        2044,
+        324
+      ],
+      "bytes": 87186,
+      "sha256": "5a7e58cc86d816aa2a7d0f51ee3070025f7f25f71cadc251a841df40f51af2cb",
+      "beforeBytes": 87186,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/torchwood.webp",
+      "size": [
+        770,
+        146
+      ],
+      "bytes": 30688,
+      "sha256": "7e8c25cf65ae5216364a16408866b46435543d402f64e6fe221d55c5584a8ad8",
+      "beforeBytes": 30688,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/umbrellaleaf.webp",
+      "size": [
+        912,
+        136
+      ],
+      "bytes": 40546,
+      "sha256": "c17b561b1ad912a9df7191e657d2f3d298506c4a01bae1a9a90ccc0627486f8b",
+      "beforeBytes": 40546,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/wallnut.webp",
+      "size": [
+        616,
+        204
+      ],
+      "bytes": 33374,
+      "sha256": "8901caefde0a03869e249e87b42464b89d0b930b6d48e94e52742fead9cfce1c",
+      "beforeBytes": 33374,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie.webp",
+      "size": [
+        2004,
+        474
+      ],
+      "bytes": 140580,
+      "sha256": "3aab334edbea85bb115a03a0d565ba949f667673ac61ae2315b0257274963a46",
+      "beforeBytes": 140580,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_backup.webp",
+      "size": [
+        1330,
+        122
+      ],
+      "bytes": 48606,
+      "sha256": "0775855c9fc6a1384fb6164f5fd5a40a84485c53063973fd908ade7fe63f7a9d",
+      "beforeBytes": 48606,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_balloon.webp",
+      "size": [
+        1692,
+        288
+      ],
+      "bytes": 68512,
+      "sha256": "677ca864c17d259dd749ab7a45476756acbc0a2f69a09a6f9a1ce3113c57431c",
+      "beforeBytes": 68512,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_bobsled.webp",
+      "size": [
+        956,
+        136
+      ],
+      "bytes": 32718,
+      "sha256": "68556fe849bf88573d50da81c5bf5137b73b5e837dbc233080fba9a406546d02",
+      "beforeBytes": 32718,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_bungi.webp",
+      "size": [
+        1978,
+        204
+      ],
+      "bytes": 83000,
+      "sha256": "36d59d8998b7d5a522eaa0b47c11af19f30503764bc2ade75d9263138007372f",
+      "beforeBytes": 83000,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_catapult.webp",
+      "size": [
+        1998,
+        382
+      ],
+      "bytes": 166278,
+      "sha256": "150dd694502179fd9bfb8b4b46f1069e3fd45d69c972b6deb7be9e75f1bacdcc",
+      "beforeBytes": 166278,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_charred.webp",
+      "size": [
+        1890,
+        220
+      ],
+      "bytes": 71528,
+      "sha256": "4b7dec6851a82b0d85daa56e39ea9d6ba39c3252384935b365ea55ee7042c530",
+      "beforeBytes": 71528,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_charred_catapult.webp",
+      "size": [
+        1900,
+        796
+      ],
+      "bytes": 165528,
+      "sha256": "999af0405acf50393db788a8f9c0411ce5bf8edfee6d8df5aa825b54a1119fd4",
+      "beforeBytes": 165528,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_charred_zamboni.webp",
+      "size": [
+        1992,
+        786
+      ],
+      "bytes": 189264,
+      "sha256": "1613582d405aa64530b486d512c173049dcfce090c0ec5d413f671f5854c76f3",
+      "beforeBytes": 189264,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_digger.webp",
+      "size": [
+        2022,
+        922
+      ],
+      "bytes": 210888,
+      "sha256": "0574923e8f52ab3f06bec5ddb8f961af210a66274bde8ddd0644e51920fa46e4",
+      "beforeBytes": 210888,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_disco.webp",
+      "size": [
+        1312,
+        122
+      ],
+      "bytes": 47190,
+      "sha256": "28b53287f6dffbb4dce1f04dba105a65b851115d3385227ca6e0296d71d27554",
+      "beforeBytes": 47190,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_dolphinrider.webp",
+      "size": [
+        1992,
+        190
+      ],
+      "bytes": 76316,
+      "sha256": "411aa145c6871c43c8fd86f9544999ee2cda71a3922338a11a627929d19a6055",
+      "beforeBytes": 76316,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_football.webp",
+      "size": [
+        1794,
+        344
+      ],
+      "bytes": 78486,
+      "sha256": "ce2040f501db916c40c8522184483293c54589630f31e1556600baa7da80e0f4",
+      "beforeBytes": 78486,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_imp.webp",
+      "size": [
+        574,
+        82
+      ],
+      "bytes": 17206,
+      "sha256": "9c7cbba2d14cad72e16a2c2ce4b3e31121dd50d2a22dc4bdb2bdeae578b39020",
+      "beforeBytes": 17206,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_jackbox.webp",
+      "size": [
+        1974,
+        170
+      ],
+      "bytes": 97050,
+      "sha256": "8d65d99fb0d575401dcf8b721fb3129a01e8ab5b44cfd88c06f75860779b7686",
+      "beforeBytes": 97050,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_ladder.webp",
+      "size": [
+        2006,
+        246
+      ],
+      "bytes": 96718,
+      "sha256": "05f4e35f0f9781a5f0cfad877f68b767c43669396bf5a69197a9a6e1ab5b82bc",
+      "beforeBytes": 96718,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_paper.webp",
+      "size": [
+        1934,
+        336
+      ],
+      "bytes": 81956,
+      "sha256": "86ba61d11ee5b663704d30691e3b53f411a73eecc8815c5a8abc0dd65ab678d6",
+      "beforeBytes": 81956,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_pogo.webp",
+      "size": [
+        1542,
+        130
+      ],
+      "bytes": 49776,
+      "sha256": "3573e5bd13a57fff5160bfd0bc883409c27a280205dc651f99633e8a76a81528",
+      "beforeBytes": 49776,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_polevaulter.webp",
+      "size": [
+        1716,
+        142
+      ],
+      "bytes": 52032,
+      "sha256": "5c5c582fce249191c3719f714c89ea8695d46e1a890baa6b869f4cafd9211485",
+      "beforeBytes": 52032,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_snorkle.webp",
+      "size": [
+        1930,
+        130
+      ],
+      "bytes": 72058,
+      "sha256": "8ea50bea9f4951b0d11d6cd761aac2271334b0cab0b84ccc029e9456d970ed65",
+      "beforeBytes": 72058,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_yeti.webp",
+      "size": [
+        1714,
+        276
+      ],
+      "bytes": 104792,
+      "sha256": "8f2dcc8fdad4a755d2c7b45dcdd6d7efec82bd86dc1cef7ba837b48740895093",
+      "beforeBytes": 104792,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/actor-motion/zombie_zamboni.webp",
+      "size": [
+        2034,
+        642
+      ],
+      "bytes": 141196,
+      "sha256": "f599e29a15c6e16c91f79242a0abe0b45a668eb001259642463e6c54cac11e56",
+      "beforeBytes": 141196,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/almanac/backup.webp",
+      "size": [
+        428,
+        684
+      ],
+      "bytes": 59812,
+      "sha256": "00b8126801ff8282436cbf2a048c6162e7901cb3c9fdd31926bfa267bda1b52a",
+      "beforeBytes": 15296,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/balloon.webp",
+      "size": [
+        284,
+        460
+      ],
+      "bytes": 35162,
+      "sha256": "b4b043b91eebcb497ac6d679492b3d764bb1fe47c31f59ca703a8338f525687a",
+      "beforeBytes": 12422,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/bobsled.webp",
+      "size": [
+        340,
+        524
+      ],
+      "bytes": 31476,
+      "sha256": "cca298ac95f5e6f6272fb5466c92f68910707e15f86deb54cd8ba7746b5c2aa9",
+      "beforeBytes": 12542,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/bucket.webp",
+      "size": [
+        324,
+        548
+      ],
+      "bytes": 34596,
+      "sha256": "1a32d03dcec01f4e505298ef8b96117a1c0f4b86ae0762b3eb0e3eb217f52088",
+      "beforeBytes": 12138,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/bungee.webp",
+      "size": [
+        592,
+        416
+      ],
+      "bytes": 49892,
+      "sha256": "5366d12080c303c0cc6b63a1270d6dd265ace1bff42e64daad0d26835ef21790",
+      "beforeBytes": 19552,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/catapult.webp",
+      "size": [
+        740,
+        592
+      ],
+      "bytes": 89010,
+      "sha256": "02436e7d3812d74544c0ff3ba176fba642439da2f54682eeced7d48ef5ae5302",
+      "beforeBytes": 31528,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/cone.webp",
+      "size": [
+        300,
+        588
+      ],
+      "bytes": 34420,
+      "sha256": "9331b06aaa4e4bd83b9959d1ca1439676fb123cb8c22e88f1eef5554a2422a0d",
+      "beforeBytes": 11378,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/dancer.webp",
+      "size": [
+        424,
+        716
+      ],
+      "bytes": 44194,
+      "sha256": "b80a54d1f05f69eb5972666a39f3ec27a23aee99546c4eaeb9e64bc6e46184a8",
+      "beforeBytes": 18444,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/digger.webp",
+      "size": [
+        460,
+        612
+      ],
+      "bytes": 48262,
+      "sha256": "4c06fcc6d622b2b50d60858c943efe3cc9ed5e0e959c2d7f9ebb9357d4ee8525",
+      "beforeBytes": 19818,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/dolphin.webp",
+      "size": [
+        396,
+        464
+      ],
+      "bytes": 36368,
+      "sha256": "73ba3aaf9482ee916708e76c9ebd1864357ee39c982394db393e61255a005517",
+      "beforeBytes": 11688,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/door.webp",
+      "size": [
+        340,
+        504
+      ],
+      "bytes": 59860,
+      "sha256": "9f2cb6777dd5cb0f38cbf8e258b579a49578337cb4cabe0c7d82b8efe3f2a06f",
+      "beforeBytes": 17588,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/ducky.webp",
+      "size": [
+        368,
+        448
+      ],
+      "bytes": 35632,
+      "sha256": "ef9210f0b74a86a222a68e1a0880334cecd8a81e775c9c39f503673d603ce6aa",
+      "beforeBytes": 12940,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/flag.webp",
+      "size": [
+        556,
+        788
+      ],
+      "bytes": 51140,
+      "sha256": "61e95a48e9b7b4d9e83ac89a7ba0bccfdf23f7d540ea198a9b99b2a43d4d9225",
+      "beforeBytes": 13686,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/football.webp",
+      "size": [
+        560,
+        508
+      ],
+      "bytes": 53956,
+      "sha256": "73ca0aab9c75b0b9b88e9b366d1bd8d4b82913b8c70db3d08a70ee14e77a0ece",
+      "beforeBytes": 17772,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/gargantuar.webp",
+      "size": [
+        780,
+        896
+      ],
+      "bytes": 108282,
+      "sha256": "644da07431b1bd76878db0ea278bf24f9dab7afe04e3296e6ce248fc7a5c3fe7",
+      "beforeBytes": 40676,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/imp.webp",
+      "size": [
+        104,
+        162
+      ],
+      "bytes": 8450,
+      "sha256": "d6e1959684d818d2363b1bb855294c0584dde60cca7f654bbc4492816e3c27af",
+      "beforeBytes": 8450,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/almanac/jack.webp",
+      "size": [
+        428,
+        572
+      ],
+      "bytes": 53704,
+      "sha256": "90d85576f47006a467f24e00c566caa227189d5829863e75a2eb16f94c68be54",
+      "beforeBytes": 17388,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/ladder.webp",
+      "size": [
+        404,
+        536
+      ],
+      "bytes": 55728,
+      "sha256": "a0c06a49659d995a211902283e549e8784155fbf7d3e1a7b68acca170e3b3083",
+      "beforeBytes": 22532,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/newspaper.webp",
+      "size": [
+        376,
+        492
+      ],
+      "bytes": 48566,
+      "sha256": "1faea52f13100050d6d420c6ae7bf4393dc67bf1ebd76acd0eee09885f09f52c",
+      "beforeBytes": 14426,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/normal.webp",
+      "size": [
+        320,
+        488
+      ],
+      "bytes": 31206,
+      "sha256": "2f03d9c3a84436c62cd0d2b369b00c004d46b8d102aee22b0f6e58eec2a47d02",
+      "beforeBytes": 10274,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/pogo.webp",
+      "size": [
+        308,
+        572
+      ],
+      "bytes": 39938,
+      "sha256": "a381cb2f8200a5d7ef2927e1b2c6983fcb95d8bd7016076326d508234ece69c2",
+      "beforeBytes": 15102,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/pole.webp",
+      "size": [
+        920,
+        544
+      ],
+      "bytes": 53948,
+      "sha256": "28f21aa3f9c1e70b449967fecc30bd3aca37d4d375555218eb5f8cbe49ca1f51",
+      "beforeBytes": 14736,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/snorkel.webp",
+      "size": [
+        328,
+        580
+      ],
+      "bytes": 40056,
+      "sha256": "9aa66ce1376c6b96c466131ce7871496d9d6916ee0e5dd6b0872b935e2e1bb69",
+      "beforeBytes": 11544,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/almanac/zomboni.webp",
+      "size": [
+        704,
+        680
+      ],
+      "bytes": 81260,
+      "sha256": "9642a73bc9b9ca8830910ff3879f48abaa336ec25895fb7fc32e72d448ede2df",
+      "beforeBytes": 27604,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_BODY.webp",
+      "size": [
+        84,
+        146
+      ],
+      "bytes": 17842,
+      "sha256": "a8bc1b524a532b077d8451b8f933a2ec9b1649244bd058862e52b47088a25ae2",
+      "beforeBytes": 17842,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_BRAIN.webp",
+      "size": [
+        122,
+        104
+      ],
+      "bytes": 19480,
+      "sha256": "d0214c284b3d77294af324efc96819b10a72c6a8c783bd28e2d385ba7851ec3f",
+      "beforeBytes": 19480,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_FACE.webp",
+      "size": [
+        98,
+        82
+      ],
+      "bytes": 15994,
+      "sha256": "20f41a028dc9c78f68111b1dbdcfaa61b726cbe419bb22b1bf54bafa67126726",
+      "beforeBytes": 15994,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_FACE2.webp",
+      "size": [
+        98,
+        82
+      ],
+      "bytes": 16080,
+      "sha256": "0e3114dd8002f8f04fb7dc8e0ac1ab298263596fc5cc202cc8180482cb0c9937",
+      "beforeBytes": 16080,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_INNERHAND.webp",
+      "size": [
+        66,
+        86
+      ],
+      "bytes": 10666,
+      "sha256": "a3b77fb07afd31bb6dc41c4d10fa9b802b99299ae9da7eba3fb4f26d680ea363",
+      "beforeBytes": 10666,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_JAW.webp",
+      "size": [
+        60,
+        56
+      ],
+      "bytes": 7944,
+      "sha256": "f5d40931d2a594cac8c03e2f83e89749a864ae7aa784a913ec2da90f015e8d76",
+      "beforeBytes": 7944,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_JAW2.webp",
+      "size": [
+        60,
+        56
+      ],
+      "bytes": 8224,
+      "sha256": "facfe5e2ee4817a77434f3eb8eae9db4ce6b3136dc06778c627493c50bf86899",
+      "beforeBytes": 8224,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_LOWERARM.webp",
+      "size": [
+        78,
+        72
+      ],
+      "bytes": 9878,
+      "sha256": "217d920a470696d64056726b7462ac986ee8c40999ef7ad129289fc6cb930f3f",
+      "beforeBytes": 9878,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_LOWERARM2.webp",
+      "size": [
+        42,
+        50
+      ],
+      "bytes": 4460,
+      "sha256": "da34bbd069b5b52a726711c9da85cd3a5807d1b1f367ba23629da5989fd27f2a",
+      "beforeBytes": 4460,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_OUTERHAND.webp",
+      "size": [
+        68,
+        60
+      ],
+      "bytes": 8664,
+      "sha256": "91387eb0b12a4d44731c5c5f3fe0dea423fbaf7782fdf19a8d0b2fd9123cdf31",
+      "beforeBytes": 8664,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSSDRIVER_UPPERARM.webp",
+      "size": [
+        50,
+        66
+      ],
+      "bytes": 6628,
+      "sha256": "a6edc722a91040251ff67e4b570349f99adf90123793e7e472a09bf4e8c99eeb",
+      "beforeBytes": 6628,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ANTENNA.webp",
+      "size": [
+        94,
+        94
+      ],
+      "bytes": 9814,
+      "sha256": "e5ede539a00beb2508bd0c154298f2a0081fdf28aee2c41c30d804b584172900",
+      "beforeBytes": 9814,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ANTENNA_LIT.webp",
+      "size": [
+        94,
+        94
+      ],
+      "bytes": 10678,
+      "sha256": "1fd891d898bc58dc3b34d396e677ac3f254879e40c3f11bf4893109ec09b6df0",
+      "beforeBytes": 10678,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ARM_UPPER2.webp",
+      "size": [
+        270,
+        296
+      ],
+      "bytes": 29292,
+      "sha256": "c30cb9b82a1d45b289f5024850284820232815e034c3ba6b73368968e18920c0",
+      "beforeBytes": 29292,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_EYEGLOW.webp",
+      "size": [
+        394,
+        178
+      ],
+      "bytes": 7318,
+      "sha256": "45e44be917e7fcb2243c826764953c724dd426c94c8ef4404873b7d680c5d99a",
+      "beforeBytes": 7318,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_EYEGLOW_BLACK.webp",
+      "size": [
+        394,
+        178
+      ],
+      "bytes": 2812,
+      "sha256": "923a5f992021f2de993dffaee4e3728a79991471ef03155b4d3102ebd8d85900",
+      "beforeBytes": 2812,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_EYEGLOW_RED.webp",
+      "size": [
+        394,
+        178
+      ],
+      "bytes": 9094,
+      "sha256": "820ebb2803eb423169cff2a112e9d3212d835d14a4fd9b23b37d75b357d360d7",
+      "beforeBytes": 9094,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_FIREBALL.webp",
+      "size": [
+        338,
+        338
+      ],
+      "bytes": 131346,
+      "sha256": "5bbe979c1f5ccb543edf641159aeeb7f535c550e9384598a7cda09eb4c59e024",
+      "beforeBytes": 131346,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_FIREBALL_ADDITIVE.webp",
+      "size": [
+        338,
+        338
+      ],
+      "bytes": 8152,
+      "sha256": "876c4009e026f0e9567877eecdb196d2e21fb539d3455e4d16e48da51e769ac9",
+      "beforeBytes": 8152,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_FIREBALL_CHUNKS.webp",
+      "size": [
+        338,
+        338
+      ],
+      "bytes": 16402,
+      "sha256": "1f4851f113349a15bc2d6787c5b626dc559be59ddaaec2caf8d86e5844737478",
+      "beforeBytes": 16402,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_FIREBALL_MULTIPLY.webp",
+      "size": [
+        338,
+        338
+      ],
+      "bytes": 23338,
+      "sha256": "22de4b0cd6c2e8633bcb2ff970acb691a82009fa1d20a6615d51ca7cc7960b70",
+      "beforeBytes": 23338,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_FIREBALL_SUPERGLOW.webp",
+      "size": [
+        576,
+        576
+      ],
+      "bytes": 25776,
+      "sha256": "e1790f2526a61976cb55e7967574ec5fd607c4d67bf6dfec1de2ec52f1acd73f",
+      "beforeBytes": 25776,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_FLAG.webp",
+      "size": [
+        126,
+        98
+      ],
+      "bytes": 9668,
+      "sha256": "14015efd048ebeb2e78447b3a2eaca252c3c7e2ab93f7a52307cd0ddb048acbf",
+      "beforeBytes": 9668,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_FLAGPOLE.webp",
+      "size": [
+        12,
+        196
+      ],
+      "bytes": 1240,
+      "sha256": "91b799d4cb2a1512698e70809cdbc35291e5b048de12e051e9b167992ab23e0e",
+      "beforeBytes": 1240,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_FOOT.webp",
+      "size": [
+        734,
+        452
+      ],
+      "bytes": 51696,
+      "sha256": "3a35e8322838dfc740bd5ce23a745d1f0cbed3c325db50ac4abc8d1ee3ba8151",
+      "beforeBytes": 51696,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_HEAD.webp",
+      "size": [
+        548,
+        452
+      ],
+      "bytes": 49798,
+      "sha256": "d3d3ed321733373ac47076711e59888328d5505a2f4804b05eac2a84e3a03a8c",
+      "beforeBytes": 49798,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_HEAD2.webp",
+      "size": [
+        370,
+        152
+      ],
+      "bytes": 16698,
+      "sha256": "b44f12310a35ab6dcfbfc10ec81a11af94d3f8c387cad1135a05088e6c57d395",
+      "beforeBytes": 16698,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ICEBALL.webp",
+      "size": [
+        350,
+        350
+      ],
+      "bytes": 80680,
+      "sha256": "c19ccf7f7130d8672d210efa1bbfddb0aae870e52a0f4eb27f4a22948745663e",
+      "beforeBytes": 80680,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ICEBALL_CRYSTAL1.webp",
+      "size": [
+        46,
+        58
+      ],
+      "bytes": 5676,
+      "sha256": "0285f13b77bdedec62ba1d4f63521fce9ceed7be2d2bab37253f19c69e4f7d95",
+      "beforeBytes": 5676,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ICEBALL_CRYSTAL2.webp",
+      "size": [
+        102,
+        116
+      ],
+      "bytes": 20546,
+      "sha256": "df2ce10cd191d489a26a401b616f182b06c4d9909eb420358855201795ec00fa",
+      "beforeBytes": 20546,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ICEBALL_CRYSTAL3.webp",
+      "size": [
+        102,
+        108
+      ],
+      "bytes": 16086,
+      "sha256": "438ba322db09729817400e2251526cd3c54005ef9bb99b914f344e4d3eca450a",
+      "beforeBytes": 16086,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ICEBALL_HIGHLIGHT.webp",
+      "size": [
+        350,
+        350
+      ],
+      "bytes": 13658,
+      "sha256": "884235dc4443d0be1457251d5fdcd972662ac67b10d5599d5a8db01f403bd72c",
+      "beforeBytes": 13658,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ICEBALL_MULTIPLY.webp",
+      "size": [
+        350,
+        350
+      ],
+      "bytes": 27256,
+      "sha256": "494557ab41c06a8024e96f35b0d82126febf388d943599d64ad47efeb4b80001",
+      "beforeBytes": 27256,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ICEBALL_OVERLAY.webp",
+      "size": [
+        350,
+        350
+      ],
+      "bytes": 36136,
+      "sha256": "fa6c5e916d30e16cb494bd5a154a542a62a6493671bf130709f374ebbaad532a",
+      "beforeBytes": 36136,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_ICEFIRE_SHADOW.webp",
+      "size": [
+        314,
+        130
+      ],
+      "bytes": 5698,
+      "sha256": "5390ff05b21d78733da8c4a9b875c41bdaafdcb833d11691afbb6111374138ca",
+      "beforeBytes": 5698,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_INNERARM_FINGER.webp",
+      "size": [
+        146,
+        206
+      ],
+      "bytes": 9384,
+      "sha256": "8067fa0e90cc26f4852ee1cca7f19df4f68a3b79c72263cdd78d6a22d28de78e",
+      "beforeBytes": 9384,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_INNERARM_FINGERROPE.webp",
+      "size": [
+        146,
+        206
+      ],
+      "bytes": 10370,
+      "sha256": "a1408ff5a6a9a7821dfe6d02b7f98862c0fcf30606086d6db8bf363a063490e6",
+      "beforeBytes": 10370,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_INNERARM_HAND.webp",
+      "size": [
+        322,
+        282
+      ],
+      "bytes": 18150,
+      "sha256": "e8e18dcbb419afed69fff4b24c6a06b85e3db4b737ae2d61a962b98bbf56baa0",
+      "beforeBytes": 18150,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_INNERARM_LOWER.webp",
+      "size": [
+        388,
+        464
+      ],
+      "bytes": 32388,
+      "sha256": "ef3ae6acb165f162344217ade928c6c699923a0293108d8ca2f55e23f18153af",
+      "beforeBytes": 32388,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_INNERARM_THUMB1.webp",
+      "size": [
+        126,
+        114
+      ],
+      "bytes": 5644,
+      "sha256": "b6375f058c6bdc94e42c25f64cd1d0021ad8107e9fb67526eedcb8556b68824d",
+      "beforeBytes": 5644,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_INNERARM_THUMB2.webp",
+      "size": [
+        120,
+        186
+      ],
+      "bytes": 7174,
+      "sha256": "6bfe2f9d4b7b6f0010f0c970d2fb0da6bb4239320dd03ee5657513a80305a301",
+      "beforeBytes": 7174,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_INNERARM_UPPER.webp",
+      "size": [
+        454,
+        500
+      ],
+      "bytes": 46248,
+      "sha256": "4a996f17030c96ca5e28d8e86ea79c2603bc718231afcd12c8cf2d33591f5ba5",
+      "beforeBytes": 46248,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_INNERJAW.webp",
+      "size": [
+        284,
+        270
+      ],
+      "bytes": 5740,
+      "sha256": "2457f133705e62da6e1950b941145da01ddcd924afa1d5fa4854069464616c4a",
+      "beforeBytes": 5740,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_INNERLEG_UPPER.webp",
+      "size": [
+        320,
+        416
+      ],
+      "bytes": 26330,
+      "sha256": "2e88f858fddec3ba2ea1545dd84a74b89f2bb5a0f256b4b4b291c7cc86009344",
+      "beforeBytes": 26330,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_JAW.webp",
+      "size": [
+        418,
+        406
+      ],
+      "bytes": 25294,
+      "sha256": "24967115de064702f7b8119574de5931d6b4599e53b16f582ab2c4d113c8340f",
+      "beforeBytes": 25294,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_LEGBITS.webp",
+      "size": [
+        268,
+        234
+      ],
+      "bytes": 15632,
+      "sha256": "bdaa492d04f2760ad931aaa339f3ced0eb6a8d5f531739a9d5d2cd9800e86e11",
+      "beforeBytes": 15632,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_LEG_LOWER.webp",
+      "size": [
+        536,
+        576
+      ],
+      "bytes": 36690,
+      "sha256": "84f4322bddc292599dcac376bd801c0f165ee2cb8ac21a17a96e65179dae0823",
+      "beforeBytes": 36690,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_LOWERBODY.webp",
+      "size": [
+        666,
+        500
+      ],
+      "bytes": 39976,
+      "sha256": "7cd93ea478933680031fae8cf4bcde45fb657db1b499028fe67b7ca88a7eaa06",
+      "beforeBytes": 39976,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_MOUTHGLOW.webp",
+      "size": [
+        270,
+        270
+      ],
+      "bytes": 16336,
+      "sha256": "200df63828d219886da69a994a195403e7447de53858e7466983146ce34c68df",
+      "beforeBytes": 16336,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_MOUTHGLOW_RED.webp",
+      "size": [
+        270,
+        270
+      ],
+      "bytes": 16352,
+      "sha256": "4e3f5fb304034a2fdb934c159ce2856c6d5a5821803fcda4aee7540409bdd99e",
+      "beforeBytes": 16352,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_NECK.webp",
+      "size": [
+        536,
+        578
+      ],
+      "bytes": 77160,
+      "sha256": "ab182c3731c7bf1747382d46dc7f63b0d401a866ece350a4f6a7ddd461cdc9d3",
+      "beforeBytes": 77160,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_OUTERARM_FINGER1.webp",
+      "size": [
+        152,
+        152
+      ],
+      "bytes": 8028,
+      "sha256": "c1e3c8f964bc964ab9843b7dff75053ee39d6cb06e4bb343f13e8ca6d4d742cb",
+      "beforeBytes": 8028,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_OUTERARM_FINGER2.webp",
+      "size": [
+        228,
+        254
+      ],
+      "bytes": 12904,
+      "sha256": "9a009fb218f5dad791d9e04bfdfe9be9604157352e00f677b816fd3327598063",
+      "beforeBytes": 12904,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_OUTERARM_HAND.webp",
+      "size": [
+        396,
+        396
+      ],
+      "bytes": 35444,
+      "sha256": "8f910b60fa65e0aeb1f4800e1f219e568df8c9f3207ced557ebff16a3864a14f",
+      "beforeBytes": 35444,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_OUTERARM_LOWER.webp",
+      "size": [
+        462,
+        422
+      ],
+      "bytes": 25262,
+      "sha256": "789ada8dc25fb9dab0e20b6a168ded0fee972775b1f7387b0c975937366c5adf",
+      "beforeBytes": 25262,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_OUTERARM_THUMB1.webp",
+      "size": [
+        152,
+        112
+      ],
+      "bytes": 4746,
+      "sha256": "b651c715ed2f0c8749f591c992576b90201e492a82a745804bba183d348ad842",
+      "beforeBytes": 4746,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_OUTERARM_THUMB2.webp",
+      "size": [
+        174,
+        202
+      ],
+      "bytes": 12556,
+      "sha256": "a9092c385e4709edb6d316bbdc09f82eae6fc5867d3a8a9b6526346b2076e590",
+      "beforeBytes": 12556,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_OUTERARM_UPPER.webp",
+      "size": [
+        570,
+        712
+      ],
+      "bytes": 40230,
+      "sha256": "53fff25ce23734482cfd4983ff6c2267ed8f1201210ec50b999815a4a40deed6",
+      "beforeBytes": 40230,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_OUTERLEG_UPPER.webp",
+      "size": [
+        400,
+        498
+      ],
+      "bytes": 32220,
+      "sha256": "fca5d07df7abfdcf087749e138b1d13b252519d618ec2160dfb82d3e81288f27",
+      "beforeBytes": 32220,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_RV.webp",
+      "size": [
+        598,
+        340
+      ],
+      "bytes": 45224,
+      "sha256": "a4d5fd5274617f2b4ae0b1db27aaf517a86a0c60938fd8f4217cfcc01b2debfc",
+      "beforeBytes": 45224,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_RVWHEEL.webp",
+      "size": [
+        98,
+        98
+      ],
+      "bytes": 12160,
+      "sha256": "2ae12f3334b58e54924985e890aaa39b2322a336efe4bda972bc91a47c543b19",
+      "beforeBytes": 12160,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/ZOMBIE_BOSS_UPPERBODY.webp",
+      "size": [
+        1044,
+        958
+      ],
+      "bytes": 128122,
+      "sha256": "26aab993c493111c3f29ac0320f82575f1cf4570df871c458dc0505d509dfbf9",
+      "beforeBytes": 128122,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/boss/background.webp",
+      "size": [
+        2800,
+        1200
+      ],
+      "bytes": 218420,
+      "sha256": "4d4e8072467be90c50c7ad4470bb5816b19f90a2d90c46b29cd6444d39c636f4",
+      "beforeBytes": 218420,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/backup-burn-0.webp",
+      "size": [
+        326,
+        1606
+      ],
+      "bytes": 36038,
+      "sha256": "81a9987a9e34adc4aeab158323fb8ddad605b33c89295a37a8a31f23dd6523da",
+      "beforeBytes": 36038,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/backup-die-0.webp",
+      "size": [
+        1386,
+        1354
+      ],
+      "bytes": 312008,
+      "sha256": "984b023d710d3bef117a8170578ee273d0d93ad2bd42fce3391874f29c40a9a3",
+      "beforeBytes": 312008,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/backup-eat-0.webp",
+      "size": [
+        1066,
+        1878
+      ],
+      "bytes": 312766,
+      "sha256": "576e06fb35bd16277a2e955ca4256c70895a4dd875b95e7b77a33c37e192905b",
+      "beforeBytes": 312766,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/backup-headless-0.webp",
+      "size": [
+        1410,
+        610
+      ],
+      "bytes": 135468,
+      "sha256": "339576dce6bf1cabb906c70d3cfaae9f3727a524cf3017b1c1ecac93576fe99f",
+      "beforeBytes": 135468,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/backup-walk-0.webp",
+      "size": [
+        610,
+        1728
+      ],
+      "bytes": 187568,
+      "sha256": "96eecee0e1eff92c261c2f99d876edf81977a3f234b2b8003c8f2e4bcf71ef55",
+      "beforeBytes": 187568,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/balloon-die-0.webp",
+      "size": [
+        1652,
+        380
+      ],
+      "bytes": 129332,
+      "sha256": "3c53286d5a5d75a6aab5bed516debd47261dec1af2673899db8854cce91e4c78",
+      "beforeBytes": 129332,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/balloon-eat-0.webp",
+      "size": [
+        970,
+        840
+      ],
+      "bytes": 175678,
+      "sha256": "a5ea640315a872a9208f288186a6e5f3bd891e98b1583da9f30bdd36427eec4b",
+      "beforeBytes": 175678,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/balloon-fly-0.webp",
+      "size": [
+        996,
+        524
+      ],
+      "bytes": 111560,
+      "sha256": "97332a177baad5cd56c3abf7e5db07d9ce370aede19f459270aed09efdda779d",
+      "beforeBytes": 111560,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/balloon-pop-0.webp",
+      "size": [
+        1600,
+        686
+      ],
+      "bytes": 217104,
+      "sha256": "98c0275a525a074f99c9c7cd79a026843a79be40fe2ce7f43aaf053c962de6aa",
+      "beforeBytes": 217104,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/balloon-walk-0.webp",
+      "size": [
+        1648,
+        896
+      ],
+      "bytes": 293124,
+      "sha256": "ee51664452f559549d2125e6a79729355d1cecf1a39d1c33eed72a3c51c914ff",
+      "beforeBytes": 293124,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/blover-0.webp",
+      "size": [
+        2000,
+        428
+      ],
+      "bytes": 169626,
+      "sha256": "cb3508366ed7f31ea720fcfc102f14dbcbf619bdcac9e60b5bffd5eb9617822e",
+      "beforeBytes": 169626,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/blover-loop-0.webp",
+      "size": [
+        722,
+        690
+      ],
+      "bytes": 95466,
+      "sha256": "30667edf0df5bf1febcacd3a34e3de04d5e513224a21fb2aa42013304ed40d15",
+      "beforeBytes": 95466,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/bobsled-die-0.webp",
+      "size": [
+        758,
+        804
+      ],
+      "bytes": 165382,
+      "sha256": "f5426008c6692af9d0b82faa336396cfceed2d906e0e9cd619d41c65cfb9f579",
+      "beforeBytes": 165382,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/bobsled-eat-0.webp",
+      "size": [
+        1396,
+        1276
+      ],
+      "bytes": 449926,
+      "sha256": "5e1599880f8bf0d58ae012f919a717458c192d3a7a543ca2103199a95ca7edb1",
+      "beforeBytes": 449926,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/bobsled-walk-0.webp",
+      "size": [
+        2014,
+        762
+      ],
+      "bytes": 415744,
+      "sha256": "69685f136dfb9ecc3165a99299b22c34df667990d7da104270eeca7e74453b9f",
+      "beforeBytes": 415744,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/bucket-eat-0.webp",
+      "size": [
+        1396,
+        1384
+      ],
+      "bytes": 349212,
+      "sha256": "cb4e43f8be2ca3e3509c1b550456e7311f710ebe812799ac9515d884f82bce30",
+      "beforeBytes": 349212,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/bucket-walk-0.webp",
+      "size": [
+        1020,
+        1986
+      ],
+      "bytes": 407712,
+      "sha256": "b3bc749c113620b8aeefcc0ca0ad385252355e7f6f62bd8a4ea867a5596199f6",
+      "beforeBytes": 407712,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/bungee-die-0.webp",
+      "size": [
+        226,
+        1762
+      ],
+      "bytes": 79452,
+      "sha256": "0fb909d6621e2a68be46ba3ae5283804c8c2569a36c64b3747cd48e7a82ac14f",
+      "beforeBytes": 79452,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/bungee-drop-0.webp",
+      "size": [
+        300,
+        1674
+      ],
+      "bytes": 115552,
+      "sha256": "48788a9aa6a2bf75a2c37ef4b7224deefd045422bb8bc3773a8cc77f6656739d",
+      "beforeBytes": 115552,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/bungee-idle-0.webp",
+      "size": [
+        1222,
+        1080
+      ],
+      "bytes": 321294,
+      "sha256": "92816d68be24bafd39bacd098c271a54390a04b8b2bbb4d43f075c3ce407f345",
+      "beforeBytes": 321294,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/cabbagepult-0.webp",
+      "size": [
+        572,
+        1496
+      ],
+      "bytes": 263334,
+      "sha256": "864d6aa6237345c52b1f8cd54cb61295f918abc39b7c75202e70b99a8bc43491",
+      "beforeBytes": 263334,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/cabbagepult-attack-0.webp",
+      "size": [
+        1000,
+        1056
+      ],
+      "bytes": 316534,
+      "sha256": "14043eaf6acbcc47ebb4d6df93864eb1d8dc39cc2117d94819aadb63e5a811f1",
+      "beforeBytes": 316534,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/cactus-0.webp",
+      "size": [
+        352,
+        1166
+      ],
+      "bytes": 101480,
+      "sha256": "2bf28145c5e135ec3a22311f9172e1c46354cfff0437e5012c6d22d5043898a2",
+      "beforeBytes": 101480,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/cactus-tall-0.webp",
+      "size": [
+        524,
+        1538
+      ],
+      "bytes": 149096,
+      "sha256": "1c71479761d621c0605537638bffc55f8b6af2f8fa7d5feb58747ffa1cc8f4e5",
+      "beforeBytes": 149096,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/catapult-die-0.webp",
+      "size": [
+        1084,
+        1200
+      ],
+      "bytes": 98164,
+      "sha256": "1dca72bacabb73de7dab09f957d85f8d4f1034e232447b300504d882b42a3ea6",
+      "beforeBytes": 98164,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/catapult-idle-0.webp",
+      "size": [
+        1116,
+        1480
+      ],
+      "bytes": 345258,
+      "sha256": "b8f1e39e5cad30d1ff5abb99b942e9125bd5c740af2ee3be6db4dda387bbf481",
+      "beforeBytes": 345258,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/catapult-shoot-0.webp",
+      "size": [
+        2046,
+        1840
+      ],
+      "bytes": 886378,
+      "sha256": "efbd606d010f7d814296cc56c99676eded0c2b92e02e5af86bd6de957bfb33e6",
+      "beforeBytes": 886378,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/catapult-walk-0.webp",
+      "size": [
+        1878,
+        1510
+      ],
+      "bytes": 718446,
+      "sha256": "2b89999315aff107939428fa6bc728db67ee478872ccb87b2976ca293029fdc0",
+      "beforeBytes": 718446,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/cherrybomb-0.webp",
+      "size": [
+        750,
+        608
+      ],
+      "bytes": 75724,
+      "sha256": "7f62e62e54d3cb9638896e3b8c8236c1e3df2a28eed74f38e985dded8f45c926",
+      "beforeBytes": 75724,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/chomper-0.webp",
+      "size": [
+        1016,
+        964
+      ],
+      "bytes": 252308,
+      "sha256": "4561887aadea590580be2087b104e2bc45de71c1ee6bca88e76f35a535506c5b",
+      "beforeBytes": 252308,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/chomper-bite-0.webp",
+      "size": [
+        732,
+        1268
+      ],
+      "bytes": 234360,
+      "sha256": "c2a1a4a00f03322d27641f6411d85097314a903d8291a34d04cb4b1be6703734",
+      "beforeBytes": 234360,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/chomper-digest-0.webp",
+      "size": [
+        822,
+        504
+      ],
+      "bytes": 129672,
+      "sha256": "48ff275e190cf07747e6375fdb1620eec679b50323033fce9bdb7b1fef0b9566",
+      "beforeBytes": 129672,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/coffeebean-0.webp",
+      "size": [
+        500,
+        260
+      ],
+      "bytes": 19730,
+      "sha256": "0484aedc1d2e4194a58e92cf63d077492dd22cab642bbe7a47ab1546f19c78ec",
+      "beforeBytes": 19730,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/cone-eat-0.webp",
+      "size": [
+        1398,
+        1462
+      ],
+      "bytes": 345508,
+      "sha256": "b133499eaa369cd5283ca356f5bb5a984fb920899e7806055711d9c2d764571e",
+      "beforeBytes": 345508,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/cone-walk-0.webp",
+      "size": [
+        1752,
+        1158
+      ],
+      "bytes": 405772,
+      "sha256": "2574041866a6a07ecf07917bc510180dd26638e3eb8c5d053a52eaa56b596e35",
+      "beforeBytes": 405772,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/dancer-burn-0.webp",
+      "size": [
+        326,
+        1606
+      ],
+      "bytes": 36038,
+      "sha256": "81a9987a9e34adc4aeab158323fb8ddad605b33c89295a37a8a31f23dd6523da",
+      "beforeBytes": 36038,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/dancer-die-0.webp",
+      "size": [
+        1720,
+        964
+      ],
+      "bytes": 324918,
+      "sha256": "6c7a8d2884d857f0e2017f62305c3a52cc14be92e94e611d2314d912bc29f748",
+      "beforeBytes": 324918,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/dancer-eat-0.webp",
+      "size": [
+        2018,
+        1054
+      ],
+      "bytes": 392672,
+      "sha256": "46cde7f59b7f02151853b8bc5baa362de371c050c575b5f5b81770aea39eefe8",
+      "beforeBytes": 392672,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/dancer-headless-0.webp",
+      "size": [
+        486,
+        1936
+      ],
+      "bytes": 155598,
+      "sha256": "466fd3b894b25a122d0f07b44d5429fb3ff7f61de73456b684e383bb799507be",
+      "beforeBytes": 155598,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/dancer-summon-0.webp",
+      "size": [
+        1482,
+        358
+      ],
+      "bytes": 109994,
+      "sha256": "a07eae4cb099181b1f3f3184ae2c4b44df22cd23ce20809f209ef06e7d1b200e",
+      "beforeBytes": 109994,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/dancer-walk-0.webp",
+      "size": [
+        1216,
+        1066
+      ],
+      "bytes": 219468,
+      "sha256": "85261276d95fce878aac97a6af62b0abac4b102ab534cf0f3b10ecf992b0d646",
+      "beforeBytes": 219468,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/digger-die-0.webp",
+      "size": [
+        1886,
+        946
+      ],
+      "bytes": 410192,
+      "sha256": "bc83a61e3412685d99df7dc5f45b926054db12e7a2bae083d86db29af828c900",
+      "beforeBytes": 410192,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/digger-dig-0.webp",
+      "size": [
+        158,
+        1326
+      ],
+      "bytes": 66314,
+      "sha256": "9b2571048bd5f23af8fd9c6a8a83fb07303d86f1f9f3b5109be2a7b83d7b13be",
+      "beforeBytes": 66314,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/digger-eat-0.webp",
+      "size": [
+        1356,
+        1396
+      ],
+      "bytes": 508664,
+      "sha256": "05c5226abdc60723e69723e832ebbde7d766e2e4ad380f7879281221e64b8aeb",
+      "beforeBytes": 508664,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/digger-rise-0.webp",
+      "size": [
+        1536,
+        298
+      ],
+      "bytes": 121258,
+      "sha256": "e16693d5d35bf650b7a9334879de5074061a7a5f8088b0ec1e7e500af08ffbb3",
+      "beforeBytes": 121258,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/digger-walk-0.webp",
+      "size": [
+        1982,
+        1108
+      ],
+      "bytes": 573824,
+      "sha256": "5a58fe373d73b09fe1cbfffc3f02549d7171c1631a4d90daa962fba420f80fca",
+      "beforeBytes": 573824,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/dolphin-die-0.webp",
+      "size": [
+        1290,
+        142
+      ],
+      "bytes": 38602,
+      "sha256": "08a139e8b095da942957f07b160545dfd14f55a699cb63adf80b46a41712f38f",
+      "beforeBytes": 38602,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/dolphin-eat-0.webp",
+      "size": [
+        960,
+        918
+      ],
+      "bytes": 204014,
+      "sha256": "94a7869a27c6360fba9bbe043f1067fda316c7a391932b0d1b43a7d6fc27e18f",
+      "beforeBytes": 204014,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/dolphin-jump-0.webp",
+      "size": [
+        588,
+        1200
+      ],
+      "bytes": 58218,
+      "sha256": "14f8f50a0dc34087d519a5d6b4cf68c48e12552db01537d047c8fecb6984b1ef",
+      "beforeBytes": 58218,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/dolphin-ride-0.webp",
+      "size": [
+        202,
+        1264
+      ],
+      "bytes": 50702,
+      "sha256": "a55573c95e170a729f453fd9bb16ca0979ddbe7cdd6999acbfbe4a9541f4abf4",
+      "beforeBytes": 50702,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/dolphin-swim-0.webp",
+      "size": [
+        1896,
+        478
+      ],
+      "bytes": 206104,
+      "sha256": "73cd63a85943e6d464dfa75d93a048d4d9c21c0964c6e9ed56c9b9348afd7b6a",
+      "beforeBytes": 206104,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/dolphin-walk-0.webp",
+      "size": [
+        1884,
+        960
+      ],
+      "bytes": 313700,
+      "sha256": "6d9bc58fec7cdfa9242bfa8cada8f3c10b44f8f9dcc63016334cb220388da415",
+      "beforeBytes": 313700,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/doomshroom-0.webp",
+      "size": [
+        352,
+        1808
+      ],
+      "bytes": 60894,
+      "sha256": "4be3a8ac2fae55c3ca5cff820cd04bfe5c727fb34451c7432d2313e35705a2b9",
+      "beforeBytes": 60894,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/door-eat-0.webp",
+      "size": [
+        1788,
+        1082
+      ],
+      "bytes": 510064,
+      "sha256": "34ab9025a4a253f24b0eb9f88e6da60c2710c63d75d070118dc7c65f9ddb82b9",
+      "beforeBytes": 510064,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/door-walk-0.webp",
+      "size": [
+        1766,
+        1282
+      ],
+      "bytes": 606870,
+      "sha256": "8f828679721282bbf86c429818d3e6bb09e1f148ce53b4b82471080a9fc0e55a",
+      "beforeBytes": 606870,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/ducky-die-0.webp",
+      "size": [
+        330,
+        1152
+      ],
+      "bytes": 93074,
+      "sha256": "f90aeac65ace593eb80ee043d7c8a77463ae5b6b490af0ce1d95b21bae24c1ec",
+      "beforeBytes": 93074,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/ducky1-eat-0.webp",
+      "size": [
+        1722,
+        722
+      ],
+      "bytes": 279234,
+      "sha256": "f0240cf0134421a20c24bd3fe3f31daa5d93e0cbfae7d42e2fbc605ce6810259",
+      "beforeBytes": 279234,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/ducky1-walk-0.webp",
+      "size": [
+        1770,
+        1272
+      ],
+      "bytes": 416714,
+      "sha256": "226cd19025e93a9816109c3c71fd9597cff347e3dce6173484df66c8683b7a7d",
+      "beforeBytes": 416714,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/ducky2-eat-0.webp",
+      "size": [
+        1384,
+        1146
+      ],
+      "bytes": 328030,
+      "sha256": "15d824911699879dd003a6f31fa06c7a97508cd3bff7d475147cf630d6c2ebf9",
+      "beforeBytes": 328030,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/ducky2-walk-0.webp",
+      "size": [
+        1260,
+        2014
+      ],
+      "bytes": 470608,
+      "sha256": "2047487f2aa667df0adba9f7611741e584f8645ed8036a57cd47d628790e1f6d",
+      "beforeBytes": 470608,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/ducky3-eat-0.webp",
+      "size": [
+        1728,
+        848
+      ],
+      "bytes": 316892,
+      "sha256": "02693bf8a77ff60086fc6020faf4ca3f9e62a6ef7fef718e942faa8a3ed4e14a",
+      "beforeBytes": 316892,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/ducky3-walk-0.webp",
+      "size": [
+        1262,
+        1974
+      ],
+      "bytes": 464594,
+      "sha256": "3ff5fbcc4c639ef7e6be90ee80bd04962fdb2d277558808addf91e97e0703554",
+      "beforeBytes": 464594,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/explodenut-0.webp",
+      "size": [
+        1044,
+        144
+      ],
+      "bytes": 27388,
+      "sha256": "3baad5247d76579a66b93599cb42b239af0cceb7f64ce92fd267081ee24af9ce",
+      "beforeBytes": 27388,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/flag-eat-0.webp",
+      "size": [
+        1648,
+        1446
+      ],
+      "bytes": 389298,
+      "sha256": "310dfd6ddf4c3cf68df455d0023cbd24c85b97f871538d5cd152500609441ab2",
+      "beforeBytes": 389298,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/flag-walk-0.webp",
+      "size": [
+        1664,
+        1712
+      ],
+      "bytes": 491222,
+      "sha256": "3f1a7a8e6d60597e1b32504b5d3730d7aa2a53f5ad704ca0dc872dfc8cbf19a3",
+      "beforeBytes": 491222,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/flowerpot-0.webp",
+      "size": [
+        138,
+        1628
+      ],
+      "bytes": 54308,
+      "sha256": "208476beafcb3e1b4a14b936ac3a3f70b9e3c489323019eea68a47646645d85b",
+      "beforeBytes": 54308,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/football-bare-eat-0.webp",
+      "size": [
+        1704,
+        1346
+      ],
+      "bytes": 397186,
+      "sha256": "6cd69d2d30fb4427c5fdbc8cbeaaf88d7a2db77f57105fcfb5576f19f9dfe7cc",
+      "beforeBytes": 397186,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/football-bare-walk-0.webp",
+      "size": [
+        1362,
+        1514
+      ],
+      "bytes": 354454,
+      "sha256": "87222088f8573a933ea95d1a737aa9d3fc653159eda0b4470647ad34c42d9b62",
+      "beforeBytes": 354454,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/football-die-0.webp",
+      "size": [
+        628,
+        1484
+      ],
+      "bytes": 159136,
+      "sha256": "3750fd7099e36e9480890e4f519e5c8101db14ec2733e1e6e3d7066ba8ceb6df",
+      "beforeBytes": 159136,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/football-eat-0.webp",
+      "size": [
+        1742,
+        1412
+      ],
+      "bytes": 456072,
+      "sha256": "023869bb37ecdcb220badb9e2138ab4c0e9afd7885ddb9ff9dc646778b7b32cb",
+      "beforeBytes": 456072,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/football-headless-0.webp",
+      "size": [
+        2036,
+        932
+      ],
+      "bytes": 296724,
+      "sha256": "a9fefb535d7f12e9aa0be49f757ea579af2b7787caa273ea24a1faa0e9eb97bf",
+      "beforeBytes": 296724,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/football-walk-0.webp",
+      "size": [
+        1620,
+        1324
+      ],
+      "bytes": 406840,
+      "sha256": "872e43c4cfd556a6ffe8bd5ffde921c20e2f9f9630de9f97170fe197d6faf34a",
+      "beforeBytes": 406840,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/fume-cloud-0.webp",
+      "size": [
+        1294,
+        374
+      ],
+      "bytes": 89126,
+      "sha256": "4dbcc8edab8291cb997a9780ed5b21e65342fe14838d3ae21d9e1d98cb6ebf7c",
+      "beforeBytes": 89126,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/fumeshroom-0.webp",
+      "size": [
+        872,
+        514
+      ],
+      "bytes": 73040,
+      "sha256": "940b4eca826b74bf4b85ced18be3efedbb2a0222e7aa69a812af89fea86c6909",
+      "beforeBytes": 73040,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/fumeshroom-attack-0.webp",
+      "size": [
+        188,
+        148
+      ],
+      "bytes": 5990,
+      "sha256": "2e408161c053e289394a58a1a9e1848df33d7b556606a8528dc1f787061af59c",
+      "beforeBytes": 5990,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-bare-die-0.webp",
+      "size": [
+        1978,
+        1742
+      ],
+      "bytes": 610000,
+      "sha256": "f400d676e251a72c55014291d4e6c2e28491770d464d29ff8e5dcc6768144d57",
+      "beforeBytes": 610000,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-bare-die-1.webp",
+      "size": [
+        2046,
+        1990
+      ],
+      "bytes": 673724,
+      "sha256": "159e34c96554655512a6d58ad038eb8abd23d50a98aa4cbd932402408919ea1f",
+      "beforeBytes": 673724,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-bare-die-2.webp",
+      "size": [
+        1982,
+        1670
+      ],
+      "bytes": 542966,
+      "sha256": "3ba5e9f5fd2820ffd3b3bf89cf8c2372251897a46876f179d2520b4a0d36fbf0",
+      "beforeBytes": 542966,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-bare-smash-0.webp",
+      "size": [
+        2038,
+        1880
+      ],
+      "bytes": 722842,
+      "sha256": "2a27a94597368cc6dabb545037303fab82f45bb3f4b9da7a4b0449bf84af2f9e",
+      "beforeBytes": 722842,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-bare-smash-1.webp",
+      "size": [
+        2000,
+        1162
+      ],
+      "bytes": 509646,
+      "sha256": "94aa4b11b7d9c036afaf40967e4ad3616863839b91e90eebee6769170996d758",
+      "beforeBytes": 509646,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-bare-walk-0.webp",
+      "size": [
+        1920,
+        1942
+      ],
+      "bytes": 897400,
+      "sha256": "51ae5ed5bbdc1a1e441421b2d158d6d0b1479838a43c345552e8939e1bd3d8f8",
+      "beforeBytes": 897400,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-bare-walk-1.webp",
+      "size": [
+        1900,
+        1882
+      ],
+      "bytes": 858864,
+      "sha256": "5da21455000353442168dfb39030b4d030fde31dd38fcdac1e9805e5498144d0",
+      "beforeBytes": 858864,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-die-0.webp",
+      "size": [
+        1978,
+        1742
+      ],
+      "bytes": 610000,
+      "sha256": "f400d676e251a72c55014291d4e6c2e28491770d464d29ff8e5dcc6768144d57",
+      "beforeBytes": 610000,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-die-1.webp",
+      "size": [
+        2048,
+        2008
+      ],
+      "bytes": 718478,
+      "sha256": "f864ce7e5c6ca24deb7e50eff5d9967196dde11eb896a6de8a3ac834c316e388",
+      "beforeBytes": 718478,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-die-2.webp",
+      "size": [
+        1916,
+        1682
+      ],
+      "bytes": 507654,
+      "sha256": "7ddf881b664c323c678ceb4756295931b5789f00634a604f8d6b00188bedb1d2",
+      "beforeBytes": 507654,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-smash-0.webp",
+      "size": [
+        1274,
+        1952
+      ],
+      "bytes": 502248,
+      "sha256": "a0316ef525045eac89e86f4a966e3cac9e0b0e387419ef7a007fb0d528a80ed6",
+      "beforeBytes": 502248,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-smash-1.webp",
+      "size": [
+        1272,
+        1742
+      ],
+      "bytes": 473136,
+      "sha256": "3d0ea49fff3b13279332f4e69664e5350efce20435268890e41ad277181e7897",
+      "beforeBytes": 473136,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-smash-2.webp",
+      "size": [
+        1124,
+        1230
+      ],
+      "bytes": 341210,
+      "sha256": "d55c5b2e1ba48e45310831bca2dab5df7b9ace3def0f06e2412e2205dfb7a962",
+      "beforeBytes": 341210,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-throw-0.webp",
+      "size": [
+        1456,
+        1792
+      ],
+      "bytes": 619660,
+      "sha256": "50fe21c8751e5f0a11298d6ad38996d74fa5e816e7654b1276abe097508561ec",
+      "beforeBytes": 619660,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-throw-1.webp",
+      "size": [
+        1538,
+        1666
+      ],
+      "bytes": 591142,
+      "sha256": "ea8e62ee9f8ad32d00b0cf396666305d9fe50b93b982456d050f9b5684deedeb",
+      "beforeBytes": 591142,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-throw-2.webp",
+      "size": [
+        1624,
+        386
+      ],
+      "bytes": 145864,
+      "sha256": "bb5eeae37075df1df6e44c5ab2c4a79c1f3577325dc91a744d7417eb03548447",
+      "beforeBytes": 145864,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-walk-0.webp",
+      "size": [
+        1592,
+        1694
+      ],
+      "bytes": 619288,
+      "sha256": "374724b33e119919a5a8f8279ddc07cbbb204f513179cda3fe0024657a849430",
+      "beforeBytes": 619288,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-walk-1.webp",
+      "size": [
+        1500,
+        1676
+      ],
+      "bytes": 617938,
+      "sha256": "8d9d384ad52a465de8d817bf9223b9540326befc4438b7526eededb77e504e31",
+      "beforeBytes": 617938,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gargantuar-walk-2.webp",
+      "size": [
+        1576,
+        1624
+      ],
+      "bytes": 642056,
+      "sha256": "c58d3fd4671e0c67f1aee7fda698cae4da2c7d23bbff00716d317a9eba4acd04",
+      "beforeBytes": 642056,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/garlic-0.webp",
+      "size": [
+        244,
+        814
+      ],
+      "bytes": 51702,
+      "sha256": "acf2d712d16d4e5be5612e56b3917bdc95cefa422c7162c0de8854872daa4087",
+      "beforeBytes": 51702,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/garlic-cracked1-0.webp",
+      "size": [
+        246,
+        814
+      ],
+      "bytes": 50704,
+      "sha256": "802fc67a51b11263e4e1e38be519784f54cb9044f269b8a6575c9bf2e58cb3df",
+      "beforeBytes": 50704,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/garlic-cracked2-0.webp",
+      "size": [
+        850,
+        182
+      ],
+      "bytes": 41372,
+      "sha256": "e170142b9a0c29fd5be67c221a7bcc499ffeac756ab13d53a4674d1c04fe7d07",
+      "beforeBytes": 41372,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/gravebuster-0.webp",
+      "size": [
+        612,
+        1322
+      ],
+      "bytes": 140022,
+      "sha256": "9479215c0b1056924279e87e1b742a9e36450c39a659c1074013c23a92fa14d1",
+      "beforeBytes": 140022,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/hypnoshroom-0.webp",
+      "size": [
+        476,
+        762
+      ],
+      "bytes": 72756,
+      "sha256": "80703c6c1adb8db16eac75d506c62acd81ccbf15365c0da2d0dcedcab0e86f52",
+      "beforeBytes": 72756,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/iceshroom-0.webp",
+      "size": [
+        344,
+        1224
+      ],
+      "bytes": 95196,
+      "sha256": "b01bbc88c298eb02494e382ce3b57a1dc06d368c8928b3003e6971abb3aa9060",
+      "beforeBytes": 95196,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/imp-die-0.webp",
+      "size": [
+        226,
+        1144
+      ],
+      "bytes": 92202,
+      "sha256": "4b62ee12dc32cbeede071b0f0d74b3c57cfddaac32a14b86ccc20478c3e0f1d2",
+      "beforeBytes": 92202,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/imp-eat-0.webp",
+      "size": [
+        360,
+        1512
+      ],
+      "bytes": 177008,
+      "sha256": "3a2265e96071fe49890e7eb0d6884437fda9ec0141a7e76072f6cf6f4601677b",
+      "beforeBytes": 177008,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/imp-land-0.webp",
+      "size": [
+        118,
+        960
+      ],
+      "bytes": 40148,
+      "sha256": "725b6df9684eb0ad36da6ce00a00cdfb4583be073b09eb0356603f9d58d1952e",
+      "beforeBytes": 40148,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/imp-thrown-0.webp",
+      "size": [
+        1104,
+        280
+      ],
+      "bytes": 101662,
+      "sha256": "40174afb7385250c400c80e956ea2bd1f03ac4117e320fea2bd6ae00e19b7f52",
+      "beforeBytes": 101662,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/imp-walk-0.webp",
+      "size": [
+        468,
+        1338
+      ],
+      "bytes": 225856,
+      "sha256": "dd5811a58db61f2700697bf17697fec281d1d16688a69bec7339ae75015060b8",
+      "beforeBytes": 225856,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/jack-die-0.webp",
+      "size": [
+        1384,
+        860
+      ],
+      "bytes": 238816,
+      "sha256": "ab4a09fe2cb319f54ace891bb89c6c71151ce1b7a52e8032c94cc2f539132e89",
+      "beforeBytes": 238816,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/jack-eat-0.webp",
+      "size": [
+        1512,
+        570
+      ],
+      "bytes": 182496,
+      "sha256": "4af6cce53188d3db375fc90b2e4445af7998bc15162882d3743834caa79ac998",
+      "beforeBytes": 182496,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/jack-headless-0.webp",
+      "size": [
+        1656,
+        442
+      ],
+      "bytes": 163386,
+      "sha256": "01b9c7c48393a2651f17cf7275045f057aefbe3152d2b6f88858ab855f892cfb",
+      "beforeBytes": 163386,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/jack-open-0.webp",
+      "size": [
+        900,
+        1140
+      ],
+      "bytes": 230098,
+      "sha256": "93fd77074205e5d083abe3a94db939916f33c1a6b4299878fe8757d1db7c6b4e",
+      "beforeBytes": 230098,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/jack-walk-0.webp",
+      "size": [
+        706,
+        1426
+      ],
+      "bytes": 208476,
+      "sha256": "414b14720f9ad71b04d13595ba813b7a38f0e9e100c0fc9bf6a776d182c28491",
+      "beforeBytes": 208476,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/jalapeno-0.webp",
+      "size": [
+        764,
+        352
+      ],
+      "bytes": 51078,
+      "sha256": "9be9bf83e5e765438ab274a2822a93c1b7da7baa6aa05a9be6fed7dd7fd8a8f4",
+      "beforeBytes": 51078,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/jalapeno-fire-0.webp",
+      "size": [
+        1400,
+        1318
+      ],
+      "bytes": 164120,
+      "sha256": "1cf6fc108d6ca6519cab3401ed5350cee3edc888c3922f5d38b757b28575e5f6",
+      "beforeBytes": 164120,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/kernelpult-0.webp",
+      "size": [
+        446,
+        1660
+      ],
+      "bytes": 191124,
+      "sha256": "56865825b8fe4f5be286bc8bd56b39d0784df996f398dc70bc1fc61a4c3a86c7",
+      "beforeBytes": 191124,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/kernelpult-attack-0.webp",
+      "size": [
+        880,
+        1654
+      ],
+      "bytes": 301176,
+      "sha256": "c5eab2dd504b0bc4da8f9d7bae53fbac277f2d5f7ccf4540a66c7e2d36781d73",
+      "beforeBytes": 301176,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/ladder-bare-0.webp",
+      "size": [
+        2000,
+        1090
+      ],
+      "bytes": 619116,
+      "sha256": "6fc39cc8746f6f6b627e45cdf1549bbc4393b06ca3e7c2169cf03d39259970fa",
+      "beforeBytes": 619116,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/ladder-die-0.webp",
+      "size": [
+        1378,
+        996
+      ],
+      "bytes": 346158,
+      "sha256": "6d5b33618be445fb8fd8f80a45f4a0e7cf392df59a8f2f5b6f12360e9965525f",
+      "beforeBytes": 346158,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/ladder-eat-0.webp",
+      "size": [
+        1250,
+        1068
+      ],
+      "bytes": 392976,
+      "sha256": "bd903b2786844b54e47e873cf4c8699f562207c8800f13ca359d56fadd30d1a1",
+      "beforeBytes": 392976,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/ladder-place-0.webp",
+      "size": [
+        638,
+        1136
+      ],
+      "bytes": 216384,
+      "sha256": "108e7de7861900bdffe304e35dd910f8a6ec6f3ab21d49688f4ffb8b17896924",
+      "beforeBytes": 216384,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/ladder-walk-0.webp",
+      "size": [
+        1718,
+        1630
+      ],
+      "bytes": 844614,
+      "sha256": "8c1ce60f166e70a714e48da25e71239d8625e10dcb307639dc4d750b435eaa0b",
+      "beforeBytes": 844614,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/lilypad-0.webp",
+      "size": [
+        162,
+        120
+      ],
+      "bytes": 4456,
+      "sha256": "9875d7d8f6d41ec683842a5031d6bee7e477420c28ae07b328cd515d29efb4bd",
+      "beforeBytes": 4456,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/magnetshroom-0.webp",
+      "size": [
+        348,
+        1302
+      ],
+      "bytes": 123562,
+      "sha256": "6380ce805defe6a1b9a42417f9ba4b6a17e3ad3950544f427cdab603ba6b1a43",
+      "beforeBytes": 123562,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/magnetshroom-attack-0.webp",
+      "size": [
+        1026,
+        154
+      ],
+      "bytes": 34818,
+      "sha256": "a6925982f1e846eacbd782329e5771ae92e3d47dd84c3f8d5d41f21c24104bcf",
+      "beforeBytes": 34818,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/marigold-0.webp",
+      "size": [
+        562,
+        792
+      ],
+      "bytes": 154706,
+      "sha256": "d9b2923cb550e36b12eec81e4dad8c4ca6b613d2f11c8ec25abe077db8b9cd61",
+      "beforeBytes": 154706,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/melonpult-0.webp",
+      "size": [
+        678,
+        1756
+      ],
+      "bytes": 270266,
+      "sha256": "05344374396e23bfc7d21569b0cfdb5f8345152810c418abdef4d96aefb8c625",
+      "beforeBytes": 270266,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/melonpult-attack-0.webp",
+      "size": [
+        1274,
+        1018
+      ],
+      "bytes": 338768,
+      "sha256": "2da4b87ce8b8e9bb15e3a0c506c2decea0d85f5ab76bcdedb248810d54927e39",
+      "beforeBytes": 338768,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/newspaper-burn-0.webp",
+      "size": [
+        326,
+        1606
+      ],
+      "bytes": 36082,
+      "sha256": "41d0f372b13181b45f0373be8573d9553ed9982d10b3d81eb1318b6be2239ecf",
+      "beforeBytes": 36082,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/newspaper-die-0.webp",
+      "size": [
+        1230,
+        952
+      ],
+      "bytes": 184688,
+      "sha256": "7c2f22eb99c08d18f7c9eb2bfd2dce384c44680bb0fe9b7e18b1d4da0e05a669",
+      "beforeBytes": 184688,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/newspaper-eat-0.webp",
+      "size": [
+        1496,
+        776
+      ],
+      "bytes": 245272,
+      "sha256": "8db2c0dda7182e857b5ebe85afbc6facc1d51d3f0ee684862ca416827ef1c256",
+      "beforeBytes": 245272,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/newspaper-gasp-0.webp",
+      "size": [
+        388,
+        1774
+      ],
+      "bytes": 98874,
+      "sha256": "23bed1e57411b373a5b1fcaecd1144f2371c720f8a30ac45a084f4fd9f00ace0",
+      "beforeBytes": 98874,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/newspaper-headless-0.webp",
+      "size": [
+        1814,
+        982
+      ],
+      "bytes": 277258,
+      "sha256": "8b645ced40d33dd28230719b4648cbce3053aa4d16276e1be0042c6dd11dd8d3",
+      "beforeBytes": 277258,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/newspaper-mad-eat-0.webp",
+      "size": [
+        1144,
+        1036
+      ],
+      "bytes": 206362,
+      "sha256": "969d7e66966fe0fdf6bb97880ac4a9bb4c35695e1849218f5d1338c2233b4ac0",
+      "beforeBytes": 206362,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/newspaper-mad-walk-0.webp",
+      "size": [
+        1812,
+        1314
+      ],
+      "bytes": 395586,
+      "sha256": "c8ef8eb0007d7475c6a8548c537c4a2e1bf155f2ab1bcd6ac42014c4617a5524",
+      "beforeBytes": 395586,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/newspaper-walk-0.webp",
+      "size": [
+        1774,
+        1314
+      ],
+      "bytes": 506644,
+      "sha256": "4c4c4a461fdfb355f168c3474330dd821d67cdccc40f4cd4fdfc95754945ca3e",
+      "beforeBytes": 506644,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/peashooter-0.webp",
+      "size": [
+        650,
+        694
+      ],
+      "bytes": 104346,
+      "sha256": "4130e45978a9b5db1db5dfcd23b55c20b9859e49c55d84d3691f9daf642227e3",
+      "beforeBytes": 104346,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/plantern-0.webp",
+      "size": [
+        1634,
+        362
+      ],
+      "bytes": 100788,
+      "sha256": "f1081542e8843db806931f7c8ce99ab06273c45b1d5e4067bbf1e405e361c181",
+      "beforeBytes": 100788,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/pogo-bounce-0.webp",
+      "size": [
+        296,
+        1346
+      ],
+      "bytes": 128878,
+      "sha256": "c536416d0d73d9ec2a937eaa60157b487297e617137338ab6f63640c0c3fec20",
+      "beforeBytes": 128878,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/pogo-die-0.webp",
+      "size": [
+        1070,
+        892
+      ],
+      "bytes": 236932,
+      "sha256": "b5b60ae252beea7f6f55b46b7399f2b9d3875187ccf58f679e035b441e9c55be",
+      "beforeBytes": 236932,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/pogo-eat-0.webp",
+      "size": [
+        1776,
+        986
+      ],
+      "bytes": 442272,
+      "sha256": "9d74534a1a057bd9ac76d84ccfe5d48f6a6b8adc3a435b75325bcb975084e1dc",
+      "beforeBytes": 442272,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/pogo-walk-0.webp",
+      "size": [
+        1496,
+        1296
+      ],
+      "bytes": 539828,
+      "sha256": "e27c8294a7b89c6b1ab53eb16b3f61b8f8c0e46f1fe5e7e2fb05b3f01e4af1e6",
+      "beforeBytes": 539828,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/pole-burn-0.webp",
+      "size": [
+        326,
+        1606
+      ],
+      "bytes": 36004,
+      "sha256": "0cf559d6d80805f5c5fab4d6df29b9a5a48c04a30672f20ff8ac8ef2f7e25ab5",
+      "beforeBytes": 36004,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/pole-die-0.webp",
+      "size": [
+        600,
+        1398
+      ],
+      "bytes": 169950,
+      "sha256": "b1092831c50963ccbf35fb1e91c6f53923c292d8f61c508b42be7ec3d2f07958",
+      "beforeBytes": 169950,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/pole-eat-0.webp",
+      "size": [
+        1532,
+        806
+      ],
+      "bytes": 274948,
+      "sha256": "b6dcc8604bd9a2a5fe516540fae1143f8f16db3b92e2c4848801b93a6dc52c03",
+      "beforeBytes": 274948,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/pole-headless-0.webp",
+      "size": [
+        1272,
+        1042
+      ],
+      "bytes": 311598,
+      "sha256": "c07d9bd17d370adaa2db6e808c2aa6822f55eaf32fd0ac72723eb742ca85db19",
+      "beforeBytes": 311598,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/pole-jump-0.webp",
+      "size": [
+        1900,
+        1810
+      ],
+      "bytes": 376482,
+      "sha256": "2120be1ee383cfed001b009a945fc662499f4ea3757f579a09009add6c3fcb15",
+      "beforeBytes": 376482,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/pole-land-0.webp",
+      "size": [
+        1040,
+        516
+      ],
+      "bytes": 125162,
+      "sha256": "4329df54755b52cf3e81852ebc349935930550658f64d762c67c7213516d433a",
+      "beforeBytes": 125162,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/pole-run-0.webp",
+      "size": [
+        1182,
+        1986
+      ],
+      "bytes": 263352,
+      "sha256": "28db021de5e9d8d418f708b7bbb74a479e8972e8bd1c471a190bee78481a71b2",
+      "beforeBytes": 263352,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/pole-run-1.webp",
+      "size": [
+        1178,
+        1310
+      ],
+      "bytes": 183220,
+      "sha256": "f319de7b0ebb25aa36670ceee3d478bfd134e6e30fd1ff5a691c4e4fb861dcfb",
+      "beforeBytes": 183220,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/pole-walk-0.webp",
+      "size": [
+        1770,
+        1112
+      ],
+      "bytes": 451582,
+      "sha256": "06c856fc726f9bb110597b1dea7690c0d90e3095126d6049ea52861a3ded6058",
+      "beforeBytes": 451582,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/potatomine-0.webp",
+      "size": [
+        148,
+        1152
+      ],
+      "bytes": 36380,
+      "sha256": "b67f513842c016f84c74a51f3849329cb9fe86c8da8bf39918ce38e61004ce87",
+      "beforeBytes": 36380,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/potatomine-unarmed-0.webp",
+      "size": [
+        80,
+        66
+      ],
+      "bytes": 2316,
+      "sha256": "a9d4bc3ac49b835d937b96a74e825c14617b51f1a2c3918d65f6ef8cf8f716d7",
+      "beforeBytes": 2316,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/puffshroom-0.webp",
+      "size": [
+        236,
+        394
+      ],
+      "bytes": 24376,
+      "sha256": "1392d468d78e37e748ec537a1854ed0f1fb9ddd5dfbe227ae354d60ffcb59ff3",
+      "beforeBytes": 24376,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/pumpkin-0.webp",
+      "size": [
+        1678,
+        260
+      ],
+      "bytes": 128714,
+      "sha256": "8d7ae146b2b4c90be0f7c345553448a9b4f62bcef3f00bf2aa25d9bd9cfebac4",
+      "beforeBytes": 128714,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/pumpkin-cracked1-0.webp",
+      "size": [
+        202,
+        1636
+      ],
+      "bytes": 109754,
+      "sha256": "bab26b3c8e6282efb7b79909590c5b4e50f2a33053c71392a91d808133685fc4",
+      "beforeBytes": 109754,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/pumpkin-cracked2-0.webp",
+      "size": [
+        200,
+        1662
+      ],
+      "bytes": 120808,
+      "sha256": "729bc1fb9556f95bf7e81e4872c7a0d1a79163797030759f044ff59d105ade60",
+      "beforeBytes": 120808,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/repeater-0.webp",
+      "size": [
+        684,
+        686
+      ],
+      "bytes": 126144,
+      "sha256": "3bf99114e7bf86bbb7938e5b3f8d5e94aede1d1fccfbb0a7dff3d46d4a984e91",
+      "beforeBytes": 126144,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/scaredyshroom-0.webp",
+      "size": [
+        1586,
+        142
+      ],
+      "bytes": 40736,
+      "sha256": "3bf2429247bdea15f8a4bd54cc23942e8c795df09eca4e296271cdd8871967a6",
+      "beforeBytes": 40736,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/scaredyshroom-scared-0.webp",
+      "size": [
+        108,
+        920
+      ],
+      "bytes": 24136,
+      "sha256": "0bbbb066d859ff4202e8a3ade0c79b6af633d515a773d4bcf763cc52b03f9add",
+      "beforeBytes": 24136,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/seashroom-0.webp",
+      "size": [
+        360,
+        458
+      ],
+      "bytes": 53150,
+      "sha256": "98fccd5f35fa12669dbc5148fb584825cec7373bb69f01f0e7a5b3c5d9abb582",
+      "beforeBytes": 53150,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/snorkel-die-0.webp",
+      "size": [
+        484,
+        764
+      ],
+      "bytes": 106570,
+      "sha256": "f83dac665394d0ac31067f35dc79b3dd502d1069771188a45c1cc6d1305d8914",
+      "beforeBytes": 106570,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/snorkel-eat-0.webp",
+      "size": [
+        816,
+        856
+      ],
+      "bytes": 174486,
+      "sha256": "c390220e5bde759154a4b455132dfbe04c8d8183b7aab02da059d78dc5982688",
+      "beforeBytes": 174486,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/snorkel-swim-0.webp",
+      "size": [
+        106,
+        612
+      ],
+      "bytes": 19176,
+      "sha256": "03bef65c9702667ebf1737b147152279514b56489764abd90d92ba82acdc38be",
+      "beforeBytes": 19176,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/snorkel-walk-0.webp",
+      "size": [
+        1252,
+        1428
+      ],
+      "bytes": 353466,
+      "sha256": "3a07e25921892f0b27eee78676a8e7b64eeedfff79e8394d7050a35e730c5cdb",
+      "beforeBytes": 353466,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/snowpea-0.webp",
+      "size": [
+        268,
+        1682
+      ],
+      "bytes": 124604,
+      "sha256": "a455da68fba069090a8e87aa262106f4fd77e681aa0c5a57fa165fcc895e8fee",
+      "beforeBytes": 124604,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/spikeweed-0.webp",
+      "size": [
+        174,
+        1216
+      ],
+      "bytes": 58416,
+      "sha256": "b38147e6753d5ccc837c78f5ff5f6bb8486768b7220f87604f2e0b6fb3eb3c53",
+      "beforeBytes": 58416,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/splitpea-0.webp",
+      "size": [
+        178,
+        1912
+      ],
+      "bytes": 90096,
+      "sha256": "d7de07d9ba4951e897baccf78ff654691ce43ef751393ff772f840813ee4811e",
+      "beforeBytes": 90096,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/squash-0.webp",
+      "size": [
+        448,
+        1032
+      ],
+      "bytes": 99624,
+      "sha256": "042720355d2bde20ef4dffb8b1fec92375fbe9f8edfecd93c28f67c54be503c8",
+      "beforeBytes": 99624,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/squash-attack-0.webp",
+      "size": [
+        708,
+        352
+      ],
+      "bytes": 49942,
+      "sha256": "8d59ec755a6885b6aaf22b040857e39c2329ffa94b543e26f042d810b8fa0d47",
+      "beforeBytes": 49942,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/starfruit-0.webp",
+      "size": [
+        628,
+        560
+      ],
+      "bytes": 75710,
+      "sha256": "d61b2255e5f0aaf4b127bf453b89bbe042bd99b00218c61bf499b3beb2a104ea",
+      "beforeBytes": 75710,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/sun-0.webp",
+      "size": [
+        1604,
+        316
+      ],
+      "bytes": 100834,
+      "sha256": "947b67af33e76ec9b323f8d9898581ca2694d1ffb34bc91a54f4826391ad908e",
+      "beforeBytes": 100834,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/sunflower-0.webp",
+      "size": [
+        396,
+        1174
+      ],
+      "bytes": 148906,
+      "sha256": "7c1f8e9f3cf332046618833480513f517277180f4efd297c1d8b581249907ee9",
+      "beforeBytes": 148906,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/sunshroom-0.webp",
+      "size": [
+        874,
+        82
+      ],
+      "bytes": 19618,
+      "sha256": "ad3893f1ef8b238639e56bd236c4786cd3195b229ac2ed82b724c638188c4bc2",
+      "beforeBytes": 19618,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/sunshroom-big-0.webp",
+      "size": [
+        120,
+        1224
+      ],
+      "bytes": 31944,
+      "sha256": "16e57bf3c9c79ce5302e08eb8dd12ca769350636d96161c77c85d2cd865af0f4",
+      "beforeBytes": 31944,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/tallnut-0.webp",
+      "size": [
+        1168,
+        484
+      ],
+      "bytes": 78790,
+      "sha256": "933f774a6a0214ac11cfdbe5165c43ba4bb0babad4af474c6d8b893f93c48df9",
+      "beforeBytes": 78790,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/tallnut-cracked1-0.webp",
+      "size": [
+        348,
+        1622
+      ],
+      "bytes": 92112,
+      "sha256": "a5bbf242bbdb090903099be9e9faea98aa34991629f8bbfea7a373a2db768ff5",
+      "beforeBytes": 92112,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/tallnut-cracked2-0.webp",
+      "size": [
+        1184,
+        460
+      ],
+      "bytes": 96046,
+      "sha256": "e70c695a9c064b80929c9ca1f7059b7b7263ba1a861891fee9fdec6f4bce61c1",
+      "beforeBytes": 96046,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/tanglekelp-0.webp",
+      "size": [
+        546,
+        918
+      ],
+      "bytes": 147550,
+      "sha256": "78afe1b1292771124ae92474f382011ef0d7435ef14807008cff3585b2874895",
+      "beforeBytes": 147550,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/tanglekelp-grab-0.webp",
+      "size": [
+        122,
+        134
+      ],
+      "bytes": 6412,
+      "sha256": "acf59eae2c713a7eacea24c937fee3dd73e5e1d3136036fe323eaedf22bbe1f9",
+      "beforeBytes": 6412,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/threepeater-0.webp",
+      "size": [
+        1152,
+        332
+      ],
+      "bytes": 134340,
+      "sha256": "d5119855b934d73d8273e0c37a5706af9ce462694d1f7623cd62daab29c35fd0",
+      "beforeBytes": 134340,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/torchwood-0.webp",
+      "size": [
+        440,
+        1194
+      ],
+      "bytes": 121998,
+      "sha256": "3c26e50bb333e6c993f0ac7c5582c2b0fad7b27d4773115cadfd3198e9e5f54f",
+      "beforeBytes": 121998,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/umbrella-0.webp",
+      "size": [
+        330,
+        958
+      ],
+      "bytes": 98952,
+      "sha256": "f511745644fc6841599283b416b92934e13ff067ebf14a981cf3e40bdc6a5915",
+      "beforeBytes": 98952,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/umbrella-block-0.webp",
+      "size": [
+        976,
+        1650
+      ],
+      "bytes": 206940,
+      "sha256": "defba7ee9c81e24bfac643e644c5463cb915a6773ffcafded2fc281e0abee60e",
+      "beforeBytes": 206940,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/wallnut-0.webp",
+      "size": [
+        510,
+        588
+      ],
+      "bytes": 65180,
+      "sha256": "1ed510741948353ba38e0ce398f0122377073ce433e0bacd60d3c706180ec056",
+      "beforeBytes": 65180,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/wallnut-cracked1-0.webp",
+      "size": [
+        638,
+        438
+      ],
+      "bytes": 66700,
+      "sha256": "a0b07a357d7f67010fcdf737d1ee5f68d38a6fb476dc2ee8d41e06c03902b476",
+      "beforeBytes": 66700,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/wallnut-cracked2-0.webp",
+      "size": [
+        382,
+        832
+      ],
+      "bytes": 74760,
+      "sha256": "b4dbf3d4e91472c5afd556cb9f4cdda3dd2c539f3817ea8fdb24c868c98c1e7c",
+      "beforeBytes": 74760,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/wallnut-roll-0.webp",
+      "size": [
+        912,
+        286
+      ],
+      "bytes": 56426,
+      "sha256": "7d230ebe2155f568b0b51698146fa966e76bb1f5380e73497bf53f169632ef4e",
+      "beforeBytes": 56426,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/zombie-burn-0.webp",
+      "size": [
+        498,
+        1274
+      ],
+      "bytes": 81038,
+      "sha256": "e944b52a503cfc6c82e12dc64c7e4f1c457a00244a220c917fdf468e63506381",
+      "beforeBytes": 81038,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/zombie-die-0.webp",
+      "size": [
+        1098,
+        856
+      ],
+      "bytes": 166322,
+      "sha256": "ad92b4bede10c4e2c72c95cc3da56061ce462be87b9dcf52632159ca8aa0e678",
+      "beforeBytes": 166322,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/zombie-eat-0.webp",
+      "size": [
+        1408,
+        1218
+      ],
+      "bytes": 297018,
+      "sha256": "5eab045d7a3dc1b18caffb34c56b8de1c9001e7fd32a606acb240fa594d849c6",
+      "beforeBytes": 297018,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/zombie-headless-0.webp",
+      "size": [
+        1458,
+        770
+      ],
+      "bytes": 229280,
+      "sha256": "3641f520ba80153b276378585b6605c1b00c109ae646baef35cd0e3ff1344989",
+      "beforeBytes": 229280,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/zombie-walk-0.webp",
+      "size": [
+        1746,
+        1018
+      ],
+      "bytes": 353062,
+      "sha256": "6bc76c13ef4223e1c20ec42c1fb8db195d46a9f59267eeea0bf186526a4401f3",
+      "beforeBytes": 353062,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/zomboni-critical-0.webp",
+      "size": [
+        1044,
+        1702
+      ],
+      "bytes": 260422,
+      "sha256": "48434ac60970bb2c0fe5bc4c0b562f1f57dab1834e6309c8655d717b5682343e",
+      "beforeBytes": 260422,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/zomboni-damaged-0.webp",
+      "size": [
+        1044,
+        1702
+      ],
+      "bytes": 247978,
+      "sha256": "bae2d0b5c2447b1903a2ac919bda135184a961c07af54fad6876f11c21c17725",
+      "beforeBytes": 247978,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/zomboni-die-0.webp",
+      "size": [
+        1528,
+        1662
+      ],
+      "bytes": 290404,
+      "sha256": "ed2e6f4c69fad8d93be1514f171da3b1b360be41b36030239245b27f117dc47a",
+      "beforeBytes": 290404,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/clips/zomboni-walk-0.webp",
+      "size": [
+        1056,
+        1702
+      ],
+      "bytes": 249836,
+      "sha256": "5b4f335137449b4a61f5dda79eeee8127a86a5858fe99008d240f295a708dedb",
+      "beforeBytes": 249836,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/giant-motion/gargantuar.webp",
+      "size": [
+        1024,
+        592
+      ],
+      "bytes": 129818,
+      "sha256": "c18162aa0f682991b00c5600fc822c16602802ab46b15cc4ef4b370de54df58e",
+      "beforeBytes": 129818,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/adventure-hover.webp",
+      "size": [
+        660,
+        280
+      ],
+      "bytes": 50532,
+      "sha256": "78adac4f8074828e7721dc3c62c8dc8fe9ac1b17d3a5a8be602074588787d6ee",
+      "beforeBytes": 50532,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/blover.webp",
+      "size": [
+        384,
+        348
+      ],
+      "bytes": 22396,
+      "sha256": "248800431a7d9f6847ff950dd76b7f2e463f1456938228f00b9173313bd169c2",
+      "beforeBytes": 22786,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/button.webp",
+      "size": [
+        448,
+        184
+      ],
+      "bytes": 10848,
+      "sha256": "ff20c6d15b92a559acea5ed4c08702c831ad3b8a6441120a350a341e1208290b",
+      "beforeBytes": 10848,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/cabbagepult.webp",
+      "size": [
+        364,
+        308
+      ],
+      "bytes": 28654,
+      "sha256": "ef8fed74c799644b0aa0ea04cb8556998414a14dd2b6c805b83239ef10e6f802",
+      "beforeBytes": 29512,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/cactus.webp",
+      "size": [
+        352,
+        320
+      ],
+      "bytes": 26622,
+      "sha256": "dffd5c7857ea4ca5e4e893a8d1a4538d0114c5236c3ff9b41c8cb05d264b1d18",
+      "beforeBytes": 28336,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/card-cherrybomb.webp",
+      "size": [
+        256,
+        360
+      ],
+      "bytes": 22146,
+      "sha256": "ccc84bd71028a202cfa34b9ce3eaafdc6aec492b67df02bb95e70c7741955287",
+      "beforeBytes": 22146,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/card-chomper.webp",
+      "size": [
+        256,
+        356
+      ],
+      "bytes": 25500,
+      "sha256": "0cb41317077adf8f30f0b159cdbe6b3c1bfc722b79583aef8d99c40784084749",
+      "beforeBytes": 25500,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/card-doomshroom.webp",
+      "size": [
+        400,
+        480
+      ],
+      "bytes": 41524,
+      "sha256": "686e8b89bd148ebae4a1fe9f4e5cb78b06b1da0a7c67f19c165b67d9426edcf7",
+      "beforeBytes": 41524,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/card-hypnoshroom.webp",
+      "size": [
+        256,
+        356
+      ],
+      "bytes": 18662,
+      "sha256": "28facfb106deac816579420af4fa31d35a434b5a71c4cb784facc535cbe88f31",
+      "beforeBytes": 18662,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/card-iceshroom.webp",
+      "size": [
+        400,
+        480
+      ],
+      "bytes": 51484,
+      "sha256": "d2fb3d79c300fe568fd0543db6a5baa819785ac66b99ab5e939001a5e155a4c6",
+      "beforeBytes": 51484,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/card-lilypad.webp",
+      "size": [
+        400,
+        480
+      ],
+      "bytes": 44084,
+      "sha256": "afeac0a0fb54405ca7bc77e630fc19b3dbfc5378591b5c8f266ba18f33368dd3",
+      "beforeBytes": 44084,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/card-peashooter.webp",
+      "size": [
+        260,
+        360
+      ],
+      "bytes": 22374,
+      "sha256": "c3336f9a74e51aba917e1ef502a4a4fe4a4ecfb62fc483c865453389bb07c40f",
+      "beforeBytes": 22374,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/card-plantern.webp",
+      "size": [
+        400,
+        480
+      ],
+      "bytes": 52244,
+      "sha256": "1aba378acd8f0d11b5e5492e54f4b1ed6487a2216c475cb9edf2806832dcc224",
+      "beforeBytes": 52244,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/card-potatomine.webp",
+      "size": [
+        256,
+        356
+      ],
+      "bytes": 20170,
+      "sha256": "5115d0cfa1981ca64528a29ce794957b358fadb20928dc776a754623c1ba2d66",
+      "beforeBytes": 20170,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/card-puffshroom.webp",
+      "size": [
+        256,
+        356
+      ],
+      "bytes": 17856,
+      "sha256": "6d4f5f08055ca38f9210c3de8b17f6cbd0f0815755d2a21703c6cb3c195fc61c",
+      "beforeBytes": 17856,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/card-repeater.webp",
+      "size": [
+        256,
+        356
+      ],
+      "bytes": 23194,
+      "sha256": "d3b08912b6d83559e2977f95be98ee430895be6dd8349e65a76dfb9a4e01b1ca",
+      "beforeBytes": 23194,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/card-scaredyshroom.webp",
+      "size": [
+        256,
+        356
+      ],
+      "bytes": 20226,
+      "sha256": "a854531f41d8d3e3f95cd8d1e0504f0615f938879119c8232ed9640a0965c480",
+      "beforeBytes": 20226,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/card-snowpea.webp",
+      "size": [
+        256,
+        360
+      ],
+      "bytes": 21726,
+      "sha256": "ac202d696821e8386843669d47c8dbbd74c487262387299687066ced47e6667c",
+      "beforeBytes": 21726,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/card-squash.webp",
+      "size": [
+        400,
+        480
+      ],
+      "bytes": 50374,
+      "sha256": "c730951f8c364e4a027f5ee4552429d54e02950e99a5ca6d98ffc70fda47f5fb",
+      "beforeBytes": 50374,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/card-sunflower.webp",
+      "size": [
+        256,
+        356
+      ],
+      "bytes": 24826,
+      "sha256": "e9e2528a706e988e99a91b18623c853682d673d2d61f829ccfecf1419c8122e4",
+      "beforeBytes": 24826,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/card-sunshroom.webp",
+      "size": [
+        256,
+        356
+      ],
+      "bytes": 18984,
+      "sha256": "b2a10bf066e11cd7ff5e2e08c43c91a6e80e02ad23ba926ae7bfdd7f5a43ad87",
+      "beforeBytes": 18984,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/card-threepeater.webp",
+      "size": [
+        400,
+        480
+      ],
+      "bytes": 61400,
+      "sha256": "693172dda313cc152b0ba66244320c2b7bb4dd8becab9e2290dd5d77c62e97f5",
+      "beforeBytes": 61400,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/card-wallnut.webp",
+      "size": [
+        256,
+        360
+      ],
+      "bytes": 21110,
+      "sha256": "63014b962290e961ba3268317ea4d99e7e0c7fe968f5187102f9437e5d7c3600",
+      "beforeBytes": 21110,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/cattail.webp",
+      "size": [
+        328,
+        296
+      ],
+      "bytes": 34722,
+      "sha256": "396705ff5f64f74eeb59a712acd81b792e728377693e1d6785d8e49e158a5f94",
+      "beforeBytes": 34722,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/cherrybomb.webp",
+      "size": [
+        312,
+        252
+      ],
+      "bytes": 18512,
+      "sha256": "4437fa8e9eaefad0d540fb8886d9bf9c5d2ef66496aed5d91278c326ca6b30d3",
+      "beforeBytes": 23258,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/chomper.webp",
+      "size": [
+        320,
+        384
+      ],
+      "bytes": 35624,
+      "sha256": "9ea6ac1f911ebff372f4e0fb195245f7bdab4864d769adb48600296d015a996f",
+      "beforeBytes": 37512,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/cobcannon.webp",
+      "size": [
+        672,
+        396
+      ],
+      "bytes": 61614,
+      "sha256": "298c456a71eb25e29f2344f82f44c6762eaa3e960203c62b5fdf1b2dc20d59a5",
+      "beforeBytes": 61614,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/coffeebean.webp",
+      "size": [
+        152,
+        404
+      ],
+      "bytes": 9402,
+      "sha256": "102e23aade1a1f7d62884fd6673279b43ca2b07d6c9f39719d30ce3bc877d824",
+      "beforeBytes": 8296,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/conveyor-back.webp",
+      "size": [
+        2064,
+        344
+      ],
+      "bytes": 32986,
+      "sha256": "96f2c80414e38795c17d8710a9b622f4b6cb0a58a9aa79f7260bc64501982932",
+      "beforeBytes": 32986,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/conveyor.webp",
+      "size": [
+        2008,
+        384
+      ],
+      "bytes": 162418,
+      "sha256": "686a5d932c71b62825adb51b07f861ee10656413b63bba46ba37d9c98ee2d036",
+      "beforeBytes": 162418,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/crazy-dave.webp",
+      "size": [
+        1412,
+        3440
+      ],
+      "bytes": 501788,
+      "sha256": "53e6225398fb75ea85c48797ec21dada241c61b727632e23041b60a7f4d7afd9",
+      "beforeBytes": 501788,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/dave-bubble.webp",
+      "size": [
+        1120,
+        732
+      ],
+      "bytes": 19018,
+      "sha256": "4bb64ed26239fd6d7bdf5b8c00dddb8ec87ed9219c8bba1e150ad365e39308fc",
+      "beforeBytes": 19018,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/dialog.webp",
+      "size": [
+        1648,
+        1932
+      ],
+      "bytes": 203406,
+      "sha256": "83f14f523c55f1f40c360356061a64580fc2b683e33e65e370822bedbf9139e6",
+      "beforeBytes": 203406,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/doomshroom.webp",
+      "size": [
+        336,
+        312
+      ],
+      "bytes": 14202,
+      "sha256": "35d2e72e55f83edfabdccd7027b8ed7b7258d1e117670083e2ed8d7dc06156eb",
+      "beforeBytes": 11128,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/explodenut.webp",
+      "size": [
+        284,
+        284
+      ],
+      "bytes": 14174,
+      "sha256": "4a9be735ed14754464a7b4942bd4c2c0bde19cba50e61efe4a253de648fd84a9",
+      "beforeBytes": 14174,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/flowerpot.webp",
+      "size": [
+        276,
+        268
+      ],
+      "bytes": 18818,
+      "sha256": "00c2d9ce64f7642e1514371a1919103fbeb1c7214b804c9bd4c2b100c99775aa",
+      "beforeBytes": 18382,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/fumeshroom.webp",
+      "size": [
+        324,
+        328
+      ],
+      "bytes": 18032,
+      "sha256": "a3baa359e84d73a8f34d6ba5ff20f03fd24f00f42be5404429c1f8b569a82873",
+      "beforeBytes": 21258,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/garlic.webp",
+      "size": [
+        228,
+        232
+      ],
+      "bytes": 13910,
+      "sha256": "2d0a333ba9de0c9573061dc941705987547dcd39226d9e786197aced1e1d6463",
+      "beforeBytes": 14808,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/gatlingpea.webp",
+      "size": [
+        320,
+        308
+      ],
+      "bytes": 25820,
+      "sha256": "ec75190cd623f4b8600957e13c0108592b91d300c436a1081c8af81a5675cabe",
+      "beforeBytes": 84730,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/gloomshroom.webp",
+      "size": [
+        328,
+        300
+      ],
+      "bytes": 29982,
+      "sha256": "204da9a6a4180e88610af826a145f4e23fc41f252c024f3e4ab7652cf7239d1f",
+      "beforeBytes": 29982,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/goldmagnet.webp",
+      "size": [
+        248,
+        300
+      ],
+      "bytes": 26740,
+      "sha256": "2160fe5e711d9deca84eff683432d068fbe0c546b0c4c5374d0c661a9138a5ba",
+      "beforeBytes": 26740,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/gravebuster.webp",
+      "size": [
+        392,
+        304
+      ],
+      "bytes": 21834,
+      "sha256": "e45c37630e786e3d5a3c07bf6d237bc38a244dd71a1a1a97d80e7dbdb54a28e9",
+      "beforeBytes": 23132,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/hypnoshroom.webp",
+      "size": [
+        228,
+        316
+      ],
+      "bytes": 14394,
+      "sha256": "c2f7114565e412936b705d1b32e5b09dbf43eee6a7ff7d1759a721f591c3bce2",
+      "beforeBytes": 15118,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/iceshroom.webp",
+      "size": [
+        336,
+        308
+      ],
+      "bytes": 27754,
+      "sha256": "042340332124ede504cafd9f84d037c6dbbbd884dd1472e6d3e6aab096481c63",
+      "beforeBytes": 24480,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/imitater.webp",
+      "size": [
+        204,
+        296
+      ],
+      "bytes": 16202,
+      "sha256": "9d78bae941f17192021889779b402e9443281c3422e8126f66da0c5fb7a75252",
+      "beforeBytes": 16202,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/jalapeno.webp",
+      "size": [
+        184,
+        308
+      ],
+      "bytes": 13706,
+      "sha256": "0eaee15debbc20541302aa310de1a996dbec1c9a782e717f92e9baeafc4a97e0",
+      "beforeBytes": 12122,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/kernelpult.webp",
+      "size": [
+        424,
+        388
+      ],
+      "bytes": 31552,
+      "sha256": "e13b52d1e89e17f1a5c32970ed4f9242ac5b9d00954e15dfbbd6cd6cb129ad7d",
+      "beforeBytes": 34234,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/lilypad.webp",
+      "size": [
+        332,
+        332
+      ],
+      "bytes": 15914,
+      "sha256": "d5d43f6b03ea8c2302d7ac0bf49bebb9915e3175928928ed3ea636a6e1e4932e",
+      "beforeBytes": 14444,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/logo.webp",
+      "size": [
+        2800,
+        464
+      ],
+      "bytes": 1352008,
+      "sha256": "afd91273755a77a63404cec478ec1f5d63268dabe945acf669307947d103d851",
+      "beforeBytes": 1352008,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/magnetshroom.webp",
+      "size": [
+        288,
+        328
+      ],
+      "bytes": 14184,
+      "sha256": "0bfa6cee629bdfa38ed613c43ae8915ea189d1267cecf9a91413fb170bce24ed",
+      "beforeBytes": 15004,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/marigold.webp",
+      "size": [
+        220,
+        296
+      ],
+      "bytes": 20290,
+      "sha256": "715f061348850caeb6b01b366542b0977fd38c8cc64d86cc2828ddcc5a683196",
+      "beforeBytes": 21700,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/melonpult.webp",
+      "size": [
+        412,
+        380
+      ],
+      "bytes": 29954,
+      "sha256": "0ee8813318794f5060b33dd830e1c6f981d156417f753fd49fc2a44f58a9895c",
+      "beforeBytes": 33278,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/menu.webp",
+      "size": [
+        3600,
+        2400
+      ],
+      "bytes": 596034,
+      "sha256": "afb66506b32010e808424d3e08b7f05cb97eead02b0edceda008d58ef021a6c3",
+      "beforeBytes": 596034,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/meter-empty.webp",
+      "size": [
+        632,
+        96
+      ],
+      "bytes": 6462,
+      "sha256": "d32539259a013107836ed4a966b38e14451c1b1973ac0466b5303c4328a7d198",
+      "beforeBytes": 6462,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/meter-flag.webp",
+      "size": [
+        80,
+        72
+      ],
+      "bytes": 2916,
+      "sha256": "2ba0342a29bda17e0bd301809330db7fc7f29bd0c74c1e5b32e007b7e652aa21",
+      "beforeBytes": 2916,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/meter-full.webp",
+      "size": [
+        632,
+        96
+      ],
+      "bytes": 8936,
+      "sha256": "f8aedd3dd585d721a37f6f683bf89962a8fae65acf69c27f4c6862022d13f2d0",
+      "beforeBytes": 8936,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/meter-head.webp",
+      "size": [
+        96,
+        96
+      ],
+      "bytes": 5208,
+      "sha256": "0fc1c4efbef268695d6d873e11afd6cdd070d3965ac81c3780419993cd5f8e18",
+      "beforeBytes": 5208,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/peashooter.webp",
+      "size": [
+        268,
+        252
+      ],
+      "bytes": 19206,
+      "sha256": "57e4b0eb94e7a2ba8f52d7e59595e8ebe06d936a479802293bd16da4864aff8f",
+      "beforeBytes": 21746,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/plantern.webp",
+      "size": [
+        340,
+        360
+      ],
+      "bytes": 24168,
+      "sha256": "75d583f2f356cf0fba7e68580bab77bbb2eb8c31669f6015b6016ce91742838b",
+      "beforeBytes": 20938,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/pool-cleaner.webp",
+      "size": [
+        188,
+        256
+      ],
+      "bytes": 13664,
+      "sha256": "1a59bdf007d58c2bd7bcffad51a457563b39c1f04beb414fb1457a337963ffa4",
+      "beforeBytes": 13664,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/potatomine.webp",
+      "size": [
+        264,
+        212
+      ],
+      "bytes": 14614,
+      "sha256": "a04d2aeb31220661324b86ac72dce7d4fb99dd8b0b1795861be9ff81cadef655",
+      "beforeBytes": 14358,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/puffshroom.webp",
+      "size": [
+        156,
+        152
+      ],
+      "bytes": 7572,
+      "sha256": "60e22bcf214188cea01c1cb07e8989defecd9df0613ecdbb3329725ac13db1c2",
+      "beforeBytes": 7140,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/pumpkin.webp",
+      "size": [
+        388,
+        260
+      ],
+      "bytes": 27938,
+      "sha256": "1f414639cde4257f2f15911f846967bd8b2229d511fd9ef4d0875d70be288d34",
+      "beforeBytes": 28198,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/repeater.webp",
+      "size": [
+        272,
+        252
+      ],
+      "bytes": 20152,
+      "sha256": "607794a81031fbfb63fd474cd039678893c500fa5338fc188bdebc468c087224",
+      "beforeBytes": 20580,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/scaredyshroom.webp",
+      "size": [
+        200,
+        280
+      ],
+      "bytes": 11808,
+      "sha256": "6e6e6872a3c72c1c85ca842f88e9749354b2064e51898467ef9be6a1dc922f40",
+      "beforeBytes": 11624,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/seashroom.webp",
+      "size": [
+        144,
+        152
+      ],
+      "bytes": 8158,
+      "sha256": "6bac41fa53aa65372399c00f2d481c4e3aa0ce1ef5cdc5b75e4d97c331a28d33",
+      "beforeBytes": 9812,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/seed-packet.webp",
+      "size": [
+        400,
+        560
+      ],
+      "bytes": 266350,
+      "sha256": "588954d542caa2f7baa059516a1da8711b2e0570c1cc7f7a25efb2fb41b2b4c6",
+      "beforeBytes": 266350,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/seedbank.webp",
+      "size": [
+        1784,
+        348
+      ],
+      "bytes": 36556,
+      "sha256": "bf31e6236eb23158f3ce5b8095c07aae6bde5feb2d962e8d4ddb2e8a94b8ceeb",
+      "beforeBytes": 36556,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/shop-background.webp",
+      "size": [
+        3200,
+        2400
+      ],
+      "bytes": 291122,
+      "sha256": "46a4c2660a542015a1cfe52226693a7b07944c7e130ca0d2b14b6e6f0612ac14",
+      "beforeBytes": 291122,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/shop-firstaid.webp",
+      "size": [
+        200,
+        228
+      ],
+      "bytes": 19480,
+      "sha256": "d9ed130d89c1b73fbb6ccbad917b8461d39093ce1fc3975ea7397b9e3334b3fd",
+      "beforeBytes": 19480,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/shop-rake.webp",
+      "size": [
+        412,
+        132
+      ],
+      "bytes": 11698,
+      "sha256": "abd07b320d9013283a9346beee7d26873e0d5e4c231145604a862b6e43105c4b",
+      "beforeBytes": 11698,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/shop-roof.webp",
+      "size": [
+        224,
+        172
+      ],
+      "bytes": 17390,
+      "sha256": "028a8b7e4550a8cefaa0c8c055d7368cec2d3b4517a367dcc134059c4a0b5c9c",
+      "beforeBytes": 17390,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/shop-slots.webp",
+      "size": [
+        260,
+        260
+      ],
+      "bytes": 20822,
+      "sha256": "9750ed81ef0480b53236bfb4f7192ec39a4dfed1d5fad2dcc11e40a93e8abf51",
+      "beforeBytes": 20822,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/shovel.webp",
+      "size": [
+        320,
+        320
+      ],
+      "bytes": 16344,
+      "sha256": "8c52a054375966aa2dd5b37d3b036c8087a0f35c2e046f06a0b2eb04dcad056a",
+      "beforeBytes": 16344,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/shovelbank.webp",
+      "size": [
+        280,
+        288
+      ],
+      "bytes": 9318,
+      "sha256": "06961144219f1f73bc4efedb8514be59ba9c02972c9eb1e9061475c86a3dd98f",
+      "beforeBytes": 9318,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/snowpea.webp",
+      "size": [
+        260,
+        252
+      ],
+      "bytes": 21258,
+      "sha256": "8b72287949d068bb99c94c55ec1cc4d98922aa9c738694c15f0d6e2704c014ba",
+      "beforeBytes": 24412,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/spikerock.webp",
+      "size": [
+        324,
+        172
+      ],
+      "bytes": 25906,
+      "sha256": "7acf8c6438089a2e57a3bf085cf5037874c870380cf2ae3f7c621214ed805a9b",
+      "beforeBytes": 25906,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/spikeweed.webp",
+      "size": [
+        328,
+        140
+      ],
+      "bytes": 15092,
+      "sha256": "4771687f041817fc2ef3cad2b199a4f0c7a21f144e09a28b28ccdf410617b76a",
+      "beforeBytes": 13006,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/splitpea.webp",
+      "size": [
+        396,
+        292
+      ],
+      "bytes": 26190,
+      "sha256": "6a29f6777aa1a9dd46302d6e90bdbc2d86d7c22621d9b9e78573ea3047298cd0",
+      "beforeBytes": 27594,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/squash.webp",
+      "size": [
+        288,
+        344
+      ],
+      "bytes": 22404,
+      "sha256": "85d77c882a9b6535e4bafcb5a90e3bd8215a9c60e1ed394d6192f1a02f98a48a",
+      "beforeBytes": 22794,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/starfruit.webp",
+      "size": [
+        296,
+        272
+      ],
+      "bytes": 17598,
+      "sha256": "012f3e0bcdac8a4c817c5b4f66b8db957f6b4aea74526bd340aa0f28c273f435",
+      "beforeBytes": 19202,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/sunflower.webp",
+      "size": [
+        260,
+        264
+      ],
+      "bytes": 23856,
+      "sha256": "1dc9980b2b0317972ef0add5f5d67041fb43a0ac8962f09a142d5dcc7e360c8d",
+      "beforeBytes": 27784,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/sunshroom.webp",
+      "size": [
+        148,
+        160
+      ],
+      "bytes": 7240,
+      "sha256": "6afc6c288e2ee3632a353b66510980f6a4035f8a65377090a0c82ec07c55bdd6",
+      "beforeBytes": 8132,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/tallnut.webp",
+      "size": [
+        324,
+        488
+      ],
+      "bytes": 24740,
+      "sha256": "6d6c96aa1697b1ddf189a3c964a6be0ce90bdb14bc5d94899a3767bbc8b4378f",
+      "beforeBytes": 23824,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/tanglekelp.webp",
+      "size": [
+        340,
+        280
+      ],
+      "bytes": 33092,
+      "sha256": "2591cfadeb1d3b11bcf044d988c01912f00be95fb1b251130fc953dbc680ce03",
+      "beforeBytes": 30952,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/threepeater.webp",
+      "size": [
+        296,
+        320
+      ],
+      "bytes": 30756,
+      "sha256": "2a72491c3c3e01c2ef205ace1e529f79f80855d230fbeec8ba8c1a0b0ec97625",
+      "beforeBytes": 32548,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/torchwood.webp",
+      "size": [
+        276,
+        364
+      ],
+      "bytes": 23896,
+      "sha256": "a6074ed59bec75e4c12d78ca07b0381dabf5b926a7e7c5541b6435835b3e6909",
+      "beforeBytes": 24512,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/trophy.webp",
+      "size": [
+        1256,
+        1076
+      ],
+      "bytes": 293162,
+      "sha256": "e4141850ff778bd1702ef948f11386176f5738a188fc729677e6555f842f8050",
+      "beforeBytes": 293162,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/original/twinsunflower.webp",
+      "size": [
+        356,
+        336
+      ],
+      "bytes": 36024,
+      "sha256": "477862ee7949dbb0989fb7264c9df89b21e789b0ccc30a0be87b208f28d2298f",
+      "beforeBytes": 108916,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/umbrella.webp",
+      "size": [
+        324,
+        276
+      ],
+      "bytes": 22092,
+      "sha256": "0516e239c480473b905189f5c30be404084a7a042cb0928772e1e25660a2253b",
+      "beforeBytes": 24834,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/wallnut.webp",
+      "size": [
+        288,
+        300
+      ],
+      "bytes": 17286,
+      "sha256": "9d079fd7a8ff0c9e1f959b99a8c9757adfde2c3e37d4dec144d529aaded38c03",
+      "beforeBytes": 19916,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/original/wintermelon.webp",
+      "size": [
+        432,
+        424
+      ],
+      "bytes": 34810,
+      "sha256": "b70c07ed477d32480f3ee78f5e7bc5d383a43d2bdc83cb1dbd759c3578aea676",
+      "beforeBytes": 96300,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/hd4/scenery/boss.webp",
+      "size": [
+        3200,
+        2400
+      ],
+      "bytes": 413950,
+      "sha256": "8694d9f843f593baf3e3b2c3aea58e7146fa5d913744996f5597f069fcda8c54",
+      "beforeBytes": 413950,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/scenery/day.webp",
+      "size": [
+        3200,
+        2400
+      ],
+      "bytes": 416336,
+      "sha256": "0ce518a68ad12def7a68fba4558fd1e93c17f7a5525da3dd537061805678ca6c",
+      "beforeBytes": 416336,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/scenery/fog.webp",
+      "size": [
+        3200,
+        2400
+      ],
+      "bytes": 576568,
+      "sha256": "8b746f51f8680b905a01d299f72360195e57b55ab8944e7053007fc7162bdefa",
+      "beforeBytes": 576568,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/scenery/lawn.webp",
+      "size": [
+        3200,
+        2400
+      ],
+      "bytes": 962532,
+      "sha256": "087a4b7e08d9d518fac754d0343be1bc602b32c35d159dea4da44c4c7fc0038a",
+      "beforeBytes": 962532,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/scenery/night.webp",
+      "size": [
+        3200,
+        2400
+      ],
+      "bytes": 566540,
+      "sha256": "a263f2ff3dc477e7c442ca430d1b668573f46ef24a267049a0be40e273bd626e",
+      "beforeBytes": 566540,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/scenery/pool.webp",
+      "size": [
+        3200,
+        2400
+      ],
+      "bytes": 987448,
+      "sha256": "2a4bc57cf6591bb1c7ad267bf46eeda907debe29ef7e9029b2724534c2033ef8",
+      "beforeBytes": 987448,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/scenery/roof.webp",
+      "size": [
+        3200,
+        2400
+      ],
+      "bytes": 530318,
+      "sha256": "b88a4f211cccb9caa90b947bdda8f4785c851dcf04af0de5153aaa4b8a1e9f3d",
+      "beforeBytes": 530318,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/ui/almanac-card.webp",
+      "size": [
+        1296,
+        1936
+      ],
+      "bytes": 86850,
+      "sha256": "1d9b4714d80e35ea739e500e0fa9134220e37806c8fb6ef37032e31335dcf88b",
+      "beforeBytes": 86850,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/ui/challenge-background.webp",
+      "size": [
+        3200,
+        2400
+      ],
+      "bytes": 198384,
+      "sha256": "1a8dba818e63aabb12371f468a662ca848b5e311599f39507dbf844834684562",
+      "beforeBytes": 198384,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/ui/challenge-window.webp",
+      "size": [
+        472,
+        480
+      ],
+      "bytes": 20290,
+      "sha256": "e60548b54b6dba0f97e0d8ab19045cde4b8d7a5f7e07330bfd188cac761affcb",
+      "beforeBytes": 20290,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/ui/checkbox-off.webp",
+      "size": [
+        168,
+        156
+      ],
+      "bytes": 8656,
+      "sha256": "7c3b980e07d4c3e2d119ebb0e43640cb2b2d227ce0ac72f7baddd7b6addc1c7b",
+      "beforeBytes": 8656,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/ui/checkbox-on.webp",
+      "size": [
+        168,
+        156
+      ],
+      "bytes": 11154,
+      "sha256": "9fcc73787b4291a8b1adca22a1732a791b2250845f622c17509d3aac148c0c56",
+      "beforeBytes": 11154,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/ui/parchment-button.webp",
+      "size": [
+        444,
+        104
+      ],
+      "bytes": 8736,
+      "sha256": "6430234886fd7fae33b4dc6b448bdf47e20694021c5709ce41273f21a9a7439e",
+      "beforeBytes": 8736,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/ui/seed-chooser.webp",
+      "size": [
+        1860,
+        2052
+      ],
+      "bytes": 64638,
+      "sha256": "4b4f4ef38d87665cbbb4c934df85aff82fa6796289dc413e841706c1973290cb",
+      "beforeBytes": 64638,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/ui/seed-silhouette.webp",
+      "size": [
+        200,
+        280
+      ],
+      "bytes": 638,
+      "sha256": "ef96c963d8e8cf716906274500f1ceb9a8c1e3990b6c464c588f3545010c88be",
+      "beforeBytes": 638,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/ui/seed-start-disabled.webp",
+      "size": [
+        624,
+        168
+      ],
+      "bytes": 5740,
+      "sha256": "c9b6b0d86d4f107c335ee62d20d41d5ccb908fc55a2382a8e3a5bc8dc7e74acb",
+      "beforeBytes": 5740,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/ui/seed-start.webp",
+      "size": [
+        624,
+        168
+      ],
+      "bytes": 6606,
+      "sha256": "06adaf7f553d2aafec1112d2f10ac642981ca0995682b73d24d319c7f953b5c0",
+      "beforeBytes": 6606,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/hd4/ui/stone-panel.webp",
+      "size": [
+        1440,
+        1280
+      ],
+      "bytes": 92804,
+      "sha256": "86639767c683db42e76764eea5a89aacf7dab00db77f2330c6b403e1a9d3eb3c",
+      "beforeBytes": 92804,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/lawn.webp",
+      "size": [
+        2800,
+        1200
+      ],
+      "bytes": 430818,
+      "sha256": "9fdbe1ab6cd031927062f79e2cac1ea2c20105b7e4f4629ce8e3c3cf99c2c806",
+      "beforeBytes": 430818,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/adventure-hover.webp",
+      "size": [
+        330,
+        140
+      ],
+      "bytes": 17132,
+      "sha256": "41b30eee3b6b8bdfcc00f227b9256e63afe402f454e05b6fa55b4cabba3e3537",
+      "beforeBytes": 17132,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/adventure.webp",
+      "size": [
+        332,
+        140
+      ],
+      "bytes": 17618,
+      "sha256": "57316ee208daaf63fbb536307eb88dd4b302fd8909d7f78a407eb5cc95c99c21",
+      "beforeBytes": 17618,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/basketball.webp",
+      "size": [
+        62,
+        62
+      ],
+      "bytes": 6882,
+      "sha256": "a5274ed7b25fdf38a1856380f289d281e425d3d0a552d182451fe46be838a8f6",
+      "beforeBytes": 6882,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/blover.webp",
+      "size": [
+        172,
+        168
+      ],
+      "bytes": 26222,
+      "sha256": "5fd0d934a5d7169abeaf45f2a0cb1eb6b665d8b69b38a064de9fc31942522b64",
+      "beforeBytes": 26222,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/bowling-stripe.webp",
+      "size": [
+        44,
+        1004
+      ],
+      "bytes": 40172,
+      "sha256": "9595733740ba458ec6cc76adcdcff44d9e82cda89a8ee0a8322b6841d24341c6",
+      "beforeBytes": 40172,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/bungee-cord.webp",
+      "size": [
+        16,
+        128
+      ],
+      "bytes": 3148,
+      "sha256": "ac11d13cdd8ce297452cdbe99ebfbd560da84e2fc7254398e4840b12193767a7",
+      "beforeBytes": 3148,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/bungee-target.webp",
+      "size": [
+        142,
+        152
+      ],
+      "bytes": 33788,
+      "sha256": "56c222599bf9de81046c200e09ce9976516c8bbdd361fc0d1de01bafe0c48867",
+      "beforeBytes": 33788,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/butter.webp",
+      "size": [
+        98,
+        100
+      ],
+      "bytes": 15842,
+      "sha256": "8bd70ce50cad5f960d2265e457882fbc9457decf3942ba7d499791c13370c34c",
+      "beforeBytes": 15842,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/button.webp",
+      "size": [
+        224,
+        92
+      ],
+      "bytes": 20578,
+      "sha256": "f9c1787f5238ef239c44d692a86d82eaba7829dadea36a9a0f5116eb9c26c06b",
+      "beforeBytes": 20578,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/cabbage.webp",
+      "size": [
+        60,
+        54
+      ],
+      "bytes": 7096,
+      "sha256": "9eba5fb81b5d2fb48d2fabcf493a5c9071a6d283571536a89de91c6434d40792",
+      "beforeBytes": 7096,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/cabbagepult.webp",
+      "size": [
+        174,
+        144
+      ],
+      "bytes": 30008,
+      "sha256": "b9c50778134a58dbc9088fa2b43b97c53ddef96de261d16bd88a52cedfb96edc",
+      "beforeBytes": 30008,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/cactus.webp",
+      "size": [
+        168,
+        154
+      ],
+      "bytes": 40302,
+      "sha256": "20f9c73fb0b4b946f467857b463c62f399212c4cdf1adf3599e6b9235b9cf70b",
+      "beforeBytes": 40302,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/cannon-projectile.webp",
+      "size": [
+        324,
+        156
+      ],
+      "bytes": 18200,
+      "sha256": "ca6f6d40be172a0ae7c102edfe6482e14d77ce97e877385b0a220cd6b8e8d995",
+      "beforeBytes": 18200,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/card-cherrybomb.webp",
+      "size": [
+        128,
+        180
+      ],
+      "bytes": 35734,
+      "sha256": "2afecc057bff37a85d1f243e37f8f212038c8ed63f5324bfebe92047650cee81",
+      "beforeBytes": 35734,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/card-chomper.webp",
+      "size": [
+        128,
+        178
+      ],
+      "bytes": 36882,
+      "sha256": "4cc5c072ce0903e59dc4f9c7698f4864c255f2896ae8bfd6b8222efda0e9d41f",
+      "beforeBytes": 36882,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/card-doomshroom.webp",
+      "size": [
+        200,
+        240
+      ],
+      "bytes": 64992,
+      "sha256": "cd08d26410dd00c311bc3d30f75208ab894505e177cdeb05e5c90fa530443e85",
+      "beforeBytes": 64992,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/card-hypnoshroom.webp",
+      "size": [
+        128,
+        178
+      ],
+      "bytes": 32152,
+      "sha256": "213f47d0a6078c814f7d7248e45bb407593abff1c4d067aecabdc979b3b11c9f",
+      "beforeBytes": 32152,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/card-iceshroom.webp",
+      "size": [
+        200,
+        240
+      ],
+      "bytes": 77108,
+      "sha256": "230a7f818ad09d1628816519e4b9cb2dd3c7678f98aa2c0d1e6b77fc5c13e2d5",
+      "beforeBytes": 77108,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/card-lilypad.webp",
+      "size": [
+        200,
+        240
+      ],
+      "bytes": 68434,
+      "sha256": "c9ede65b6c935577aa46e4962d9932a58d4556d1e2e4e3517a9e493a0bccd638",
+      "beforeBytes": 68434,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/card-peashooter.webp",
+      "size": [
+        130,
+        180
+      ],
+      "bytes": 35678,
+      "sha256": "2c11f9a2fb144cf827d4271e9c30327414ad36912821716fb66fd23bbc3a5c15",
+      "beforeBytes": 35678,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/card-plantern.webp",
+      "size": [
+        200,
+        240
+      ],
+      "bytes": 76938,
+      "sha256": "999f9dd01be50d04ab71bfd12f83d3f00b47d2eaab734cbdf4e3ac135743eeab",
+      "beforeBytes": 76938,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/card-potatomine.webp",
+      "size": [
+        128,
+        178
+      ],
+      "bytes": 32792,
+      "sha256": "d79d04a1208a30a3b30a444046f81ce4ca79935ea79f80a61e652490b69c7dbe",
+      "beforeBytes": 32792,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/card-puffshroom.webp",
+      "size": [
+        128,
+        178
+      ],
+      "bytes": 30432,
+      "sha256": "8af2f209647c5240906d450d451f765ae43e1566fe7f640868939804d2dd0f83",
+      "beforeBytes": 30432,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/card-repeater.webp",
+      "size": [
+        128,
+        178
+      ],
+      "bytes": 35220,
+      "sha256": "21d856e76b3b1f1b62e6f1abb2d34eb2422324e232287184969213ba1277eb6d",
+      "beforeBytes": 35220,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/card-scaredyshroom.webp",
+      "size": [
+        128,
+        178
+      ],
+      "bytes": 32098,
+      "sha256": "7407eca8dbd50cb6e5908a4cc5247a599d946321462a0813b1e76713931f9e0f",
+      "beforeBytes": 32098,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/card-snowpea.webp",
+      "size": [
+        128,
+        180
+      ],
+      "bytes": 35080,
+      "sha256": "d3557d4a14fe19627ffb056c5912bb2f3b94b145ff3ae380867a2089af80c6c7",
+      "beforeBytes": 35080,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/card-squash.webp",
+      "size": [
+        200,
+        240
+      ],
+      "bytes": 74400,
+      "sha256": "185146e851cb8fe54d9dd7b6914178102d19c245311a19eaf7ab16623019d1fc",
+      "beforeBytes": 74400,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/card-sunflower.webp",
+      "size": [
+        128,
+        178
+      ],
+      "bytes": 36200,
+      "sha256": "e200bd8dab56b12411c62a196f4342ca2f6cff9a7d22ce6b0960ec95b1e17ec2",
+      "beforeBytes": 36200,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/card-sunshroom.webp",
+      "size": [
+        128,
+        178
+      ],
+      "bytes": 31386,
+      "sha256": "e6f8d175b1a42cbd4e39de6268cf1316df3e34323420381a5f71a8a85477bf10",
+      "beforeBytes": 31386,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/card-threepeater.webp",
+      "size": [
+        200,
+        240
+      ],
+      "bytes": 85704,
+      "sha256": "3399d26cd9d32f57deccd842bbf88c0c19524ce31c9b7f03cea8960d7f8b54a2",
+      "beforeBytes": 85704,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/card-wallnut.webp",
+      "size": [
+        128,
+        180
+      ],
+      "bytes": 34130,
+      "sha256": "033177d38ce86f920ebaae8db7271ad7dc084524f2be668aea9e6d39435e855c",
+      "beforeBytes": 34130,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/cattail.webp",
+      "size": [
+        82,
+        74
+      ],
+      "bytes": 4420,
+      "sha256": "8c7c50d38b18fa4b68431a88e6da09b878a3e6abd6bebbcceeb2ded3396ebc9e",
+      "beforeBytes": 4420,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/cherrybomb.webp",
+      "size": [
+        224,
+        162
+      ],
+      "bytes": 30858,
+      "sha256": "a8f22c52fc95f4ae3082449060a72dc5d463100f2698f14d9ce66b6a72f2b573",
+      "beforeBytes": 30858,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/chomper.webp",
+      "size": [
+        260,
+        228
+      ],
+      "bytes": 12832,
+      "sha256": "b08f90bb004263aa77dcaffa3d5cad5576ce36e00e51aa63b4b663eb5bac8949",
+      "beforeBytes": 12832,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/cobcannon.webp",
+      "size": [
+        168,
+        99
+      ],
+      "bytes": 7932,
+      "sha256": "e68af572ea9dd93d1fa1b04c532e9ba49e6ff3fa183d80da5b56c67a91143170",
+      "beforeBytes": 7932,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/coffeebean.webp",
+      "size": [
+        78,
+        194
+      ],
+      "bytes": 10010,
+      "sha256": "801f0c5ae25c9fd588df9c24810912b65b98af4c8681c4152c4d92f6eb2fff57",
+      "beforeBytes": 10010,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/coin-diamond.webp",
+      "size": [
+        136,
+        104
+      ],
+      "bytes": 11494,
+      "sha256": "8551ead4cea635ea5c7903a3d2de3fa2e91eec83e591ef2d22b6c16110124b58",
+      "beforeBytes": 11494,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/coin-gold.webp",
+      "size": [
+        90,
+        90
+      ],
+      "bytes": 13908,
+      "sha256": "aa6c6945b31da6f9132913d331554a40135fb7278fdf31466edc51521430eddf",
+      "beforeBytes": 13908,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/coin-silver.webp",
+      "size": [
+        86,
+        80
+      ],
+      "bytes": 11944,
+      "sha256": "ce44c2ff1ef94c61f598be6d8eb04aaf4c4f279178dbfcc44f79f6b3350f62b9",
+      "beforeBytes": 11944,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/conveyor-back.webp",
+      "size": [
+        1032,
+        172
+      ],
+      "bytes": 58416,
+      "sha256": "1f443c3442dccd5947f21a23a355b770e657a84518417e288347f16328bb2899",
+      "beforeBytes": 58416,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/conveyor.webp",
+      "size": [
+        1004,
+        192
+      ],
+      "bytes": 54170,
+      "sha256": "72e0bf871990799ad43a91141299c5697da20f43d2bd80ad08430b54b1742167",
+      "beforeBytes": 54170,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/crater.webp",
+      "size": [
+        360,
+        122
+      ],
+      "bytes": 21060,
+      "sha256": "5a7b9b52f895f267e4ccdc7a6b1d18b929ef19168f07ccf581d3201c875a4e2e",
+      "beforeBytes": 21060,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/crazy-dave.webp",
+      "size": [
+        353,
+        860
+      ],
+      "bytes": 66772,
+      "sha256": "453104afbc8c26ff648f3488fde8f340dba220b9b9acf61b91346bfd0e170722",
+      "beforeBytes": 66772,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/dave-bubble.webp",
+      "size": [
+        280,
+        183
+      ],
+      "bytes": 1356,
+      "sha256": "40829849824afe9e854952fe86cf044744722981350b0914ba907d0cdaf318c1",
+      "beforeBytes": 1356,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/dialog.webp",
+      "size": [
+        824,
+        966
+      ],
+      "bytes": 511880,
+      "sha256": "d95e80c49d49f5b5a9f911e58ee765f92f03aca5b074226f4ffdc1c62d85faec",
+      "beforeBytes": 511880,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/doomshroom.webp",
+      "size": [
+        204,
+        182
+      ],
+      "bytes": 4024,
+      "sha256": "22642dcf30dde2cfaef3db33f62128d64f09367769dcb685c0e5810018f0e9ac",
+      "beforeBytes": 4024,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/explodenut.webp",
+      "size": [
+        142,
+        142
+      ],
+      "bytes": 21316,
+      "sha256": "3131a3d97742b61bb6242f20074cb388a5af00995f96cef515b304c0281e7b59",
+      "beforeBytes": 21316,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/fire-pea.webp",
+      "size": [
+        800,
+        450
+      ],
+      "bytes": 141944,
+      "sha256": "96e80845ada21063bd6afd0cdd5e526884f5b3820a511fd0f3cbe639509083f2",
+      "beforeBytes": 141944,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/flowerpot.webp",
+      "size": [
+        144,
+        136
+      ],
+      "bytes": 28178,
+      "sha256": "818c9ce807c0ec8b45cbbcb772ffda2b567a49363a2fd08a36190dabb102b2c5",
+      "beforeBytes": 28178,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/fog-cloud.webp",
+      "size": [
+        3360,
+        380
+      ],
+      "bytes": 148888,
+      "sha256": "328b4fd46aa95159778401cd11659699a4b8623e933a4d922a186eaf9d3206a6",
+      "beforeBytes": 148888,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/fog.webp",
+      "size": [
+        2800,
+        1200
+      ],
+      "bytes": 266774,
+      "sha256": "3fefd7e7a4010041b8d116ad726da5ba3c4ee055fd1f8924a72f6d2760c6b4f4",
+      "beforeBytes": 266774,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/fumeshroom.webp",
+      "size": [
+        200,
+        176
+      ],
+      "bytes": 8884,
+      "sha256": "ab0890c3fe2409b23b63024eb4410d6aefb43dcafea31c6fe9b81b22ec3dfeab",
+      "beforeBytes": 8884,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/garlic.webp",
+      "size": [
+        120,
+        118
+      ],
+      "bytes": 5220,
+      "sha256": "1ecaf44c1c57d7e104b44ffd4937d379c78d0226cc53e0164217a5e4a6912d30",
+      "beforeBytes": 5220,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/gatlingpea.webp",
+      "size": [
+        150,
+        145
+      ],
+      "bytes": 25934,
+      "sha256": "8dec2e6e16ca4074b705a26ccd5f4c78677c913e53b3dcb009808b9d39ca9a76",
+      "beforeBytes": 25934,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/gloomshroom.webp",
+      "size": [
+        82,
+        75
+      ],
+      "bytes": 3994,
+      "sha256": "5abaf7de2e9d653087c27185ceac7b16b89eb261c4f0e14cc38c47dde36cdce3",
+      "beforeBytes": 3994,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/goldmagnet.webp",
+      "size": [
+        62,
+        75
+      ],
+      "bytes": 3366,
+      "sha256": "162b39e5eac9336b66c98b36a6773d90ebeeab53e4cf4e90712e23964b474f3a",
+      "beforeBytes": 3366,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/grave.webp",
+      "size": [
+        176,
+        200
+      ],
+      "bytes": 13944,
+      "sha256": "3bf53e1176ac08d6786e17a0b3bda6f7ea01603cff99b26c14386053dfd49c50",
+      "beforeBytes": 13944,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/gravebuster.webp",
+      "size": [
+        198,
+        212
+      ],
+      "bytes": 8482,
+      "sha256": "1447b297805343652c022d4fe50895198034f1df7ff6cac76b23ea8c5b201a8e",
+      "beforeBytes": 8482,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/hammer.webp",
+      "size": [
+        98,
+        118
+      ],
+      "bytes": 17470,
+      "sha256": "0323da456ff8bf62ae5a4b08dfe2e7fadb203bf3c5e705f0de2018caecc4e893",
+      "beforeBytes": 17470,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/hypnoshroom.webp",
+      "size": [
+        136,
+        152
+      ],
+      "bytes": 6540,
+      "sha256": "5dda7d8a69e411cab7c5d0634a150e787fa0fccc085811675ca4ac29fb1f4b2a",
+      "beforeBytes": 6540,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/ice-trail.webp",
+      "size": [
+        300,
+        144
+      ],
+      "bytes": 4398,
+      "sha256": "ab2b05fa7809555e044604539d7bb60588bbf96c952d2f3ced9c1cf4343a4203",
+      "beforeBytes": 4398,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/iceshroom.webp",
+      "size": [
+        166,
+        150
+      ],
+      "bytes": 32140,
+      "sha256": "c7f98a5a6be027d474d56c9741aaa246b43022d3dd7533beb28c43e9f0d2c8b9",
+      "beforeBytes": 32140,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/imitater.webp",
+      "size": [
+        51,
+        74
+      ],
+      "bytes": 2230,
+      "sha256": "28cef3ea8cab60ce4cd7d4a32cc654230888aa2209e4e7aebc943170535b8650",
+      "beforeBytes": 2230,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/jalapeno.webp",
+      "size": [
+        136,
+        178
+      ],
+      "bytes": 14584,
+      "sha256": "d6c5e1b82f10fc29aeb066f34e72a391d00071d30f44d17b15f089497e7449af",
+      "beforeBytes": 14584,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/kernel.webp",
+      "size": [
+        42,
+        44
+      ],
+      "bytes": 3192,
+      "sha256": "213d0b43b66575c99ac0761193a8aa7feafadca00c5bb1b34797f6c192de69fa",
+      "beforeBytes": 3192,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/kernelpult.webp",
+      "size": [
+        204,
+        190
+      ],
+      "bytes": 35052,
+      "sha256": "7c6288930fb3f167c10ee9dadea86c010403bb0fb1c8a501d484d2efeee1f13a",
+      "beforeBytes": 35052,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/ladder.webp",
+      "size": [
+        154,
+        242
+      ],
+      "bytes": 9430,
+      "sha256": "e1a4adee468d644148a8e524fb7498396b5b68a32887fc2d590970a23fc30a42",
+      "beforeBytes": 9430,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/lilypad.webp",
+      "size": [
+        158,
+        116
+      ],
+      "bytes": 22496,
+      "sha256": "693f3bbf237a8a1232dc810cf8114b1b8d5b723d92e4790332725e6ae1090a86",
+      "beforeBytes": 22496,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/logo.webp",
+      "size": [
+        1400,
+        232
+      ],
+      "bytes": 343504,
+      "sha256": "b61deda7ac8652a8907b531468b40d15e416ed7a679ef9534cd46409569c00a2",
+      "beforeBytes": 343504,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/magnetshroom.webp",
+      "size": [
+        108,
+        144
+      ],
+      "bytes": 18144,
+      "sha256": "0b6981646d6927125fa70a718ab9c9ad7809d2c247c4d8fe8d5a77b4abef4faf",
+      "beforeBytes": 18144,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/marigold.webp",
+      "size": [
+        104,
+        144
+      ],
+      "bytes": 22708,
+      "sha256": "5660036fe897d52871184bdf238a35e836443f6b7d0c171c3df42802ac2e5bba",
+      "beforeBytes": 22708,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/melon.webp",
+      "size": [
+        110,
+        96
+      ],
+      "bytes": 16364,
+      "sha256": "e2a09616512c117e8a931e3726a8925201fbf3d26fa25b9419bd7f3630b206f4",
+      "beforeBytes": 16364,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/melonpult.webp",
+      "size": [
+        200,
+        178
+      ],
+      "bytes": 37848,
+      "sha256": "b61c7a18bb1524ace56017b41523f956f53d05f70ef1a32d6d11f0c83d85d9e1",
+      "beforeBytes": 37848,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/menu.webp",
+      "size": [
+        1800,
+        1200
+      ],
+      "bytes": 156070,
+      "sha256": "a4770a0995aafd3d586143d35a54c5b14ad0922c96c4ca17597e303565945754",
+      "beforeBytes": 156070,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/meter-empty.webp",
+      "size": [
+        316,
+        48
+      ],
+      "bytes": 8856,
+      "sha256": "a6d204ca339d7653fb5d83aad2d6819d29a1303e9f58490fa9a9ff082762d562",
+      "beforeBytes": 8856,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/meter-flag.webp",
+      "size": [
+        40,
+        36
+      ],
+      "bytes": 3228,
+      "sha256": "ff9cd00b43b18ff53bd3d6137210c5a15b6b40ee971f732c12e565025e9dc002",
+      "beforeBytes": 3228,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/meter-full.webp",
+      "size": [
+        316,
+        48
+      ],
+      "bytes": 13342,
+      "sha256": "3d6208a1d091c728b7c177de7cce051d81902d1437799a790cff4ca4dc45ae9d",
+      "beforeBytes": 13342,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/meter-head.webp",
+      "size": [
+        48,
+        48
+      ],
+      "bytes": 5010,
+      "sha256": "7708d673a8854a69b83db59e867e97f519e195bc5f68a1b3487b47c081c7c30e",
+      "beforeBytes": 5010,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/mower.webp",
+      "size": [
+        140,
+        114
+      ],
+      "bytes": 16956,
+      "sha256": "8b9e2e728c2c163687749b87a58c21e7b96414c6ae94a8302b4c9c35dd3a852e",
+      "beforeBytes": 16956,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/night.webp",
+      "size": [
+        2800,
+        1200
+      ],
+      "bytes": 290862,
+      "sha256": "dae595cc17324ab133f58b956e0cf51c64992a05fa257012fc63d8f560007276",
+      "beforeBytes": 290862,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/peashooter.webp",
+      "size": [
+        142,
+        142
+      ],
+      "bytes": 24668,
+      "sha256": "d2c5a46a87be92a890b48c57db9691ade080419e776a66f0f46e2c9536232d7d",
+      "beforeBytes": 24668,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/plantern.webp",
+      "size": [
+        162,
+        176
+      ],
+      "bytes": 26130,
+      "sha256": "d896acc61e1a14a26d3ab04f97802a51df7709786f29169a3792ae69d451403a",
+      "beforeBytes": 26130,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/pool-cleaner.webp",
+      "size": [
+        94,
+        128
+      ],
+      "bytes": 14534,
+      "sha256": "f70990a2e14e10f06b26eccb165cfa6a3a45a5df06da939815e0ba814d6ea19f",
+      "beforeBytes": 14534,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/pool.webp",
+      "size": [
+        2800,
+        1200
+      ],
+      "bytes": 473708,
+      "sha256": "f2ea533b38f5e16a6c248d28ae763b61c7a37cea635663e9ac1dcac45959994e",
+      "beforeBytes": 473708,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/potatomine.webp",
+      "size": [
+        150,
+        110
+      ],
+      "bytes": 6110,
+      "sha256": "106979d7c8d291b1476ec0bb85b467e8be68e39cea4eaef45b8ac02012095d12",
+      "beforeBytes": 6110,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/puff.webp",
+      "size": [
+        64,
+        54
+      ],
+      "bytes": 5502,
+      "sha256": "121384d619f1c630c242b5ef800d3ef77ac238c6ba2e83371b9ac690c8a88acc",
+      "beforeBytes": 5502,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/puffshroom.webp",
+      "size": [
+        80,
+        132
+      ],
+      "bytes": 10584,
+      "sha256": "3851f574e6c8dfa4231acaff6a6910d2143e3a7abc28372e71670bece1d883f4",
+      "beforeBytes": 10584,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/pumpkin.webp",
+      "size": [
+        194,
+        134
+      ],
+      "bytes": 41806,
+      "sha256": "c82ded77feec31aa97aa371a90dfdd0175160192c09cb38e0fe30067d8313afb",
+      "beforeBytes": 41806,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/rake.webp",
+      "size": [
+        2560,
+        280
+      ],
+      "bytes": 42730,
+      "sha256": "eda1c3ff783b7f8453f4f9931a86703076fa7fb7b77f035036d268df8193cb00",
+      "beforeBytes": 42730,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/repeater.webp",
+      "size": [
+        146,
+        142
+      ],
+      "bytes": 29042,
+      "sha256": "53bdbaaba8312d17c8232e8b716260d1a641bf695c4f2c43b144825d0a693c59",
+      "beforeBytes": 29042,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/roof-cleaner.webp",
+      "size": [
+        142,
+        104
+      ],
+      "bytes": 9520,
+      "sha256": "14a001a90a1283569e0ad06e65a3815abdfc26e4f8486df422aa267736f0009d",
+      "beforeBytes": 9520,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/roof.webp",
+      "size": [
+        2800,
+        1200
+      ],
+      "bytes": 301458,
+      "sha256": "90edf0917b209c922aff7444e5c6e91723b68c8da4960a598e7206f3294e2b1c",
+      "beforeBytes": 301458,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/scaredyshroom.webp",
+      "size": [
+        114,
+        162
+      ],
+      "bytes": 17004,
+      "sha256": "be125fc0f85f9aba5fcffdb33c4b17fee84ad2a02eb9d82642cc9d4ca60c7d43",
+      "beforeBytes": 17004,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/seashroom.webp",
+      "size": [
+        96,
+        198
+      ],
+      "bytes": 11700,
+      "sha256": "95735588ef2e3585ff1cb440ee9ccdd36e0ebcf55a4093a488ef5c620d29281c",
+      "beforeBytes": 11700,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/seed-packet.webp",
+      "size": [
+        200,
+        280
+      ],
+      "bytes": 66940,
+      "sha256": "6cdf59677a28e15a7b1f28cd3ccf35d35c399ea68b8e4896952046a0f5b28a32",
+      "beforeBytes": 66940,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/seedbank.webp",
+      "size": [
+        892,
+        174
+      ],
+      "bytes": 75964,
+      "sha256": "e4683642d144642b44b800b240ab0bbb6d1e602d7853fcc743ba95863c111bd0",
+      "beforeBytes": 75964,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/shop-background.webp",
+      "size": [
+        800,
+        600
+      ],
+      "bytes": 35474,
+      "sha256": "9991a420e01a720ca7f9a4564b25ecf7eeb4d39b25f658e8d33f0bb6b4a0d4d8",
+      "beforeBytes": 35474,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/shop-firstaid.webp",
+      "size": [
+        50,
+        57
+      ],
+      "bytes": 2326,
+      "sha256": "afae6362227a22e0201ccfbee7793a5e563a58f0e5f3db00af567323eda05fe3",
+      "beforeBytes": 2326,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/shop-rake.webp",
+      "size": [
+        103,
+        33
+      ],
+      "bytes": 1486,
+      "sha256": "82532590abacdc86ca8140c40012b21f8843727986ba0ca51ba9b6492f3dae4b",
+      "beforeBytes": 1486,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/shop-roof.webp",
+      "size": [
+        56,
+        43
+      ],
+      "bytes": 1926,
+      "sha256": "44977c756aca728c6dd0cb8c87655accd75936e7ba4048a59d92bb65e4c65639",
+      "beforeBytes": 1926,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/shop-slots.webp",
+      "size": [
+        65,
+        65
+      ],
+      "bytes": 2486,
+      "sha256": "bebb30dd5302d4f6221396ede1b90883c1ef8ba0e8b07f00e04df46d842fd2fb",
+      "beforeBytes": 2486,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/shovel.webp",
+      "size": [
+        160,
+        160
+      ],
+      "bytes": 17204,
+      "sha256": "28f2ef5d0ea40f45604305963056d03a2c7beaf945f1dc35877095ca5b4f44a3",
+      "beforeBytes": 17204,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/shovelbank.webp",
+      "size": [
+        140,
+        144
+      ],
+      "bytes": 22804,
+      "sha256": "f400c542126be3793a5f2786d097b38222c1c6f0b2e47837ccea36ca02a7013d",
+      "beforeBytes": 22804,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/sled.webp",
+      "size": [
+        632,
+        208
+      ],
+      "bytes": 29528,
+      "sha256": "f9012ef7e9fef16bd6cd7c4b006b82ea63014c055c30fa1e29011508c4c614ec",
+      "beforeBytes": 29528,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/snow-pea.webp",
+      "size": [
+        56,
+        56
+      ],
+      "bytes": 5660,
+      "sha256": "ed2a1fd43fe2f889c9c4117ec580400d1e268f4a17ff0b6f7f52fe2fe17366a9",
+      "beforeBytes": 5660,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/snowpea.webp",
+      "size": [
+        142,
+        142
+      ],
+      "bytes": 26438,
+      "sha256": "832bc9b8772342376df9881c5879522e433c53291a3a666ca10f21512b496a7d",
+      "beforeBytes": 26438,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/spike.webp",
+      "size": [
+        60,
+        32
+      ],
+      "bytes": 3650,
+      "sha256": "7854d5cfb7080f44e980d7398dbf4df22db1600aa437f3938ee2faec6885d249",
+      "beforeBytes": 3650,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/spikerock.webp",
+      "size": [
+        81,
+        43
+      ],
+      "bytes": 2880,
+      "sha256": "cfe17f83ccb320f5e2aeefec7aab47478438aa70a86197792f785a993f099bf8",
+      "beforeBytes": 2880,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/spikeweed.webp",
+      "size": [
+        170,
+        70
+      ],
+      "bytes": 15610,
+      "sha256": "64edfd7ade8f4761bcc7bdf212cde72c2cf031a825aafc71cfef66d4f1eab3a2",
+      "beforeBytes": 15610,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/splitpea.webp",
+      "size": [
+        184,
+        144
+      ],
+      "bytes": 32154,
+      "sha256": "75c2d53464b4228c51b501114ca1a2a8f6fa4fd1de806a4c42627a17957f4c5b",
+      "beforeBytes": 32154,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/squash.webp",
+      "size": [
+        136,
+        164
+      ],
+      "bytes": 9298,
+      "sha256": "d8e50044c2d8c04e13012839976f5ba52729422e1023a15abd88ad93f423d0b4",
+      "beforeBytes": 9298,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/star.webp",
+      "size": [
+        60,
+        60
+      ],
+      "bytes": 5624,
+      "sha256": "0b6618f031b6549918db8e358daecdc53ae3012d6a16bc409a2f6732d791292a",
+      "beforeBytes": 5624,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/starfruit.webp",
+      "size": [
+        154,
+        140
+      ],
+      "bytes": 25936,
+      "sha256": "29a3b72be8ccf8e03e071c4af11fbba06195f4d1cd4522471721f290c5930315",
+      "beforeBytes": 25936,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/sun.webp",
+      "size": [
+        156,
+        156
+      ],
+      "bytes": 22358,
+      "sha256": "aacd1d93d55dc0f0f6520e3d7be7c7da67e558d3da85158b880e90b204bf98df",
+      "beforeBytes": 22358,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/sunflower.webp",
+      "size": [
+        146,
+        148
+      ],
+      "bytes": 30644,
+      "sha256": "3c297ce99fd0cb8c1a1bbf37fb414117ad53545a463056b982ca11246b2f9bd0",
+      "beforeBytes": 30644,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/sunshroom.webp",
+      "size": [
+        118,
+        122
+      ],
+      "bytes": 10124,
+      "sha256": "cf1c4bcff3c51c2d1b9689a9887107147f45bd0e6675291085c30efd6ab7d7ee",
+      "beforeBytes": 10124,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/tallnut.webp",
+      "size": [
+        166,
+        238
+      ],
+      "bytes": 45954,
+      "sha256": "8a183119264e562638d2604f850a531baeacfa9b89d38c2fd96646a7a641a524",
+      "beforeBytes": 45954,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/tanglekelp.webp",
+      "size": [
+        180,
+        144
+      ],
+      "bytes": 36988,
+      "sha256": "697f78fbd29b58002c91f0a54e174434d3552937382642e07150ef48e67ecf21",
+      "beforeBytes": 36988,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/threepeater.webp",
+      "size": [
+        146,
+        160
+      ],
+      "bytes": 36644,
+      "sha256": "df9bff1fe4d5637b99429faac6cc3d010eef78e0d39fe58a61c18159dd66cbdc",
+      "beforeBytes": 36644,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/torchwood.webp",
+      "size": [
+        146,
+        174
+      ],
+      "bytes": 36080,
+      "sha256": "f8ccfe1fcca3957a1582c93e54b356078fe20d8f3de0ab84ac976596aacdea6b",
+      "beforeBytes": 36080,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/trophy.webp",
+      "size": [
+        628,
+        538
+      ],
+      "bytes": 114896,
+      "sha256": "29d5b74026384507cece6702c0902d0d6ca17bee40d3a66d1bdf88060def9217",
+      "beforeBytes": 114896,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/twinsunflower.webp",
+      "size": [
+        173,
+        161
+      ],
+      "bytes": 31130,
+      "sha256": "a40bfc5390d8d083bfda8a21db3664b127b3fa928fc24d584fdc1d381f961e9d",
+      "beforeBytes": 31130,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/umbrella.webp",
+      "size": [
+        156,
+        132
+      ],
+      "bytes": 28970,
+      "sha256": "03d50377f3d9133e513500f2c9bef390644d9b79d6c68ada3cc614e626b3899b",
+      "beforeBytes": 28970,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/vases.webp",
+      "size": [
+        480,
+        404
+      ],
+      "bytes": 43662,
+      "sha256": "7e7dea16186ac945e85345d9e33e2412f6388e510e34ca81ac1d1c6f20df1d52",
+      "beforeBytes": 43662,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/wallnut.webp",
+      "size": [
+        130,
+        146
+      ],
+      "bytes": 26700,
+      "sha256": "5327c33564bde31cfcaf8ed892a2744e7ecf5406cd3004db4bd7e5de42829122",
+      "beforeBytes": 26700,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/wintermelon-projectile.webp",
+      "size": [
+        110,
+        96
+      ],
+      "bytes": 13900,
+      "sha256": "0215c815c5efa731354c7aee6f3ab3f9fe03aec9b40cb57cc65ba7fd1efa752e",
+      "beforeBytes": 13900,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/wintermelon.webp",
+      "size": [
+        193,
+        194
+      ],
+      "bytes": 39312,
+      "sha256": "6a824f5581dd2d2639621e32c835463509575a96fef92543d76dfd8c18f8db5d",
+      "beforeBytes": 39312,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/original/yeti.webp",
+      "size": [
+        492,
+        524
+      ],
+      "bytes": 57916,
+      "sha256": "63c49c99bde0ac40ff3d4ecdcb0350a1bcb8b03516d8498979bc93612375d6da",
+      "beforeBytes": 10678,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/pea.webp",
+      "size": [
+        56,
+        56
+      ],
+      "bytes": 4914,
+      "sha256": "0082baa3b26710ce07a2fd76771d638623eba2efd7abfd7754e76c9f9d4c2e63",
+      "beforeBytes": 4914,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/plant-motion/cabbagepult.webp",
+      "size": [
+        1024,
+        98
+      ],
+      "bytes": 94822,
+      "sha256": "b1ed55856d7f9b13ab096c0524353006d9dcd2236dd40abb2b752e4ef8e22614",
+      "beforeBytes": 94822,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/plant-motion/gatlingpea.webp",
+      "size": [
+        1024,
+        220
+      ],
+      "bytes": 47376,
+      "sha256": "3dd16ffc5bb83ad43eac85ecbbb0b0c988ae65719ee0271a50718df345f1b8de",
+      "beforeBytes": 47376,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/plant-motion/kernelpult.webp",
+      "size": [
+        1024,
+        188
+      ],
+      "bytes": 37264,
+      "sha256": "19b0e005806472cd567d73607c718c22b61062f4c0f42943cd334627e82e6d24",
+      "beforeBytes": 37264,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/plant-motion/melonpult.webp",
+      "size": [
+        1024,
+        100
+      ],
+      "bytes": 107124,
+      "sha256": "64caa2b09523ae756376d964229002c02644ccd656439b1a87bd883eecc0c416",
+      "beforeBytes": 107124,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/plant-motion/peashooter.webp",
+      "size": [
+        1024,
+        134
+      ],
+      "bytes": 83630,
+      "sha256": "4bb3df4daecdd1ea228d7d70828bc88dd9e87bd7e76b3b1d7aca0e4af4522dca",
+      "beforeBytes": 98708,
+      "changed": true
+    },
+    {
+      "file": "assets/runtime/plant-motion/sunflower.webp",
+      "size": [
+        1024,
+        116
+      ],
+      "bytes": 85412,
+      "sha256": "df641c79a76a1d4d38a905ddd6df40278ecb871d87e27a6a843833cc178cd4fc",
+      "beforeBytes": 85412,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/plant-motion/threepeater.webp",
+      "size": [
+        1024,
+        142
+      ],
+      "bytes": 27510,
+      "sha256": "bb5297241dbdad7cb7bb7ecf33d584c0249c07e126b81132d2092deb2e3bd315",
+      "beforeBytes": 27510,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/plant-motion/twinsunflower.webp",
+      "size": [
+        1024,
+        122
+      ],
+      "bytes": 98620,
+      "sha256": "c3987bdb9a6a247b827cd6be1e420de20de8af7f5d78dbeff1c07cbf12f3c5e9",
+      "beforeBytes": 98620,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/plant-motion/wintermelon.webp",
+      "size": [
+        1024,
+        104
+      ],
+      "bytes": 120936,
+      "sha256": "592478fd6110dba737ddb0a0a2181a7831e5d48a448acb70d1eae883e1eb0f9e",
+      "beforeBytes": 120936,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/previews/day.jpg",
+      "size": [
+        1400,
+        600
+      ],
+      "bytes": 171907,
+      "sha256": "ad2100045025a71343277d9ab13bbdb69126132f8482e14987ab2c4f4729dbbc",
+      "beforeBytes": 171907,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/previews/fog.webp",
+      "size": [
+        800,
+        343
+      ],
+      "bytes": 96758,
+      "sha256": "e7e476ed931f450aa85dba43a69acf48ba1f739810b196c72c0ff704b2a56e5a",
+      "beforeBytes": 96758,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/previews/night.webp",
+      "size": [
+        800,
+        343
+      ],
+      "bytes": 103076,
+      "sha256": "7a13c12dc061173cdd0e544d82280c53d13ea4b5a7da90754b9745562998351d",
+      "beforeBytes": 103076,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/previews/pool.webp",
+      "size": [
+        800,
+        343
+      ],
+      "bytes": 131012,
+      "sha256": "73a9b44a6c93ae6b61b9355f4d94b55560d4e6908bfbd184a877ce0aad1f6773",
+      "beforeBytes": 131012,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/previews/roof.webp",
+      "size": [
+        800,
+        343
+      ],
+      "bytes": 97730,
+      "sha256": "d9921222950f253a4fcb337e2e6e9e17746f39f33d415a858efdacd53d0fb27f",
+      "beforeBytes": 97730,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/ui/almanac-card.webp",
+      "size": [
+        324,
+        484
+      ],
+      "bytes": 21528,
+      "sha256": "85394fc7810947cfb79abd04c0050d21eb565992395f31501a952e518fb8708e",
+      "beforeBytes": 21528,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/ui/challenge-background.webp",
+      "size": [
+        800,
+        600
+      ],
+      "bytes": 23176,
+      "sha256": "4b89f5c3338a73d7155b4bcc4ee0a60252de5be305dd2ae0b16c4b050a0b2e93",
+      "beforeBytes": 23176,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/ui/challenge-window.webp",
+      "size": [
+        118,
+        120
+      ],
+      "bytes": 3754,
+      "sha256": "1afad663968bb28e5eb79972da9c18c34ccef92999c9f605623cec555865684c",
+      "beforeBytes": 3754,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/ui/checkbox-off.webp",
+      "size": [
+        42,
+        39
+      ],
+      "bytes": 1914,
+      "sha256": "8d58f2f37f8af31dc500c3e81059d87946f8372d3a71fb06f98853a9e5f17aca",
+      "beforeBytes": 1914,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/ui/checkbox-on.webp",
+      "size": [
+        42,
+        39
+      ],
+      "bytes": 2448,
+      "sha256": "6e52ead68a65fb7225ad1fd6119fa335be1f2d645e9686967b97d97a537e0c2b",
+      "beforeBytes": 2448,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/ui/parchment-button.webp",
+      "size": [
+        111,
+        26
+      ],
+      "bytes": 2326,
+      "sha256": "c64c6550a6dd0ba0e493048333c8653a87c3c5381d82eadd216d192bc42412d3",
+      "beforeBytes": 2326,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/ui/seed-chooser.webp",
+      "size": [
+        465,
+        513
+      ],
+      "bytes": 8720,
+      "sha256": "299c3a65abd6514a9bab03d41d2e0b7f8cb0a9d455386b724f6fffa4859130b1",
+      "beforeBytes": 8720,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/ui/seed-silhouette.webp",
+      "size": [
+        50,
+        70
+      ],
+      "bytes": 120,
+      "sha256": "f88251fc93d5f29c54b4eed7097c29b391c6c5fa36ce21b6c261145fc5ea56a4",
+      "beforeBytes": 120,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/ui/seed-start-disabled.webp",
+      "size": [
+        156,
+        42
+      ],
+      "bytes": 792,
+      "sha256": "15f4f3abd89a175d0f0ed8d061551bd167085a9776cf5e01b02bb26e21289bae",
+      "beforeBytes": 792,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/ui/seed-start.webp",
+      "size": [
+        156,
+        42
+      ],
+      "bytes": 892,
+      "sha256": "4cb6486f6a2a429ad88b177d134f766240be67a36f727cf7d53f0bb5195ddc9b",
+      "beforeBytes": 892,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/ui/stone-panel.webp",
+      "size": [
+        360,
+        320
+      ],
+      "bytes": 30918,
+      "sha256": "f8b182fb2b2b2879a7fdea8f3315937d26276a7ac5d02d2696b6039ebba5c919",
+      "beforeBytes": 30918,
+      "changed": false
+    },
+    {
+      "file": "assets/runtime/yard.webp",
+      "size": [
+        2800,
+        1200
+      ],
+      "bytes": 285726,
+      "sha256": "3d182bea73f0f680574d822a437a54de0e43f1dc2a1c0f6b3cbfb4a958437a5c",
+      "beforeBytes": 285726,
+      "changed": false
+    },
+    {
+      "file": "icons/apple-touch-icon.png",
+      "size": [
+        180,
+        180
+      ],
+      "bytes": 47106,
+      "sha256": "8ea35971c0ae139c204be2ccc590aa24872867a89cb98071e14fa76d95e5e51c"
+    },
+    {
+      "file": "icons/favicon.ico",
+      "size": [
+        48,
+        48
+      ],
+      "bytes": 7864,
+      "sha256": "90da1d3cf4a6e9aab3eea91715688ae2a4da7b2707ed07c0be7e7e94bc4df736"
+    },
+    {
+      "file": "icons/icon-16.png",
+      "size": [
+        16,
+        16
+      ],
+      "bytes": 737,
+      "sha256": "bebf8424d6694dacaaa8026df0b968e81934a97c66b4ec3d95efefd8a85801b1"
+    },
+    {
+      "file": "icons/icon-192.png",
+      "size": [
+        192,
+        192
+      ],
+      "bytes": 52586,
+      "sha256": "3fa7dae2abcbfa1fa96e2a527752bec6ec7a4e30870afbc56b0841b977b60537"
+    },
+    {
+      "file": "icons/icon-32.png",
+      "size": [
+        32,
+        32
+      ],
+      "bytes": 2315,
+      "sha256": "b67a6468ae4c150293666a383e35fc930100dbbe308b197de8a8ddb4070bba88"
+    },
+    {
+      "file": "icons/icon-512.png",
+      "size": [
+        512,
+        512
+      ],
+      "bytes": 295981,
+      "sha256": "4b8d5d79e0e9bf91c64ddd73340853887a9b9b945477ae7f3b58fdda61ace0f1"
+    },
+    {
+      "file": "icons/maskable-512.png",
+      "size": [
+        512,
+        512
+      ],
+      "bytes": 136081,
+      "sha256": "33ffc0a29ae087da890106eb1e7940e84661229959e7db7784464f08a27b702b"
+    }
+  ]
+}

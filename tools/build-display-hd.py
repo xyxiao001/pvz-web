@@ -1,4 +1,4 @@
-"""Build display-only 4x art with the existing Real-ESRGAN model.
+"""Build display art from reviewed render masters or the existing Real-ESRGAN model.
 Usage: python3 tools/build-display-hd.py
 Targets/sources are pinned in tools/display-hd-targets.json. Gameplay atlases stay 2x.
 Generated files are separate URLs; low-density clients and old releases keep their art.
@@ -13,6 +13,7 @@ targets = json.loads((root/'tools/display-hd-targets.json').read_text())
 for folder in ['input', 'output']:
     (work/folder).mkdir(parents=True, exist_ok=True)
 for i, target in enumerate(targets):
+    if target.get('rendered'): continue
     image = Image.open(root/target['source']).convert('RGBA')
     if 'crop' in target:
         image = image.crop(target['crop'])
@@ -25,7 +26,7 @@ if '--encode-only' not in sys.argv:
                        stdout=log, stderr=log, check=True)
 report = []
 for i, target in enumerate(targets):
-    image = Image.open(work/'output'/f'{i:03}.png')
+    image = Image.open(root/target['source'] if target.get('rendered') else work/'output'/f'{i:03}.png')
     path = root/'public/assets/runtime/hd4'/target['file']
     path.parent.mkdir(parents=True, exist_ok=True)
     # Keep packet lettering/logo lossless; use Q97 for other HD surfaces and Q95 for scenery.

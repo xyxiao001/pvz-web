@@ -14,7 +14,7 @@ inputs.mkdir(parents=True, exist_ok=True); results.mkdir(parents=True, exist_ok=
 images = {p.stem.upper(): p for p in directory.glob('*.png')}
 sources = {}; definitions = {}; fields = ['x','y','sx','sy','kx','ky','f','a','i']
 def record(path): sources[str(path.relative_to(repo))] = hashlib.sha256(path.read_bytes()).hexdigest()
-for key, name, layer, duration in [('peashooter','PeaShooter','anim_full_idle',100),('sunflower','SunFlower','anim_idle',100),('threepeater','ThreePeater','anim_idle',144),('gatlingpea','GatlingPea','anim_idle',144),('twinsunflower','TwinSunflower','anim_idle',144),('wintermelon','WinterMelon','anim_idle',248),('cabbagepult','Cabbagepult','anim_idle',310),('kernelpult','Cornpult','anim_idle',190),('melonpult','Melonpult','anim_idle',310)]:
+for key, name, layer, duration in [('peashooter','PeaShooterSingle','anim_full_idle',100),('sunflower','SunFlower','anim_idle',100),('threepeater','ThreePeater','anim_idle',144),('gatlingpea','GatlingPea','anim_idle',144),('twinsunflower','TwinSunflower','anim_idle',144),('wintermelon','WinterMelon','anim_idle',248),('cabbagepult','Cabbagepult','anim_idle',310),('kernelpult','Cornpult','anim_idle',190),('melonpult','Melonpult','anim_idle',310)]:
     path = directory / (name+'.reanim'); record(path)
     xml = ET.fromstring('<root>'+path.read_text()+'</root>'); tracks = {}
     for track in xml.findall('track'):
@@ -28,6 +28,9 @@ for key, name, layer, duration in [('peashooter','PeaShooter','anim_full_idle',1
         active=[i for i,p in enumerate(tracks[layer]) if p[6]>=0]; start=active[0]; count=len(active)
         selected=[]
         for name,poses in tracks.items():
+            # This source mirror added a Gatling helmet to the single-pea track.
+            # The ordinary peashooter uses its original sprout, without a helmet.
+            if key == 'peashooter' and name == 'GatlingPea_helmet2': continue
             frames=poses[start:start+count]
             if any(p[8] and p[6]>=0 and p[7]>0 for p in frames): selected.append({'name':name,'poses':frames})
         result={'tracks':selected,'length':count}
