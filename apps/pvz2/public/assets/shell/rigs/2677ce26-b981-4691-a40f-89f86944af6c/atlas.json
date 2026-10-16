@@ -1,0 +1,1 @@
+{"imagePath":"texture.webp","width":1024,"height":512,"name":"WorldmapAnimate","SubTexture":[{"width":328,"y":1,"height":199,"name":"dust","x":371},{"frameY":0,"y":371,"frameWidth":164,"frameHeight":164,"width":164,"height":90,"name":"bgSide","frameX":0,"x":1},{"width":368,"y":1,"height":368,"name":"bg","x":1}]}

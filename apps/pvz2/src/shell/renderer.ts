@@ -1,0 +1,224 @@
+import 'pixi.js/prepare';
+import { Application, Assets, Container, Sprite, Texture, Text, ColorMatrixFilter } from 'pixi.js';
+import { PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
+import { assetUrl, json, loadInBatches } from '../assets/load';
+import { clampCamera, islandStates } from './navigation';
+import type { Catalog, Draw, Island, WorldMap } from './types';
+
+interface View { root: Container; rigs: PixiArmatureDisplay[]; draw: Draw }
+export class MapRenderer {
+  readonly app = new Application();
+  private factory = new PixiFactory(null, false);
+  private clock = new WorldClock();
+  private root = new Container();
+  private background!: PixiArmatureDisplay;
+  private layer = new Container();
+  private toolbar = new Container();
+  private loaded = new Set<string>();
+  private views = new Map<number, View>();
+  private draws: Draw[] = [];
+  private map: WorldMap | null = null;
+  private camera = 0;
+  private velocity = 0;
+  private mode: 'chooser' | 'map' = 'chooser';
+  private carousel = 0;
+  private carouselStart = 0;
+  private carouselTarget = 0;
+  private transition = .2;
+  private pointer: { id: number; x: number; origin: number; moved: boolean } | null = null;
+  private scale = 1;
+  private grey = new ColorMatrixFilter();
+  private backgroundColor = [0, 255, 224];
+  private targetColor = [0, 255, 224];
+  private observer!: ResizeObserver;
+  onWorld: (index: number) => void = () => {};
+  onIsland: (island: Island) => void = () => {};
+  onCamera: (x: number) => void = () => {};
+  onFrame: (camera: number, carousel: number) => void = () => {};
+  onStep: (direction: number) => void = () => {};
+
+  constructor(private host: HTMLElement, readonly catalog: Catalog) { this.grey.desaturate(); }
+  async init() {
+    await this.app.init({ width: 1024, height: 640, background: '#00c6d3', resolution: Math.min(devicePixelRatio, 2), autoDensity: true, antialias: true, autoStart: false });
+    this.host.append(this.app.canvas); this.app.canvas.setAttribute('aria-label', '原生世界地图');
+    this.app.stage.eventMode = 'none'; this.app.stage.addChild(this.root); this.root.addChild(this.layer, this.toolbar);
+    await this.load([this.catalog.background]);
+    this.background = this.makeRig(this.catalog.background, 'WorldmapBG', 'IdleDay');
+    this.background.position.set(512, 320); this.root.addChildAt(this.background, 0);
+    await this.prepare(this.catalog.toolbar);
+    for (const draw of this.catalog.toolbar) {
+      const view = this.make(draw); this.toolbar.addChild(view.root);
+      if (draw.owner === 14) view.root.visible = true;
+    }
+    this.observer = new ResizeObserver(() => {
+      this.scale = this.host.clientWidth / 1024; this.root.scale.set(this.scale);
+      this.app.renderer.resize(this.host.clientWidth, this.host.clientWidth * 640 / 1024); this.app.render();
+    }); this.observer.observe(this.host);
+    const x = (event: PointerEvent) => (event.clientX - this.app.canvas.getBoundingClientRect().left) / this.scale;
+    this.app.canvas.addEventListener('pointerdown', event => {
+      this.velocity = 0; this.pointer = { id: event.pointerId, x: x(event), origin: x(event), moved: false };
+      this.app.canvas.setPointerCapture(event.pointerId);
+    });
+    this.app.canvas.addEventListener('pointermove', event => {
+      if (!this.pointer || this.pointer.id !== event.pointerId) return;
+      const next = x(event), delta = next - this.pointer.x;
+      if (Math.abs(next - this.pointer.origin) > 6) this.pointer.moved = true;
+      if (this.mode === 'map' && this.pointer.moved) { this.velocity = -delta * 60; this.setCamera(this.camera - delta); }
+      this.pointer.x = next;
+    });
+    this.app.canvas.addEventListener('pointerup', event => {
+      const pointer = this.pointer; if (!pointer) return;
+      this.pointer = null;
+      if (pointer.moved) { if (this.mode === 'chooser') this.onStep(x(event) < pointer.origin ? 1 : -1); return; }
+      const px = x(event), py = (event.clientY - this.app.canvas.getBoundingClientRect().top) / this.scale;
+      if (this.mode === 'chooser') {
+        const index = Math.round((px - 512 + this.carousel) / 264);
+        if (index >= 0 && index < this.catalog.worlds.length && py > 100 && py < 570) this.onWorld(index);
+      } else {
+        const island = this.map!.islands.filter(n => n.kind === 0).find(n => Math.abs(px - (512 + n.x - this.camera)) < 32 && Math.abs(py - (320 + n.y - 18)) < 44);
+        if (island) this.onIsland(island);
+      }
+    });
+    this.app.canvas.addEventListener('pointercancel', () => { this.pointer = null; this.velocity = 0; });
+    this.app.canvas.addEventListener('wheel', event => {
+      event.preventDefault();
+      if (this.mode === 'chooser') this.onStep(event.deltaY > 0 || event.deltaX > 0 ? 1 : -1);
+      else { this.velocity = 0; this.setCamera(this.camera + (Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY) * .2); }
+    }, { passive: false });
+    this.app.ticker.add(ticker => {
+      const dt = Math.min(ticker.deltaMS / 1000, .05);
+      if (this.mode === 'chooser' && this.transition < .2) {
+        this.transition = Math.min(.2, this.transition + dt); const t = this.transition / .2;
+        this.carousel = this.carouselStart + (this.carouselTarget - this.carouselStart) * (1 - (1 - t) ** 2);
+        this.positionChooser();
+      }
+      if (this.mode === 'map' && !this.pointer && Math.abs(this.velocity) > .5) {
+        this.setCamera(this.camera + this.velocity * dt); this.velocity *= Math.pow(1 / 1.05, dt * 60);
+      }
+      for (let i = 0; i < 3; i++) this.backgroundColor[i] += (this.targetColor[i] - this.backgroundColor[i]) * Math.min(1, dt * 5);
+      this.background.tint = (Math.round(this.backgroundColor[0]) << 16) | (Math.round(this.backgroundColor[1]) << 8) | Math.round(this.backgroundColor[2]);
+      this.clock.advanceTime(dt); PixiFactory.advanceTime(0);
+      this.onFrame(this.camera, this.carousel);
+    });
+  }
+  private makeRig(key: string, armature: string, animation: string) {
+    const display = this.factory.buildArmatureDisplay(armature, key)!;
+    display.armature.clock = this.clock;
+    if (animation) display.animation.play(animation, 0);
+    return display;
+  }
+  private async load(keys: string[]) {
+    await loadInBatches([...new Set(keys)].filter(key => !this.loaded.has(key)), 2, async key => {
+      const path = `shell/rigs/${key}/`;
+      const [skeleton, atlas, texture] = await Promise.all([json<object>(path + 'skeleton.json'), json<object>(path + 'atlas.json'), Assets.load<Texture>(assetUrl(path + 'texture.webp'))]);
+      this.factory.parseDragonBonesData(skeleton, key); this.factory.parseTextureAtlasData(atlas, texture, key);
+      await this.app.renderer.prepare.upload(texture); this.loaded.add(key);
+    });
+  }
+  private clear() {
+    for (const view of this.views.values()) { for (const rig of view.rigs) rig.dispose(); view.root.destroy({ children: true }); }
+    this.views.clear(); this.draws = []; PixiFactory.advanceTime(0);
+  }
+  private async releaseExcept(keys: Set<string>) {
+    for (const draw of this.catalog.toolbar) if (draw.kind === 'rig') keys.add(draw.rig!);
+    for (const key of this.loaded) if (!keys.has(key)) {
+      this.factory.removeDragonBonesData(key); this.factory.removeTextureAtlasData(key);
+      await Assets.unload(assetUrl(`shell/rigs/${key}/texture.webp`)); this.loaded.delete(key);
+    }
+    PixiFactory.advanceTime(0);
+  }
+  private make(draw: Draw): View {
+    const root = new Container(), rigs: PixiArmatureDisplay[] = [];
+    if (draw.kind === 'rig') { const rig = this.makeRig(draw.rig!, draw.armature!, draw.animation!); root.addChild(rig); rigs.push(rig); }
+    if (draw.kind === 'sprite') {
+      const image = new Sprite(Assets.get<Texture>(assetUrl(draw.image!))); image.anchor.set(draw.ax!, draw.ay!); image.width = draw.w!; image.height = draw.h!; root.addChild(image);
+    }
+    if (draw.kind === 'label' && draw.text) {
+      const text = new Text({ text: draw.text, style: { fontFamily: 'PvZMap, sans-serif', fontSize: draw.size, fill: '#fff', stroke: { color: '#333129', width: 2 } } });
+      text.anchor.set(.5); root.addChild(text);
+    }
+    root.position.set(512 + draw.x, 320 + draw.y); root.scale.set(draw.sx, draw.sy); root.rotation = draw.rotation;
+    this.layer.addChild(root); return { root, rigs, draw };
+  }
+  private async prepare(draws: Draw[]) {
+    await this.load(draws.filter(d => d.kind === 'rig').map(d => d.rig!));
+    await Promise.all([...new Set(draws.filter(d => d.kind === 'sprite').map(d => assetUrl(d.image!)))].map(path => Assets.load(path)));
+  }
+  async showChooser(index: number) {
+    this.stop(); this.clear(); this.toolbar.children.forEach((child,i) => { child.visible = this.catalog.toolbar[i].owner === 14; }); this.mode = 'chooser'; this.map = null; this.velocity = 0;
+    const selected = this.catalog.chooser.filter(d => d.kind === 'rig');
+    await this.prepare([...selected, ...this.catalog.lock]);
+    await this.releaseExcept(new Set([this.catalog.background, ...selected.map(d => d.rig!), ...this.catalog.lock.map(d => d.rig!)]));
+    this.draws = selected;
+    for (const [i, draw] of selected.entries()) {
+      const view = this.make(draw); this.views.set(i, view);
+      const world = this.catalog.worlds.find(w => w.draw.owner === draw.owner);
+      if (world && world.id !== 'egypt' && world.enterable) {
+        view.rigs[0].filters = [this.grey]; view.rigs[0].tint = 0x969696;
+        for (const lock of this.catalog.lock) if (lock.kind === 'rig') {
+          const rig = this.makeRig(lock.rig!, lock.armature!, lock.animation!); rig.y = -120; view.root.addChild(rig); view.rigs.push(rig);
+        }
+      }
+    }
+    this.carousel = this.carouselTarget = index * 264; this.transition = .2; this.positionChooser(); this.setNight(this.catalog.worlds[index].night); this.start();
+  }
+  selectWorld(index: number) {
+    this.carouselStart = this.carousel; this.carouselTarget = index * 264; this.transition = 0;
+    this.setNight(this.catalog.worlds[index].night);
+  }
+  private setNight(night: boolean) { this.targetColor = night ? [75, 133, 255] : [0, 255, 224]; }
+  private positionChooser() {
+    for (const view of this.views.values()) {
+      const draw = view.draw;
+      if (draw.armature === 'rotateEffect') continue;
+      const x = draw.x - this.carousel, scale = Math.max(1 - Math.abs(x) / 600, .3);
+      view.root.position.set(512 + x, 320 + draw.y); view.root.scale.set(draw.sx * scale, draw.sy * scale);
+    }
+  }
+  async showMap(map: WorldMap, camera: number, completed: ReadonlySet<string>, night: boolean) {
+    this.stop(); this.clear(); this.toolbar.children.forEach((child,i) => { child.visible = this.catalog.toolbar[i].owner !== 14; }); this.map = map; this.mode = 'map'; this.velocity = 0; this.setNight(night);
+    const states = islandStates(map, completed), dynamic: Draw[] = [], paths: Draw[] = [];
+    for (const island of map.islands) {
+      const state = states.get(island.node)!;
+      for (const next of island.next) {
+        const target = map.islands.find(n => n.node === next)!, dx = target.x - island.x, dy = target.y - island.y;
+        for (const style of this.catalog.nodes.path) if (style.kind === 'rig') paths.push({ ...style, x: island.x, y: island.y, sx: Math.hypot(dx, dy) / 330, sy: .4, rotation: Math.atan2(dy, dx), parallax: 1, animation: state === 'finished' ? 'Idle' : 'Idle_Thin' });
+      }
+      if (island.kind === 0) {
+        const key = island.appearance === 0 ? 'normalNode' : island.appearance === 1 ? 'minigameNode' : 'gargantuarNode';
+        for (const style of this.catalog.nodes[key]) {
+          if (style.kind === 'sprite' || style.kind === 'rig' || style.kind === 'label') dynamic.push({ ...style, x: island.x + style.x, y: island.y + style.y, parallax: 1,
+            ...(style.kind === 'label' ? { text: island.name } : {}), ...(style.kind === 'rig' ? { animation: state === 'finished' ? 'IdleFinished' : state === 'open' ? 'IdleUnfinish' : 'IdleUnopen' } : {}) });
+        }
+      }
+      if (island.kind === 1) {
+        const card = this.catalog.plantCards[island.plant];
+        for (const style of this.catalog.nodes.plantCard) dynamic.push({ ...style, x: island.x, y: island.y - 30, sx: .4, sy: .4, parallax: 1,
+          animation: style.armature === 'plants' ? card.animation : card.background });
+      }
+      if (island.kind === 3) for (const style of this.catalog.nodes.upgrade) dynamic.push({ ...style, x: island.x, y: island.y, sx: .4, sy: .4, parallax: 1, animation: this.catalog.upgrades[island.upgrade] });
+      if (island.kind === 2 || island.kind === 4) for (const style of this.catalog.nodes[island.kind === 2 ? 'giftbox' : 'epicPortal']) {
+        if (style.kind === 'rig') dynamic.push({ ...style, x: island.x + style.x, y: island.y + style.y, sx: .4, sy: .4, parallax: 1, animation: island.kind === 2 ? (state === 'finished' ? 'Finished' : 'Idle') : (state === 'finished' ? 'Idle' : 'Idle_Locked') });
+      }
+    }
+    this.draws = [...map.draws.filter(d => !['DeltaArrow', 'BtnPurpleBigUp'].includes(d.name)), ...paths, ...dynamic];
+    await this.prepare(this.draws);
+    await this.releaseExcept(new Set([this.catalog.background, ...this.draws.filter(d => d.kind === 'rig').map(d => d.rig!)]));
+    this.camera = clampCamera(map, camera); this.positionMap(); this.start();
+  }
+  private positionMap() {
+    for (const [index, draw] of this.draws.entries()) {
+      const x = 512 + draw.x - this.camera * draw.parallax!;
+      const visible = draw.parallax !== 1 || x > -900 && x < 1924;
+      const old = this.views.get(index);
+      if (!visible) { if (old) { for (const rig of old.rigs) rig.dispose(); old.root.destroy({ children: true }); this.views.delete(index); } continue; }
+      const view = old ?? this.make(draw); view.root.x = x; view.root.zIndex = index;
+      if (!old) this.views.set(index, view);
+    }
+    this.layer.sortableChildren = true; this.onCamera(this.camera);
+  }
+  private setCamera(x: number) { this.camera = clampCamera(this.map!, x); this.positionMap(); }
+  moveBy(delta: number) { this.velocity = 0; this.setCamera(this.camera + delta); }
+  start() { this.app.start(); }
+  stop() { this.app.stop(); this.velocity = 0; }
+}
