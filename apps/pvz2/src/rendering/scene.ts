@@ -1,6 +1,6 @@
 import 'pixi.js/prepare';
 import { BattleArt } from './battle-art';
-import { animationTimeline, type Skeleton } from './presentation';
+import { animationTimeline, COMBAT_VIEW, type Skeleton } from './presentation';
 import { Application, Assets, Container, Graphics, Sprite, Texture, type Ticker } from 'pixi.js';
 import { EventObject, PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
 import { assetUrl, json, loadInBatches } from '../assets/load';
@@ -40,6 +40,8 @@ export class Scene {
   private sunFlights: {rig:PixiArmatureDisplay;x:number;y:number;age:number}[] = [];
   private skeletons = new Map<RigName,Skeleton>();
   private cameraX = 0;
+  private cameraY = 0;
+  private cameraZoom = 1;
   onSound: (name:string)=>void = () => {};
   onNPCEvent: (character:string,event:string)=>void = () => {};
   private npcTransition: 'enter'|'exit'|null = null;
@@ -56,6 +58,7 @@ export class Scene {
     this.app.stage.eventMode = 'none';
     this.app.stage.addChild(this.world);
     const lawn = new Sprite(await Assets.load<Texture>(assetUrl('egypt/lawn.webp')));
+    lawn.width=1974;lawn.height=768;
     lawn.position.set(-340, -40); this.world.addChild(lawn, this.highlight, this.actorLayer);
     this.actorLayer.sortableChildren = true;
     const artCount=await this.art.init(this.app,(done,total)=>progress(done+1,total+7));
@@ -79,12 +82,11 @@ export class Scene {
     this.observer = new ResizeObserver(() => {
       this.scale = host.clientWidth / BOARD.width;
       this.app.renderer.resize(host.clientWidth, host.clientWidth * BOARD.height / BOARD.width);
-      this.world.scale.set(this.scale);
-      this.world.x=-this.cameraX*this.scale;
+      this.applyCamera();
       this.render();
     });
     this.observer.observe(host);
-    const point = (e: PointerEvent) => { const r = this.app.canvas.getBoundingClientRect(); return [(e.clientX - r.left) / this.scale, (e.clientY - r.top) / this.scale] as const; };
+    const point = (e: PointerEvent) => { const r = this.app.canvas.getBoundingClientRect(); return [(e.clientX - r.left) / (this.scale*this.cameraZoom)+this.cameraX, (e.clientY - r.top) / (this.scale*this.cameraZoom)+this.cameraY] as const; };
     this.app.canvas.addEventListener('pointerdown', e => { e.preventDefault(); this.onPoint(...point(e)); });
     this.app.canvas.addEventListener('pointermove', e => this.onHover(...point(e)));
     this.app.canvas.addEventListener('pointerleave', () => this.highlight.clear());
@@ -101,8 +103,8 @@ export class Scene {
     const rig = this.rig(kind);
     rig.animation.play(kind === 'potatomine' ? 'Idle' : RIGS[kind].idle, 0);
     rig.armature.advanceTime(.01);
-    const canvas = this.app.renderer.extract.canvas({ target: rig, resolution: 1 });
-    const url = (canvas as HTMLCanvasElement).toDataURL('image/webp');
+    const canvas = this.app.renderer.extract.canvas({ target: rig, resolution: 2 });
+    const url = (canvas as HTMLCanvasElement).toDataURL('image/png');
     rig.dispose(); PixiFactory.advanceTime(0);
     return url;
   }
@@ -253,7 +255,7 @@ export class Scene {
   }
   private updateSunFlights(dt:number) {
     for(const flight of this.sunFlights){flight.age+=dt;const t=Math.min(1,flight.age),p=1-(1-t)*(1-t);
-      flight.rig.position.set(flight.x+(42-flight.x)*p,flight.y+(42-flight.y)*p);
+      flight.rig.position.set(flight.x+(this.cameraX+42/this.cameraZoom-flight.x)*p,flight.y+(this.cameraY+42/this.cameraZoom-flight.y)*p);
       if(flight.age>1)flight.rig.scale.set(.5*Math.max(0,1-Math.pow((flight.age-1)/.2,2)));
     }
     this.sunFlights=this.sunFlights.filter(flight=>{if(flight.age<1.2)return true;flight.rig.removeFromParent();flight.rig.dispose();return false;});
@@ -340,7 +342,15 @@ export class Scene {
     this.clock.advanceTime(dt);
     for(const actor of this.actors.values())if(actor.armor){const bone=actor.rig.armature.getBone('armorSOCKET')!;bone.updateGlobalTransform();actor.armor.position.set(bone.global.x*.51,bone.global.y*.51);actor.armor.rotation=bone.global.rotation;}
   }
-  setCamera(x:number){this.cameraX=x;this.world.x=-x*this.scale;}
+  private applyCamera() {
+    const scale=this.scale*this.cameraZoom;
+    this.world.scale.set(scale);this.world.position.set(-this.cameraX*scale,-this.cameraY*scale);
+  }
+  setCamera(x:number,zoom=1,y=0){this.cameraX=x;this.cameraY=y;this.cameraZoom=zoom;this.applyCamera();}
+  frameCombat(progress=1) {
+    const start=this.art.catalog.presentation.seedChoosingCameraX;
+    this.setCamera(start+(COMBAT_VIEW.x-start)*progress,1+(COMBAT_VIEW.zoom-1)*progress,COMBAT_VIEW.y*progress);
+  }
   render() { this.app.render(); }
   start() { this.app.start(); }
   stop() { this.app.stop(); }

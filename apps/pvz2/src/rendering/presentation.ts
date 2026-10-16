@@ -1,3 +1,6 @@
+// Fit all nine columns and five rows, keeping the street spawn area outside combat view.
+export const COMBAT_VIEW = { x: -48, y: 60, zoom: 1.18 };
+
 export interface Skeleton {
   armature: { name: string; frameRate: number; animation: { name: string; duration?: number; frame?: { duration?: number; sound?: string; events?: { name: string }[] }[] }[] }[];
 }

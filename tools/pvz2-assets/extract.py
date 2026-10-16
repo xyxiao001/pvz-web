@@ -114,7 +114,7 @@ pixels = Image.open(io.BytesIO(native(texture_id, 'png')))
 rect = next(t for t in lawn_atlas['SubTexture'] if t['name'] == 'Lawn')
 lawn = pixels.crop((rect['x'], rect['y'], rect['x'] + rect['width'], rect['y'] + rect['height']))
 (OUT / 'egypt').mkdir(parents=True, exist_ok=True)
-lawn.resize((1974, 768), Image.Resampling.LANCZOS).save(OUT / 'egypt/lawn.webp', quality=88, method=6)
+lawn.save(OUT / 'egypt/lawn.webp', quality=95, method=6)
 # A small, separate menu preview; entering the menu never loads gameplay assets.
 lawn.resize((790, 307), Image.Resampling.LANCZOS).save(OUT / 'egypt/preview.webp', quality=80, method=6)
 
@@ -144,7 +144,7 @@ license_data = download('LICENSE')
 (ROOT / 'apps/pvz2/UPSTREAM-LICENSE').write_bytes(license_data)
 write_json(ROOT / 'apps/pvz2/asset-provenance.json', {
     'repository': 'https://github.com/Gzh0821/pvzge_web', 'commit': COMMIT,
-    'transformations': ['Cocos UUID and pack extraction', 'PNG to WebP', 'Static lawn resize'],
+    'transformations': ['Cocos UUID and pack extraction', 'PNG to WebP', 'Native-resolution static lawn; resized menu preview'],
     'sources': SOURCES,
     'outputs': {str(p.relative_to(OUT)): {'bytes': p.stat().st_size,
                 'sha256': hashlib.sha256(p.read_bytes()).hexdigest()}

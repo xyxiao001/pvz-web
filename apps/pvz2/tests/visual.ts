@@ -17,6 +17,7 @@ function zombie(kind:ZombieKind,x:number,row=2):Zombie {
 }
 function report(){state.textContent=`时间 ${game.time.toFixed(2)} · 活僵尸 ${game.zombies.length} · 死亡记录 ${game.deaths.length} · 阳光 ${game.suns.length} · 演出 ${scene.hasDeathAnimations?'进行中':'已结束'}`;}
 function render(){scene.sync(game,0);scene.render();report();}
+scene.onPoint=(x,y)=>{const sun=game.suns.find(s=>Math.hypot(x-s.x,y-s.y)<38);if(sun){game.collect(sun.id);render();}};
 function reset(){scene.reset();scene.setCamera(0);game=new Game(level,props,scene.timing,zombie=>scene.absorptionTarget(zombie),42);}
 function zombies(){reset();game.zombies=(['mummy','mummy_flag','ra','mummy_armor1'] as const).map((kind,i)=>zombie(kind,400+i*180));render();}
 function advance(seconds:number){for(let i=0;i<Math.round(seconds*60);i++){game.tick(1/60);scene.sync(game,1/60);game.events.length=0;}scene.render();report();}
@@ -33,6 +34,7 @@ function ra(){
 }
 for(const button of document.querySelectorAll<HTMLButtonElement>('[data-action]'))button.onclick=()=>{
   switch(button.dataset.action){
+    case 'spawn':reset();scene.frameCombat();game.zombies=(['mummy','mummy_flag','ra','mummy_armor1'] as const).map((kind,i)=>zombie(kind,1070,i));game.suns.push({id:8000,x:cellX(4),y:rowY(2),targetY:rowY(2),value:50,age:0,from:'sky',vx:0,vy:0,groundAge:0,absorber:null,absorbAge:0});render();break;
     case 'reset':zombies();break;
     case 'normal':case 'potato':case 'mower':for(const z of game.zombies){z.hp=0;z.deathCause=button.dataset.action;}advance(1/60);break;
     case 'effects':effects();break;

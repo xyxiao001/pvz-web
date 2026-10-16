@@ -186,8 +186,8 @@ export function createBattle(host: HTMLElement, onReturn: () => void) {
     if(screen==='returning') {
       const presentation=scene.art.catalog.presentation;transitionTime+=dt;
       const t=Math.min(1,transitionTime/presentation.camera.PanMoveLeftTime);
-      scene.setCamera(presentation.seedChoosingCameraX*(1-cubicInOut(t)));scene.previewTick(dt);
-      if(t===1){scene.reset();scene.setCamera(0);scene.sync(game,0);updateHud();screen='countdown';host.dataset.screen=screen;$('#battle-announcement').hidden=false;$('#battle-announcement').textContent='准备…';scene.start();sound('readySetPlant');playMusic();}return;
+      scene.frameCombat(cubicInOut(t));scene.previewTick(dt);
+      if(t===1){scene.reset();scene.frameCombat();scene.sync(game,0);updateHud();screen='countdown';host.dataset.screen=screen;$('#battle-announcement').hidden=false;$('#battle-announcement').textContent='准备…';scene.start();sound('readySetPlant');playMusic();}return;
     }
     if(screen==='choosing'){scene.previewTick(dt);return;}
     if(screen==='countdown') {
