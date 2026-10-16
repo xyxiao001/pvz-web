@@ -63,7 +63,12 @@ export function createBattle(host: HTMLElement, onReturn: () => void) {
 
   async function enter() {
     host.hidden=false; screen='loading'; host.dataset.screen=screen; preferences=readAudio();
-    panel('神秘埃及 - 第1天','<p id="load-status" role="status">正在准备庭院…</p><progress id="load-progress" max="7" value="0"></progress>');
+    $('#overlay').innerHTML = `<section class="battle-loading" aria-label="神秘埃及第1天加载中">
+      <img class="loading-scenery" src="${assetUrl('egypt/preview.webp')}" alt="">
+      <div class="loading-destination"><span class="loading-chapter">时空之旅</span><h2>神秘埃及</h2><span class="loading-day">第1天</span></div>
+      <div class="loading-progress"><p id="load-status" role="status">正在准备庭院…</p><progress id="load-progress" aria-label="关卡资源加载进度" max="7" value="0"></progress></div>
+    </section>`;
+    $('#overlay').hidden = false;
     if (!scene) {
       const [{ Scene },props,level,flag] = await Promise.all([import('./rendering/scene'),json<Properties>('levels/properties.json'),json<SourceLevel>('levels/egypt1.source.json'),json<ZombieProperties>('battle/flag.json')]);
       properties=props; properties.zombies.mummy_flag=flag; source=level; scene=new Scene();

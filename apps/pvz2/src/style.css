@@ -11,8 +11,23 @@ button{font:inherit;cursor:pointer;border:0;padding:0;background:transparent;col
 #battle-announcement{position:absolute;inset:42% 0 auto;text-align:center;color:#ec2527;font-size:6cqw;text-shadow:.3cqw .3cqw #252012,-.15cqw -.15cqw #252012;pointer-events:none;z-index:3}
 #overlay{position:absolute;inset:0;background:#0007;z-index:5;display:flex;align-items:center;justify-content:center}.battle-window{position:relative;width:66%;border:3.125cqw solid transparent;border-image:var(--art-window) 80 fill stretch;padding:1.5cqw 2cqw 2cqw;text-align:center;color:#463823}.battle-window::before{content:"";position:absolute;inset:-3.125cqw;pointer-events:none;border:3.125cqw solid transparent;border-image:var(--art-windowBorder) 80 fill stretch}.battle-window h2{font-size:3.1cqw;margin:0 0 2cqw;font-weight:400}.battle-window p{font-size:2cqw}.battle-window .battle-button{margin:1cqw auto 0}.pause-actions{display:flex;justify-content:center;gap:1cqw;margin-top:3cqw}.pause-actions .battle-button{font-size:1.7cqw;min-width:0;flex:1}.map-reward{width:24%;height:14cqw;object-fit:contain}.volume-option{display:flex;align-items:center;justify-content:center;gap:3cqw;margin:2cqw auto;font-size:2cqw}.volume-option input{width:60%;accent-color:#a9cf31}progress{accent-color:#96be35;width:70%;height:1cqw}.battle-caption{height:30px;width:min(100vw,calc((100dvh - 30px)*12/7));display:flex;align-items:center;justify-content:space-between;padding:0 10px;font:11px "PingFang SC",sans-serif;color:#aebdbf}
 :scope[data-screen=choosing] #wave-hud,:scope[data-screen=choosing] .level-name,:scope[data-screen=choosing] #shovel,:scope[data-screen=choosing] #speed,:scope[data-screen=choosing] #pause{display:none}
-:scope[data-screen=loading] .battle-window{background:#d5b17d;border-image:none}
-@media(max-width:650px){.battle-caption{font-size:9px}.battle-caption span:last-child{display:none}}
+:scope[data-screen=loading] .battle-caption{visibility:hidden}
+.battle-loading{position:absolute;inset:0;isolation:isolate;overflow:hidden;background:#795c31;text-align:center;color:#fff4cb}
+.loading-scenery{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.battle-loading::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#30201055 0%,#30201018 30%,#30201066 58%,#21190ded 100%),radial-gradient(ellipse at 50% 40%,#72511c00 20%,#35250f88 100%)}
+.battle-loading::after{content:"";position:absolute;inset:1.6cqw;border:1px solid #ffe2a044;box-shadow:0 0 0 .4cqw #49331622;pointer-events:none}
+.loading-destination{position:absolute;inset:29% 0 auto;text-shadow:0 .2cqw .2cqw #38250d}
+.loading-chapter{display:flex;align-items:center;justify-content:center;gap:1.4cqw;color:#ffe5a3;font:1.25cqw/1.5 "PingFang SC",sans-serif;letter-spacing:.45cqw}
+.loading-chapter::before,.loading-chapter::after{content:"";width:5cqw;height:1px;background:#ffe5a377}
+.loading-destination h2{margin:1.2cqw 0 1.6cqw;font-size:6cqw;line-height:1.2;font-weight:400;letter-spacing:.5cqw;-webkit-text-stroke:.06cqw #65441b;text-shadow:0 .3cqw 0 #65441b,0 .5cqw 1.2cqw #241608}
+.loading-day{display:inline-block;min-width:12cqw;padding:.5cqw 2.8cqw .7cqw;background:#483719cf;border-top:1px solid #ebcc82a6;border-bottom:1px solid #ebcc8255;clip-path:polygon(5% 0,95% 0,100% 50%,95% 100%,5% 100%,0 50%);font-size:2cqw;line-height:1.3}
+.loading-progress{position:absolute;left:29%;right:29%;bottom:13%}
+.loading-progress p{margin:0 0 1.3cqw;color:#f9e8ba;font:1.35cqw/1.5 "PingFang SC",sans-serif;letter-spacing:.08cqw;text-shadow:0 1px 3px #241608}
+#load-progress{display:block;appearance:none;-webkit-appearance:none;width:100%;height:1.35cqw;padding:.22cqw;border:.12cqw solid #c3a260;border-radius:2cqw;background:#302a19;box-shadow:0 .25cqw .65cqw #0005;overflow:hidden}
+#load-progress::-webkit-progress-bar{background:#302a19;border-radius:2cqw}
+#load-progress::-webkit-progress-value{border-radius:2cqw;background:linear-gradient(#d8ee70,#9bc039 48%,#6b9528 52%,#8fb534);box-shadow:inset 0 1px #f3ffae;transition:width .2s ease-out}
+#load-progress::-moz-progress-bar{border-radius:2cqw;background:linear-gradient(#d8ee70,#9bc039 48%,#6b9528 52%,#8fb534);box-shadow:inset 0 1px #f3ffae}
+@media(max-width:650px){.battle-caption{font-size:9px}.battle-caption span:last-child{display:none}.loading-chapter{font-size:10px}.loading-day{font-size:max(12px,2cqw)}.loading-progress{left:22%;right:22%}.loading-progress p{font-size:max(10px,1.35cqw)}#load-progress{height:max(8px,1.35cqw)}}
 }
 @scope (.battle-app) {
 #narrative{position:absolute;inset:0;width:100%;height:100%;text-align:center}.speech{position:absolute;left:48%;top:27%;width:35%;height:25%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2cqw 3cqw 3.4cqw;color:#322b25;isolation:isolate;font:2cqw/1.5 PvZMap,"PingFang SC",sans-serif}.speech small{font-size:1.2cqw;color:#6c6454;margin-top:.8cqw}#narrative[data-character=crazydave] .speech{left:19%;top:25%}
