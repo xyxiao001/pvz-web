@@ -47,7 +47,7 @@ export function tutorialHint(game: Game) {
     if (game.sun<100) return '点击落下的阳光，收集到 100 阳光再种一株！';
     if (game.cooldown('peashooter')>0) return '种得不错！等种子包恢复后，再种一株豌豆射手。';
     if (game.selected==='peashooter') return '点击中间的草坪，种下豌豆射手！';
-    if (game.planted===0) return '点击上方的豌豆射手种子包！';
+    if (game.planted===0) return '点击豌豆射手种子包！';
     return '阳光够了！点击种子包，再种一株豌豆射手！';
   }
   if (game.tutorial==='sunflower'||game.tutorial==='more-sun') {

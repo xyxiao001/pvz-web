@@ -1,0 +1,101 @@
+.mobile-hud-break{display:none}
+
+/* Phone landscape: reserve narrow thumb rails, give the board its full height. */
+@media (orientation:landscape) and (max-height:600px) and (max-width:1100px) {
+  .page.in-battle .game-frame {
+    overflow:clip;
+    --mobile-card-height:clamp(61.6px,calc((100cqh - 76px)/5),78px);
+    --seed-rail:calc(var(--mobile-card-height)*10/7 + 26px);
+    --action-rail:112px;
+    --hud-height:0px;
+  }
+  .page.in-battle .game-frame #canvas-host,
+  .page.in-battle.battle-fill .game-frame #canvas-host {
+    left:var(--seed-rail);top:0;
+    width:calc(100% - var(--seed-rail) - var(--action-rail));height:100%;transform:none;
+  }
+  .page.in-battle .game-frame #battle-hud {
+    inset:0;width:100%;height:100%;transform:none;
+  }
+  .page.in-battle .game-frame #battle-hud:before {
+    inset:0 0 0 auto;width:var(--action-rail);height:100%;
+    border:8px solid transparent;
+    border-image:var(--hd-ui-stone-panel) 30.3125% 33.333333% 35.625% 29.722222% fill / 8px;
+    background:none;
+  }
+  .page.in-battle .game-frame .seed-bank {
+    left:0;top:0;width:var(--seed-rail);height:100%;
+    border:8px solid transparent;
+    border-image:var(--hd-ui-stone-panel) 30.3125% 33.333333% 35.625% 29.722222% fill / 8px;
+    background:none;
+  }
+  .page.in-battle .game-frame .seed-bank strong {
+    left:0;top:0;width:100%;height:36px;padding:4px 4px 4px 34px;
+    background:var(--hd-ui-parchment-button) center/100% 100% no-repeat;
+    font-size:23px;line-height:28px;
+  }
+  .page.in-battle .game-frame .seed-bank strong:before {
+    content:'';position:absolute;left:2px;top:1px;width:34px;height:34px;
+    background:url('/assets/runtime/original/sun.webp') center/contain no-repeat;
+  }
+  .page.in-battle .game-frame .seed-bank #seed-cards {
+    left:0;top:42px;width:100%;height:calc(100% - 42px);
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-auto-rows:var(--mobile-card-height);gap:2px;align-content:start;justify-items:center;
+    padding:2px;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;
+    touch-action:pan-y;
+  }
+  .page.in-battle .game-frame .seed-card {
+    position:relative;left:auto!important;top:auto;
+    width:calc(var(--mobile-card-height)*5/7);height:var(--mobile-card-height);max-height:none;
+    flex:none;align-self:start;touch-action:pan-y;
+  }
+  .page.in-battle .game-frame .packet-price{font-size:14px}
+  .page.in-battle .game-frame .cooldown-number{font-size:18px}
+  .page.in-battle .game-frame .battle-controls {
+    right:8px;top:8px;width:calc(var(--action-rail) - 16px);
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .page.in-battle .game-frame .battle-controls #pause{order:-1}
+  .page.in-battle .game-frame .battle-controls #pause,
+  .page.in-battle .game-frame .battle-controls #speed {
+    width:100%;height:44px;min-height:44px;font-size:18px;
+  }
+  .page.in-battle .game-frame .auto-sun {
+    height:50px;min-height:50px;padding:5px;gap:4px;
+    white-space:normal;font-size:12px;line-height:18px;
+  }
+  .page.in-battle .mobile-hud-break{display:block}
+  .page.in-battle .game-frame .auto-sun input{flex:none;width:20px;height:20px;margin:0}
+  .page.in-battle .game-frame .shovel-button {
+    left:auto;right:calc((var(--action-rail) - 48px)/2);top:160px;width:48px;height:54px;
+  }
+  .page.in-battle .game-frame .action-cancel {
+    top:220px;right:8px;width:calc(var(--action-rail) - 16px);height:40px;min-width:0;font-size:15px;
+  }
+  .page.in-battle .game-frame .advice {
+    left:calc(var(--seed-rail) + 10px);top:10px;
+    width:calc(100% - var(--seed-rail) - var(--action-rail) - 20px);
+    font-size:clamp(14px,3.8cqh,20px);
+  }
+  .page.in-battle .game-frame .level-caption {
+    left:auto;right:8px;bottom:60px;width:calc(var(--action-rail) - 16px);
+    text-align:center;font-size:11px;line-height:16px;
+  }
+  .page.in-battle .game-frame .wave-hud{right:8px;bottom:10px;width:calc(var(--action-rail) - 16px)}
+  .page.in-battle .game-frame .wave-hud>span{font-size:11px}
+  .page.in-battle .game-frame .wave-meter{height:20px}
+  .page.in-battle .game-frame .wave-meter #wave-fill{background-size:96px 100%}
+  /* Supply order remains unchanged; the phone rail shows every available packet. */
+  .page.in-battle .game-frame .conveyor-bank #seed-cards{top:0;height:100%}
+  .page.in-battle .game-frame .conveyor-bank #conveyor-belt{display:none}
+}
+
+@media (orientation:landscape) and (max-height:360px) and (max-width:1100px) {
+  .page.in-battle .game-frame .battle-controls{gap:4px}
+  .page.in-battle .game-frame .auto-sun{height:44px;min-height:44px}
+  .page.in-battle .game-frame .shovel-button{top:150px;height:44px;width:40px;right:36px}
+  .page.in-battle .game-frame .action-cancel{top:200px;height:36px}
+  .page.in-battle .game-frame .level-caption{bottom:42px;font-size:10px;line-height:12px}
+  .page.in-battle .game-frame .wave-hud{bottom:4px}
+}

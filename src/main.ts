@@ -11,6 +11,7 @@ import './mobile.css';
 import './hud-skin.css';
 import './interaction.css';
 import './widescreen.css';
+import './mobile-battle.css';
 import './display-hd.css';
 import { registerPwa, showPwa } from './platform/pwa';
 void registerPwa();
@@ -59,7 +60,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div id="battle-hud" hidden>
     <div class="seed-bank"><div id="conveyor-belt"></div><strong id="sun-total">150</strong><div id="seed-cards"></div></div>
     <button id="shovel" class="shovel-button" hidden title="铲除植物（不返还阳光）" aria-label="铲子" aria-pressed="false"><img loading="lazy" src="${asset('shovel.png')}" alt=""/></button>
-    <div class="battle-controls"><label class="auto-sun"><input id="auto-sun" type="checkbox"/>自动收集阳光</label><button id="speed" class="wood-button" title="切换游戏速度：1× / 2× / 4×" aria-label="游戏速度 1 倍">1×</button><button id="pause" class="wood-button">菜单</button></div>
+    <div class="battle-controls"><label class="auto-sun"><input id="auto-sun" type="checkbox"/><span>自动收集<br class="mobile-hud-break"/>阳光</span></label><button id="speed" class="wood-button" title="切换游戏速度：1× / 2× / 4×" aria-label="游戏速度 1 倍">1×</button><button id="pause" class="wood-button">菜单</button></div>
     <div id="advice" class="advice" role="status"></div><button id="cancel-action" class="wood-button action-cancel" hidden>取消</button>
     <div class="level-caption" id="level-label"></div>
     <div class="wave-hud"><span id="wave-label"></span><div class="wave-meter"><div id="wave-fill"></div><img loading="lazy" class="meter-flag" src="${asset('meter-flag.png')}" alt="最终波次"/><img loading="lazy" id="meter-head" src="${asset('meter-head.png')}" alt=""/></div></div>
