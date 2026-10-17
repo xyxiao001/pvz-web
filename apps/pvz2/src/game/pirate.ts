@@ -4,7 +4,7 @@ import type {Game,Plant,Zombie} from './model';
 export const seaCell=(planks:readonly number[]|null,row:number,column:number)=>planks!==null&&column>=5&&!planks.includes(row);
 export const pirateArmor=(kind:ZombieKind)=>kind==='pirate_armor4'?'pirate_armor4':kind==='pirate_armor1'?'pirate_armor1':kind==='pirate_armor2'?'pirate_armor2':null;
 export const zombieY=(z:Zombie)=>z.parrot?.y??z.route?.y??z.west?.lane?.y??rowY(z.row);
-export const isFlying=(z:Zombie)=>z.kind==='future_jetpack'||z.kind==='seagull'||z.kind==='pelican'||z.kind==='pirate_captain_parrot';
+export const isFlying=(z:Zombie)=>(z.kind==='future_jetpack'||z.kind==='future_jetpack_disco')||z.kind==='seagull'||z.kind==='pelican'||z.kind==='pirate_captain_parrot';
 export const swinging=(z:Zombie,time:number)=>!!z.swing&&time<z.swing.end;
 
 export interface CannonShot {id:number;x:number;y:number;row:number;age:number;food?:boolean;explodeAt?:number}

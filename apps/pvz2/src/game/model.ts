@@ -141,6 +141,9 @@ export class Game {
 
   plant(kind: PlantKind, row: number, column: number, packetId?:number): boolean {
     const p = this.props.plants[kind];
+    const tilePlant=kind==='powerplant_alpha'||kind==='powerplant_beta';
+    // Native powertile tags use tilePutable: ordinary plants may share the square.
+    if(tilePlant&&(this.level.powerTiles.some(t=>t.row===row&&t.column===column)||this.plants.some(p=>p.row===row&&p.column===column&&(p.endangered||p.kind==='powerplant_alpha'||p.kind==='powerplant_beta'))))return false;
     const placementKind=kind==='imitater'?this.imitateKind:kind;
     const existing=this.plants.find(p=>p.row===row&&p.column===column);
     const repairing=this.wallnutFirstAid&&(kind==='wallnut'||kind==='tallnut')&&existing?.kind===kind&&existing.hp<=p.Toughness*(kind==='tallnut'?2/3:.75)||kind==='spikerock'&&existing?.kind==='spikerock'&&existing.spikes!<p.MaxSpike||kind==='chardguard'&&existing?.kind==='chardguard'&&existing.leaves!<p.MaxBounceTime;
@@ -152,7 +155,7 @@ export class Game {
     if (this.phase !== 'playing' || row < 0 || row >= BOARD.rows || column < 0 || column >= BOARD.columns
       || this.level.mold.some(c=>c.row===row&&c.column===column)
       || this.level.cannon || this.level.blacklist.includes(kind) || this.level.powerups || this.level.match || (this.level.conveyor?!packet:this.sun < this.seedCost(kind) || !this.preparing&&this.cooldowns[kind] > 0)
-      || (placementKind==='gravebuster'?!this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0):this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0)) || existing&&!stacking&&!repairing) return false;
+      || (placementKind==='gravebuster'?!this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0):this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0)) || existing&&!tilePlant&&!stacking&&!repairing) return false;
     if(packet){if(this.level.corral)this.corralWaiting=false;this.conveyor.splice(this.conveyor.indexOf(packet),1);if(!this.level.corral)this.nextCard=Math.min(this.nextCard,this.time+this.conveyorDelay());}
     else {const cost=this.seedCost(kind);this.sun -= cost; this.sunSpent+=cost;this.cooldowns[kind] = this.preparing?0:this.seedCooldown(kind);}
     if(repairing){if(kind==='wallnut'||kind==='tallnut')existing.hp=p.Toughness;else if(kind==='chardguard'){existing.leaves=p.MaxBounceTime;existing.hp=p.Toughness;}else existing.spikes=p.MaxSpike;}else if(stacking){existing.heads!++;existing.hp=p.Toughness;}else this.addPlant(kind, row, column);
@@ -226,7 +229,7 @@ export class Game {
     if(plant&&this.westFinale.handles(plant.kind)&&!this.westFinale.foodable(plant))return false;
     if(plant?.kind==='tallnut'&&plant.armor>0)return false;
     if(plant?.kind==='escaperoot'&&(!plant.rootGrown||plant.action!=='idle'||plant.animation!=='Idle'))return false;
-    if (!plant || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['blover','gravebuster','imitater','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
+    if (!plant || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['powerplant_alpha','powerplant_beta','empea','blover','gravebuster','imitater','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
     if(!boost){this.food--;this.future.link(plant);} plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
     if(plant.kind==='splitpea'||plant.kind==='chilibean')this.cowboy.food(plant);
@@ -424,7 +427,7 @@ export class Game {
 
   private conveyorWeight(p:NonNullable<Level['conveyor']>['InitialPlantList'][number]) {
     if(p.MaxDelivered!==undefined&&(this.conveyorDeliveryCount.get(p.PlantType)??0)>=p.MaxDelivered)return 0;
-    const count=this.plants.filter(plant=>plant.kind===p.PlantType).length+this.conveyor.filter(card=>card.kind===p.PlantType).length;
+    const count=this.level.powerTiles.filter(t=>'powerplant_'+t.group===p.PlantType).length+this.plants.filter(plant=>plant.kind===p.PlantType).length+this.conveyor.filter(card=>card.kind===p.PlantType).length;
     // ConveyorPlant's serialized default for either weight factor is 1.
     let weight=p.Weight;
     if(p.MinCount!==undefined&&count<=p.MinCount)weight*=p.MinWeightFactor??1;
@@ -951,7 +954,7 @@ export class Game {
       const statusDt=dt*(this.time<(z.perfumeUntil??0)?.5:1);
       if(this.future.tickZombie(z,statusDt)||this.cowboy.tickZombie(z,statusDt)||this.pirate.tickZombie(z,dt)||this.tickSpecialZombie(z,dt))continue;
       if(this.westFinale.blockEnemy(z,statusDt))continue;
-      const target = this.plants.filter(p => p.hp > 0 && !(p.kind==='chilibean'&&p.leap) && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='blover'&&p.kind!=='hurrikale'&&p.kind!=='stallia'&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='cherry_bomb'&&p.kind!=='jalapeno'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column)[0];
+      const target = this.plants.filter(p => p.hp > 0 && !(p.kind==='chilibean'&&p.leap) && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='empea'&&p.kind!=='blover'&&p.kind!=='hurrikale'&&p.kind!=='stallia'&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='cherry_bomb'&&p.kind!=='jalapeno'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column)[0];
       z.eating = !!target;
       if(target&&(z.kind==='explorer'||z.kind==='explorer_veteran')&&this.specialZombies.get(z.id)!.torch){target.hp=0;target.armor=0;}
       else if (target) { const amount = (z.kind==='egypt_imp'?100:this.props.zombies[z.kind].EatDPS) * statusDt*(this.time<z.chilledUntil?.5:1), armor = Math.min(target.armor, amount); target.armor -= armor; target.hp -= amount - armor;if(target.hp<=0){this.cowboy.eaten(target,z);this.westFinale.eaten(target,z);}if(target.hp<=0&&target.kind==='parsnip')this.launchParsnip(target,false); }
