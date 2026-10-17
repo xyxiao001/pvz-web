@@ -44,3 +44,13 @@ export function specialAnimationTiming(skeletons:ReadonlyMap<string,Skeleton>) {
     boneThrow:bone.events.throw,boneEnd:bone.duration,graveBust:spawn.events.bust,graveFinish:bust.events.finish,graveDie:bust.events.die,
     twinProduce:twin.events.Produce,twinProduceEnd:twin.duration,iceweedShoot:ice.events.shoot,iceweedFoodEnd:ice.events.foodEnd};
 }
+
+export function bonkAnimationTiming(skeleton:Skeleton) {
+  const attack=animationTimeline(skeleton,'BonkChoy','Attack'),heavy=animationTimeline(skeleton,'BonkChoy','Defeat');
+  const arm=skeleton.armature.find(a=>a.name==='BonkChoy')!;
+  const start=arm.animation.find(a=>a.name==='FoodStart')!;
+  let frames=0;
+  for(const frame of start.frame!){if((frame as {action?:string}).action==='Food')break;frames+=frame.duration??1;}
+  const food=arm.animation.find(a=>a.name==='Food')!;
+  return {attack:attack.events.attackGoal,heavy:heavy.events.attackHeavy,foodStart:frames/arm.frameRate,foodHit:food.frame![0].duration!/arm.frameRate};
+}

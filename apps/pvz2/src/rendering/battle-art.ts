@@ -19,7 +19,7 @@ export class BattleArt {
     this.catalog = await json<BattleCatalog>('battle/catalog.json');
     if(day>1){
       this.campaign=await json<CampaignCatalog>('campaign/catalog.json');
-      const names=['food','iceTrap',...(day>=3?['grave','sandstorm']:[]),...(plants.includes('cabbagepult')?['cabbage']:[]),...(plants.includes('bloomerang')?['boomerang']:[]),...(day===4||day===8?['conveyor']:[]),...([7,10].includes(day)?['dirtSpawn']:[]),...(day===10?['tombBone']:[]),...(plants.includes('iceweed')?['iceSaw']:[]),...(day===8?['pharaohBreak']:[]),...(day===5?['dirtSpawn','sprout','powerSnow','snowHit','cherryExplosion','wizardFinger','wizardPoint','tossPar','flameFinger','flameSquare']:[])];
+      const names=['food','iceTrap',...(day>=3?['grave','sandstorm']:[]),...(plants.includes('cabbagepult')?['cabbage']:[]),...(plants.includes('bloomerang')?['boomerang']:[]),...(day===4||day===8?['conveyor']:[]),...([7,10,14,16].includes(day)?['dirtSpawn']:[]),...([10,14].includes(day)?['tombBone']:[]),...(day===13?['mold']:[]),...(day===15?['endangered']:[]),...(plants.includes('iceweed')?['iceSaw']:[]),...(day===8?['pharaohBreak']:[]),...(day===5?['dirtSpawn','sprout','powerSnow','snowHit','cherryExplosion','wizardFinger','wizardPoint','tossPar','flameFinger','flameSquare']:[])];
       const rigs=Object.fromEntries(names.map(name=>[name,this.campaign.rigs[name]]));
       this.catalog={...this.catalog,rigs:{...this.catalog.rigs,...rigs},ui:{...this.catalog.ui,...this.campaign.ui},sounds:{...this.catalog.sounds,...this.campaign.sounds}};
     }
@@ -51,7 +51,7 @@ export class BattleArt {
   }
   card(app: Application, kind: PlantKind): string {
     const container = new Container();
-    const layers: PixiArmatureDisplay[] = [this.build('cards',['cabbagepult','bloomerang','iceburg','gravebuster','twinsunflower'].includes(kind)?'egypt':'frontyard','background'),this.build('cards',kind,'plants'),this.build('cards','dotPrice','upper_dots')];
+    const layers: PixiArmatureDisplay[] = [this.build('cards',['cabbagepult','bloomerang','iceburg','gravebuster','twinsunflower','bonkchoy'].includes(kind)?'egypt':'frontyard','background'),this.build('cards',kind,'plants'),this.build('cards','dotPrice','upper_dots')];
     container.addChild(...layers);
     const image = (app.renderer.extract.canvas({target:container,resolution:2,frame:new Rectangle(-119,-75,238,150)}) as HTMLCanvasElement).toDataURL('image/png');
     layers.forEach(r=>r.dispose()); container.destroy({children:true}); return image;

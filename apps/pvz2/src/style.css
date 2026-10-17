@@ -50,3 +50,10 @@ button{font:inherit;cursor:pointer;border:0;padding:0;background:transparent;col
 
 :scope[data-mode=match] .seed-bank,:scope[data-mode=match] .sun-counter,:scope[data-mode=match] #shovel{display:none}
 }
+
+@scope (.battle-app) {
+#hud > .challenge-objective { position:absolute;right:16%;top:15%;color:#fff8c6;text-shadow:0 .15cqw .2cqw #392718;font-size:1.3cqw;pointer-events:none; }
+:scope[data-screen=choosing] #hud > .challenge-objective { display:none; }
+.chooser-cards:has(.choose-card:nth-child(9)) .choose-card { width:calc((100% - 4cqw)/5); }
+.chooser-objective { position:absolute;left:0;right:0;top:45%;margin:0;text-align:center;color:#442913;font-size:1.3cqw;line-height:1.4; }
+}

@@ -26,13 +26,14 @@ export class ProgressStore {
   worldKeys(){return this.campaignRewards().filter(r=>r.type==='worldtrophy'&&r.id==='worldkey').reduce((n,r)=>n+r.count,0);}
   finish(world: string, level: string, sprouts=0) {
     if (this.isComplete(level)) return;
-    if(['egypt4','egypt6','egypt7','egypt8','egypt10','egypt11'].includes(level)||level==='egypt5'&&sprouts>0){
+    if(['egypt4','egypt6','egypt7','egypt8','egypt10','egypt11','egypt12','egypt14','egypt15','egypt16'].includes(level)||level==='egypt5'&&sprouts>0){
       const rewards=this.campaignRewards();
       if(level==='egypt4')rewards.push({level,type:'worldtrophy',id:'powerupgadget',count:1});
+      if(level==='egypt12')rewards.push({level,type:'worldtrophy',id:'dangerroom_egypt',count:1});
       if(level==='egypt7')rewards.push({level,type:'note',id:'note_egypt',count:1});
       if(level==='egypt8')rewards.push({level,type:'worldtrophy',id:'worldkey',count:1});
-      if(level==='egypt10')rewards.push({level,type:'coinbag',id:'CoinBag',count:1});
-      if(level==='egypt6'||level==='egypt11')rewards.push({level,type:'pinata',id:'spine_egypt',count:1});
+      if(['egypt10','egypt14','egypt16'].includes(level))rewards.push({level,type:'coinbag',id:'CoinBag',count:1});
+      if(level==='egypt6'||level==='egypt11'||level==='egypt15')rewards.push({level,type:'pinata',id:'spine_egypt',count:1});
       if(level==='egypt5')rewards.push({level,type:'sprout',id:'sprout',count:sprouts});
       this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));
     }

@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {Game,type Zombie} from '../src/game/model';
 import {readLevel,cellX,rowY,type Properties,type SourceLevel,type AnimationTiming} from '../src/game/level';
-import {animationTimeline,specialAnimationTiming,type Skeleton} from '../src/rendering/presentation';
+import {animationTimeline,specialAnimationTiming,bonkAnimationTiming,type Skeleton} from '../src/rendering/presentation';
 import type {CampaignCatalog} from '../src/rendering/battle-art';
 import {ProgressStore,completionEvents} from '../src/shell/progression';
 import {islandStates} from '../src/shell/navigation';
@@ -18,6 +18,7 @@ const timing:AnimationTiming={shoot:.5,shootDuration:26/30,produce:23/30,produce
  campaign:{cabbage:timeline('cabbagepult','Lob').events.Lob,cabbageDuration:timeline('cabbagepult','Lob').duration,cabbageFood:timeline('cabbagepult','Food').events.lobFood,cabbageFoodEnd:timeline('cabbagepult','Food').events.foodEnd,
  boomerang:timeline('bloomerang','Shoot').events.Shoot,boomerangDuration:timeline('bloomerang','Shoot').duration,boomerangCatch:timeline('bloomerang','Catch').duration,ice:timeline('iceburg','Death').events.explode,iceDuration:timeline('iceburg','Death').duration,iceFood:timeline('iceburg','Food').events.foodExplode/.8,iceFoodEnd:timeline('iceburg','Food').events.foodEnd/.8}};
 timing.special=specialAnimationTiming(new Map(Object.entries(catalog.actors).map(([name,rig])=>[name,read<Skeleton>(`campaign/rigs/${rig.rig}/skeleton.json`)])));
+timing.bonk=bonkAnimationTiming(read<Skeleton>(`campaign/rigs/${catalog.actors.bonkchoy.rig}/skeleton.json`));
 const level=(day:number)=>readLevel(read<SourceLevel>(`campaign/egypt${day}.source.json`));
 const create=(day:number)=>new Game(level(day),props,timing,z=>({x:z.x-25,y:rowY(z.row)-95}),1234);
 const tick=(g:Game,n:number)=>{for(let i=0;i<Math.round(n*60);i++)g.tick(1/60);};
@@ -307,4 +308,102 @@ test('a Gargantuar coffin release waits for its native frame and keeps the final
 test('normal sunflower food follows the pinned three Produce events, rather than an immediate six-sun burst',()=>{
  const g=create(11);g.sun=500;g.plant('sunflower',2,0);g.food=1;g.plantFood(2,0);assert.equal(g.suns.length,0);tick(g,.8);
  assert.equal(g.suns.length,props.plants.sunflower.PlantfoodTime);assert.equal(g.suns.reduce((n,s)=>n+s.value,0),150);
+});
+
+test('Egypt 16 four-face matching finishes all eleven waves with remembered revealed faces',()=>{
+ const g=create(16);
+ const memory=new Map<number,number>();
+ for(let frame=0;frame<60*450&&g.phase==='playing';frame++){
+  if(frame%8===0){
+   const face=g.zombies.filter(z=>g.camelCards.get(z.id)!.state==='face');for(const z of face)memory.set(z.id,g.camelCards.get(z.id)!.face);
+   const back=g.zombies.filter(z=>g.camelCards.get(z.id)!.state==='back'&&g.time-z.entryAt>1.35);
+   if(face.length===1){const match=back.find(z=>memory.get(z.id)===memory.get(face[0].id));if(match)g.flipCamel(match.id);else {const unseen=back.find(z=>!memory.has(z.id));if(unseen)g.flipCamel(unseen.id);else if(back.length)g.flipCamel(back[0].id);};}
+   else if(!face.length){let next=back.find(z=>memory.has(z.id)&&back.some(other=>other!==z&&memory.get(other.id)===memory.get(z.id)));next??=back.find(z=>!memory.has(z.id))??back[0];if(next)g.flipCamel(next.id);}
+  }
+  g.tick(1/60);g.events=[];
+ }
+ assert.equal(g.phase,'won',`time ${g.time}, wave ${g.wave}, remaining ${g.zombies.length}`);assert.equal(g.wave,11);
+});
+test('Egypt 12–16 preserve authored waves, active objectives and native challenge plants',()=>{
+ assert.deepEqual([12,13,14,15,16].map(day=>level(day).waves.length),[16,10,16,16,11]);
+ assert.deepEqual([12,13,14].map(day=>level(day).graves.length),[11,5,11]);
+ assert.equal(level(13).mold.length,10);assert.ok(level(13).mold.every(c=>c.column<2));
+ assert.equal(level(15).mustProtect,3);assert.deepEqual(level(15).protectedPlants.map(p=>[p.row,p.column]),[[0,4],[2,4],[4,4]]);
+ assert.equal(level(16).match!.types,4);assert.equal(level(16).mowers,false);assert.equal(level(16).sunDrops,false);
+ assert.ok(level(16).waves.flat().includes('camel_manyhump_touch'));assert.deepEqual(props.zombies.camel_manyhump_touch.TeamMemberCount,[5,6,7]);
+});
+
+test('mold prevents planting without charging sun or cooldown, while adjacent ground stays usable',()=>{
+ const g=create(13);g.sun=500;assert.equal(g.plant('peashooter',0,0),false);assert.equal(g.plant('sunflower',4,1),false);
+ assert.equal(g.sun,500);assert.equal(g.cooldowns.peashooter,0);assert.equal(g.plant('peashooter',0,2),true);
+});
+
+test('protected sunflowers produce sun, cannot be shoveled, and losing any one ends the battle',()=>{
+ const g=create(15),p=g.plants[0];assert.equal(g.plants.filter(p=>p.endangered).length,3);
+ g.shovel(p.row,p.column);assert.ok(g.plants.includes(p));tick(g,11);assert.ok(g.suns.some(s=>s.from==='plant'));
+ const z=zombie(p.row,cellX(p.column)+10);g.zombies.push(z);p.hp=5;tick(g,.1);
+ assert.equal(g.phase,'lost');assert.equal(g.lossReason,'protected');assert.equal(g.events.filter(e=>e.type==='lose').length,1);
+});
+
+test('Pharaoh coffin absorbs the breaking hit then releases a faster full-health inner zombie',()=>{
+ const l=level(12);l.actions=[[{...l.actions[0][0],zombies:[{kind:'pharaoh',row:2}],food:1}]];l.waves=[['pharaoh']];l.flagInterval=100;l.graves=[];
+ const g=new Game(l,props,timing,z=>({x:z.x,y:rowY(z.row)}),42);tick(g,15.6);const z=g.zombies[0];z.x=cellX(6);
+ assert.equal(z.armor,1200);assert.equal(z.hp,290);const before=z.x;tick(g,1);assert.ok(Math.abs(before-z.x-.185*82)<.01);
+ g.peas.push({id:serial++,row:z.row,x:z.x-25,y:rowY(z.row)-48,damage:1800,powered:false});tick(g,.05);
+ assert.equal(z.kind,'pharaoh_inner');assert.equal(z.hp,290);assert.equal(z.armor,0);assert.equal(g.phase,'playing');assert.equal(g.pickups.length,0);
+ tick(g,3);const after=z.x;tick(g,1);assert.ok(Math.abs(after-z.x-.5*82)<.01);
+ z.hp=0;tick(g,.1);assert.equal(g.phase,'won');assert.equal(g.pickups.length,1);
+});
+
+test('Bonk Choy punches on native attack frames in either direction and its food hits a 3x3 area 25 times',()=>{
+ assert.equal(timing.bonk!.attack,4/30);assert.equal(timing.bonk!.heavy,1/30);assert.equal(timing.bonk!.foodStart,12/30);
+ const g=create(14);g.graves=[];g.sun=500;g.plant('bonkchoy',2,3);const p=g.plants[0];
+ const z=zombie(2,cellX(2));z.hp=10000;g.zombies.push(z);tick(g,.5);assert.equal(p.facing,-1);assert.equal(z.hp,10000);
+ tick(g,.1);assert.equal(z.hp,9985);g.food=1;g.plantFood(2,3);
+ const near=zombie(1,cellX(4)),far=zombie(0,cellX(3));near.hp=10000;far.hp=10000;g.zombies.push(near,far);
+ z.frozenUntil=g.time+10;near.frozenUntil=g.time+10;far.frozenUntil=g.time+10;const hp=z.hp;tick(g,2.85);assert.equal(hp-z.hp,25*60);assert.equal(near.hp,8500);assert.equal(far.hp,10000);assert.equal(g.food,0);assert.equal(p.burst,0);assert.notEqual(p.action,'food');
+});
+
+test('Egypt 12 trophy and day 13 native plant reward progress through day 16 exactly once',()=>{
+ const data=new Map<string,string>(),progress=new ProgressStore({getItem:k=>data.get(k)??null,setItem:(k,v)=>{data.set(k,v);},removeItem:k=>{data.delete(k);}}),map=read<WorldMap>('shell/maps/egypt.json');
+ for(let day=1;day<=16;day++){
+  const id=`egypt${day}`;progress.finish('egypt',id);
+  const events=completionEvents(map,id,progress.completed(map),progress.rewardNodes('egypt'));
+  for(const e of events)if(e.action==='reward')progress.award('egypt',map.islands.find(n=>n.node===e.node)!);
+  if(day>=12&&day<16)assert.ok(events.some(e=>e.action==='open'&&map.islands.find(n=>n.node===e.node)!.levels.includes(`egypt${day+1}`)));
+  progress.finishPresentation();progress.finish('egypt',id);assert.equal(progress.pending(),null);
+ }
+ assert.ok(progress.ownedPlants().has(7));assert.ok(!progress.ownedPlants().has(8));
+ assert.deepEqual(progress.campaignRewards().filter(r=>Number(r.level.slice(5))>=12).map(r=>[r.level,r.id]),[['egypt12','dangerroom_egypt'],['egypt14','CoinBag'],['egypt15','spine_egypt'],['egypt16','CoinBag']]);
+});
+
+for(const day of [12,13,14,15])test(`Egypt ${day} can finish with legal planting, collection and its active objectives`,()=>{
+ const g=create(day),offset=day===13?2:0;
+ for(let frame=0;frame<60*900&&g.phase==='playing';frame++){
+  for(const s of [...g.suns])g.collect(s.id);for(const p of [...g.pickups])g.collectPickup(p.id);
+  if(frame%15===0){
+   const occupied=(r:number,c:number)=>g.plants.some(p=>p.row===r&&p.column===c),threats=[...g.zombies].sort((a,b)=>a.x-b.x);
+   for(const z of threats)if(!g.plants.some(p=>p.row===z.row&&p.kind==='bloomerang'))g.plant('bloomerang',z.row,offset+2);
+   for(let row=0;row<5;row++)if(!occupied(row,offset))g.plant('sunflower',row,offset);
+   for(const z of threats)if(z.x<cellX(7)){g.plant('wallnut',z.row,day===13?6:5);if(z.frozenUntil<=g.time)g.plant('iceburg',z.row,Math.floor((z.x-190)/82));}
+   for(let row=0;row<5;row++)if(!occupied(row,offset+1))g.plant('sunflower',row,offset+1);
+   for(const grave of g.graves)if(grave.column<=6)g.plant('gravebuster',grave.row,grave.column);
+   for(const c of [offset+2,offset+3,offset+4])for(let row=0;row<5;row++)if(!occupied(row,c))g.plant('bloomerang',row,c);
+   const target=threats.find(z=>z.x<1000);if(target){const p=g.plants.find(p=>p.row===target.row&&p.kind==='bloomerang');if(p)g.plantFood(p.row,p.column);}
+  }
+  g.tick(1/60);g.events.length=0;
+ }
+ assert.equal(g.phase,'won',`day ${day}, time ${g.time}, wave ${g.wave}, reason ${g.lossReason}, plants ${g.plants.length}`);assert.equal(g.wave,g.level.waves.length);
+});
+
+test('new actor actions, challenge tiles and Egypt trophy resolve in native assets',()=>{
+ for(const [actor,animations] of [['bonkchoy',['Idle','Attack','Defeat','FoodStart','Food','Death']],['pharaoh',['Idle','Walk','Eat','Death']],['pharaohInner',['Idle','Walk','Eat','Death']]] as const)
+  for(const animation of animations)assert.ok(timeline(actor,animation).duration>0,`${actor}/${animation}`);
+ for(const [name,animation] of [['mold','Idle'],['endangered','Idle_Floor']]){
+  const rig=catalog.rigs[name];assert.ok(animationTimeline(read<Skeleton>(`campaign/rigs/${rig.rig}/skeleton.json`),rig.armature,animation).duration>0);
+ }
+ const reward=read<{rigs:Record<string,{rig:string;armature:string}>}>('battle/catalog.json').rigs.reward;
+ assert.ok(animationTimeline(read<Skeleton>(`battle/rigs/${reward.rig}/skeleton.json`),reward.armature,'dangerroom_egypt'));
+ assert.equal(read<{plants:Record<number,unknown>}>('shell/progression.json').plants[7]!==undefined,true);
+ for(const name of ['EGYPT_OUTRO_DANGER_ROOM_KEY','EGYPT_CHALLENGE_PROTECTPLANTS_A'])for(const step of catalog.narratives[name])if(step.Lines){assert.ok(step.Voice);assert.ok(catalog.sounds[step.Voice!].every(path=>readFileSync(new URL('../public/assets/'+path,import.meta.url)).length>0));}
 });

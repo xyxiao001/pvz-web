@@ -9,6 +9,7 @@ import type { Scene } from './rendering/scene';
 import { cubicInOut, introCamera } from './rendering/presentation';
 
 const DESCRIPTIONS: Record<PlantKind,string> = {
+  bonkchoy:'菜问快速拳击前后靠近的僵尸。',
   gravebuster:'噬碑藤吞噬墓碑，为种植腾出空间。',
   twinsunflower:'双胞向日葵一次生产双倍阳光。',
   iceweed:'冰地刺伤害并减速踩在上面的僵尸。',
@@ -39,6 +40,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       <div id="conveyor" hidden aria-label="传送带"></div>
       <div id="powerups" hidden>${(['fire','snow','toss','zap','cherry'] as const).map((kind,i)=>`<button data-power="${kind}" aria-label="${['火焰','雪球','抛掷','闪电','樱桃炸弹'][i]}" title="${['按住并拖动喷火','按住并拖动投掷雪球','划过僵尸将它推离庭院','按住并拖动释放闪电','点击庭院使用樱桃炸弹'][i]}"><img alt="${['火焰','雪球','抛掷','闪电','樱桃炸弹'][i]}"></button>`).join('')}<progress id="power-time" max="1" value="1"></progress></div>
       <div id="game-tip" role="status" hidden></div>
+      <div class="challenge-objective" hidden></div>
       <div class="level-name">${title}</div>
       <div id="wave-hud"><div id="wave-fill"></div><span id="wave-label"></span></div>
     </div>
@@ -46,6 +48,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     <div id="seed-chooser" hidden>
       <section class="chooser-window" aria-label="选择植物">
         <div class="plant-description"><img id="plant-portrait" alt=""><div><h2 id="plant-name"></h2><p id="plant-description"></p></div></div>
+        <p class="challenge-objective chooser-objective" hidden></p>
         <div class="chooser-cards"></div>
       </section>
       <button id="ready-back" class="battle-button">返回地图</button><button id="start" class="battle-button" disabled>开始战斗</button>
@@ -100,7 +103,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       if(campaign){Object.assign(props.plants,campaign.plants);Object.assign(props.zombies,campaign.zombies);Object.assign(props.armors,campaign.armors);Object.assign(props,{grave:campaign.grave,projectiles:campaign.projectiles,powerups:campaign.powerups});}
       properties=props; properties.zombies.mummy_flag=flag; source=level; scene=new Scene();
       const parsed=readLevel(source);
-      const actorPlants=[...new Set([...(parsed.preset??(parsed.conveyor?parsed.conveyor.InitialPlantList.map(p=>p.PlantType):parsed.match||parsed.powerups?[]:cardOrder)),...parsed.initialPlants.map(p=>p.kind)])];
+      const actorPlants=[...new Set([...(parsed.preset??(parsed.conveyor?parsed.conveyor.InitialPlantList.map(p=>p.PlantType):parsed.match||parsed.powerups?[]:cardOrder)),...parsed.initialPlants.map(p=>p.kind),...parsed.protectedPlants.map(p=>p.kind)])];
       await scene.init($('#canvas-host'),(done,total)=>{
         $('#load-status').textContent=`正在准备植物与庭院 ${done} / ${total}`;
         const progress=$<HTMLProgressElement>('#load-progress');progress.max=total;progress.value=done;
@@ -118,7 +121,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       $<HTMLImageElement>('.sun-counter img').src=scene.art.image(scene.app,'sunIcon');
       $<HTMLImageElement>('#shovel img').src=scene.art.image(scene.app,'shovel','Idle');
       for(const [name,paths] of Object.entries(scene.art.catalog.sounds)) clips.set(name,paths.map(path=>{const audio=new Audio(assetUrl(path));audio.preload='none';return audio;}));
-      music.src=assetUrl(levelConfig.night||levelConfig.mode==='preset'?'campaign/minigame.mp3':'egypt/music.mp3');
+      music.src=assetUrl(levelConfig.night||levelConfig.mode==='preset'||levelConfig.day===15?'campaign/minigame.mp3':'egypt/music.mp3');
       if(levelConfig.day>1){
         $<HTMLImageElement>('#plant-food img').src=scene.art.image(scene.app,'food','Idle');
         if(levelConfig.mode==='powerups')for(const kind of ['fire','snow','toss','zap','cherry'])$<HTMLImageElement>(`[data-power="${kind}"] img`).src=assetUrl(scene.art.catalog.ui['power-'+kind].image);
@@ -143,12 +146,16 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     $('#narrative').hidden=false;$('#narrative').dataset.character=step.Character;
     $('#speech-line').textContent=step.Lines!.zh;scene.narrative(step.Character,step.Animation!);voice=sound(step.Voice!);
   }
-  function prepareGame(){game=new Game(readLevel(source),properties,scene.timing,zombie=>scene.absorptionTarget(zombie),Date.now()>>>0,!progress.isComplete(levelConfig.id));}
+  function prepareGame(){
+    game=new Game(readLevel(source),properties,scene.timing,zombie=>scene.absorptionTarget(zombie),Date.now()>>>0,!progress.isComplete(levelConfig.id));
+    const objective=game.level.mold.length?'霉菌覆盖的地块不能种植':game.level.mustProtect?`保护好 ${game.level.mustProtect} 株向日葵`:'';
+    for(const element of host.querySelectorAll<HTMLElement>('.challenge-objective')){element.textContent=objective;element.hidden=!objective;}
+  }
   function survey() {
     prepareGame();
     screen='survey';host.dataset.screen=screen;transitionTime=0;
     $('#hud').hidden=true;$('#overlay').hidden=true;$('#seed-chooser').hidden=true;
-    scene.preview(game.level.waves.flat(),game.graves,game.plants);scene.start();playMusic();
+    scene.preview(game.level.waves.flat(),game.graves,game.plants,game.level);scene.start();playMusic();
   }
   function describe(kind: PlantKind) {
     $('#plant-name').textContent=plantLabels[kind];$('#plant-description').textContent=DESCRIPTIONS[kind];
@@ -170,7 +177,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   }
   function chooseSeeds() {
     prepareGame();
-    scene.preview(game.level.waves.flat(),game.graves,game.plants);scene.setCamera(scene.art.catalog.presentation.seedChoosingCameraX);scene.start();openChooser();
+    scene.preview(game.level.waves.flat(),game.graves,game.plants,game.level);scene.setCamera(scene.art.catalog.presentation.seedChoosingCameraX);scene.start();openChooser();
   }
   function openChooser() {
     if(levelConfig.mode!=='seedbank'){deck=readLevel(source).preset??[];start();return;}
@@ -296,12 +303,12 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(game.phase==='won') {
       const first=!progress.isComplete(levelConfig.id);
       const reward=levelConfig.firstReward;
-      const rewardImage=first?(reward.plant?cards.get(reward.plant)!:levelConfig.day===7?assetUrl(scene.art.catalog.ui['note-egypt'].image):scene.art.image(scene.app,'reward',levelConfig.day===4?'powerups':[6,11].includes(levelConfig.day)?'Pinata':reward.image,[6,11].includes(levelConfig.day)?'Upgrades':levelConfig.day===10?'CoinBag':undefined)):'';
+      const rewardImage=first?(reward.plant?cards.get(reward.plant)!:levelConfig.day===7?assetUrl(scene.art.catalog.ui['note-egypt'].image):scene.art.image(scene.app,'reward',levelConfig.day===4?'powerups':[6,11,15].includes(levelConfig.day)?'Pinata':reward.image,[6,11,15].includes(levelConfig.day)?'Upgrades':[10,14,16].includes(levelConfig.day)?'CoinBag':undefined)):'';
       const sprouts=game.sprouts+game.pickups.filter(p=>p.kind==='sprout').length;
       panel('关卡完成',`${first?`<img class="map-reward" src="${rewardImage}" alt="${levelConfig.firstReward.label}"><p>获得${levelConfig.firstReward.label}</p>`:`<p>${title}</p>`}${sprouts>0?`<p>植物幼苗 × ${sprouts}</p>`:''}<button id="result-map" class="battle-button">继续</button>`);
       $('#result-map').onclick=()=>{progress.finish(levelConfig.world,levelConfig.id,sprouts);menu();};
     } else {
-      panel('僵尸吃掉了你的脑子！','<button id="again" class="battle-button">重新开始</button><button id="result-map" class="battle-button">返回地图</button>');
+      panel(game.lossReason==='protected'?'需要保护的植物被吃掉了！':'僵尸吃掉了你的脑子！','<button id="again" class="battle-button">重新开始</button><button id="result-map" class="battle-button">返回地图</button>');
       $('#again').onclick=chooseSeeds;$('#result-map').onclick=menu;
     }
   }
