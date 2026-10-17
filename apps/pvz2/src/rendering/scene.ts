@@ -192,6 +192,11 @@ export class Scene {
     root.addChild(shade, rig); this.actorLayer.addChild(root);
     const actor: Actor = { root, rig, kind:name, animation: '', actionAt: -1, armLost:false,camelFrame:name==='camel'?0:undefined };
     const events:Partial<Record<RigName,Record<string,string>>>={bull:{step:'stepSounds',deathSound:'deathSounds',brakeSound:'brakeSounds',impSteady:'impSteadySounds'},wintermelon:{Lob:'lobSound'},cowboyGargantuar:{step:'stepSounds',swing:'swingSounds',smash:'smashSounds',afterSmash:'afterSmashSaySounds',impThrow:'ImpThrowSounds',deathPole:'deathPoleSounds',deathFall:'deathFallSounds'},escaperoot:{unWrapSound:'unwrapQuickSounds'},spikerock:{attack:'attackSound'},threepeater:{ShootSound:'shootSound'},spikeweed:{attack:'attackSound'},springbean:{foodLeap:'foodLeapSound',foodBounce:'foodBounceSound'},impCannon:{Shoot:'ShootSound',Explode:'ExplodeSound'},pirateGargantuar:{steady:'steadySounds',step:'stepSounds',swing:'swingSounds',smash:'smashSounds',afterSmash:'afterSmashSaySounds',impThrow:'ImpThrowSounds',deathPole:'deathPoleSounds',deathFall:'deathFallSounds'},swashbuckler:{swing:'swingSounds'},snapdragon:{attackSound:'attackSound',flap:'flapSound',foodAttack:'foodSound'},coconutcannon:{Shoot:'shootSound',foodShoot:'shootFoodSound'},boss:{introSmashSound:'introSmashSound',introFallSound:'introFallSound',introSound:'introSound',spawnLandSound:'introLandSound',stepSound:'worldZombossMechStepSounds',moveSound:'worldZombossMechMoveSounds',mouthOpenSound:'worldZombossMechMouthOpenSounds',mouthCloseSound:'worldZombossMechMouthCloseSounds',leapSound:'worldZombossMechLeapStartSounds',landSound:'worldZombossMechLeapEndSounds',deathFallSound:'worldZombossMechDeathFallSounds',shootReadySound:'worldZombossMechShootRiseSounds',shootStart:'worldZombossMechShootSounds',shoot:'worldZombossMechPRJDropSounds',escape_trigger:'worldZombossEscapeTriggerSound'},snowdrop:{LobSound:'lobSound'},sapfling:{LobSound:'lobSound',sneeze:'sneezeSound',brush:'brushSound'},peapod:{ShootMega:'shootMegaSounds'},imitater:{sound:'imitateSound'},celerystalker:{hit:'hitSounds',foodSummon:'foodSounds'},parsnip:{hit:'snipSound',summon:'popSound'},repeater:{ShootSound:'shootSound',shootMega:'shootMegaSound'},kernelpult:{LobSound:'lobSound'},melonpult:{Lob:'lobSound'},bonkchoy:{attackAir:'attackAirSound',attackGoal:'attackGoalSound',attackHeavy:'defeatSound',foodAttack:'attackAirSound'},cabbagepult:{LobSound:'lobSound'},bloomerang:{ShootSound:'shootSound',catch:'catchSound'},iceburg:{explode:'deadSound',foodExplode:'foodBlastSound'},tombraiser:{puke:'pukeSound',throw:'throwSound'},gargantuar:{step:'stepSounds',swing:'swingSounds',smash:'smashSounds',afterSmash:'afterSmashSaySounds',impThrow:'ImpThrowSounds',deathPole:'deathPoleSounds',deathFall:'deathFallSounds'}};
+    if(name==='boss'&&this.art.campaign.actors.boss.group==='cowboy'){
+      Object.assign(events.boss!,{rollingSound:'rollingSound',expandSound:'expandSound',introBodyCallSound:'introBodyCallSound',loadMissileSound:'loadMissileSound',mouthCloseImpactSound:'worldZombossMechMouthCloseImpactSounds',summonFallSound:'worldZombossMechMouthOpenBodySounds'});
+      delete events.boss!.mouthCloseSound;
+      rig.addDBEventListener(EventObject.FRAME_EVENT,event=>{if(event.name==='expandSound')this.onSound('boss/expand2Sound');if(event.name==='loadMissileSound')this.onSound('boss/loadMissile2Sound');},this);
+    }
     if(name==='boss'&&this.art.campaign.actors.boss.group==='pirate'){
       events.boss!.shoot='afterShootSound';
       rig.addDBEventListener(EventObject.FRAME_EVENT,event=>{if(event.name==='shoot')this.onSound('boss/addShootSounds');if(event.name==='shootReadySound')this.onSound('boss/waveBeforeShootSound');},this);
@@ -376,7 +381,7 @@ export class Scene {
   }
   private dropFragment(actor:Actor,part:'head'|'arm'|'Cone'|'Bucket'|'Bricks') {
     const rig=this.rig(actor.kind,part==='Bricks'?'BricksDrop':part);rig.scale.set(RIGS[actor.kind].scale);
-    rig.animation.play((part==='Cone'||part==='Bucket'||part==='Bricks')?actor.armor!.animation.lastAnimationName!:part==='arm'&&actor.kind!=='imp'?'newAnimation':'Idle',0);
+    rig.animation.play((part==='Cone'||part==='Bucket'||part==='Bricks')?actor.armor!.animation.lastAnimationName!:part==='arm'&&!['imp','cowboyImp'].includes(actor.kind)?'newAnimation':'Idle',0);
     const bone=actor.rig.armature.getBone(part==='head'?'head':part==='arm'?'arm_here':'armorSOCKET')!;
     bone.updateGlobalTransform();
     const x=actor.root.x+actor.rig.x+bone.global.x*actor.rig.scale.x,y=actor.root.y+actor.rig.y+bone.global.y*actor.rig.scale.y;
@@ -537,7 +542,7 @@ export class Scene {
       for(const [i,t] of game.boss.targets.entries())object(`boss-target-${i}`,'bossTarget','Idle',cellX(t.column),rowY(t.row),.2);
       for(const m of game.boss.missiles){
         if(m.age<1.5){object(`boss-missile-${m.id}`,'bossMissile','Idle',cellX(m.column),rowY(m.row)-600*(1-m.age/1.5),.5).zIndex=1100;object(`boss-locator-${m.id}`,'bossTarget','Idle',cellX(m.column),rowY(m.row),.2);}
-        else {const rig=object(`boss-impact-${m.id}`,'bossMissile','Play',cellX(m.column),rowY(m.row),.5,'ProjectileExplode');rig.animation.lastAnimationState!.playTimes=1;}
+        else {const west=game.level.world==='west',key=`boss-impact-${m.id}`;if(west&&!this.objects.has(key))this.onSound('boss/missileImpact');const rig=object(key,west?'bossMissileImpact':'bossMissile','Play',cellX(m.column),rowY(m.row),.5,west?undefined:'ProjectileExplode');rig.animation.lastAnimationState!.playTimes=1;}
       }
       if(game.boss.animation==='Escape'){const rig=object('boss-escape','bossEscape','Play',game.boss.zombie.x+65.644,game.boss.y-84.136,.5);rig.animation.lastAnimationState!.playTimes=1;}
     }

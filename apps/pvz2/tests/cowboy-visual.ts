@@ -1,3 +1,4 @@
+import {playCowboyFifth} from './cowboy-fifth-strategy';
 import {playCowboyFourth} from './cowboy-fourth-strategy';
 import '../src/shell/style.css';
 import '../src/style.css';
@@ -20,8 +21,8 @@ const shell=new WorldShell(worldHost,async id=>{battle=createBattle(battleHost,a
 async function clean(){if(battle){await battle.dispose();battle=undefined;}if(scene){await scene.dispose();scene=undefined;}sceneHost.hidden=true;worldHost.hidden=true;battleHost.hidden=true;}
 function button(label:string,action:()=>Promise<void>|void){const b=document.createElement('button');b.textContent=label;b.onclick=async()=>{try{await action();}catch(e){status.textContent=String(e);throw e;}};controls.append(b);}
 button('世界地图',async()=>{await clean();worldHost.hidden=false;await shell.init();});
-for(let day=1;day<=20;day++)button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`cowboy${day}`],progress);await battle.enter();});
-for(let day=1;day<=20;day++)button(`场景${day}`,async()=>{
+for(let day=1;day<=25;day++)button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`cowboy${day}`],progress);await battle.enter();});
+for(let day=1;day<=25;day++)button(`场景${day}`,async()=>{
  await clean();sceneHost.hidden=false;scene=new Scene();const config=BATTLE_LEVELS[`cowboy${day}`],level=readLevel(await json<SourceLevel>(config.source));
  const groups=await Promise.all(['levels','campaign','pirate','cowboy'].map(name=>json<Properties>(name+'/properties.json'))),flag=await json<Properties['zombies']['mummy_flag']>('battle/flag.json');
  const props=groups.reduce((a,b)=>({...a,...b,plants:{...a.plants,...b.plants},zombies:{...a.zombies,...b.zombies},armors:{...a.armors,...b.armors},projectiles:{...a.projectiles,...b.projectiles},plantAnimations:{...a.plantAnimations,...b.plantAnimations}}));props.zombies.mummy_flag=flag;
@@ -44,7 +45,7 @@ let replayFrame=0;
 button('本关合法通关回放',()=>{
  const current=game!;game=new Game(current.level,current.props,scene!.timing,z=>scene!.absorptionTarget(z),1234,false);if(game.level.day===4)game.boosts=new Set(['peashooter']);if(game.level.day===12)game.boosts=new Set(['lightningreed']);replayFrame=0;scene!.reset();scene!.frameCombat();scene!.sync(game,0);scene!.render();status.textContent=game.level.day===12?'第12关回放：一份成熟闪电芦苇花园强化':game.level.day===4?'本关回放：一份成熟豌豆射手花园强化':'本关回放：正常阳光、卡片与冷却';
 });
-button('回放推进20秒',()=>{for(let i=0;i<1200&&game!.phase==='playing';i++,replayFrame++){(game!.level.day>15?playCowboyFourth:game!.level.day>10?playCowboyThird:game!.level.day>5?playCowboyNext:playCowboy)(game!,replayFrame);game!.tick(1/60);scene!.sync(game!,1/60);game!.events.length=0;}scene!.render();status.textContent=`回放 ${game!.level.day} / ${game!.time.toFixed(1)}s / ${game!.phase} / ${game!.wave}波`;});
+button('回放推进20秒',()=>{for(let i=0;i<1200&&game!.phase==='playing';i++,replayFrame++){(game!.level.day>20?playCowboyFifth:game!.level.day>15?playCowboyFourth:game!.level.day>10?playCowboyThird:game!.level.day>5?playCowboyNext:playCowboy)(game!,replayFrame);game!.tick(1/60);scene!.sync(game!,1/60);game!.events.length=0;}scene!.render();status.textContent=`回放 ${game!.level.day} / ${game!.time.toFixed(1)}s / ${game!.phase} / ${game!.wave}波`;});
 
 button('巨人抛掷',()=>{const z=game!.zombies.find(z=>z.kind==='cowboy_gargantuar')!;game!.damage(z,1900);});
 button('释放鸡群',()=>{const z=game!.zombies.find(z=>z.kind==='chicken_farmer')!;game!.damage(z,40);});
@@ -57,3 +58,11 @@ button('斗牛触电退场',()=>{const z=game!.zombies.find(z=>z.kind==='west_bu
 button('第17关高坚果护甲检查',()=>{const g=game!;g['nextWave']=Infinity;g.sun=1000;g.plant('tallnut',2,4);g.food=1;g.plantFood(2,4);const z=g.spawnZombie('west_bullrider',2,cellX(5));z.west!.bullThrown=true;z.leap={fromX:z.x,fromY:rowY(2)-40,toX:cellX(3),toRow:2,at:g.time,duration:.7};scene!.sync(g,0);scene!.render();status.textContent='高坚果：8000生命 / 6000铁甲 / 骑手碰撞';});
 button('高坚果破损',()=>{const p=game!.plants.find(p=>p.kind==='tallnut')!;p.hp=2000;p.armor=1000;scene!.sync(game!,0);scene!.render();});
 button('高坚果退场',()=>{game!.plants.find(p=>p.kind==='tallnut')!.hp=0;game!.tick(1/60);scene!.sync(game!,1/60);scene!.render();});
+
+button('西部僵王铁轨锁定',()=>{
+ const g=game!,b=g.boss!;g.sun=1000;
+ for(const c of g.cowboy.carts)g.addPlant('wintermelon',c.row,c.column);
+ do {b['aim']();}while(b.targets.length!==4);
+ scene!.sync(g,0);scene!.render();status.textContent=`铁轨 ${b.targets[0].column+1}：锁定 ${b.targets.map(t=>t.row+1).join('、')} 行`;
+});
+button('西部僵王导弹落地',()=>{const b=game!.boss!;b['fire']();for(let i=0;i<100;i++){game!.tick(1/60);scene!.sync(game!,1/60);}scene!.render();status.textContent='西部火焰导弹：落地爆炸，无埃及骨墓';});

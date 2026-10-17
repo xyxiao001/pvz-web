@@ -3,6 +3,7 @@ import {PirateFinalePlants} from './pirate-finale-plants';
 import {EscapeRoots} from './escape-root';
 import {PirateBattle,pirateArmor,seaCell,swinging,isFlying} from './pirate';
 import mowerPresentation from '../../public/assets/battle/mower.json';
+import { CowboyBoss } from './cowboy-boss';
 import { PirateBoss } from './pirate-boss';
 import { EgyptBoss } from './egypt-boss';
 import { EGYPT_RULES as RULES } from './rules';
@@ -119,7 +120,7 @@ export class Game {
     if(!level.mowers)this.mowers.forEach(m=>m.spent=true);
     if(level.world==='egypt'&&level.day===2&&tutorial)this.addPlant('peashooter',2,2);
     this.conveyorPlants=level.conveyor?level.conveyor.InitialPlantList.map(p=>({...p})):[];
-    if(level.boss)this.boss=level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
+    if(level.boss)this.boss=level.boss.kind==='zombossmech_cowboy'?new CowboyBoss(this):level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
     if(level.cannon){this.nextWave=4+RULES.normalWaveEntrance;level.cannon.RowHasCannon.forEach((has,row)=>{if(has)this.addPlant('coconutcannon',row,1);});}
   }
 

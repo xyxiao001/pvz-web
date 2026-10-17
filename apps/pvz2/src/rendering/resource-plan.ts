@@ -10,6 +10,7 @@ export function battleActors(level:Level,plants:readonly PlantKind[]){
   if(names.has('barrelroller'))names.add('pirateBarrel');
   if(['barrelroller','pirateGargantuar','impCannon'].some(n=>names.has(n)))names.add('pirateImp');
   if(level.boss?.kind.startsWith('zombossmech_pirate'))for(const name of ['boss','pirate','pirateCaptain','pirateParrot','pirateGargantuar','pirateImp','barrelroller','pirateBarrel'])names.add(name);
+  else if(level.boss?.kind==='zombossmech_cowboy')for(const name of ['boss','cowboy','prospector','piano','poncho','cowboyGargantuar','cowboyImp','chickenFarmer','chicken','chickenPumpkin'])names.add(name);
   else if(level.boss)for(const name of ['boss','mummy','gargantuar','imp','tombraiser','explorer','torchlight','pharaoh','pharaohInner'])names.add(name);
   if(names.has('gargantuar')){names.add('imp');names.add('pharaohInner');}
   if(names.has('pharaoh')||names.has('pharaohWeak'))names.add('pharaohInner');
@@ -20,7 +21,7 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   if(level.corral)for(const name of ['fenceHere','fenceThere'])names.add(name);
   if(level.world==='west')for(const name of ['cowboyLawn','mower','cowboyCone','cowboyBucket','rail','cart','prospectorSmoke','prospectorTail','ponchoBreak','plateDrop','cowboyHat'])names.add(name);
   if(level.world==='west'&&level.day===8)names.add('zombossicon');
-  if(level.waves.flat().includes('chicken_farmer'))names.add('chickenAsh');
+  if(level.waves.flat().includes('chicken_farmer')||level.boss?.kind==='zombossmech_cowboy')names.add('chickenAsh');
   if(level.world==='pirate'&&level.day===8)names.add('zombossicon');
   if(level.world==='pirate')for(const name of ['pirateLawn','mower','pirateCone','pirateBucket','seaSplash'])names.add(name);
   if(level.waves.flat().includes('pirate_armor4')||level.boss?.kind==='zombossmech_pirate2')names.add('pirateBricks');
@@ -32,6 +33,7 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   };
   for(const plant of plants)for(const effect of plantEffects[plant]??[])names.add(effect);
   if(level.boss?.kind.startsWith('zombossmech_pirate'))for(const name of ['bossEscape','bossPortal','zombossicon','dirtSpawn'])names.add(name);
+  else if(level.boss?.kind==='zombossmech_cowboy')for(const name of ['bossMissile','bossMissileImpact','bossTarget','bossEscape','bossPortal','zombossicon','dirtSpawn'])names.add(name);
   else if(level.boss)for(const name of ['bossMissile','bossTarget','bossEscape','bossPortal','zombossicon'])names.add(name);
   if(level.flowerLine!==null)names.add('flower');
   if(level.mold.length)names.add('mold');

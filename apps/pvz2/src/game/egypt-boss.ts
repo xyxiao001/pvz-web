@@ -96,13 +96,16 @@ export class EgyptBoss {
     if(name==='mouthOpenSound')this.summonAt=this.game.time+.5;
     if(name==='shoot')this.fire();
   }
-  tick(dt:number){
-    for(const missile of this.missiles){missile.age+=dt;if(missile.age-dt<1.5&&missile.age>=1.5){
+  protected impact(missile:{row:number;column:number}){
       const props=this.game.props.projectiles[this.game.props.zombies[this.zombie.kind].MissileType];
       for(const plant of this.game.plants)if(plant.row===missile.row&&Math.abs(plant.column-missile.column)<=1&&plant.action!=='food')plant.hp-=plant.column===missile.column?props.Damage:props.SplashDamage[0].Damage!;
       const cells=Array.from({length:9},(_,i)=>({row:missile.row+Math.floor(i/3)-1,column:missile.column+i%3-1})).filter(c=>c.row>=0&&c.row<5&&c.column>=0&&c.column<9&&(c.row!==missile.row||c.column!==missile.column)&&!this.game.plants.some(p=>p.row===c.row&&p.column===c.column)&&!this.game.graves.some(g=>g.row===c.row&&g.column===c.column));
       let count=props.BoneCount.Min+Math.floor(this.game.random()*(props.BoneCount.Max-props.BoneCount.Min+1));
       while(count--&&cells.length){const cell=cells.splice(Math.floor(this.game.random()*cells.length),1)[0];this.game.throwBone(cell.row,cell.column,cellX(missile.column),rowY(missile.row));}
+  }
+  tick(dt:number){
+    for(const missile of this.missiles){missile.age+=dt;if(missile.age-dt<1.5&&missile.age>=1.5){
+      this.impact(missile);
     }}
     this.missiles=this.missiles.filter(m=>m.age<2.5);
     if(this.defeated)return;
