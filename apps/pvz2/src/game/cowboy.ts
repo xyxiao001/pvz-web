@@ -1,6 +1,6 @@
 import {BOARD,cellX,rowY,type ZombieKind} from './level';
 import type {Game,Plant,Zombie} from './model';
-export const cowboyArmor=(kind:ZombieKind)=>kind==='cowboy_armor1'?'cowboy_armor1':kind==='cowboy_armor2'?'cowboy_armor2':null;
+export const cowboyArmor=(kind:ZombieKind)=>kind==='cowboy_armor4'?'cowboy_armor4':kind==='cowboy_armor1'?'cowboy_armor1':kind==='cowboy_armor2'?'cowboy_armor2':null;
 export interface CowboyZombie {
  bullThrown?:boolean;blockedByTallnut?:boolean;
  bull?:{delay:number;blocked:boolean;retreating:boolean;cheer:number};chickens?:boolean;imp?:boolean;fired?:boolean;animation?:string;at:number;elapsed:number;fuse?:number;ignited?:boolean;dirty?:boolean;
@@ -40,7 +40,7 @@ export class CowboyBattle {
   if(z.kind==='piano'||z.kind==='west_bullrider')z.west={at:g.time,elapsed:0};
   if(z.kind==='prospector')z.west={at:g.time,elapsed:0,fuse:props.ExplodeCountdown,ignited:true,dirty:false};
   if(z.kind.startsWith('poncho'))z.west={at:g.time,elapsed:0,poncho:props.PonchoToughness,plate:g.random()<props.ChanceToPlate?props.ShieldToughness:0};
-  if(['cowboy','cowboy_armor1','cowboy_armor2','cowboy_flag'].includes(z.kind))z.west={at:g.time,elapsed:0,dance:false,danceBeat:0,hat:z.armor===0};
+  if(['cowboy','cowboy_armor1','cowboy_armor2','cowboy_armor4','cowboy_flag'].includes(z.kind))z.west={at:g.time,elapsed:0,dance:false,danceBeat:0,hat:z.armor===0};
  }
  damage(z:Zombie,amount:number){
   const state=z.west;if(state?.poncho!==undefined){
@@ -101,7 +101,7 @@ export class CowboyBattle {
    if(s!.ignited&&!s!.dirty&&z.x<cellX(9)){const previous=s!.fuse!;s!.fuse!-=dt*(g.time<z.chilledUntil?.5:1);if(Math.floor(previous/(10/3))!==Math.floor(s!.fuse!/(10/3)))this.sounds.push('prospector/igniteSound');if(s!.fuse!<=0){s!.animation='FlyStart';s!.at=g.time;s!.elapsed=0;return true;}}
   }
   // The pinned class uses CowboyPianoDancingSpeedScale=1; DanceSPSScale in JSON is not read.
-  if(['cowboy','cowboy_armor1','cowboy_armor2','cowboy_flag'].includes(z.kind)&&s){
+  if(['cowboy','cowboy_armor1','cowboy_armor2','cowboy_armor4','cowboy_flag'].includes(z.kind)&&s){
    const dancing=this.pianoPlaying&&z.x<cellX(9);
    if(dancing!==s.dance){s.dance=dancing;if(!z.eating){s.animation=dancing?'DanceStart':'DanceEnd';s.at=g.time;s.elapsed=0;}}
    if(s.animation==='DanceStart'||s.animation==='DanceEnd'){s.elapsed+=dt;if(s.elapsed<1/3)return true;delete s.animation;}

@@ -15,6 +15,7 @@ import { isCamel, isMatchCamel, type DeathCause, Game, Plant, Zombie, ZombieDeat
 
 type RigName = PlantKind | 'bull'|'cowboyGargantuar'|'cowboyImp'|'chickenFarmer'|'chicken'|'chickenPumpkin'| 'cowboy'|'cowboyFlag'|'prospector'|'poncho'|'piano'| 'pirateCaptain'|'pirateParrot'| 'barrelroller'|'pirateBarrel'|'pirateGargantuar'|'pirateImp'|'impCannon'| 'pirate'|'pirateFlag'|'swashbuckler'|'seagull'|'pelican'| 'boss' | 'torchlight' | 'pharaohWeak' | 'mummy' | 'ra' | 'camel' | 'camelTouch' | 'gargantuar' | 'imp' | 'explorer' | 'tombraiser' | 'pharaoh' | 'pharaohInner';
 const RIGS: Record<RigName, { armature: string; idle: string; scale: number }> = {
+  electricpeashooter:{armature:'ElectricPeashooter',idle:'Idle',scale:.55},magnetshroom:{armature:'MagnetShroom',idle:'Idle',scale:.55},magnifyinggrass:{armature:'MagnifyingGrass',idle:'Idle',scale:.55},
   tallnut:{armature:'TallNut',idle:'Idle0',scale:.55},bull:{armature:'Bull',idle:'Walk',scale:.51},wintermelon:{armature:'Melon-pult',idle:'Idle',scale:.55},cowboyGargantuar:{armature:'CowboyGargantuar',idle:'Walk',scale:.51},cowboyImp:{armature:'CowboyImp',idle:'Walk',scale:.51},chickenFarmer:{armature:'ChickenFarmerZombie',idle:'WalkWithChicken',scale:.51},chicken:{armature:'Chicken',idle:'IdleWalk',scale:.51},chickenPumpkin:{armature:'ChickenPumpkin',idle:'IdleWalk',scale:.51},
   cowboy:{armature:'CowboyBasic',idle:'Walk',scale:.51},cowboyFlag:{armature:'CowboyFlag',idle:'Walk',scale:.51},prospector:{armature:'ProspectorZombie',idle:'Walk',scale:.51},piano:{armature:'PianoZombie',idle:'Walk',scale:.51},poncho:{armature:'PonchoZombie',idle:'Walk',scale:.51},splitpea:{armature:'SplitPea',idle:'Idle',scale:.55},chilibean:{armature:'Chilibean',idle:'Idle',scale:.55},
   xshot:{armature:'Rotobaga',idle:'Idle',scale:.55},chardguard:{armature:'ChardGuard',idle:'Idle',scale:.55},dandelion:{armature:'Dandelion',idle:'Idle',scale:.55},jalapeno:{armature:'Jalapeno',idle:'Idle',scale:.55},lightningreed:{armature:'LightningReed',idle:'Idle',scale:.55},escaperoot:{armature:'EscapeRoot',idle:'Baby_Loop',scale:.55},spikerock:{armature:'Spikerock',idle:'Idle',scale:.55},threepeater:{armature:'Threepeater',idle:'Idle',scale:.55},pirateCaptain:{armature:'Captain',idle:'Walk',scale:.51},pirateParrot:{armature:'Parrot',idle:'Flying',scale:.51},
@@ -173,6 +174,7 @@ export class Scene {
     const rig = this.rig(kind);
     rig.animation.play(kind === 'potatomine' ? 'Idle' : RIGS[kind].idle, 0);
     rig.armature.advanceTime(.01);
+    if(['electricpeashooter','magnetshroom','magnifyinggrass'].includes(kind))for(const slot of rig.armature.getSlots())if(slot.name.startsWith('COS'))slot.displayIndex=-1;
     const canvas = this.app.renderer.extract.canvas({ target: rig, resolution: 2 });
     const url = (canvas as HTMLCanvasElement).toDataURL('image/png');
     rig.dispose(); PixiFactory.advanceTime(0);
@@ -246,7 +248,7 @@ export class Scene {
       if(p.leap){const t=Math.min(1,(game.time-p.leap.at)/(p.kind==='chilibean'?.8:.5));actor.root.position.set(p.leap.x+(cellX(p.column)-p.leap.x)*t,p.leap.y+(rowY(p.row)-p.leap.y)*t-100*4*t*(1-t));}
       if(p.kind==='escaperoot')actor.rootGrown=p.rootGrown;
       if(p.kind==='bonkchoy')actor.rig.scale.x=RIGS.bonkchoy.scale*(p.facing??1);
-      actor.rig.animation.timeScale=game.corralWaiting?0:game.finale.handles(p.kind)?game.finale.rate(p):p.kind==='coconutcannon'&&['Shoot','Food'].includes(p.animation!)?2:p.kind==='parsnip'&&p.action==='shoot'?Math.max(1,1/game.props.plants.parsnip.AttackInterval):p.kind==='iceburg'&&p.action==='food'?.8:1;
+      actor.rig.animation.timeScale=game.corralWaiting?0:game.western.handles(p.kind)?game.western.rate(p):game.finale.handles(p.kind)?game.finale.rate(p):p.kind==='coconutcannon'&&['Shoot','Food'].includes(p.animation!)?2:p.kind==='parsnip'&&p.action==='shoot'?Math.max(1,1/game.props.plants.parsnip.AttackInterval):p.kind==='iceburg'&&p.action==='food'?.8:1;
       const animation = this.plantAnimation(p, game);
       this.animate(actor, animation, p.action === 'idle' ? 0 : p.actionAt, animation==='FoodBig'?1:p.action==='food'&&(p.kind==='sunflower'||p.kind==='twinsunflower')?game.props.plants[p.kind].PlantfoodTime: ['shoot','produce','grow','explode','catch'].includes(p.action)||p.action==='food'&&['cabbagepult','iceburg','wallnut'].includes(p.kind)||animation==='Spawn_Baby'?1:0);
     }
@@ -302,7 +304,7 @@ export class Scene {
         actor.armor = this.rig(actor.kind, z.kind.endsWith('_armor4')?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone'); actor.armor.scale.set(.51); actor.root.addChild(actor.armor);
       }
       if (actor.armor) {
-        if(actor.armor.visible&&z.armor<=0){this.dropFragment(actor,z.kind.endsWith('_armor4')?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone');this.onSound('zombieLimbPop');}
+        if(actor.armor.visible&&z.armor<=0&&!z.magnetized){this.dropFragment(actor,z.kind.endsWith('_armor4')?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone');this.onSound('zombieLimbPop');}
         actor.armor.visible = z.armor > 0;
         const max=cowboyArmor(z.kind)?game.props.armors[cowboyArmor(z.kind)!].Toughness:pirateArmor(z.kind)?game.props.armors[pirateArmor(z.kind)!].Toughness:z.kind==='mummy_armor4'?game.props.armors.egypt_armor4.Toughness:z.kind==='mummy_armor2'?game.props.armors.egypt_armor2.Toughness:game.props.armors.egypt_armor1.Toughness;
         const animation = z.armor > max*2/3 ? 'Broken0' : z.armor > max/3 ? 'Broken1' : 'Broken2';
@@ -312,7 +314,7 @@ export class Scene {
     for(const death of game.deaths)if(!this.seenDeaths.has(death.zombie.id)){this.seenDeaths.add(death.zombie.id);this.killZombie(death);}
     for (const [id, actor] of this.actors) if (!alive.has(id)&&!actor.death&&PLANT_KINDS.includes(actor.kind as PlantKind)) {
       if(actor.kind==='escaperoot'&&(id<0||actor.rootGrown)||actor.captured||actor.kind==='imitater'||actor.kind==='cherry_bomb'||actor.kind==='jalapeno'||actor.kind==='gravebuster'||actor.animation==='Charging'||actor.kind==='iceburg'&&actor.animation==='Death'||game.effects.some(effect=>effect.kind==='remove'&&effect.x===actor.root.x&&effect.y===actor.root.y)){this.removeActor(id,actor);continue;}
-      const animation=actor.kind==='escaperoot'?'Baby_Death':(actor.kind==='wallnut'||actor.kind==='tallnut')?actor.animation.replace('Idle','Death'):actor.kind==='potatomine'?'Death_Baby':'Death';
+      const animation=actor.kind==='escaperoot'?'Baby_Death':(actor.kind==='wallnut'||actor.kind==='tallnut')?actor.animation.replace('Idle','Death'):actor.kind==='potatomine'?'Death_Baby':actor.kind==='magnetshroom'&&['Resting','AbsorbEnd'].includes(actor.animation)?'DeathDark':'Death';
       const timeline=animationTimeline(this.skeletons.get(actor.kind)!,RIGS[actor.kind].armature,animation);
       this.animate(actor,animation,0,1);actor.death={cause:'plant',elapsed:0,fadeAt:timeline.duration,fallAt:Infinity};
     }
@@ -322,6 +324,7 @@ export class Scene {
     for(const [id,actor] of this.actors){
       const state=game.specialZombies.get(id);
       for(const slot of actor.rig.armature.getSlots()){
+        if(game.western.handles(actor.kind as PlantKind)&&slot.name.startsWith('COS'))slot.displayIndex=-1;
         if(actor.kind==='bull'){const z=game.zombies.find(z=>z.id===id)??game.deaths.find(d=>d.zombie.id===id)?.zombie;if(z){if(slot.name.includes('_IMP')&&!z.west!.imp)slot.displayIndex=-1;if(slot.name.includes('_bp1'))slot.displayIndex=z.hp<=game.props.zombies.west_bull.Toughness*2/3&&z.hp>game.props.zombies.west_bull.Toughness/3?0:-1;if(slot.name.includes('_bp2'))slot.displayIndex=z.hp<=game.props.zombies.west_bull.Toughness/3?0:-1;}}
         if(actor.kind==='cowboyGargantuar'&&game.zombies.find(z=>z.id===id)?.west?.imp===false&&slot.name.includes('_IMP'))slot.displayIndex=-1;
         if(actor.kind==='chickenFarmer'&&slot.name.includes('_CHICK')&&game.zombies.find(z=>z.id===id)?.west?.chickens===false)slot.displayIndex=-1;
@@ -567,6 +570,28 @@ export class Scene {
       if(power.kind==='zap')for(const z of game.zombies)if(Math.abs(z.x-power.x)<123&&Math.abs(rowY(z.row)-50-power.y)<147){
         const dx=z.x-power.x,dy=rowY(z.row)-50-power.y;
         const rig=object(`zap-${z.id}`,'wizardPoint','Idle',power.x,power.y,1);rig.scale.set(Math.hypot(dx,dy)/175,.5);rig.rotation=Math.atan2(dy,dx);rig.zIndex=1100;
+      }
+    }
+    for(const sound of game.western.sounds.splice(0))this.onSound(sound);
+    for(const shot of game.western.shots){
+      const rig=object(`west-shot-${shot.id}`,shot.armor?.name??shot.kind,shot.armor?.animation??'Idle',shot.x,shot.y,.5,shot.armor?.armature);rig.rotation=Math.atan2(shot.vy,shot.vx);
+      if(shot.kind==='electricpea'||shot.kind==='electricpea_pf')object(`west-foot-${shot.id}`,'electricFoot','Idle',shot.x,shot.y,.5);
+    }
+    for(const v of game.western.visuals){const rig=object(`west-fx-${v.id}`,v.name,v.animation,v.x,v.y,.5);rig.animation.lastAnimationState!.playTimes=1;if(v.toX!==undefined){const dx=v.toX-v.x,dy=v.toY!-v.y;rig.rotation=Math.atan2(dy,dx);rig.scale.x=Math.hypot(dx,dy)/200;}}
+    for(const metal of game.western.metals){
+      const state=game.western.magnets.get(metal.plant)!,shrink=metal.food||game.time-metal.at<.2?1:Math.max(.01,(state.restUntil-game.time)/game.props.plants.magnetshroom.RestTime);
+      object(`west-metal-${metal.id}`,metal.name,metal.animation,metal.x,metal.y,.5*shrink,metal.armature);
+    }
+    for(const beam of game.western.beams){
+      const age=game.time-beam.at,ending=game.time>=beam.until;
+      const from=object(`grass-from-${beam.plant}`,'grassFrom',ending?'End':age<game.props.plantAnimations.grassFrom.Start.duration?'Start':'Idle',beam.x,beam.y,.5);if(ending)from.animation.lastAnimationState!.playTimes=1;
+      if(beam.target!==null){
+        const hit=object(`grass-to-${beam.plant}`,'grassTo',ending?'Die':'Idle',beam.toX,beam.toY,.5);if(ending)hit.animation.lastAnimationState!.playTimes=1;
+        const ray=object(`grass-ray-${beam.plant}`,'grassRay',ending?'End':age<game.props.plantAnimations.grassRay.Start.duration?'Start':'Idle',beam.x,beam.y,.5);ray.rotation=Math.atan2(beam.toY-beam.y,beam.toX-beam.x);ray.scale.x=Math.hypot(beam.toX-beam.x,beam.toY-beam.y)/500;if(ending)ray.animation.lastAnimationState!.playTimes=1;
+      }
+      for(const [index,id] of beam.producers.entries()){
+        const p=game.plants.find(p=>p.id===id);if(!p||ending||age>=(index+1)*game.props.plants.magnifyinggrass.PlantfoodDurationExtendPerProducer)continue;
+        object(`grass-absorb-${beam.plant}-${id}`,'grassAbsorb','Idle',cellX(p.column),rowY(p.row)-50,.5);
       }
     }
     for(const sound of game.finale.sounds.splice(0))this.onSound(sound);

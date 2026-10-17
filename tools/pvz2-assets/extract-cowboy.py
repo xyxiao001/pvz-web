@@ -1,4 +1,4 @@
-"""Export Wild West 1–25 from the pinned source build."""
+"""Export Wild West 1–30 from the pinned source build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -18,11 +18,15 @@ def rig(path):
 def props(path,names):
     objs=e.read('json/Objects/'+path).objects[0]['json']['objects']
     return {n:next(o['objdata'] for o in objs if n in o.get('aliases',[])) for n in names}
-actors={n:rig(p) for n,p in {'boss':'zombies/CowboyZombossMechZOMBIE','tallnut':'plants/TallnutPLANT','bull':'zombies/CowboyBullZOMBIE','wintermelon':'plants/WinterMelonPLANT','cowboyGargantuar':'zombies/CowboyGargantuarZOMBIE','cowboyImp':'zombies/CowboyImpZOMBIE','chickenFarmer':'zombies/CowboyChickenFarmerZOMBIE','chicken':'zombies/CowboyChickenZOMBIE','chickenPumpkin':'zombies/CowboyChickenPumpkinZOMBIE','cowboy':'zombies/CowboyBasicZOMBIE','cowboyFlag':'zombies/CowboyFlagZOMBIE','prospector':'zombies/CowboyProspectorZOMBIE','piano':'zombies/CowboyPianoZOMBIE','poncho':'zombies/CowboyPonchoZOMBIE','splitpea':'plants/SplitPeaPLANT','chilibean':'plants/ChiliBeanPLANT'}.items()}
-rigs={n:rig(p) for n,p in {'bossMissile':'projectiles/CowboyZombossMissilePRJ','winter_melon':'projectiles/MelonWinter0PRJ','winter_melon_pf':'projectiles/MelonWinterMegaPRJ','cowboyLawn':'lawns/CowboyLAWN','mower':'projectiles/CowboyMowerPRJ','cowboyCone':'armors/CowboyConeARMOR','cowboyBucket':'armors/CowboyBucketARMOR','rail':'tiles/RailTILE','cart':'tiles/CartTILE'}.items()}
+actors={n:rig(p) for n,p in {'electricpeashooter':'plants/ElectricPeashooterPLANT','magnetshroom':'plants/MagnetShroomPLANT','magnifyinggrass':'plants/MagnifyingGrassPLANT','boss':'zombies/CowboyZombossMechZOMBIE','tallnut':'plants/TallnutPLANT','bull':'zombies/CowboyBullZOMBIE','wintermelon':'plants/WinterMelonPLANT','cowboyGargantuar':'zombies/CowboyGargantuarZOMBIE','cowboyImp':'zombies/CowboyImpZOMBIE','chickenFarmer':'zombies/CowboyChickenFarmerZOMBIE','chicken':'zombies/CowboyChickenZOMBIE','chickenPumpkin':'zombies/CowboyChickenPumpkinZOMBIE','cowboy':'zombies/CowboyBasicZOMBIE','cowboyFlag':'zombies/CowboyFlagZOMBIE','prospector':'zombies/CowboyProspectorZOMBIE','piano':'zombies/CowboyPianoZOMBIE','poncho':'zombies/CowboyPonchoZOMBIE','splitpea':'plants/SplitPeaPLANT','chilibean':'plants/ChiliBeanPLANT'}.items()}
+rigs={n:rig(p) for n,p in {'cowboyBricks':'armors/CowboyBricksARMOR','electricpea':'projectiles/ElectricPeaPRJ','electricpea_pf':'projectiles/ElectricPeaBigPRJ','electricpea_small':'projectiles/ElectricPeaSmallPRJ','magnifying_grass':'projectiles/MagGrass0PRJ','bossMissile':'projectiles/CowboyZombossMissilePRJ','winter_melon':'projectiles/MelonWinter0PRJ','winter_melon_pf':'projectiles/MelonWinterMegaPRJ','cowboyLawn':'lawns/CowboyLAWN','mower':'projectiles/CowboyMowerPRJ','cowboyCone':'armors/CowboyConeARMOR','cowboyBucket':'armors/CowboyBucketARMOR','rail':'tiles/RailTILE','cart':'tiles/CartTILE'}.items()}
 for p,fields in [('zombies/CowboyProspectorZOMBIE',{'prospectorSmoke':'explSmokePar','prospectorTail':'smokeTailPar'}),('zombies/CowboyPonchoZOMBIE',{'ponchoBreak':'ponchoBreakPar','plateDrop':'plateDrop'}),('zombies/CowboyBasicZOMBIE',{'cowboyHat':'zombieHat'})]:
     co=next(x for x in walk(e.read(p).objects) if next(iter(fields.values())) in x)
     for n,k in fields.items():rigs[n]=rig(co[k]['asset'])
+for path,fields in [('projectiles/ElectricPeaPRJ',{'electricHit':'PopParticle','electricFoot':'footPar','electricLink':'curvePar'}),('projectiles/ElectricPeaBigPRJ',{'electricBigHit':'PopParticle'}),('projectiles/ElectricPeaSmallPRJ',{'electricSmallHit':'PopParticle'}),('plants/MagnifyingGrassPLANT',{'grassFrom':'foodFromParPrefab','grassTo':'foodToParPrefab','grassAbsorb':'foodAbsorbParPrefab','grassRay':'foodRayParPrefab'}),('projectiles/MagGrass0PRJ',{'grassHit':'PopParticle'})]:
+    co=next(x for x in walk(e.read(path).objects) if next(iter(fields.values())) in x)
+    for n,k in fields.items():
+        value=co[k];rigs[n]=rig((value[0] if isinstance(value,list) else value)['asset'])
 particles=e.read('resouce_prefabs/ParticlesRP').objects[1]['_components'][0]
 for name,key in [('chiliFart','zombieFart'),('chiliStun','zombieChiliBeanStun')]:rigs[name]=rig(particles[key]['asset'])
 for name,key in [('fenceHere','FenceHere'),('fenceThere','FenceThere')]:rigs[name]=rig(particles['cowboyFence'][key]['asset'])
@@ -42,8 +46,8 @@ boss_file=e.OUT/'rigs'/actors['boss']['rig']/'skeleton.json';boss_data=json.load
 for item in walk(boss_data):
     if item.get('action')=='Nope':del item['action']
 c.write_json(boss_file,boss_data)
-for day in range(1,26):c.write_json(e.OUT/f'cowboy{day}.source.json',e.read(f'levels/cowboy{day}').objects[0]['json'])
-properties={'plants':props('PlantProps',['tallnut','splitpea','chilibean','wintermelon']),'zombies':props('ZombieProps',['zombossmech_cowboy','west_bull','cowboy_gargantuar','west_bullrider','chicken_farmer','chicken','chicken_pumpkin','cowboy','cowboy_armor1','cowboy_armor2','cowboy_flag','prospector','piano','poncho','poncho_no_plate','poncho_plate']),'armors':props('ArmorProps',['cowboy_armor1','cowboy_armor2']),'projectiles':props('ProjectileProps',['zomboss_missile_cowboy','pea_mega','winter_melon','winter_melon_pf']),'plantAnimations':{}}
+for day in range(1,31):c.write_json(e.OUT/f'cowboy{day}.source.json',e.read(f'levels/cowboy{day}').objects[0]['json'])
+properties={'plants':props('PlantProps',['electricpeashooter','magnetshroom','magnifyinggrass','tallnut','splitpea','chilibean','wintermelon']),'zombies':props('ZombieProps',['cowboy_armor4','zombossmech_cowboy','west_bull','cowboy_gargantuar','west_bullrider','chicken_farmer','chicken','chicken_pumpkin','cowboy','cowboy_armor1','cowboy_armor2','cowboy_flag','prospector','piano','poncho','poncho_no_plate','poncho_plate']),'armors':props('ArmorProps',['cowboy_armor4','cowboy_armor1','cowboy_armor2']),'projectiles':props('ProjectileProps',['electricpea','electricpea_pf','electricpea_small','magnifying_grass','zomboss_missile_cowboy','pea_mega','winter_melon','winter_melon_pf']),'plantAnimations':{}}
 for name,description in {**actors,**rigs}.items():
     sk=json.loads((e.OUT/'rigs'/description['rig']/'skeleton.json').read_text());arm=next(a for a in sk['armature'] if a['name']==description['armature']);timelines={}
     for animation in arm['animation']:
@@ -66,8 +70,9 @@ def sound(name,value):
 for key,value in bossco.items():
     if (key.endswith('Sound') or key.endswith('Sounds')) and value:sound('boss/'+key,value)
 sound('boss/missileImpact',missileco['PopSound'])
-for n,p in [('tallnut','plants/TallnutPLANT'),('wintermelon','plants/WinterMelonPLANT'),('splitpea','plants/SplitPeaPLANT'),('chilibean','plants/ChiliBeanPLANT')]:
+for n,p in [('electricpeashooter','plants/ElectricPeashooterPLANT'),('magnetshroom','plants/MagnetShroomPLANT'),('magnifyinggrass','plants/MagnifyingGrassPLANT'),('tallnut','plants/TallnutPLANT'),('wintermelon','plants/WinterMelonPLANT'),('splitpea','plants/SplitPeaPLANT'),('chilibean','plants/ChiliBeanPLANT')]:
     co=next(x for x in walk(e.read(p).objects) if 'soundRes' in x)
+    if n=='magnetshroom':sound('magnetshroom/hitSounds',co['hitSounds'])
     for key,value in co['soundRes'].items():
         if isinstance(value,(dict,list)) and value:sound(n+'/'+key,value)
 for n,p,keys in [('cowboyImp','zombies/CowboyImpZOMBIE',['landSounds']),('bull','zombies/CowboyBullZOMBIE',['stepSounds','deathSounds','bullBrakeSounds','brakeSounds','impBrakeSounds','bullThrowSounds','impThrowSounds','impSteadySounds','angrySounds','impCheerSounds']),('cowboyGargantuar','zombies/CowboyGargantuarZOMBIE',['stepSounds','deathPoleSounds','deathFallSounds','swingSounds','smashSounds','afterSmashSaySounds','ImpThrowSaySounds','ImpThrowSounds','throwSounds']),('chickenFarmer','zombies/CowboyChickenFarmerZOMBIE',['chickenActionSound']),('prospector','zombies/CowboyProspectorZOMBIE',['landSound','explodeSound','explodeSaySound','igniteSound']),('cart','tiles/CartTILE',['moveSounds'])]:
@@ -77,7 +82,7 @@ sound('zombieShock',e.read('resouce_prefabs/SoundsRP').objects[1]['_components']
 sound('birdExpl',e.read('resouce_prefabs/SoundsRP').objects[1]['_components'][0]['birdExpl'])
 sound('zombieFart',e.read('resouce_prefabs/SoundsRP').objects[1]['_components'][0]['zombieFart'])
 npc=e.read('b697cdfd-e783-4f80-abbe-ac197db6cf97');narratives={}
-for name in ['COWBOY_INTRO_ZOMBOSS','COWBOY_OUTRO_ZOMBOSS','COWBOY_CHALLENGE_PROTECTPLANTS_A','COWBOY_INTRO_FIRSTLEVEL','COWBOY_OUTRO_DANGER_ROOM_KEY','COWBOY_CHALLENGE_LASTSTAND_A','COWBOY_INTRO_LEVEL7','COWBOY_INTRO_GARGANTUAR','COWBOY_OUTRO_GARGANTUAR','COWBOY_CHALLENGE_PRESET_A']:
+for name in ['COWBOY_26_INTRO','COWBOY_INTRO_ZOMBOSS','COWBOY_OUTRO_ZOMBOSS','COWBOY_CHALLENGE_PROTECTPLANTS_A','COWBOY_INTRO_FIRSTLEVEL','COWBOY_OUTRO_DANGER_ROOM_KEY','COWBOY_CHALLENGE_LASTSTAND_A','COWBOY_INTRO_LEVEL7','COWBOY_INTRO_GARGANTUAR','COWBOY_OUTRO_GARGANTUAR','COWBOY_CHALLENGE_PRESET_A']:
     flow=next(o['objdata']['Flow'] for o in e.read('json/Objects/NarrativeList').objects[0]['json']['objects'] if name in o.get('aliases',[]))
     for step in flow:
         if 'Lines' in step:
@@ -91,4 +96,4 @@ for name,path in [('music','P1_LP_Cowboy'),('minigame','MG_Cowboy'),('piano','PI
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{'note-cowboy':e.sprite(c.decode_uuid(c.config['uuids'][c.path_index['note/cowboy/spriteFrame']]))}})
 c.write_json(c.ROOT/'apps/pvz2/cowboy-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Wild West 1–25')
+print('Exported Wild West 1–30')

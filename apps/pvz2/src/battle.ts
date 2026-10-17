@@ -10,6 +10,7 @@ import type { Scene } from './rendering/scene';
 import { cubicInOut, introCamera } from './rendering/presentation';
 
 const DESCRIPTIONS: Record<PlantKind,string> = {
+  electricpeashooter:'电能豌豆发射穿透电球，并向附近的僵尸释放电流。',magnetshroom:'磁力菇吸走僵尸的金属护甲，消化后可以再次吸取。',magnifyinggrass:'点击棱镜草，消耗50阳光发射彩虹光弹。',
   wintermelon:'冰西瓜投出冰瓜，对落点附近的僵尸造成伤害并减速。',splitpea:'裂荚射手向前发射一颗豌豆，向后连射两颗。',chilibean:'巴豆被吃掉后会毒死僵尸，并使它身后的同路僵尸眩晕。',xshot:'旋转芜菁向四个斜向射击。',chardguard:'甜菜护卫可以用叶片把僵尸推回去。',dandelion:'蒲公英向附近三行发射爆炸种子。',jalapeno:'火爆辣椒烧毁一整行的僵尸。',lightningreed:'闪电芦苇的电流会在附近僵尸间传导。',escaperoot:'点击逃脱树根，再点击另一株植物即可换位。成熟后遇到僵尸会变成爆炸植物。',spikerock:'钢地刺能刺破三个滚桶，伤害踩在上面的僵尸。',threepeater:'三线射手同时向所在行和相邻两行发射豌豆。',spikeweed:'地刺可以伤害踩在上面的僵尸，并刺破滚桶。',springbean:'弹簧豆可以弹开僵尸，也能把靠近海边的僵尸弹入水中。',snapdragon:'火龙草向前方三行喷火，灼烧靠近的僵尸。',coconutcannon:'点击椰子加农炮发射炮弹，爆炸后需要时间重新装填。',snowdrop:'雪莲抛出冰霜花瓣，使僵尸减速，偶尔将它冻住。',imitater:'选择本关的一种植物，模仿者会在种下后变成它。',peapod:'在同一格重复种植，最多叠加五个豌豆头。',cherry_bomb:'樱桃炸弹炸毁周围九宫格内的僵尸。',celerystalker:'潜伏芹菜藏在地下，攻击走过身后的僵尸。',parsnip:'防风草用钳子攻击前方，被吃掉后冲出去继续攻击。',sapfling:'树脂投手在落点留下树脂，减缓僵尸的移动。',
   repeater:'双发射手连续发射两颗豌豆。',kernelpult:'玉米投手抛射玉米粒，偶尔用黄油定住僵尸。',melonpult:'西瓜投手的西瓜能伤害落点周围的僵尸。',
   bonkchoy:'菜问快速拳击前后靠近的僵尸。',
@@ -266,7 +267,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(selected==='shovel'){game.shovel(row,column);sound('shovelDig');}
     else if(selected==='food'){if(game.plantFood(row,column)){selected=null;scene.highlightCell(-1,-1,0);}}
     else if(selected&&game.plant(selected,row,column,packetId)){selected=null;scene.highlightCell(-1,-1,0);}
-    else if(selected===null&&!game.cowboy.select(row,column)&&!game.escape.select(row,column))game.pirate.fire(row,column);
+    else if(selected===null&&!game.cowboy.select(row,column)&&!game.escape.select(row,column)&&!game.western.fire(row,column))game.pirate.fire(row,column);
     updateHud();
   }
   function tick(dt: number) {

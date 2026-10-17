@@ -1,3 +1,4 @@
+import {WesternPlants} from './western-plants';
 import {CowboyBattle,cowboyArmor,type CowboyZombie} from './cowboy';
 import {PirateFinalePlants} from './pirate-finale-plants';
 import {EscapeRoots} from './escape-root';
@@ -16,7 +17,7 @@ export interface Plant {
   transformed?:boolean;leaves?:number;rootGrown?:boolean;spikes?:number;boosted?:boolean; endangered?:boolean; facing?:number;heavy?:boolean;
   actionAt: number; fired: boolean; burst: number; nextBurst: number;
 }
-export interface Zombie { west?:CowboyZombie; captain?:{parrot:boolean;health:number;next:number};parrot?:{captain:number;target:number|null;y:number;height:number;capture:number;fleeing:boolean;escaped:boolean;carrying?:Plant}; stunnedUntil?:number; pirate?:{animation:string;at:number;elapsed:number;next:number;count:number;fired:boolean;imp:boolean};barrel?:number;pusher?:number;detachedAt?:number; swing?:{at:number;judge:number;end:number;failure:boolean};route?:{spawnLane:number;spawnWave:number;points:{x:number;y:number}[];index:number;y:number;angle:number}; sappedUntil?:number; butteredUntil?:number;reversed?:boolean;landUntil?:number; id: number; kind: ZombieKind; row: number; x: number; hp: number; armor: number; eating: boolean; absorbed: number; absorbUntil: number; absorbState:'idle'|'start'|'loop'|'end'; absorbAt:number;deathCause:DeathCause; frozenUntil:number;chilledUntil:number;food:boolean;entry:SpawnAction['mode'];entryAt:number;entryX:number;camelPart:number;team:number;leap:{fromX:number;fromY:number;toX:number;toRow:number;at:number;duration?:number}|null }
+export interface Zombie { magnetized?:boolean; west?:CowboyZombie; captain?:{parrot:boolean;health:number;next:number};parrot?:{captain:number;target:number|null;y:number;height:number;capture:number;fleeing:boolean;escaped:boolean;carrying?:Plant}; stunnedUntil?:number; pirate?:{animation:string;at:number;elapsed:number;next:number;count:number;fired:boolean;imp:boolean};barrel?:number;pusher?:number;detachedAt?:number; swing?:{at:number;judge:number;end:number;failure:boolean};route?:{spawnLane:number;spawnWave:number;points:{x:number;y:number}[];index:number;y:number;angle:number}; sappedUntil?:number; butteredUntil?:number;reversed?:boolean;landUntil?:number; id: number; kind: ZombieKind; row: number; x: number; hp: number; armor: number; eating: boolean; absorbed: number; absorbUntil: number; absorbState:'idle'|'start'|'loop'|'end'; absorbAt:number;deathCause:DeathCause; frozenUntil:number;chilledUntil:number;food:boolean;entry:SpawnAction['mode'];entryAt:number;entryX:number;camelPart:number;team:number;leap:{fromX:number;fromY:number;toX:number;toRow:number;at:number;duration?:number}|null }
 export type DeathCause = 'electric' | 'water' | 'normal' | 'potato' | 'mower' | 'toss' | 'match';
 export const isCamel=(kind:ZombieKind)=>kind.startsWith('camel_');
 export const isMatchCamel=(kind:ZombieKind)=>kind.endsWith('_touch');
@@ -37,6 +38,7 @@ export type GameEvent = { type: 'shot' | 'plant' | 'sun' | 'explode' | 'win' | '
 export class Game {
   readonly cowboy:CowboyBattle;
   corralWaiting=false;
+  readonly western=new WesternPlants(this);
   readonly finale=new PirateFinalePlants(this);
   plantsLost=0;
   readonly escape=new EscapeRoots(this);
@@ -161,6 +163,7 @@ export class Game {
     this.plants.push({ id: ++this.id, kind, row, column, hp: p.Toughness, armor: 0, age: 0, nextAction,
       action: 'idle', actionAt: this.time, fired: false, burst: 0, nextBurst: 0 });
     const plant=this.plants.at(-1)!;
+    if(this.western.handles(kind))plant.animation='Idle';
     if(kind==='chardguard')plant.leaves=p.MaxBounceTime;
     if(kind==='jalapeno')plant.animation='Attack';
     if(kind==='escaperoot'){plant.rootGrown=false;plant.animation='Baby_Start';}
@@ -218,6 +221,7 @@ export class Game {
     if(!boost)this.food--; plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
     if(plant.kind==='splitpea'||plant.kind==='chilibean')this.cowboy.food(plant);
+    if(this.western.handles(plant.kind))this.western.food(plant);
     if(this.finale.handles(plant.kind))this.finale.food(plant);
     if(plant.kind==='escaperoot')this.escape.food(plant);
     if (plant.kind === 'repeater') {plant.burst=this.props.plants.repeater.PlantfoodPeaCount;plant.nextBurst=this.time+2/plant.burst;plant.animation='Food';plant.eventIndex=0;}
@@ -829,10 +833,11 @@ export class Game {
       }
       if(z.west?.animation==='LandVerticle'&&this.time>=z.landUntil!)delete z.west.animation;
     }
-    this.tickConveyor(dt);this.tickPower(dt);this.tickMatching();this.escape.tick(dt);this.finale.tick(dt);
+    this.tickConveyor(dt);this.tickPower(dt);this.tickMatching();this.escape.tick(dt);this.finale.tick(dt);this.western.tick(dt);
     for (const p of this.plants) {
       if(p.leap){if(this.time-p.leap.at<(p.kind==='chilibean'?.8:.5))continue;delete p.leap;}
       if(p.kind==='splitpea'||p.kind==='chilibean'){this.cowboy.tickPlant(p);continue;}
+      if(this.western.handles(p.kind)){this.western.tickPlant(p,dt);continue;}
       if(this.finale.handles(p.kind)){this.finale.tickPlant(p,dt);continue;}
       if(p.kind==='escaperoot'){this.escape.tickPlant(p,dt);continue;}
       if(p.kind==='threepeater'){p.age+=dt;this.tickThreepeater(p);continue;}
