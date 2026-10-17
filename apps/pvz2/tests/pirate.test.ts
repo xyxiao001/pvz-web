@@ -492,3 +492,132 @@ test('Pirate 21–25 reward slots, cherry bomb and the Pirate trophy once',()=>{
  assert.ok(progress.ownedPlants().has(45));assert.ok(progress.ownedUpgrades().has(9));
  assert.equal(progress.campaignRewards().filter(r=>r.id==='worldtrophy_pirate').length,1);progress.finish('pirate','pirate25');assert.equal(new ProgressStore(storage).campaignRewards().filter(r=>r.id==='worldtrophy_pirate').length,1);
 });
+
+test('Pirate 26–30 preserve empty waves, source planks, mold, limits and preset challenge',()=>{
+ assert.deepEqual([26,27,28,29,30].map(d=>level(d).waves.length),[12,18,10,16,16]);
+ assert.equal(level(26).actions[0][0].zombies.length,0);assert.equal(level(26).actions[0][1].zombies.length,2);
+ assert.deepEqual([26,27,28,29,30].map(d=>level(d).planks),[[0,4],[1,2,4],[0,1,3,4],[0,1,3,4],[1,2]]);
+ assert.equal(level(27).mold.length,19);assert.equal(level(27).conveyor!.InitialPlantList[0].MaxDelivered,5);
+ assert.equal(level(28).maxSun,2000);assert.equal(level(28).maxPlants,15);
+ assert.deepEqual(level(29).preset,['sunflower','kernelpult','iceburg','spikeweed','cherry_bomb']);assert.deepEqual(level(29).killChallenge,{count:20,seconds:8});
+ const g=create(30),z=g.spawnZombie('pirate_armor4',1,900);assert.equal(z.armor,2200);g.damage(z,1800);assert.equal(z.armor,400);assert.equal(z.hp,190);
+});
+test('Escape Root matures, exchanges positions and retains target health without spending another packet',()=>{
+ const g=create(27);g['nextWave']=Infinity;
+ g.conveyor.push({id:900,kind:'escaperoot',lane:0,position:0},{id:901,kind:'threepeater',lane:1,position:0});
+ assert.ok(g.plant('escaperoot',0,0,900));assert.ok(g.plant('threepeater',1,1,901));const root=g.plants[0],target=g.plants[1];target.hp=123;
+ tick(g,1.1);assert.equal(g.plantFood(0,0),false);assert.ok(g.escape.select(0,0));assert.equal(g.escape.exchange(2,2),false);
+ assert.ok(g.escape.select(0,0));assert.ok(g.escape.exchange(1,1));assert.equal(root.rootGrown,true);assert.equal(root.row,1);assert.equal(root.column,1);assert.equal(target.row,0);assert.equal(target.column,0);assert.equal(target.hp,123);assert.ok(target.leap);
+ tick(g,1.3);assert.equal(root.animation,'Idle');assert.equal(target.leap,undefined);
+});
+test('Escape Root uses native Show, charge and Explode timings, then removes its bomb',()=>{
+ for(const variant of [0,1,2,3]){
+  const g=create(27);g['nextWave']=Infinity;g.conveyor.push({id:900,kind:'escaperoot',lane:0,position:0});g.plant('escaperoot',2,3,900);tick(g,12.3);
+  const root=g.plants[0];assert.equal(root.rootGrown,true);const z=g.spawnZombie('pirate_gargantuar',2,cellX(3));z.frozenUntil=100;
+  g.tick(1/60);const bomb=g.escape.bombs[0];bomb.variant=variant;const hp=z.hp;tick(g,1.48);assert.equal(z.hp,hp);tick(g,.04);if(variant===3)assert.ok(z.hp<=hp-1800);else assert.equal(z.hp,hp-(variant===1?2700:1800));
+  if(variant===3)assert.equal(g.escape.grapes.length,8);tick(g,.1);assert.equal(g.escape.bombs.length,0);assert.ok(!g.plants.includes(root));
+ }
+});
+test('Escape Root food produces two bombs, returns to idle and consumes one food',()=>{
+ const g=create(27);g['nextWave']=Infinity;g.conveyor.push({id:900,kind:'escaperoot',lane:0,position:0});g.plant('escaperoot',0,0,900);tick(g,12.3);g.food=1;assert.ok(g.plantFood(0,0));tick(g,.6);assert.equal(g.escape.bombs.length,1);assert.equal(g.escape.bombs[0].animation,'Death_Dig_End');tick(g,3);assert.equal(g.escape.bombs.length,1);tick(g,4.3);assert.equal(g.escape.bombs.length,0);assert.equal(g.plants[0].animation,'Idle');assert.equal(g.food,0);
+});
+test('Pirate 27 delivers at most five Escape Root cards',()=>{
+ const g=create(27);g['nextWave']=Infinity;g.conveyorPlants=g.conveyorPlants.filter(p=>p.PlantType==='escaperoot');let delivered=0;
+ for(let i=0;i<60*120;i++){delivered+=g.conveyor.length;g.conveyor=[];g.tick(1/60);}assert.equal(delivered,5);
+});
+// Extended-world completion fixtures include the earned Egyptian +25 starting sun /
+// fourth food slot and explicitly listed, pre-grown garden boosts. No battle currency,
+// cooldown, zombie health or authored wave is changed during these runs.
+function emergencyBombs(g:Game,threshold:number){
+ const threats=g.zombies.filter(z=>z.hp>0&&!z.swing&&!z.parrot&&z.x<threshold).sort((a,b)=>a.x-b.x);
+ for(const z of threats){
+  const col=Math.floor((z.x-190)/82);
+  for(const c of [col,col-1,col+1])for(const r of [z.row,z.row-1,z.row+1])if((g.level.maxSun===null||g.sunSpent+150<=g.level.maxSun)&&(g.level.maxPlants===null||g.plants.length<g.level.maxPlants))g.plant('cherry_bomb',r,c);
+  if(g.level.maxPlants===null||g.plants.length<g.level.maxPlants)g.plant('iceburg',z.row,col);
+ }
+}
+for(const day of [26,30])test(`Pirate ${day} completes with garden boosts, collected sun and earned food`,()=>{
+ const g=create(day);g.sun+=25;g.foodLimit=4;g.boosts=new Set(['sunflower','kernelpult']);
+ for(let frame=0;frame<60*1400&&g.phase==='playing';frame++){
+  for(const s of [...g.suns])g.collect(s.id);for(const p of [...g.pickups])g.collectPickup(p.id);
+  if(frame%15===0){
+   const occupied=(r:number,c:number)=>g.plants.some(p=>p.row===r&&p.column===c),threats=g.zombies.filter(z=>z.hp>0&&!z.swing&&!z.parrot).sort((a,b)=>a.x-b.x);
+   for(const z of threats)if(!g.plants.some(p=>p.row===z.row&&p.kind==='kernelpult'))g.plant('kernelpult',z.row,1);
+   for(const z of threats)if(z.x<cellX(4)+90){g.plant('springbean',z.row,4);if(z.x<cellX(3)+45)g.plant('iceburg',z.row,3);}
+   emergencyBombs(g,620);
+   for(const col of [0])for(let row=0;row<5;row++)if(!occupied(row,col))g.plant('sunflower',row,col);
+   for(const col of [1,2])for(let row=0;row<5;row++)if(!occupied(row,col))g.plant(col===2?'snapdragon':'kernelpult',row,col);
+   for(let row=0;row<5;row++)if(!occupied(row,4))g.plant('springbean',row,4);
+   const target=threats.find(z=>z.x<850);if(target){const p=g.plants.find(p=>p.row===target.row&&p.kind==='kernelpult');const bean=g.plants.find(p=>p.kind==='springbean');if(bean)g.plantFood(bean.row,bean.column);else if(p)g.plantFood(p.row,p.column);}
+  }
+  g.tick(1/60);g.events.length=0;
+ }
+ assert.equal(g.phase,'won',`day ${day}, reason ${g.lossReason}, time ${g.time}, wave ${g.wave}`);
+});
+
+test('Pirate 27 completes with a Threepeater garden boost and its original limited conveyor',()=>{
+ const g=new Game(level(27),props,timing,z=>({x:z.x,y:rowY(z.row)}),42);g.boosts=new Set(['threepeater']);
+ for(let frame=0;frame<60*1600&&g.phase==='playing';frame++){
+  for(const p of [...g.pickups])g.collectPickup(p.id);
+  if(frame%15===0){
+   for(const card of [...g.conveyor]){
+    const cells=card.kind==='threepeater'?[{row:2,column:0},{row:0,column:0},{row:4,column:0},{row:3,column:1},{row:1,column:1}]:card.kind==='escaperoot'?[{row:2,column:3},{row:1,column:1},{row:3,column:1}]:Array.from({length:45},(_,i)=>({row:i%5,column:8-Math.floor(i/5)}));
+    for(const c of cells)if(g.plant(card.kind,c.row,c.column,card.id))break;
+   }
+   const threats=g.zombies.filter(z=>z.hp>0&&!z.swing).sort((a,b)=>a.x-b.x);
+   const target=threats.find(z=>z.x<650);if(target){const root=g.plants.find(p=>p.kind==='escaperoot'&&p.rootGrown&&p.animation==='Idle');const p=root??g.plants.find(p=>p.kind==='threepeater'&&Math.abs(p.row-target.row)<=1);if(p)g.plantFood(p.row,p.column);}
+  }
+  g.tick(1/60);g.events.length=0;
+ }
+ assert.equal(g.phase,'won',`reason ${g.lossReason}, time ${g.time}, wave ${g.wave}`);
+});
+test('Pirate 28 completes with garden boosts within 2000 sun and 15 simultaneous plants',()=>{
+ const g=create(28);g.sun+=25;g.foodLimit=4;g.boosts=new Set(['sunflower','kernelpult','snapdragon','spikeweed']);
+ for(let frame=0;frame<60*1600&&g.phase==='playing';frame++){
+  for(const s of [...g.suns])g.collect(s.id);for(const p of [...g.pickups])g.collectPickup(p.id);
+  if(frame%15===0){
+   const put=(kind:Parameters<Game['plant']>[0],r:number,c:number)=>{if(g.plants.length<15&&g.sunSpent+g.seedCost(kind)<=2000)g.plant(kind,r,c);};
+   const threats=g.zombies.filter(z=>z.hp>0&&!z.swing&&!z.parrot).sort((a,b)=>a.x-b.x);
+   for(const row of [0,2,4])put('sunflower',row,0);
+   for(const z of threats)if(z.kind==='pirate_barrel'&&z.x<850)put('spikeweed',z.row,4);
+   for(const row of [1,3])put('snapdragon',row,2);
+   for(const z of threats)put('kernelpult',z.row,1);
+   const threat=threats.find(z=>z.x<620);if(threat){const snap=g.plants.find(p=>p.kind==='snapdragon'&&Math.abs(p.row-threat.row)<=1);if(snap)g.plantFood(snap.row,snap.column);}
+   emergencyBombs(g,400);
+  }
+  g.tick(1/60);g.events.length=0;
+ }
+ assert.equal(g.phase,'won',`reason ${g.lossReason}, time ${g.time}, wave ${g.wave}, spent ${g.sunSpent}`);
+});
+test('Pirate 29 completes with garden boosts, its five preset cards and twenty kills in eight seconds',()=>{
+ const g=create(29);g.sun+=25;g.foodLimit=4;g.boosts=new Set(['sunflower','kernelpult']);
+ for(let frame=0;frame<60*1600&&g.phase==='playing';frame++){
+  for(const s of [...g.suns])g.collect(s.id);for(const p of [...g.pickups])g.collectPickup(p.id);
+  if(frame%15===0){
+   const threats=g.zombies.filter(z=>z.hp>0&&!z.swing&&!z.parrot).sort((a,b)=>a.x-b.x);
+   emergencyBombs(g,650);
+   for(const z of threats)if(!g.plants.some(p=>p.kind==='kernelpult'&&p.row===z.row))g.plant('kernelpult',z.row,2);
+   for(const col of [0,1])for(let row=0;row<5;row++)g.plant('sunflower',row,col);
+   for(const col of [2,3])for(let row=0;row<5;row++)g.plant('kernelpult',row,col);
+   for(const col of [4,5,6])for(let row=0;row<5;row++)g.plant('spikeweed',row,col);
+   if(threats.some(z=>z.x<750)){const p=g.plants.find(p=>p.kind==='kernelpult'&&p.action!=='food');if(p)g.plantFood(p.row,p.column);}
+  }
+  g.tick(1/60);g.events.length=0;
+ }
+ assert.equal(g.phase,'won',`reason ${g.lossReason}, time ${g.time}, wave ${g.wave}, challenge ${g.killChallengeComplete}`);
+});
+
+test('Escape Root matures after the authored ten seconds and cancellation resumes its idle state',()=>{
+ const g=create(27);g['nextWave']=Infinity;g.conveyor.push({id:900,kind:'escaperoot',lane:0,position:0});g.plant('escaperoot',0,0,900);tick(g,9.9);assert.equal(g.plants[0].rootGrown,false);tick(g,.2);assert.equal(g.plants[0].animation,'Baby_End');tick(g,1.2);assert.ok(g.escape.select(0,0));g.escape.cancel();assert.equal(g.escape.selected,null);assert.equal(g.plants[0].animation,'Idle');
+});
+test('grapes keep horizontal direction on impact, turn between lanes and expire after five contacts',()=>{
+ const g=create(27);g['nextWave']=Infinity;const z=g.spawnZombie('pirate',2,cellX(3));z.frozenUntil=100;
+ const grape={id:-100,x:cellX(3)-10,y:rowY(2)-40,vx:100,vy:0,hits:0,lane:2,blocked:false,detected:[] as number[]};g.escape.grapes.push(grape);g.escape.tick(.01);
+ assert.equal(grape.vx,100);assert.notEqual(grape.vy,0);assert.equal(grape.hits,1);assert.equal(grape.blocked,true);assert.deepEqual(grape.detected,[z.id]);
+ grape.x=190;grape.vx=-100;grape.hits=4;g.escape.tick(.01);assert.equal(g.escape.grapes.length,0);
+});
+test('Pirate 27 and 30 grant the source pinatas once and retain cleared-map progress',()=>{
+ const data=new Map<string,string>(),storage={getItem:(k:string)=>data.get(k)??null,setItem:(k:string,v:string)=>{data.set(k,v);},removeItem:(k:string)=>{data.delete(k);}},progress=new ProgressStore(storage);
+ for(const day of [27,30]){progress.finish('pirate',`pirate${day}`);progress.finishPresentation();progress.finish('pirate',`pirate${day}`);}
+ const reopened=new ProgressStore(storage);assert.equal(reopened.campaignRewards().filter(r=>r.id==='spine_pirate').length,2);assert.ok(reopened.isComplete('pirate30'));
+});

@@ -14,7 +14,7 @@ import { isCamel, isMatchCamel, type DeathCause, Game, Plant, Zombie, ZombieDeat
 
 type RigName = PlantKind | 'pirateCaptain'|'pirateParrot'| 'barrelroller'|'pirateBarrel'|'pirateGargantuar'|'pirateImp'|'impCannon'| 'pirate'|'pirateFlag'|'swashbuckler'|'seagull'| 'boss' | 'torchlight' | 'pharaohWeak' | 'mummy' | 'ra' | 'camel' | 'camelTouch' | 'gargantuar' | 'imp' | 'explorer' | 'tombraiser' | 'pharaoh' | 'pharaohInner';
 const RIGS: Record<RigName, { armature: string; idle: string; scale: number }> = {
-  spikerock:{armature:'Spikerock',idle:'Idle',scale:.55},threepeater:{armature:'Threepeater',idle:'Idle',scale:.55},pirateCaptain:{armature:'Captain',idle:'Walk',scale:.51},pirateParrot:{armature:'Parrot',idle:'Flying',scale:.51},
+  escaperoot:{armature:'EscapeRoot',idle:'Baby_Loop',scale:.55},spikerock:{armature:'Spikerock',idle:'Idle',scale:.55},threepeater:{armature:'Threepeater',idle:'Idle',scale:.55},pirateCaptain:{armature:'Captain',idle:'Walk',scale:.51},pirateParrot:{armature:'Parrot',idle:'Flying',scale:.51},
   spikeweed:{armature:'Spikeweed',idle:'Idle',scale:.55},springbean:{armature:'SpringBean',idle:'Idle',scale:.55},barrelroller:{armature:'BarrelPusher',idle:'Walk',scale:.51},pirateBarrel:{armature:'Barrel',idle:'Walk',scale:.51},pirateGargantuar:{armature:'PirateGargantuar',idle:'Walk',scale:.51},pirateImp:{armature:'Imp',idle:'Walk',scale:.51},impCannon:{armature:'ImpCannon',idle:'Idle',scale:.51},
   pirate:{armature:'PirateBasic',idle:'Walk',scale:.51},pirateFlag:{armature:'PirateFlag',idle:'Walk',scale:.51},swashbuckler:{armature:'Swashbuckler',idle:'Walk',scale:.51},seagull:{armature:'SeagullZombie',idle:'Walk',scale:.51},snapdragon:{armature:'SnapDragon',idle:'Idle',scale:.55},coconutcannon:{armature:'CoconutCannon',idle:'Idle',scale:.55},
   boss:{armature:'Zomboss',idle:'Idle',scale:.51},torchlight:{armature:'TorchlightZombie',idle:'Walk',scale:.51},pharaohWeak:{armature:'WeakPharaohZombie',idle:'Walk',scale:.51},
@@ -43,7 +43,7 @@ const RIGS: Record<RigName, { armature: string; idle: string; scale: number }> =
   ra: { armature: 'RaZombie', idle: 'Walk', scale: .51 },
 };
 
-interface Actor { captured?:boolean;capturing?:boolean; root: Container; rig: PixiArmatureDisplay; kind: RigName; animation: string; actionAt: number; armor?: PixiArmatureDisplay; armLost: boolean; mask?:Graphics;camelFrame?:number;plank?:PixiArmatureDisplay;plankState?:string;plankAt?:number; death?: {cause:DeathCause|'plant';elapsed:number;fadeAt:number;fallAt:number} }
+interface Actor { rootGrown?:boolean;rootCharged?:boolean; captured?:boolean;capturing?:boolean; root: Container; rig: PixiArmatureDisplay; kind: RigName; animation: string; actionAt: number; armor?: PixiArmatureDisplay; armLost: boolean; mask?:Graphics;camelFrame?:number;plank?:PixiArmatureDisplay;plankState?:string;plankAt?:number; death?: {cause:DeathCause|'plant';elapsed:number;fadeAt:number;fallAt:number} }
 interface Fragment {rig:PixiArmatureDisplay;x:number;y:number;ground:number;vx:number;vy:number;spin:number;age:number;landed:number}
 
 export class Scene {
@@ -81,6 +81,8 @@ export class Scene {
   onSound: (name:string)=>void = () => {};
   onNPCEvent: (character:string,event:string)=>void = () => {};
   private npcTransition: 'enter'|'exit'|null = null;
+  private rootLocator?:PixiArmatureDisplay;
+  private pointer:readonly [number,number]=[0,0];
   private highlight = new Graphics();
   private observer!: ResizeObserver;
   private scale = 1;
@@ -149,8 +151,8 @@ export class Scene {
     if(skeletons.has('bonkchoy'))this.timing.bonk=bonkAnimationTiming(skeletons.get('bonkchoy')!);
     this.observer.observe(host);
     const point = (e: PointerEvent) => { const r = this.app.canvas.getBoundingClientRect(); return [(e.clientX - r.left) / (this.scale*this.cameraZoom)+this.cameraX, (e.clientY - r.top) / (this.scale*this.cameraZoom)+this.cameraY] as const; };
-    this.app.canvas.addEventListener('pointerdown', e => { e.preventDefault();this.app.canvas.setPointerCapture(e.pointerId); this.onPoint(...point(e)); });
-    this.app.canvas.addEventListener('pointermove', e => this.onHover(...point(e)));
+    this.app.canvas.addEventListener('pointerdown', e => { e.preventDefault();this.app.canvas.setPointerCapture(e.pointerId); this.pointer=point(e);this.onPoint(...this.pointer); });
+    this.app.canvas.addEventListener('pointermove', e => {this.pointer=point(e);this.onHover(...this.pointer);});
     this.app.canvas.addEventListener('pointerup',()=>this.onRelease());
     this.app.canvas.addEventListener('pointercancel',()=>this.onRelease());
     this.app.canvas.addEventListener('pointerleave', () => {this.highlight.clear();this.onRelease();});
@@ -185,7 +187,7 @@ export class Scene {
     const rig = this.rig(name, flag ? 'EgyptFlagZombie' : RIGS[name].armature); rig.scale.set(RIGS[name].scale);
     root.addChild(shade, rig); this.actorLayer.addChild(root);
     const actor: Actor = { root, rig, kind:name, animation: '', actionAt: -1, armLost:false,camelFrame:name==='camel'?0:undefined };
-    const events:Partial<Record<RigName,Record<string,string>>>={spikerock:{attack:'attackSound'},threepeater:{ShootSound:'shootSound'},spikeweed:{attack:'attackSound'},springbean:{foodLeap:'foodLeapSound',foodBounce:'foodBounceSound'},impCannon:{Shoot:'ShootSound',Explode:'ExplodeSound'},pirateGargantuar:{steady:'steadySounds',step:'stepSounds',swing:'swingSounds',smash:'smashSounds',afterSmash:'afterSmashSaySounds',impThrow:'ImpThrowSounds',deathPole:'deathPoleSounds',deathFall:'deathFallSounds'},swashbuckler:{swing:'swingSounds'},snapdragon:{attackSound:'attackSound',flap:'flapSound',foodAttack:'foodSound'},coconutcannon:{Shoot:'shootSound',foodShoot:'shootFoodSound'},boss:{introSmashSound:'introSmashSound',introFallSound:'introFallSound',introSound:'introSound',spawnLandSound:'introLandSound',stepSound:'worldZombossMechStepSounds',moveSound:'worldZombossMechMoveSounds',mouthOpenSound:'worldZombossMechMouthOpenSounds',mouthCloseSound:'worldZombossMechMouthCloseSounds',leapSound:'worldZombossMechLeapStartSounds',landSound:'worldZombossMechLeapEndSounds',deathFallSound:'worldZombossMechDeathFallSounds',shootReadySound:'worldZombossMechShootRiseSounds',shootStart:'worldZombossMechShootSounds',shoot:'worldZombossMechPRJDropSounds',escape_trigger:'worldZombossEscapeTriggerSound'},snowdrop:{LobSound:'lobSound'},sapfling:{LobSound:'lobSound',sneeze:'sneezeSound',brush:'brushSound'},peapod:{ShootMega:'shootMegaSounds'},imitater:{sound:'imitateSound'},celerystalker:{hit:'hitSounds',foodSummon:'foodSounds'},parsnip:{hit:'snipSound',summon:'popSound'},repeater:{ShootSound:'shootSound',shootMega:'shootMegaSound'},kernelpult:{LobSound:'lobSound'},melonpult:{Lob:'lobSound'},bonkchoy:{attackAir:'attackAirSound',attackGoal:'attackGoalSound',attackHeavy:'defeatSound',foodAttack:'attackAirSound'},cabbagepult:{LobSound:'lobSound'},bloomerang:{ShootSound:'shootSound',catch:'catchSound'},iceburg:{explode:'deadSound',foodExplode:'foodBlastSound'},tombraiser:{puke:'pukeSound',throw:'throwSound'},gargantuar:{step:'stepSounds',swing:'swingSounds',smash:'smashSounds',afterSmash:'afterSmashSaySounds',impThrow:'ImpThrowSounds',deathPole:'deathPoleSounds',deathFall:'deathFallSounds'}};
+    const events:Partial<Record<RigName,Record<string,string>>>={escaperoot:{unWrapSound:'unwrapQuickSounds'},spikerock:{attack:'attackSound'},threepeater:{ShootSound:'shootSound'},spikeweed:{attack:'attackSound'},springbean:{foodLeap:'foodLeapSound',foodBounce:'foodBounceSound'},impCannon:{Shoot:'ShootSound',Explode:'ExplodeSound'},pirateGargantuar:{steady:'steadySounds',step:'stepSounds',swing:'swingSounds',smash:'smashSounds',afterSmash:'afterSmashSaySounds',impThrow:'ImpThrowSounds',deathPole:'deathPoleSounds',deathFall:'deathFallSounds'},swashbuckler:{swing:'swingSounds'},snapdragon:{attackSound:'attackSound',flap:'flapSound',foodAttack:'foodSound'},coconutcannon:{Shoot:'shootSound',foodShoot:'shootFoodSound'},boss:{introSmashSound:'introSmashSound',introFallSound:'introFallSound',introSound:'introSound',spawnLandSound:'introLandSound',stepSound:'worldZombossMechStepSounds',moveSound:'worldZombossMechMoveSounds',mouthOpenSound:'worldZombossMechMouthOpenSounds',mouthCloseSound:'worldZombossMechMouthCloseSounds',leapSound:'worldZombossMechLeapStartSounds',landSound:'worldZombossMechLeapEndSounds',deathFallSound:'worldZombossMechDeathFallSounds',shootReadySound:'worldZombossMechShootRiseSounds',shootStart:'worldZombossMechShootSounds',shoot:'worldZombossMechPRJDropSounds',escape_trigger:'worldZombossEscapeTriggerSound'},snowdrop:{LobSound:'lobSound'},sapfling:{LobSound:'lobSound',sneeze:'sneezeSound',brush:'brushSound'},peapod:{ShootMega:'shootMegaSounds'},imitater:{sound:'imitateSound'},celerystalker:{hit:'hitSounds',foodSummon:'foodSounds'},parsnip:{hit:'snipSound',summon:'popSound'},repeater:{ShootSound:'shootSound',shootMega:'shootMegaSound'},kernelpult:{LobSound:'lobSound'},melonpult:{Lob:'lobSound'},bonkchoy:{attackAir:'attackAirSound',attackGoal:'attackGoalSound',attackHeavy:'defeatSound',foodAttack:'attackAirSound'},cabbagepult:{LobSound:'lobSound'},bloomerang:{ShootSound:'shootSound',catch:'catchSound'},iceburg:{explode:'deadSound',foodExplode:'foodBlastSound'},tombraiser:{puke:'pukeSound',throw:'throwSound'},gargantuar:{step:'stepSounds',swing:'swingSounds',smash:'smashSounds',afterSmash:'afterSmashSaySounds',impThrow:'ImpThrowSounds',deathPole:'deathPoleSounds',deathFall:'deathFallSounds'}};
     if(name==='boss'&&this.art.campaign.actors.boss.group==='pirate'){
       events.boss!.shoot='afterShootSound';
       rig.addDBEventListener(EventObject.FRAME_EVENT,event=>{if(event.name==='shoot')this.onSound('boss/addShootSounds');if(event.name==='shootReadySound')this.onSound('boss/waveBeforeShootSound');},this);
@@ -198,7 +200,7 @@ export class Scene {
 
   private animate(actor: Actor, name: string, actionAt = 0, times = 0) {
     if (actor.animation === name && actor.actionAt === actionAt) return;
-    const sound=actor.kind==='coconutcannon'&&name==='Food'?'foodStartSound':actor.kind==='threepeater'?(name==='Food'?'foodSound':actor.animation==='Food'?'foodEndSound':null):actor.kind==='springbean'?({Ready:'readySound',Bounce:'bounceSound',Food:'foodSound'} as Record<string,string>)[name]:(actor.kind==='spikeweed'||actor.kind==='spikerock')?name==='Food'?'foodSound':actor.animation==='Food'?'foodEndSound':null:actor.kind==='pirateGargantuar'&&name==='Throw'?'ImpThrowSaySounds':null;if(sound)this.onSound(actor.kind+'/'+sound);
+    const sound=actor.kind==='escaperoot'?({Baby_Start:'spawnSounds',Baby_End:'unwrapSounds',Dig_Start:'burrowSounds',Dig_End:'digEndSounds',Ready_Start:'locateSounds',Baby_Ready_Start:'locateSounds'} as Record<string,string>)[name]:actor.kind==='coconutcannon'&&name==='Food'?'foodStartSound':actor.kind==='threepeater'?(name==='Food'?'foodSound':actor.animation==='Food'?'foodEndSound':null):actor.kind==='springbean'?({Ready:'readySound',Bounce:'bounceSound',Food:'foodSound'} as Record<string,string>)[name]:(actor.kind==='spikeweed'||actor.kind==='spikerock')?name==='Food'?'foodSound':actor.animation==='Food'?'foodEndSound':null:actor.kind==='pirateGargantuar'&&name==='Throw'?'ImpThrowSaySounds':null;if(sound)this.onSound(actor.kind+'/'+sound);
     actor.rig.animation.play(name, times); actor.animation = name; actor.actionAt = actionAt;
   }
 
@@ -220,16 +222,26 @@ export class Scene {
 
   sync(game: Game, dt: number) {
     this.conveyorLayer.visible=!!game.level.conveyor;
+    if(game.escape.selected!==null){
+      if(!this.rootLocator){this.rootLocator=this.rig('escaperoot','Locator');this.rootLocator.scale.set(.55);this.rootLocator.animation.play('Idle',0);this.rootLocator.zIndex=2000;this.actorLayer.addChild(this.rootLocator);}
+      this.rootLocator.visible=true;this.rootLocator.position.set(...this.pointer);
+    }else if(this.rootLocator)this.rootLocator.visible=false;
     const alive = new Set<number>();
     for (const p of game.plants) {
       alive.add(p.id);
       const actor = this.actors.get(p.id) ?? this.addActor(p.id, p.kind);
       actor.root.position.set(cellX(p.column), rowY(p.row)); actor.root.zIndex = rowY(p.row);
       if(p.leap){const t=Math.min(1,(game.time-p.leap.at)/.5);actor.root.position.set(p.leap.x+(cellX(p.column)-p.leap.x)*t,p.leap.y+(rowY(p.row)-p.leap.y)*t-100*4*t*(1-t));}
+      if(p.kind==='escaperoot')actor.rootGrown=p.rootGrown;
       if(p.kind==='bonkchoy')actor.rig.scale.x=RIGS.bonkchoy.scale*(p.facing??1);
       actor.rig.animation.timeScale=p.kind==='coconutcannon'&&['Shoot','Food'].includes(p.animation!)?2:p.kind==='parsnip'&&p.action==='shoot'?Math.max(1,1/game.props.plants.parsnip.AttackInterval):p.kind==='iceburg'&&p.action==='food'?.8:1;
       const animation = this.plantAnimation(p, game);
       this.animate(actor, animation, p.action === 'idle' ? 0 : p.actionAt, animation==='FoodBig'?1:p.action==='food'&&(p.kind==='sunflower'||p.kind==='twinsunflower')?game.props.plants[p.kind].PlantfoodTime: ['shoot','produce','grow','explode','catch'].includes(p.action)||p.action==='food'&&['cabbagepult','iceburg','wallnut'].includes(p.kind)||animation==='Spawn_Baby'?1:0);
+    }
+    for(const bomb of game.escape.bombs){
+      alive.add(bomb.id);const actor=this.actors.get(bomb.id)??this.addActor(bomb.id,'escaperoot');
+      actor.root.position.set(cellX(bomb.column),rowY(bomb.row));actor.root.zIndex=rowY(bomb.row);
+      this.animate(actor,bomb.animation,bomb.at,1);
     }
     for (const z of game.zombies) {
       alive.add(z.id);
@@ -274,10 +286,10 @@ export class Scene {
       }
       if(['pirateCaptain','pirate','pirateFlag','swashbuckler','mummy','ra','explorer','torchlight','tombraiser','imp','pharaohInner'].includes(actor.kind)&&!actor.armLost&&z.hp<=game.props.zombies[z.kind].Toughness*this.art.catalog.presentation.armDropHealthFraction){actor.armLost=true;this.dropFragment(actor,'arm');this.onSound('zombieLimbPop');}
       if ((actor.kind==='mummy'||actor.kind==='pirate')&&z.armor > 0 && !actor.armor) {
-        actor.armor = this.rig(actor.kind, z.kind==='mummy_armor4'?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone'); actor.armor.scale.set(.51); actor.root.addChild(actor.armor);
+        actor.armor = this.rig(actor.kind, z.kind.endsWith('_armor4')?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone'); actor.armor.scale.set(.51); actor.root.addChild(actor.armor);
       }
       if (actor.armor) {
-        if(actor.armor.visible&&z.armor<=0){this.dropFragment(actor,z.kind==='mummy_armor4'?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone');this.onSound('zombieLimbPop');}
+        if(actor.armor.visible&&z.armor<=0){this.dropFragment(actor,z.kind.endsWith('_armor4')?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone');this.onSound('zombieLimbPop');}
         actor.armor.visible = z.armor > 0;
         const max=pirateArmor(z.kind)?game.props.armors[pirateArmor(z.kind)!].Toughness:z.kind==='mummy_armor4'?game.props.armors.egypt_armor4.Toughness:z.kind==='mummy_armor2'?game.props.armors.egypt_armor2.Toughness:game.props.armors.egypt_armor1.Toughness;
         const animation = z.armor > max*2/3 ? 'Broken0' : z.armor > max/3 ? 'Broken1' : 'Broken2';
@@ -286,8 +298,8 @@ export class Scene {
     }
     for(const death of game.deaths)if(!this.seenDeaths.has(death.zombie.id)){this.seenDeaths.add(death.zombie.id);this.killZombie(death);}
     for (const [id, actor] of this.actors) if (!alive.has(id)&&!actor.death&&PLANT_KINDS.includes(actor.kind as PlantKind)) {
-      if(actor.captured||actor.kind==='imitater'||actor.kind==='cherry_bomb'||actor.kind==='gravebuster'||actor.animation==='Charging'||actor.kind==='iceburg'&&actor.animation==='Death'||game.effects.some(effect=>effect.kind==='remove'&&effect.x===actor.root.x&&effect.y===actor.root.y)){this.removeActor(id,actor);continue;}
-      const animation=actor.kind==='wallnut'?actor.animation.replace('Idle','Death'):actor.kind==='potatomine'?'Death_Baby':'Death';
+      if(actor.kind==='escaperoot'&&(id<0||actor.rootGrown)||actor.captured||actor.kind==='imitater'||actor.kind==='cherry_bomb'||actor.kind==='gravebuster'||actor.animation==='Charging'||actor.kind==='iceburg'&&actor.animation==='Death'||game.effects.some(effect=>effect.kind==='remove'&&effect.x===actor.root.x&&effect.y===actor.root.y)){this.removeActor(id,actor);continue;}
+      const animation=actor.kind==='escaperoot'?'Baby_Death':actor.kind==='wallnut'?actor.animation.replace('Idle','Death'):actor.kind==='potatomine'?'Death_Baby':'Death';
       const timeline=animationTimeline(this.skeletons.get(actor.kind)!,RIGS[actor.kind].armature,animation);
       this.animate(actor,animation,0,1);actor.death={cause:'plant',elapsed:0,fadeAt:timeline.duration,fallAt:Infinity};
     }
@@ -304,6 +316,12 @@ export class Scene {
         if((actor.kind==='pharaoh'||actor.kind==='pharaohWeak')&&slot.name==='armor'){const z=game.zombies.find(z=>z.id===id);if(z)slot.displayIndex=z.armor<game.props.zombies.pharaoh.Toughness/3?2:z.armor<game.props.zombies.pharaoh.Toughness*2/3?1:0;}
         if(actor.kind==='boss'&&game.boss){const part=slot.name.match(/_BP([0-3])/);if(part)slot.displayIndex=(game.boss.zombie.hp<=0?3:game.boss.stage)>=Math.max(1,Number(part[1]))?0:-1;}
         if(actor.kind==='peapod'){const p=game.plants.find(p=>p.id===id);if(p){const head=slot.name.match(/_(?:HEAD|UH)([0-4])$/);if(head)slot.displayIndex=Number(head[1])<p.heads!?0:-1;}}
+        if(actor.kind==='escaperoot'&&['PM','PPM','CB','GS'].includes(slot.name)){
+          const bomb=game.escape.bombs.find(b=>b.id===id),timeline=bomb&&game.props.plantAnimations.escaperoot[bomb.animation];
+          const visible=!!bomb&&slot.name===['PM','PPM','CB','GS'][bomb.variant]&&game.time-bomb.at>=timeline!.events.find(e=>e.name==='Show')!.at;
+          slot.displayIndex=visible?0:-1;
+          if(visible&&game.time-bomb!.at>=timeline!.events.find(e=>e.name==='charge')!.at&&!actor.rootCharged){slot.childArmature!.animation.play('Attack',1);actor.rootCharged=true;if(bomb!.variant>=2)this.onSound('escaperoot/cherryChargeSound');}
+        }
         if(actor.kind==='spikerock'){const spikes=actor.death?0:game.plants.find(p=>p.id===id)!.spikes!;if(slot.name==='spikeL')slot.displayIndex=spikes>=1?0:-1;if(slot.name==='spikeM')slot.displayIndex=spikes>=2?0:-1;if(slot.name==='spikeR')slot.displayIndex=spikes>=3?0:-1;}
         if(actor.kind==='iceweed'){const spikes=game.iceweedSpikes.get(id)??1;if(slot.name.endsWith('_S1'))slot.displayIndex=spikes>=2?1:0;if(slot.name.endsWith('_S2'))slot.displayIndex=spikes>=3?1:0;}
         if((actor.kind==='explorer'||actor.kind==='torchlight')&&state&&!state.torch&&slot.name.startsWith('FIRE'))slot.displayIndex=-1;
@@ -367,7 +385,7 @@ export class Scene {
       if(death.cause==='potato'){const feathers=this.rig('seagull','ParticleSeagull');feathers.scale.set(.51);feathers.position.copyFrom(actor.root.position);feathers.animation.play('Play',1);feathers.zIndex=actor.root.zIndex;this.actorLayer.addChild(feathers);this.particles.set(-z.id,feathers);}
     }
     if(!['pirateParrot','pirateBarrel','impCannon','seagull','camel','camelTouch','pharaoh','pharaohWeak'].includes(actor.kind))this.dropFragment(actor,'head');this.onSound(actor.kind==='pirateParrot'?'pirateParrot/deathSound':'zombieLimbPop');
-    if(actor.armor?.visible){this.dropFragment(actor,z.kind==='mummy_armor4'?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone');actor.armor.visible=false;}
+    if(actor.armor?.visible){this.dropFragment(actor,z.kind.endsWith('_armor4')?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone');actor.armor.visible=false;}
     if(death.cause==='match'&&actor.plank){actor.plank.removeFromParent();actor.plank.dispose();actor.plank=undefined;}
     if(death.cause==='potato'){this.removeActor(z.id,actor);return;}
     const animation=actor.kind==='pirateParrot'?'Die':'Death',timeline=animationTimeline(this.skeletons.get(actor.kind)!,actor.rig.armature.name,animation);
@@ -511,6 +529,7 @@ export class Scene {
         const rig=object(`zap-${z.id}`,'wizardPoint','Idle',power.x,power.y,1);rig.scale.set(Math.hypot(dx,dy)/175,.5);rig.rotation=Math.atan2(dy,dx);rig.zIndex=1100;
       }
     }
+    for(const grape of game.escape.grapes)object(`grape-${grape.id}`,'grapeshot',grape.vx>0?'WalkR':grape.vx<0?'WalkL':grape.vy<0?'WalkU':'WalkD',grape.x,grape.y,.5);
     for(const pea of game.peas)object(`pea-${pea.id}`,'pea','Idle',pea.x,pea.y,.5,pea.mega?'pea_g':'pea0');
     for (const [key,rig] of this.objects) if (!alive.has(key)) { rig.removeFromParent(); rig.dispose(); this.objects.delete(key); }
     for (const effect of game.effects) if(!this.seenEffects.has(effect.id)) {
@@ -521,7 +540,7 @@ export class Scene {
         this.sunFlights.push({rig,x:effect.x,y:effect.y,age:0});continue;
       }
       const special:Partial<Record<typeof effect.kind,{name:string;animation:string;armature?:string}>>={
-        cherry:{name:'cherryExplosion',animation:'Play'},snowHit:{name:'snowHit',animation:'Play'},
+        grape:{name:'escapeGrapeExplosion',animation:'Play'},cherry:{name:'cherryExplosion',animation:'Play'},snowHit:{name:'snowHit',animation:'Play'},
         pharaoh:{name:'pharaohBreak',animation:'Play'},graveSpawn:{name:'dirtSpawn',animation:'Play'},ground:{name:'dirtSpawn',animation:'Play'},freeze:{name:'iceTrap',animation:'Die'},
         toss:{name:'tossPar',animation:'Play'},graveHit:{name:'grave',animation:`Play${effect.stage}`,armature:'Particle'},
         cabbageHit:{name:'cabbage',animation:'Pop',armature:'Particle1'},boomerangHit:{name:'boomerang',animation:'Hit',armature:'Particle0'},
@@ -533,6 +552,7 @@ export class Scene {
       const rig=this.art.build(name,animation,spec?.armature);
       rig.animation.play(animation,1);rig.position.set(effect.x,effect.y);rig.scale.set(.5);rig.zIndex=effect.y+2;
       this.actorLayer.addChild(rig);this.particles.set(effect.id,rig);
+      if(effect.kind==='grape')this.onSound('escaperoot/grapeExplSounds');
       if(effect.kind==='hit')this.onSound('peaHit');
     }
   }
@@ -590,7 +610,7 @@ export class Scene {
     for (const [index,kind] of [...new Set(kinds)].slice(0,6).entries()) {
       const actor = this.addActor(-index-1,zombieRig(kind),kind==='mummy_flag');
       actor.root.position.set(1280 + index % 2 * 70,260 + index * 65);
-      if(kind==='mummy_armor1'||kind==='mummy_armor2'||kind==='mummy_armor4'||pirateArmor(kind)){actor.armor=this.rig(actor.kind,kind==='mummy_armor4'?'Bricks':kind.endsWith('_armor2')?'Bucket':'Cone');actor.armor.scale.set(.51);actor.armor.animation.play('Broken0',0);actor.root.addChild(actor.armor);}
+      if(kind==='mummy_armor1'||kind==='mummy_armor2'||kind==='mummy_armor4'||pirateArmor(kind)){actor.armor=this.rig(actor.kind,kind.endsWith('_armor4')?'Bricks':kind.endsWith('_armor2')?'Bucket':'Cone');actor.armor.scale.set(.51);actor.armor.animation.play('Broken0',0);actor.root.addChild(actor.armor);}
       this.animate(actor,'Idle');
       actor.rig.armature.advanceTime(.01);
     }
@@ -623,6 +643,7 @@ export class Scene {
   stop() { this.app.stop(); }
   reset() {
     this.stop();this.conveyorLayer.visible=false;
+    if(this.rootLocator){this.rootLocator.removeFromParent();this.rootLocator.dispose();this.rootLocator=undefined;}
     for (const [id,actor] of this.actors)this.removeActor(id,actor);
     for(const hold of this.mowerHolds.values())hold.root.destroy({children:true});this.mowerHolds.clear();
     for (const rig of this.objects.values()) {rig.removeFromParent();rig.dispose();} this.objects.clear();

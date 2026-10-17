@@ -1,4 +1,4 @@
-"""Export Pirate Seas 1–25 from the same pinned build as Egypt."""
+"""Export Pirate Seas 1–30 from the same pinned build as Egypt."""
 import hashlib, importlib.util, json, math, io
 from PIL import Image
 from pathlib import Path
@@ -18,8 +18,8 @@ def rig(path):
 def props(path,names):
     objs=e.read('json/Objects/'+path).objects[0]['json']['objects']
     return {n:next(o['objdata'] for o in objs if n in o.get('aliases',[])) for n in names}
-actors={n:rig(p) for n,p in {'boss':'zombies/PirateZombossMechZOMBIE','spikerock':'plants/SpikerockPLANT','threepeater':'plants/ThreePeaterPLANT','pirateCaptain':'zombies/PirateCaptainZOMBIE','pirateParrot':'zombies/PirateCaptainParrotZOMBIE','spikeweed':'plants/SpikeweedPLANT','springbean':'plants/SpringBeanPLANT','barrelroller':'zombies/PirateBarrelPusherZOMBIE','pirateBarrel':'zombies/PirateBarrelZOMBIE','pirateGargantuar':'zombies/PirateGargantuarZOMBIE','pirateImp':'zombies/PirateImpZOMBIE','impCannon':'zombies/PirateImpCannonZOMBIE','pirate':'zombies/PirateBasicZOMBIE','pirateFlag':'zombies/PirateFlagZOMBIE','swashbuckler':'zombies/PirateSwashbucklerZOMBIE','seagull':'zombies/PirateSeagullZOMBIE','snapdragon':'plants/SnapDragonPLANT','coconutcannon':'plants/CoconutCannonPLANT'}.items()}
-rigs={n:rig(p) for n,p in {'pirateLawn':'lawns/PirateLAWN','mower':'projectiles/PirateMowerPRJ','pirateCone':'armors/PirateConeARMOR','pirateBucket':'armors/PirateBucketARMOR','coconut':'projectiles/Coconut0PRJ'}.items()}
+actors={n:rig(p) for n,p in {'escaperoot':'plants/EscapeRootPLANT','boss':'zombies/PirateZombossMechZOMBIE','spikerock':'plants/SpikerockPLANT','threepeater':'plants/ThreePeaterPLANT','pirateCaptain':'zombies/PirateCaptainZOMBIE','pirateParrot':'zombies/PirateCaptainParrotZOMBIE','spikeweed':'plants/SpikeweedPLANT','springbean':'plants/SpringBeanPLANT','barrelroller':'zombies/PirateBarrelPusherZOMBIE','pirateBarrel':'zombies/PirateBarrelZOMBIE','pirateGargantuar':'zombies/PirateGargantuarZOMBIE','pirateImp':'zombies/PirateImpZOMBIE','impCannon':'zombies/PirateImpCannonZOMBIE','pirate':'zombies/PirateBasicZOMBIE','pirateFlag':'zombies/PirateFlagZOMBIE','swashbuckler':'zombies/PirateSwashbucklerZOMBIE','seagull':'zombies/PirateSeagullZOMBIE','snapdragon':'plants/SnapDragonPLANT','coconutcannon':'plants/CoconutCannonPLANT'}.items()}
+rigs={n:rig(p) for n,p in {'pirateBricks':'armors/PirateBricksARMOR','grapeshot':'projectiles/GrapeshotPRJ','escapeGrapeExplosion':'611674fc-1507-4b04-8cee-1ce3da45a415','pirateLawn':'lawns/PirateLAWN','mower':'projectiles/PirateMowerPRJ','pirateCone':'armors/PirateConeARMOR','pirateBucket':'armors/PirateBucketARMOR','coconut':'projectiles/Coconut0PRJ'}.items()}
 snap=next(x for x in walk(e.read('plants/SnapDragonPLANT').objects) if 'attPar' in x)
 rigs['snapFire']=rig(snap['attPar']['asset']);rigs['snapFood']=rig(snap['foodPar']['asset'])
 food=next(x for x in walk(e.read(snap['foodPar']['asset']).objects) if 'ballFire' in x)
@@ -37,8 +37,8 @@ at=e.read(co['_dragonAtlasAsset']['asset']);atlas=json.loads(at.objects[0]['_atl
 pixels=Image.open(io.BytesIO(c.native(at.data[1][at.rec[5][0]],'png')))
 pixels.crop((rect['x'],rect['y'],rect['x']+rect['width'],rect['y']+rect['height'])).save(e.OUT/'lawn.webp',quality=95,method=6)
 rigs['coconutHit']=rig('d9bf60cc-4648-439d-831e-e964bd5cbabd')
-for day in range(1,26):c.write_json(e.OUT/f'pirate{day}.source.json',e.read(f'levels/pirate{day}').objects[0]['json'])
-properties={'plants':props('PlantProps',['snapdragon','coconutcannon','spikeweed','springbean','threepeater','spikerock']),'zombies':props('ZombieProps',['zombossmech_pirate','pirate','pirate_armor1','pirate_armor2','pirate_flag','swashbuckler','seagull','barrelroller','pirate_barrel','pirate_gargantuar','pirate_imp','cannon','pirate_captain','pirate_captain_parrot']),'armors':props('ArmorProps',['pirate_armor1','pirate_armor2']),'projectiles':props('ProjectileProps',['coconut','coconut_pf']),'plantAnimations':{}}
+for day in range(1,31):c.write_json(e.OUT/f'pirate{day}.source.json',e.read(f'levels/pirate{day}').objects[0]['json'])
+properties={'plants':props('PlantProps',['escaperoot','snapdragon','coconutcannon','spikeweed','springbean','threepeater','spikerock']),'zombies':props('ZombieProps',['pirate_armor4','zombossmech_pirate','pirate','pirate_armor1','pirate_armor2','pirate_flag','swashbuckler','seagull','barrelroller','pirate_barrel','pirate_gargantuar','pirate_imp','cannon','pirate_captain','pirate_captain_parrot']),'armors':props('ArmorProps',['pirate_armor1','pirate_armor2','pirate_armor4']),'projectiles':props('ProjectileProps',['coconut','coconut_pf','grapeshot']),'plantAnimations':{}}
 for name,description in {**actors,**rigs}.items():
     sk=json.loads((e.OUT/'rigs'/description['rig']/'skeleton.json').read_text());arm=next(a for a in sk['armature'] if a['name']==description['armature']);timelines={}
     for animation in arm['animation']:
@@ -54,7 +54,7 @@ def sound(name,value):
     for ref in refs:
         clip=e.read(ref['asset']);ext=clip.objects[0]['_native'];target=e.OUT/'audio'/(ref['asset']+ext);target.parent.mkdir(exist_ok=True)
         target.write_bytes(c.native(ref['asset'],ext.lstrip('.')));sounds[name].append(str(target.relative_to(c.OUT)))
-for n,p in [('spikerock','plants/SpikerockPLANT'),('threepeater','plants/ThreePeaterPLANT'),('spikeweed','plants/SpikeweedPLANT'),('springbean','plants/SpringBeanPLANT'),('snapdragon','plants/SnapDragonPLANT'),('coconutcannon','plants/CoconutCannonPLANT')]:
+for n,p in [('escaperoot','plants/EscapeRootPLANT'),('spikerock','plants/SpikerockPLANT'),('threepeater','plants/ThreePeaterPLANT'),('spikeweed','plants/SpikeweedPLANT'),('springbean','plants/SpringBeanPLANT'),('snapdragon','plants/SnapDragonPLANT'),('coconutcannon','plants/CoconutCannonPLANT')]:
     co=next(x for x in walk(e.read(p).objects) if 'soundRes' in x)
     for key,value in co['soundRes'].items():
         if isinstance(value,(dict,list)) and value:sound(n+'/'+key,value)
@@ -73,8 +73,10 @@ boss_data=json.loads(boss_file.read_text())
 for item in walk(boss_data):
     if item.get('action')=='Nope':del item['action']
 c.write_json(boss_file,boss_data)
+escape=next(x for x in walk(e.read('plants/EscapeRootPLANT').objects) if 'grapeExplSounds' in x)
+for key in ['grapeExplSounds','cherryChargeSound']:sound('escaperoot/'+key,escape[key])
 npc=e.read('b697cdfd-e783-4f80-abbe-ac197db6cf97');narratives={}
-for name in ['PIRATE_INTRO_FIRSTLEVEL','PIRATE_OUTRO_DANGER_ROOM_KEY','PIRATE_CHALLENGE_PRESET_A','PIRATE_INTRO_GARGANTUAR','PIRATE_CHALLENGE_MINIGAME_A','PIRATE_CHALLENGE_LASTSTAND_A','PIRATE_CHALLENGE_PROTECTPLANTS_A','PIRATE_INTRO_ZOMBOSS','PIRATE_OUTRO_ZOMBOSS']:
+for name in ['PIRATE_26_INTRO','PIRATE_INTRO_FIRSTLEVEL','PIRATE_OUTRO_DANGER_ROOM_KEY','PIRATE_CHALLENGE_PRESET_A','PIRATE_INTRO_GARGANTUAR','PIRATE_CHALLENGE_MINIGAME_A','PIRATE_CHALLENGE_LASTSTAND_A','PIRATE_CHALLENGE_PROTECTPLANTS_A','PIRATE_INTRO_ZOMBOSS','PIRATE_OUTRO_ZOMBOSS']:
     flow=next(o['objdata']['Flow'] for o in e.read('json/Objects/NarrativeList').objects[0]['json']['objects'] if name in o.get('aliases',[]))
     for step in flow:
         if 'Lines' in step:
@@ -88,4 +90,4 @@ for name,path in [('music','music/inGame/pirate/P1_LP_Pirate'),('minigame','musi
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{'note-pirate':e.sprite(c.decode_uuid(c.config['uuids'][c.path_index['note/pirate/spriteFrame']]))}})
 c.write_json(c.ROOT/'apps/pvz2/pirate-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Pirate Seas 1–25')
+print('Exported Pirate Seas 1–30')

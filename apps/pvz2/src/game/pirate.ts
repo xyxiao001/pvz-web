@@ -2,7 +2,7 @@ import {BOARD,cellX,rowY,type ZombieKind} from './level';
 import type {Game,Plant,Zombie} from './model';
 
 export const seaCell=(planks:readonly number[]|null,row:number,column:number)=>planks!==null&&column>=5&&!planks.includes(row);
-export const pirateArmor=(kind:ZombieKind)=>kind==='pirate_armor1'?'pirate_armor1':kind==='pirate_armor2'?'pirate_armor2':null;
+export const pirateArmor=(kind:ZombieKind)=>kind==='pirate_armor4'?'pirate_armor4':kind==='pirate_armor1'?'pirate_armor1':kind==='pirate_armor2'?'pirate_armor2':null;
 export const zombieY=(z:Zombie)=>z.parrot?.y??z.route?.y??rowY(z.row);
 export const isFlying=(z:Zombie)=>z.kind==='seagull'||z.kind==='pirate_captain_parrot';
 export const swinging=(z:Zombie,time:number)=>!!z.swing&&time<z.swing.end;
@@ -127,7 +127,7 @@ export class PirateBattle {
       if(p){z.x=p.x-62;z.row=p.row;
         for(const plant of g.plants)if(plant.hp>0&&plant.row===z.row&&Math.abs(cellX(plant.column)-z.x)<45){
           if(plant.kind==='spikeweed'||plant.kind==='spikerock'||plant.kind==='iceweed'){z.hp=0;this.consumeSpike(plant);}
-          else if(!(plant.kind==='springbean'&&['Ready','Idle_Ready'].includes(plant.animation!))){plant.hp=0;plant.armor=0;p.stunnedUntil=g.time+.5;}
+          else if(!(plant.kind==='escaperoot'&&plant.rootGrown)&&!(plant.kind==='springbean'&&['Ready','Idle_Ready'].includes(plant.animation!))){plant.hp=0;plant.armor=0;p.stunnedUntil=g.time+.5;}
         }
       }else {if(g.time-z.detachedAt!>=10)z.hp=0;z.x-=.01*BOARD.cellWidth*step;}
       return true;
@@ -152,7 +152,7 @@ export class PirateBattle {
       if(state.elapsed>=timeline.duration){if(state.animation==='Explode'){z.hp=0;}else {start('Idle');state.next=g.props.zombies.cannon.ShootInterval+g.random()*g.props.zombies.cannon.ShootIntervalAdditional;}}
       return true;
     }
-    const target=g.plants.filter(p=>p.hp>0&&p.row===z.row&&Math.abs(cellX(p.column)-z.x)<75&&!(p.kind==='springbean'&&['Ready','Idle_Ready'].includes(p.animation!))).sort((a,b)=>b.column-a.column)[0];
+    const target=g.plants.filter(p=>p.hp>0&&!(p.kind==='escaperoot'&&p.rootGrown)&&p.row===z.row&&Math.abs(cellX(p.column)-z.x)<75&&!(p.kind==='springbean'&&['Ready','Idle_Ready'].includes(p.animation!))).sort((a,b)=>b.column-a.column)[0];
     if(state.animation==='Walk'){
       if(state.imp&&z.hp<g.props.zombies[z.kind].Toughness/2&&z.x>cellX(2))start('Throw');
       else if(target)start('Smash');else return false;

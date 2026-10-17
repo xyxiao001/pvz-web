@@ -10,7 +10,7 @@ import type { Scene } from './rendering/scene';
 import { cubicInOut, introCamera } from './rendering/presentation';
 
 const DESCRIPTIONS: Record<PlantKind,string> = {
-  spikerock:'钢地刺能刺破三个滚桶，伤害踩在上面的僵尸。',threepeater:'三线射手同时向所在行和相邻两行发射豌豆。',spikeweed:'地刺可以伤害踩在上面的僵尸，并刺破滚桶。',springbean:'弹簧豆可以弹开僵尸，也能把靠近海边的僵尸弹入水中。',snapdragon:'火龙草向前方三行喷火，灼烧靠近的僵尸。',coconutcannon:'点击椰子加农炮发射炮弹，爆炸后需要时间重新装填。',snowdrop:'雪莲抛出冰霜花瓣，使僵尸减速，偶尔将它冻住。',imitater:'选择本关的一种植物，模仿者会在种下后变成它。',peapod:'在同一格重复种植，最多叠加五个豌豆头。',cherry_bomb:'樱桃炸弹炸毁周围九宫格内的僵尸。',celerystalker:'潜伏芹菜藏在地下，攻击走过身后的僵尸。',parsnip:'防风草用钳子攻击前方，被吃掉后冲出去继续攻击。',sapfling:'树脂投手在落点留下树脂，减缓僵尸的移动。',
+  escaperoot:'点击逃脱树根，再点击另一株植物即可换位。成熟后遇到僵尸会变成爆炸植物。',spikerock:'钢地刺能刺破三个滚桶，伤害踩在上面的僵尸。',threepeater:'三线射手同时向所在行和相邻两行发射豌豆。',spikeweed:'地刺可以伤害踩在上面的僵尸，并刺破滚桶。',springbean:'弹簧豆可以弹开僵尸，也能把靠近海边的僵尸弹入水中。',snapdragon:'火龙草向前方三行喷火，灼烧靠近的僵尸。',coconutcannon:'点击椰子加农炮发射炮弹，爆炸后需要时间重新装填。',snowdrop:'雪莲抛出冰霜花瓣，使僵尸减速，偶尔将它冻住。',imitater:'选择本关的一种植物，模仿者会在种下后变成它。',peapod:'在同一格重复种植，最多叠加五个豌豆头。',cherry_bomb:'樱桃炸弹炸毁周围九宫格内的僵尸。',celerystalker:'潜伏芹菜藏在地下，攻击走过身后的僵尸。',parsnip:'防风草用钳子攻击前方，被吃掉后冲出去继续攻击。',sapfling:'树脂投手在落点留下树脂，减缓僵尸的移动。',
   repeater:'双发射手连续发射两颗豌豆。',kernelpult:'玉米投手抛射玉米粒，偶尔用黄油定住僵尸。',melonpult:'西瓜投手的西瓜能伤害落点周围的僵尸。',
   bonkchoy:'菜问快速拳击前后靠近的僵尸。',
   gravebuster:'噬碑藤吞噬墓碑，为种植腾出空间。',
@@ -226,6 +226,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     $('#hud').hidden=true;$('#overlay').hidden=true;$('#seed-chooser').hidden=true;host.hidden=true;onReturn();
   }
   function updateHud() {
+    if(selected)game.escape.cancel();
     $('#sun-count').textContent=String(game.sun);if(levelConfig.mode==='seedbank'||levelConfig.mode==='preset')updateDeck();
     $('#plant-food b').textContent=`${game.food} / ${game.foodLimit}`;$('#plant-food').classList.toggle('selected',selected==='food');
     if(levelConfig.mode==='conveyor')updateConveyor();
@@ -255,10 +256,12 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     const sun=[...game.suns].reverse().find(s=>Math.hypot(x-s.x,y-s.y)<38);
     if(sun){game.collect(sun.id);updateHud();return;}
     const column=Math.floor((x-BOARD.left)/BOARD.cellWidth),row=Math.floor((y-BOARD.top)/BOARD.cellHeight);
+    if(selected)game.escape.cancel();
+    if(selected===null&&game.escape.selected!==null){game.escape.exchange(row,column);updateHud();return;}
     if(selected==='shovel'){game.shovel(row,column);sound('shovelDig');}
     else if(selected==='food'){if(game.plantFood(row,column)){selected=null;scene.highlightCell(-1,-1,0);}}
     else if(selected&&game.plant(selected,row,column,packetId)){selected=null;scene.highlightCell(-1,-1,0);}
-    else if(selected===null)game.pirate.fire(row,column);
+    else if(selected===null&&!game.escape.select(row,column))game.pirate.fire(row,column);
     updateHud();
   }
   function tick(dt: number) {
@@ -362,7 +365,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   window.addEventListener('keydown',event=>{
     if(host.hidden||event.repeat)return;
     if(event.code==='Space'&&(screen==='playing'||screen==='pause')){event.preventDefault();screen==='playing'?pause():resume();}
-    if(event.key==='Escape'){if(screen==='pause')resume();else if(screen==='playing'){selected=null;if(game.power?.remaining===0)game.power=null;scene.highlightCell(-1,-1,0);}}
+    if(event.key==='Escape'){if(screen==='pause')resume();else if(screen==='playing'){selected=null;game.escape.cancel();if(game.power?.remaining===0)game.power=null;scene.highlightCell(-1,-1,0);}}
     if(screen!=='playing')return;
     if((levelConfig.mode==='seedbank'||levelConfig.mode==='preset')&&'12345678'.slice(0,seedSlots).includes(event.key)&&event.key.length===1){const i=Number(event.key)-1;if(!$<HTMLButtonElement>(`[data-slot="${i}"]`).disabled)selected=deck[i];}
     updateHud();
