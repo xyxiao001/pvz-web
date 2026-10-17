@@ -7,10 +7,11 @@ export interface BattleLevel {
   day: number;
   source: string;
   assets: 'intro'|'campaign';
+  bundle?:string;
   presentation:{lawn:string;loading:string;music:string};
   plants: { id: number; kind: PlantKind }[];
-  firstReward: { image: string; label: string; plant?:PlantKind };
-  mode:'seedbank'|'conveyor'|'powerups'|'match'|'preset';
+  firstReward: { image: string; label: string; plant?:PlantKind; animation?:string; armature?:string };
+  mode:'seedbank'|'conveyor'|'powerups'|'match'|'preset'|'cannon';
   night:boolean;
   actors:PlantKind[];
   narrative:string|null;

@@ -1,7 +1,8 @@
+import {BATTLE_LEVELS} from '../game/levels';
 import type { Island, WorldMap } from './types';
 
 export const NAVIGATION_KEY = 'pvz2-web:world-navigation';
-export const LEVEL_ROUTES: Readonly<Record<string, string>> = Object.fromEntries([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35].map(day=>[`egypt${day}`,`egypt${day}`]));
+export const LEVEL_ROUTES: Readonly<Record<string,string>> = Object.fromEntries(Object.keys(BATTLE_LEVELS).map(id=>[id,id]));
 export interface Navigation { world: string | null; chooser: number; cameras: Record<string, number> }
 export const initialNavigation = (): Navigation => ({ world: null, chooser: 0, cameras: {} });
 
@@ -10,7 +11,7 @@ export const initialNavigation = (): Navigation => ({ world: null, chooser: 0, c
 export function islandStates(map: WorldMap, completed: ReadonlySet<string>, rewards: ReadonlySet<number> = new Set()) {
   const states = new Map<number, 'locked' | 'open' | 'finished'>();
   for (const island of map.islands) states.set(island.node, (island.kind === 0 ? island.levels.some(id => completed.has(id)) : rewards.has(island.node)) ? 'finished'
-    : map.id === 'egypt' && island.levels.some(id => map.startingLevels.includes(id)) ? 'open' : 'locked');
+    : (map.id === 'egypt'||map.id==='pirate') && island.levels.some(id => map.startingLevels.includes(id)) ? 'open' : 'locked');
   const propagated = new Set<number>();
   const advance = (island: Island) => {
     if (propagated.has(island.node)) return;

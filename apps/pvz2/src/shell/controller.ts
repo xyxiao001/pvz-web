@@ -103,7 +103,7 @@ export class WorldShell {
     }
     const world = this.catalog.worlds[index];
     if (!world.enterable) return;
-    if (world.id === 'egypt') await this.openWorld(world);
+    if (this.progress.worldUnlocked(world.id)) await this.openWorld(world);
     else await this.worldDescription(world);
   }
   private step(direction: number) {
@@ -122,7 +122,7 @@ export class WorldShell {
     for (const button of this.host.querySelectorAll<HTMLButtonElement>('[data-world-target]')) button.onclick = () => { void this.choose(Number(button.dataset.worldTarget)); };
 
     this.renderer.setWorldKeys(this.progress.worldKeys());
-    await this.renderer.showChooser(this.navigation.chooser);
+    await this.renderer.showChooser(this.navigation.chooser,new Set(['egypt',...this.progress.unlockedWorlds()]));
     this.$('.map-caption').textContent = '世界地图 · 点击两侧世界切换，再次点击进入';
     this.save(); this.loading(false);
   }
@@ -244,6 +244,10 @@ export class WorldShell {
     this.loading(true);
     const art=await this.renderer.worldDetails(world.id);
     this.loading(false);
+    if(world.id==='pirate'){
+      this.modal(world.name,`<p>${world.description}</p><img class="world-banner" src="${art.background}" alt="${world.name}"><button class="native-button" data-unlock ${this.progress.worldKeys()<1?'disabled':''}>世界钥匙 × 1 · 解锁</button><div class="world-plant-cards">${art.cards.map(image=>`<img src="${image}" alt="本世界植物卡片">`).join('')}</div>`);
+      this.$('.native-window').classList.add('world-description');this.$('[data-unlock]').onclick=()=>{if(this.progress.unlockWorld(world.id))void this.openWorld(world);};return;
+    }
     this.modal(world.name,`<p>${world.description}</p><img class="world-banner" src="${art.background}" alt="${world.name}"><button class="native-button" disabled>世界钥匙 × 1 · ${this.progress.worldKeys()>0?'已获得，关卡尚未接入':'尚未获得'}</button><div class="world-plant-cards" aria-label="本世界植物">${art.cards.map(image=>`<img src="${image}" alt="本世界植物卡片">`).join('')}</div><button class="preview-world">预览地图 · 关卡尚未接入</button>`);
     this.$('.native-window').classList.add('world-description');
     this.$('.preview-world').onclick=()=>{void this.openWorld(world);};

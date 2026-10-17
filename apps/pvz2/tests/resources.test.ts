@@ -19,11 +19,13 @@ test('reentering a scene during release waits for the old unload before loading 
  const old=new ResourceScope(pool),next=new ResourceScope(pool);await old.load('lawn');const released=old.dispose();await Promise.resolve();
  const loaded=next.load('lawn');assert.deepEqual(calls,['load','unload']);finish();await released;await loaded;assert.deepEqual(calls,['load','unload','load']);
 });
-test('all 35 levels resolve only exported actors and effect rigs, including summoned dependencies',()=>{
- const catalog=read('campaign/catalog.json');
+test('all registered levels resolve only exported actors and effect rigs, including summoned dependencies',()=>{
+ const base=read('campaign/catalog.json');
  for(const config of Object.values(BATTLE_LEVELS)){
-  const level=readLevel(read(config.source));const plants=[...new Set<PlantKind>([...config.plants.map(p=>p.kind),...level.initialPlants.map(p=>p.kind),...level.protectedPlants.map(p=>p.kind),...(level.preset??[]),...(level.conveyor?.InitialPlantList.map(p=>p.PlantType)??[]),...level.actions.flat().flatMap(a=>a.add?.map(p=>p.PlantType)??[])])];
-  for(const name of battleActors(level,plants)){const spec=catalog.actors[name];assert.ok(read(spec?`campaign/rigs/${spec.rig}/skeleton.json`:`actors/${name}/skeleton.json`).armature.length,config.id+': '+name);}
+  const extra=config.bundle?read(`${config.bundle}/catalog.json`):{actors:{},rigs:{}};
+  const catalog={actors:{...base.actors,...extra.actors},rigs:{...base.rigs,...extra.rigs}};
+  const level=readLevel(read(config.source));const plants=[...new Set<PlantKind>([...config.plants.map(p=>p.kind),...(level.cannon?['coconutcannon' as const]:[]),...level.initialPlants.map(p=>p.kind),...level.protectedPlants.map(p=>p.kind),...(level.preset??[]),...(level.conveyor?.InitialPlantList.map(p=>p.PlantType)??[]),...level.actions.flat().flatMap(a=>a.add?.map(p=>p.PlantType)??[])])];
+  for(const name of battleActors(level,plants)){const spec=catalog.actors[name];assert.ok(read(spec?`${spec.group}/rigs/${spec.rig}/skeleton.json`:`actors/${name}/skeleton.json`).armature.length,config.id+': '+name);}
   for(const name of battleEffects(level,plants))assert.ok(catalog.rigs[name],config.id+': '+name);
  }
  const ordinary=readLevel(read(BATTLE_LEVELS.egypt2.source)),effects=battleEffects(ordinary,['peashooter','sunflower','wallnut','potatomine']);

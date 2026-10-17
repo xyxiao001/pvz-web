@@ -198,7 +198,7 @@ export class MapRenderer {
     PixiFactory.advanceTime(0);await previews.dispose();
     return images;
   }
-  async showChooser(index: number) {
+  async showChooser(index: number,unlocked:ReadonlySet<string>) {
     this.stop(); this.clear(); this.toolbar.children.forEach((child,i) => { child.visible = this.catalog.toolbar[i].owner === 14; }); this.mode = 'chooser'; this.map = null; this.velocity = 0;
     const selected = this.catalog.chooser.filter(d => d.kind === 'rig');
     await this.prepare([...selected, ...this.catalog.lock]);
@@ -207,7 +207,7 @@ export class MapRenderer {
     for (const [i, draw] of selected.entries()) {
       const view = this.make(draw); this.views.set(i, view);
       const world = this.catalog.worlds.find(w => w.draw.owner === draw.owner);
-      if (world && world.id !== 'egypt' && world.enterable) {
+      if (world && !unlocked.has(world.id) && world.enterable) {
         view.rigs[0].filters = [this.grey]; view.rigs[0].tint = 0x969696;
         for (const lock of this.catalog.lock) if (lock.kind === 'rig') {
           const rig = this.makeRig(lock.rig!, lock.armature!, lock.animation!); rig.y = -120; view.root.addChild(rig); view.rigs.push(rig);

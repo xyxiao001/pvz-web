@@ -37,7 +37,10 @@ export class ProgressStore {
   campaignRewards():{level:string;type:'worldtrophy'|'pinata'|'sprout'|'note'|'coinbag';id:string;count:number}[]{
     const saved=this.storage.getItem('pvz2-web:campaign-rewards');return saved===null?[]:JSON.parse(saved);
   }
-  worldKeys(){return this.campaignRewards().filter(r=>r.type==='worldtrophy'&&r.id==='worldkey').reduce((n,r)=>n+r.count,0);}
+  unlockedWorlds():string[]{const saved=this.storage.getItem('pvz2-web:unlocked-worlds');return saved===null?[]:JSON.parse(saved);}
+  worldUnlocked(world:string){return world==='egypt'||this.unlockedWorlds().includes(world);}
+  unlockWorld(world:string){if(this.worldUnlocked(world)||this.worldKeys()<1)return false;this.storage.setItem('pvz2-web:unlocked-worlds',JSON.stringify([...this.unlockedWorlds(),world]));return true;}
+  worldKeys(){return this.campaignRewards().filter(r=>r.type==='worldtrophy'&&r.id==='worldkey').reduce((n,r)=>n+r.count,0)-this.unlockedWorlds().length;}
   finish(world: string, level: string, sprouts=0) {
     if (this.isComplete(level)) return;
     if(['egypt4','egypt6','egypt7','egypt8','egypt10','egypt11','egypt12','egypt14','egypt15','egypt16','egypt18','egypt20','egypt22','egypt23','egypt25','egypt27','egypt30','egypt31','egypt34'].includes(level)||level==='egypt5'&&sprouts>0){
@@ -54,6 +57,7 @@ export class ProgressStore {
       if(level==='egypt5')rewards.push({level,type:'sprout',id:'sprout',count:sprouts});
       this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));
     }
+    if(level==='pirate4'||level==='pirate5'){const rewards=this.campaignRewards();rewards.push({level,type:level==='pirate4'?'worldtrophy':'pinata',id:level==='pirate4'?'dangerroom_pirate':'spine_pirate',count:1});this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));}
     this.storage.setItem(completionKey(level), '1');
     this.storage.setItem(PENDING_KEY, JSON.stringify({ world, level }));
   }
