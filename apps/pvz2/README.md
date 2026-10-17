@@ -8,7 +8,7 @@
 - 导出 13 个主世界的原始坐标、远景视差、主线与分支连接，保留另外两个不可进入的世界图标。
 - 世界选择支持点选、横向滑动、滚轮和方向键；地图支持拖动、惯性、滚轮、边缘箭头及关卡点击。桌面鼠标使用原版 32×56 白色指针，限定在二代页面。
 - 埃及主线第 1–35 关接入对应对白、选卡／传送带／道具战斗流程；其他关卡显示待接入状态。世界介绍中的“查看地图”仅供预览，不消耗钥匙、不解锁世界或授予奖励。
-- 商店、图鉴、花园、小游戏与经济系统未接入，顶部原版入口暂不可用，资源栏为零。设置提供独立的音乐、音效音量，并与二代战斗共享设置。
+- 商店支持本地购买，首次建立钱包赠送 99999 钻石，购买后正常扣除并保存。金币和钻石兑换沿用原价格；已接入三种升级和两种植物商品。图鉴、花园、小游戏和门票功能暂未接入。设置提供独立的音乐、音效音量，并与二代战斗共享设置。
 
 还原基准是上游的地图布局、美术、动画与导航交互。当前不是完整复刻：世界介绍已接入原生横幅和本世界植物卡片；设置采用原生窗口美术。埃及前段已接入通关节点、道路推进和植物奖励状态；完整世界解锁演出、皮纳塔开箱、无尽模式、支线和其他世界战斗尚待接入。无尽入口按上游未解锁状态呈现。上游沙滩保龄球骨骼本身缺少 `_ro0/_ro1/_ro2` 子骨骼，冰窟、古城部分骨骼有重复名称，保留原数据；未伪造这些动画。
 
@@ -155,3 +155,13 @@ python3 tools/pvz2-assets/extract-egypt-campaign.py
 僵王接入跳跃、换行、召唤、导弹造墓、冲刺、眩晕及死亡逃离；动作事件读取原骨骼，阶段权重、生命值、供卡和台词读取固定上游数据。新增植物按关卡加载原骨骼、弹体与音效，不影响一代。
 
 125 项测试通过，覆盖全部主线路由与奖励推进、新增挑战规则和技能时机。第 25、29 关通过合法操作通关模拟；其他新增普通关通过受控消灭敌群验证波次与胜利流程，不等同于人工策略通关。僵王两关另有阶段、技能、受击和退场测试。开发页 `/pvz2/tests/finale-scenes.html` 可逐帧检查终章角色，使用独立内存状态，不修改玩家存档。具体还原差异见 FIDELITY.md。
+
+### Local store
+
+The store uses the pinned native category tabs, commodity panels, currency buttons and product art. `extract-store.py` exports its catalog and records hashes in `store-provenance.json`; store art loads on first opening.
+
+`pvz2-web:wallet` stores coins, gems, tickets and one-time purchases independently from PVZ1. Gems start at 99999 once; reopening or refreshing does not replenish them. Coin/gem bundles retain upstream prices. The three available upgrades each add one seed slot, one plant-food slot or 25 starting sun, and stack with earned map rewards. Iceweed and Snowdrop retain the Egypt 9/28 completion prerequisites and become selectable in normal battles from day 2 onward. Day 1 retains its tutorial roster. Fixed decks and conveyor pools remain authored by the level.
+
+Other shop plants, shovel/manual-mower upgrades, costumes, garden purchases, tickets and battle coin settlement are not implemented. Store product previews currently use native idle stills. Locked map nodes now follow upstream `WorldMap.ts`: clicking does not open a dialog. The old migration explanation has been removed.
+
+`tests/store-visual.html` exercises purchases and battle entry with a separate memory profile.

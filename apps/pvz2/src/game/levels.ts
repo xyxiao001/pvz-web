@@ -34,5 +34,6 @@ export const BATTLE_LEVELS: Readonly<Record<string, BattleLevel>> = {
 };
 
 export function availablePlants(level: BattleLevel, owned: ReadonlySet<number>) {
-  return level.plants.filter(plant => owned.has(plant.id)).map(plant => plant.kind);
+  const plants = level.day === 1 ? level.plants : [...level.plants, { id: 165, kind: 'iceweed' as const }, { id: 158, kind: 'snowdrop' as const }];
+  return plants.filter(plant => owned.has(plant.id)).map(plant => plant.kind);
 }

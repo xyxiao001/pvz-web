@@ -4,6 +4,8 @@ import { PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbo
 import { assetUrl, json, loadInBatches } from '../assets/load';
 import { clampCamera, islandStates } from './navigation';
 import { WorldScrollGesture } from './world-scroll';
+import type { CampaignCatalog } from '../rendering/battle-art';
+import type { StoreCatalog, Wallet } from './store';
 import type { MapEvent } from './progression';
 import type { Catalog, Draw, Island, WorldMap, ProgressionArt } from './types';
 
@@ -155,6 +157,43 @@ export class MapRenderer {
     await Promise.all([...new Set(draws.filter(d => d.kind === 'sprite').map(d => assetUrl(d.image!)))].map(path => Assets.load(path)));
   }
   setWorldKeys(count:number){const index=this.catalog.toolbar.findIndex(d=>d.owner===14&&d.kind==='label');(this.toolbar.children[index].children[0] as Text).text=String(count);}
+  setStoreOpen(open: boolean) { this.layer.visible = !open; this.toolbar.visible = !open; }
+  setCurrencies(wallet: Wallet) {
+    for (const [owner, value] of [[24, wallet.coin], [25, wallet.gem], [26, wallet.ticket]]) {
+      const index = this.catalog.toolbar.findIndex(d => d.owner === owner && d.name === 'value');
+      const label = this.toolbar.children[index].children[0] as Text;
+      label.text = value.toLocaleString('en-US'); label.scale.set(1);
+      label.scale.set(Math.min(1, 170 / label.width));
+    }
+  }
+  async storeArt(catalog: StoreCatalog) {
+    const campaign = await json<CampaignCatalog>('campaign/catalog.json');
+    const upgradeKey = this.catalog.nodes.upgrade.find(d => d.kind === 'rig')!.rig!;
+    await this.load([catalog.rig, upgradeKey]);
+    const images = new Map<string, string>();
+    const capture = (id: string, layers: PixiArmatureDisplay[]) => {
+      const root = new Container();
+      for (const rig of layers) { rig.armature.advanceTime(.001); root.addChild(rig); }
+      images.set(id, (this.app.renderer.extract.canvas({ target: root, resolution: 2 }) as HTMLCanvasElement).toDataURL('image/webp'));
+      layers.forEach(rig => rig.dispose()); root.destroy({ children: true });
+    };
+    for (const [category, armature] of Object.entries({ Plants: 'page_plant', Upgrade: 'page_trophy', Coin: 'page_coin', Gem: 'page_gem' })) {
+      capture(category, [this.makeRig(catalog.rig, armature, 'Idle')]);
+      capture(category + '-selected', [this.makeRig(catalog.rig, armature, 'Chosen')]);
+    }
+    for (const item of catalog.items) {
+      if (item.type === 'plant') {
+        const spec = campaign.actors[item.name], base = `campaign/rigs/${spec.rig}/`;
+        const [skeleton, atlas, texture] = await Promise.all([json<object>(base + 'skeleton.json'), json<object>(base + 'atlas.json'), Assets.load<Texture>(assetUrl(base + 'texture.webp'))]);
+        const factory = new PixiFactory(null, false);
+        factory.parseDragonBonesData(skeleton, spec.rig); factory.parseTextureAtlasData(atlas, texture, spec.rig);
+        const rig = factory.buildArmatureDisplay(spec.armature, spec.rig)!; rig.animation.play('Idle', 0);
+        capture(item.id, [rig]); factory.clear(false);
+      } else if (item.type === 'upgrade') capture(item.id, [this.makeRig(upgradeKey, 'Upgrades', item.animation!)]);
+      else capture(item.id, [this.makeRig(catalog.rig, item.type + 'Stack', item.animation!)]);
+    }
+    return images;
+  }
   async showChooser(index: number) {
     this.stop(); this.clear(); this.toolbar.children.forEach((child,i) => { child.visible = this.catalog.toolbar[i].owner === 14; }); this.mode = 'chooser'; this.map = null; this.velocity = 0;
     const selected = this.catalog.chooser.filter(d => d.kind === 'rig');

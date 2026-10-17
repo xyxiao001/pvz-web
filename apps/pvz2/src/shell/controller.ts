@@ -3,6 +3,7 @@ import { assetUrl, json } from '../assets/load';
 import { NAVIGATION_KEY, LEVEL_ROUTES, initialNavigation, islandStates, type Navigation } from './navigation';
 import { ProgressStore, completionEvents } from './progression';
 import type { Catalog, Island, World, WorldMap, ProgressionArt } from './types';
+import type { StoreCatalog, StoreCategory } from './store';
 import type { MapRenderer } from './renderer';
 
 export class WorldShell {
@@ -17,18 +18,22 @@ export class WorldShell {
   private currentWorld!: World;
   private cameraLayout = NaN;
   private clickSounds = new Map<string, HTMLAudioElement>();
-  private progress = new ProgressStore(localStorage);
+  private progress: ProgressStore;
   private progression!: ProgressionArt;
+  private storeCatalog: StoreCatalog | null = null;
+  private storeImages = new Map<string, string>();
+  private storeCategory: StoreCategory = 'Coin';
   private completed = () => this.progress.completed(this.map!);
   private $ = <T extends HTMLElement>(selector: string) => this.host.querySelector<T>(selector)!;
-  constructor(private host: HTMLElement, private play: (level: string, progress: ProgressStore) => Promise<void>) {
-    const saved = localStorage.getItem(NAVIGATION_KEY);
+  constructor(private host: HTMLElement, private play: (level: string, progress: ProgressStore) => Promise<void>, private storage: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> = localStorage) {
+    this.progress = new ProgressStore(storage);
+    const saved = storage.getItem(NAVIGATION_KEY);
     this.navigation = saved === null ? initialNavigation() : JSON.parse(saved);
     host.innerHTML = `<div class="world-frame"><div class="map-canvas"></div><div class="map-controls"></div>
       <div class="world-labels"></div><div class="map-level-targets"></div>
       <button class="map-arrow map-arrow-left" aria-label="向左浏览"><span></span></button><button class="map-arrow map-arrow-right" aria-label="向右浏览"><span></span></button>
       <div class="map-modal" hidden></div><div class="map-loading" role="status"><span class="loading-flower">✿</span><span>正在准备世界地图…</span></div></div>
-      <div class="world-caption"><a href="/">‹ 植物大战僵尸 1</a><span class="map-caption">世界地图 · 关卡逐步接入</span><span>外层移植预览</span></div>`;
+      <div class="world-caption"><a href="/">‹ 植物大战僵尸 1</a><span class="map-caption">世界地图</span><span></span></div>`;
     this.music.loop = true; this.music.preload = 'none'; this.music.volume = this.audio.music;
   }
   async init() {
@@ -59,13 +64,15 @@ export class WorldShell {
     if (this.navigation.world) await this.openWorld(this.catalog.worlds.find(w => w.id === this.navigation.world)!);
     else await this.showChooser();
   }
-  private save() { localStorage.setItem(NAVIGATION_KEY, JSON.stringify(this.navigation)); }
+  private save() { this.storage.setItem(NAVIGATION_KEY, JSON.stringify(this.navigation)); }
   private loading(show: boolean) { this.busy = show; this.$('.map-loading').hidden = !show; this.$('.map-controls').inert = show; }
   private makeControls() {
-    const names: Record<string,string> = { exitButton: '返回', settingButton: '设置', arcadeButton: '小游戏 · 尚未接入', almanacButton: '图鉴 · 尚未接入', zengardenButton: '禅境花园 · 尚未接入', storeButton: '商店 · 尚未接入' };
-    this.$('.map-controls').innerHTML = Object.entries(this.catalog.buttons).map(([id,b]) => `<button class="native-icon" data-control="${id}" aria-label="${names[id]}" title="${names[id]}" ${id === 'exitButton' || id === 'settingButton' ? '' : 'disabled'} style="left:${b.x/10.24}%;top:${b.y/6.4}%;width:${b.w/10.24}%;height:${b.h/6.4}%;--normal:url('${assetUrl(b.normal.image)}');--hover:url('${assetUrl(b.hover.image)}');--pressed:url('${assetUrl(b.pressed.image)}')"></button>`).join('');
+    const names: Record<string,string> = { exitButton: '返回', settingButton: '设置', arcadeButton: '小游戏 · 尚未接入', almanacButton: '图鉴 · 尚未接入', zengardenButton: '禅境花园 · 尚未接入', storeButton: '商店' };
+    this.$('.map-controls').innerHTML = Object.entries(this.catalog.buttons).map(([id,b]) => `<button class="native-icon" data-control="${id}" aria-label="${names[id]}" title="${names[id]}" ${id === 'exitButton' || id === 'settingButton' || id === 'storeButton' ? '' : 'disabled'} style="left:${b.x/10.24}%;top:${b.y/6.4}%;width:${b.w/10.24}%;height:${b.h/6.4}%;--normal:url('${assetUrl(b.normal.image)}');--hover:url('${assetUrl(b.hover.image)}');--pressed:url('${assetUrl(b.pressed.image)}')"></button>`).join('');
     this.$('[data-control="exitButton"]').onclick = () => { void this.back(); };
     this.$('[data-control="settingButton"]').onclick = () => this.settings();
+    this.$('[data-control="storeButton"]').onclick = () => { void this.openStore(); };
+    this.renderer.setCurrencies(this.progress.shop().read());
     const skin = this.catalog.window;
     this.host.style.setProperty('--window-fill',`url('${assetUrl(skin.windowCommon.image)}')`);
     this.host.style.setProperty('--window-border',`url('${assetUrl(skin.windowCommonBorder.image)}')`);
@@ -125,7 +132,7 @@ export class WorldShell {
     const events = pending?.world === world.id ? completionEvents(this.map,pending.level,completed,rewards) : [];
     const displayed = new Set(completed); if (events.length) displayed.delete(pending!.level);
     await this.renderer.showMap(this.map,camera,displayed,world.night,rewards,this.progression,events);
-    this.$('.map-caption').textContent = `${world.name} · 拖动或滚轮浏览 · 关卡逐步接入`;
+    this.$('.map-caption').textContent = `${world.name} · 拖动或滚轮浏览`;
     this.save(); this.loading(false);
     if (events.length) {
       this.busy = true; this.$('.world-frame').inert = true;
@@ -166,10 +173,54 @@ export class WorldShell {
     if (this.busy || !this.$('.map-modal').hidden) return;
     const state = islandStates(this.map!,this.completed(),this.progress.rewardNodes(this.map!.id)).get(island.node)!;
     const id=island.levels.find(id=>LEVEL_ROUTES[id]);
-    if (id && state !== 'locked') {
+    // WorldMap.ts ignores locked nodes; there is no native locked-level window.
+    if (state === 'locked') return;
+    if (id) {
       this.save(); this.renderer.stop(); if(this.musicPlay) await this.musicPlay; this.music.pause(); this.musicPlay=null; this.host.hidden=true; await this.play(id, this.progress); return;
     }
-    this.modal(`${this.currentWorld.name} · 第 ${island.name} 关`, `<p>${state==='locked'?'此关卡尚未解锁。':'此关卡尚未接入。'}</p><p class="port-note">当前先还原地图与选关流程，后续按原关卡逐一移植。</p><button class="native-button close-dialog">返回地图</button>`);
+    this.modal(`${this.currentWorld.name} · 第 ${island.name} 关`, `<p>此关卡尚未接入。</p><button class="native-button close-dialog">返回地图</button>`);
+  }
+  private async openStore() {
+    if (this.busy) return;
+    if (this.storeCatalog === null) {
+      this.loading(true);
+      this.storeCatalog = await json<StoreCatalog>('shell/store.json');
+      this.storeImages = await this.renderer.storeArt(this.storeCatalog);
+      this.loading(false);
+    }
+    this.renderStore();
+  }
+  private renderStore() {
+    const catalog = this.storeCatalog!, shop = this.progress.shop(), wallet = shop.read();
+    const names: Record<StoreCategory, string> = { Plants: '植物', Upgrade: '升级', Coin: '金币', Gem: '钻石' };
+    const items = catalog.items.filter(item => item.category === this.storeCategory && (!item.unlockLevel || this.progress.isComplete(item.unlockLevel)));
+    const money = (value: number) => value.toLocaleString('en-US');
+    const art = (name: string) => assetUrl(catalog.art[name].image);
+    const counters = (['coin', 'gem'] as const).map(currency => {
+      const background = this.catalog.toolbar.find(d => d.name === (currency === 'coin' ? 'CoinCounter' : 'GemCounter'))!;
+      return `<div class="store-currency" aria-label="${currency === 'coin' ? '金币' : '钻石'} ${wallet[currency]}" style="background-image:url('${assetUrl(background.image!)}')"><span>${money(wallet[currency])}</span></div>`;
+    }).join('');
+    this.modal('商店', `<div class="store-wallet" aria-live="polite">${counters}</div><div class="store-tabs" role="tablist" aria-label="商品分类">${(Object.keys(names) as StoreCategory[]).map(category => `<button role="tab" aria-label="${names[category]}" aria-selected="${category === this.storeCategory}" data-store-tab="${category}"><img src="${this.storeImages.get(category + (category === this.storeCategory ? '-selected' : ''))}" alt=""></button>`).join('')}</div><div class="store-shelf" role="tabpanel" aria-label="${names[this.storeCategory]}">${items.map(item => {
+      const owned = shop.owned(item), canBuy = shop.canBuy(item, level => this.progress.isComplete(level));
+      return `<article class="store-item" style="background-image:url('${art(item.type + 'Window')}')"><h3>${item.label}</h3><img class="store-product" src="${this.storeImages.get(item.id)}" alt="${item.label}">${item.type === 'coin' || item.type === 'gem' ? `<b class="store-count">×${money(item.count)}</b>` : ''}${item.description ? `<p class="store-description">${item.description}</p>` : ''}<button class="store-buy" data-buy="${item.id}" aria-label="${owned ? '已购买' : '购买'}${item.label}${owned ? '' : `，${item.price}${item.currency === 'gem' ? '钻石' : '金币'}`}" ${canBuy ? '' : 'disabled'} style="--buy-up:url('${art(item.currency + 'ButtonUp')}');--buy-down:url('${art(item.currency + 'ButtonDown')}')"><img src="${art(item.currency === 'gem' ? 'buyGemIcon' : 'buyCoinIcon')}" alt="">${owned ? '已售罄' : money(item.price)}</button></article>`;
+    }).join('')}</div><div class="store-pagination"><button class="native-button" data-store-scroll="-1" aria-label="上一页商品">◀</button><button class="native-button" data-store-scroll="1" aria-label="下一页商品">▶</button></div>`);
+    this.$('.native-window').classList.add('store-window');
+    this.host.dataset.store = 'true'; this.renderer.setStoreOpen(true);
+    for (const tab of this.host.querySelectorAll<HTMLButtonElement>('[data-store-tab]')) tab.onclick = () => {
+      this.storeCategory = tab.dataset.storeTab as StoreCategory; this.renderStore();
+      this.$<HTMLButtonElement>(`[data-store-tab="${this.storeCategory}"]`).focus();
+    };
+    for (const button of this.host.querySelectorAll<HTMLButtonElement>('[data-buy]')) button.onclick = () => {
+      const item = catalog.items.find(item => item.id === button.dataset.buy)!;
+      shop.buy(item, level => this.progress.isComplete(level));
+      this.renderer.setCurrencies(shop.read());
+      const offset = this.$('.store-shelf').scrollLeft;
+      this.renderStore(); this.$('.store-shelf').scrollLeft = offset;
+      this.$<HTMLButtonElement>(`[data-buy="${item.id}"]`).focus();
+    };
+    for (const button of this.host.querySelectorAll<HTMLButtonElement>('[data-store-scroll]')) button.onclick = () => {
+      const shelf = this.$('.store-shelf'); shelf.scrollBy({ left: Number(button.dataset.storeScroll) * shelf.clientWidth * .8, behavior: 'smooth' });
+    };
   }
   private async worldDescription(world: World) {
     this.loading(true);
@@ -186,7 +237,7 @@ export class WorldShell {
     for(const button of this.host.querySelectorAll<HTMLButtonElement>('.close-dialog'))button.onclick=()=>this.closeModal();
     this.$<HTMLButtonElement>('.native-close').focus();
   }
-  private closeModal() { this.$('.map-modal').hidden=true; this.$('.map-modal').innerHTML=''; }
+  private closeModal() { delete this.host.dataset.store; this.renderer.setStoreOpen(false); this.$('.map-modal').hidden=true; this.$('.map-modal').innerHTML=''; }
   private settings() {
     this.modal('设置',`${audioControls(this.audio)}<button class="native-button close-dialog">返回游戏</button><a class="switch-version" href="/">植物大战僵尸 1</a>`);
     for (const input of this.host.querySelectorAll<HTMLInputElement>('[data-volume]')) input.oninput=()=>{

@@ -27,6 +27,8 @@ const DESCRIPTIONS: Record<PlantKind,string> = {
 
 export function createBattle(host: HTMLElement, onReturn: () => void, levelConfig: BattleLevel, progress: ProgressStore) {
   const listeners=new AbortController();
+  const bonuses = progress.battleBonuses(), seedSlots = bonuses.seedSlots;
+  host.style.setProperty('--seed-slots', String(seedSlots));
   host.dataset.mode=levelConfig.mode;
   const title = `${levelConfig.worldName} - 第${levelConfig.day}天`;
   let cardOrder: PlantKind[] = [];
@@ -35,11 +37,11 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     <div id="canvas-host"></div>
     <div id="hud" hidden>
       <div class="sun-counter"><img alt="阳光"><b id="sun-count">50</b></div>
-      <div class="seed-bank">${Array.from({length:6},(_,i)=>`<button class="seed" data-slot="${i}" aria-label="空卡槽" disabled><img alt=""><span class="seed-price"></span><span class="seed-cooldown"></span></button>`).join('')}</div>
+      <div class="seed-bank">${Array.from({length:seedSlots},(_,i)=>`<button class="seed" data-slot="${i}" aria-label="空卡槽" disabled><img alt=""><span class="seed-price"></span><span class="seed-cooldown"></span></button>`).join('')}</div>
       <button id="speed" class="battle-icon" aria-label="切换二倍速" aria-pressed="false"></button>
       <button id="pause" class="battle-icon" aria-label="暂停游戏"></button>
       <button id="shovel" class="battle-icon" aria-label="使用铲子"><img alt="铲子"></button>
-      <button id="plant-food" aria-label="使用能量豆" hidden><img alt="能量豆"><b>0 / 3</b></button>
+      <button id="plant-food" aria-label="使用能量豆" hidden><img alt="能量豆"><b>0 / ${bonuses.foodLimit}</b></button>
       <div id="conveyor" hidden aria-label="传送带"></div>
       <div id="powerups" hidden>${(['fire','snow','toss','zap','cherry'] as const).map((kind,i)=>`<button data-power="${kind}" aria-label="${['火焰','雪球','抛掷','闪电','樱桃炸弹'][i]}" title="${['按住并拖动喷火','按住并拖动投掷雪球','划过僵尸将它推离庭院','按住并拖动释放闪电','点击庭院使用樱桃炸弹'][i]}"><img alt="${['火焰','雪球','抛掷','闪电','樱桃炸弹'][i]}"></button>`).join('')}<progress id="power-time" max="1" value="1"></progress></div>
       <button id="laststand-start" class="battle-button" hidden>开始进攻</button><div id="game-tip" role="status" hidden></div>
@@ -58,7 +60,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     </div>
     <div id="battle-announcement" role="status" hidden></div>
     <div id="overlay" hidden></div>
-  </section><div class="battle-caption"><span>${title}</span><span>${levelConfig.mode==='match'?'翻开骆驼牌 · 配对相同图案':levelConfig.mode==='powerups'?'选择道具 · 按住或拖动攻击':levelConfig.mode==='conveyor'?'点击传送带植物 · 点击地块种植':'1–6 选卡 · 点击阳光收集'} · 空格暂停</span></div>`;
+  </section><div class="battle-caption"><span>${title}</span><span>${levelConfig.mode==='match'?'翻开骆驼牌 · 配对相同图案':levelConfig.mode==='powerups'?'选择道具 · 按住或拖动攻击':levelConfig.mode==='conveyor'?'点击传送带植物 · 点击地块种植':`1–${seedSlots} 选卡 · 点击阳光收集`} · 空格暂停</span></div>`;
 
   let scene: Scene, properties: Properties, source: SourceLevel, game: Game;
   let selected: PlantKind | 'shovel' | 'food' | null = null;
@@ -135,7 +137,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     cardOrder = availablePlants(levelConfig,progress.ownedPlants()).filter(kind=>!readLevel(source).blacklist.includes(kind));
     $('.chooser-cards').innerHTML = cardOrder.map(kind=>`<button data-choose="${kind}" class="seed choose-card" aria-label="选择${plantLabels[kind]}" aria-pressed="false"><img alt="${plantLabels[kind]}" src="${cards.get(kind)!}"><span class="seed-price">${properties.plants[kind].SunCost}</span></button>`).join('');
     for(const kind of cardOrder)$(`[data-choose="${kind}"]`).onclick=()=>{
-      describe(kind);const index=deck.indexOf(kind);if(index===-1&&deck.length<6){deck.push(kind);sound('cardChosen');}else if(index!==-1){deck.splice(index,1);sound('cardCancel');}updateDeck();
+      describe(kind);const index=deck.indexOf(kind);if(index===-1&&deck.length<seedSlots){deck.push(kind);sound('cardChosen');}else if(index!==-1){deck.splice(index,1);sound('cardCancel');}updateDeck();
     };
     $('#overlay').hidden=true;
     narrativeLines=levelConfig.narrative===null?[]:levelConfig.day===1?scene.art.catalog.intro:scene.art.campaign.narratives[levelConfig.day===5&&progress.isComplete(levelConfig.id)?'POWERUPS_TUTORIAL_REPEAT':levelConfig.narrative];
@@ -158,8 +160,8 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   function prepareGame(){
     bossMusicStage=-1;
     game=new Game(readLevel(source),properties,scene.timing,zombie=>scene.absorptionTarget(zombie),Date.now()>>>0,!progress.isComplete(levelConfig.id));
-    game.foodLimit=progress.rewards().some(r=>r.kind==='upgrade'&&r.id===2)?4:3;
-    if(!game.level.lastStand&&progress.rewards().some(r=>r.kind==='upgrade'&&r.id===0))game.sun+=25;
+    game.foodLimit=bonuses.foodLimit;
+    if(!game.level.lastStand)game.sun+=bonuses.startingSun;
     const objective=[game.level.mold.length?'霉菌覆盖的地块不能种植':'',game.level.mustProtect?`保护好 ${game.level.mustProtect} 株植物`:'',game.level.maxPlants!==null?`同时种植不超过 ${game.level.maxPlants} 株植物`:'',game.level.flowerLine!==null?'不要让僵尸踩到花坛':'',game.level.maxSun!==null?`消耗阳光不超过 ${game.level.maxSun}`:'',game.level.lastStand?`用 ${game.level.lastStand.sun} 阳光布置防线，再开始进攻`:''].filter(Boolean).join(' · ');
     for(const element of host.querySelectorAll<HTMLElement>('.challenge-objective')){element.textContent=objective;element.hidden=!objective;}
   }
@@ -174,7 +176,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     $<HTMLImageElement>('#plant-portrait').src=portraits.get(kind)!;
   }
   function updateDeck() {
-    for (let i=0;i<6;i++) {
+    for (let i=0;i<seedSlots;i++) {
       const button=$<HTMLButtonElement>(`[data-slot="${i}"]`),kind=deck[i];
       button.disabled=screen==='choosing'?!kind:!kind||game.sun<properties.plants[kind].SunCost||!game.preparing&&game.cooldowns[kind]>0;
       button.classList.toggle('empty',!kind);button.classList.toggle('selected',selected===kind);
@@ -337,7 +339,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   $('#pause').onclick=pause;$('#start').onclick=start;$('#ready-back').onclick=menu;
   $('#speed').onclick=()=>{if(screen==='playing'){speed=speed===1?2:1;$('#speed').setAttribute('aria-pressed',String(speed===2));}};
   $('#shovel').onclick=()=>{if(screen==='playing'){selected=selected==='shovel'?null:'shovel';updateHud();}};
-  for(let i=0;i<6;i++)$(`[data-slot="${i}"]`).onclick=()=>{
+  for(let i=0;i<seedSlots;i++)$(`[data-slot="${i}"]`).onclick=()=>{
     if(screen==='choosing'){deck.splice(i,1);sound('cardCancel');updateDeck();}
     else if(screen==='playing'){selected=selected===deck[i]?null:deck[i];updateHud();}
   };
@@ -346,7 +348,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(event.code==='Space'&&(screen==='playing'||screen==='pause')){event.preventDefault();screen==='playing'?pause():resume();}
     if(event.key==='Escape'){if(screen==='pause')resume();else if(screen==='playing'){selected=null;if(game.power?.remaining===0)game.power=null;scene.highlightCell(-1,-1,0);}}
     if(screen!=='playing')return;
-    if((levelConfig.mode==='seedbank'||levelConfig.mode==='preset')&&'123456'.includes(event.key)&&event.key.length===1){const i=Number(event.key)-1;if(!$<HTMLButtonElement>(`[data-slot="${i}"]`).disabled)selected=deck[i];}
+    if((levelConfig.mode==='seedbank'||levelConfig.mode==='preset')&&'12345678'.slice(0,seedSlots).includes(event.key)&&event.key.length===1){const i=Number(event.key)-1;if(!$<HTMLButtonElement>(`[data-slot="${i}"]`).disabled)selected=deck[i];}
     updateHud();
   },{signal:listeners.signal});
   document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();},{signal:listeners.signal});

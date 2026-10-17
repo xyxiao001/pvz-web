@@ -119,7 +119,7 @@ export class Scene {
       const cabbage=animationTimeline(skeletons.get('cabbagepult')!,'Cabbage-Pult','Lob'),boom=animationTimeline(skeletons.get('bloomerang')!,'Bloomerang','Shoot'),ice=animationTimeline(skeletons.get('iceburg')!,'IcebergLettuce','Death');
       this.timing.campaign={cabbage:cabbage.events.Lob,cabbageDuration:cabbage.duration,cabbageFood:animationTimeline(skeletons.get('cabbagepult')!,'Cabbage-Pult','Food').events.lobFood,cabbageFoodEnd:animationTimeline(skeletons.get('cabbagepult')!,'Cabbage-Pult','Food').events.foodEnd,boomerang:boom.events.Shoot,boomerangDuration:boom.duration,boomerangCatch:animationTimeline(skeletons.get('bloomerang')!,'Bloomerang','Catch').duration,ice:ice.events.explode,iceDuration:ice.duration,iceFood:animationTimeline(skeletons.get('iceburg')!,'IcebergLettuce','Food').events.foodExplode/.8,iceFoodEnd:animationTimeline(skeletons.get('iceburg')!,'IcebergLettuce','Food').events.foodEnd/.8};
     }
-    if(day>=7){
+    if(day>=7||plantActors.includes('iceweed')){
       for(const name of ['gargantuar','tombraiser','gravebuster','twinsunflower','iceweed'] as const)if(!skeletons.has(name))skeletons.set(name,await json<Skeleton>(`campaign/rigs/${this.art.campaign.actors[name].rig}/skeleton.json`));
       this.timing.special=specialAnimationTiming(skeletons);
     }

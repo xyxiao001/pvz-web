@@ -1,3 +1,4 @@
+import { LocalStore } from './store';
 import { islandStates } from './navigation';
 import type { Island, WorldMap } from './types';
 
@@ -15,7 +16,13 @@ export class ProgressStore {
     return saved === null ? [] : JSON.parse(saved);
   }
   rewardNodes(world: string) { return new Set(this.rewards().filter(r => r.world === world).map(r => r.node)); }
-  ownedPlants() { return new Set([0, 1, 2, 3, ...this.rewards().filter(r => r.kind === 'plant').map(r => r.id)]); }
+  shop() { return new LocalStore(this.storage); }
+  ownedPlants() { return new Set([0, 1, 2, 3, ...this.shop().read().plants, ...this.rewards().filter(r => r.kind === 'plant').map(r => r.id)]); }
+  ownedUpgrades() { return new Set([...this.shop().read().upgrades, ...this.rewards().filter(r => r.kind === 'upgrade').map(r => r.id)]); }
+  battleBonuses() {
+    const upgrades = this.ownedUpgrades();
+    return { seedSlots: 6 + Number(upgrades.has(9)) + Number(upgrades.has(10)), foodLimit: 3 + Number(upgrades.has(2)) + Number(upgrades.has(3)), startingSun: 25 * (Number(upgrades.has(0)) + Number(upgrades.has(1))) };
+  }
   pending(): PendingCompletion | null {
     const saved = this.storage.getItem(PENDING_KEY);
     return saved === null ? null : JSON.parse(saved);
