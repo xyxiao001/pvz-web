@@ -3,6 +3,6 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PVZ2 地图通关流程核对</title>
 <style>body{margin:0;background:#142020;color:white;font:14px sans-serif}header{padding:12px}button{padding:8px;margin:4px}#map{width:min(100vw,1024px);aspect-ratio:1.6}canvas{display:block}#status{white-space:pre-wrap}</style>
-<header><b>地图通关流程核对（使用独立内存存档）</b><div><button id="first" disabled>第一关首次通关</button><button id="second" disabled>第二关植物奖励</button><button id="third" disabled>第三关植物奖励</button><button id="reload" disabled>重新打开地图</button></div><p id="status">加载中</p></header><div id="map"></div>
+<header><b>地图通关流程核对（使用独立内存存档）</b><div><button id="first" disabled>第一关首次通关</button><button id="second" disabled>第二关植物奖励</button><button id="third" disabled>第三关植物奖励</button><button id="lifecycle" disabled>战斗销毁与返图回归</button><button id="reload" disabled>重新打开地图</button></div><p id="status">加载中</p></header><div id="map"></div><div id="battle" style="width:min(100vw,1200px);aspect-ratio:12/7" hidden></div><p id="lifecycle-status" role="status"></p>
 <script type="module" src="./map-visual.ts"></script>
 </html>

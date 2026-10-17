@@ -516,7 +516,11 @@ export class Scene {
     const start=this.art.catalog.presentation.seedChoosingCameraX;
     this.setCamera(start+(COMBAT_VIEW.x-start)*progress,1+(COMBAT_VIEW.zoom-1)*progress,COMBAT_VIEW.y*progress);
   }
-  dispose(){this.reset();for(const child of this.conveyorLayer.children){(child as PixiArmatureDisplay).dispose();}this.observer.disconnect();this.clock.clear();this.art.dispose();this.factory.clear(false);this.app.destroy(true,{children:true,texture:false,textureSource:false});}
+  dispose(){
+    this.reset();for(const child of this.conveyorLayer.children){(child as PixiArmatureDisplay).dispose();}this.observer.disconnect();this.clock.clear();this.art.dispose();this.factory.clear(false);
+    // The map application is still alive; destroy(true) also releases its shared Pixi batch pools.
+    this.app.destroy({removeView:true,releaseGlobalResources:false},{children:true,texture:false,textureSource:false});
+  }
   render() { this.app.render(); }
   start() { this.app.start(); }
   stop() { this.app.stop(); }
