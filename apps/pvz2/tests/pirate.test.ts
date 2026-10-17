@@ -9,6 +9,7 @@ import {animationTimeline,specialAnimationTiming,bonkAnimationTiming,type Skelet
 import type {CampaignCatalog} from '../src/rendering/battle-art';
 import {ProgressStore,completionEvents} from '../src/shell/progression';
 import type {WorldMap} from '../src/shell/types';
+import {playPirate34} from './pirate34-strategy';
 const read=<T>(path:string):T=>JSON.parse(readFileSync(new URL('../public/assets/'+path,import.meta.url),'utf8'));
 const base=read<Properties>('levels/properties.json'),extra=read<Properties>('campaign/properties.json');
 const props:Properties={...extra,plants:{...base.plants,...extra.plants},zombies:{...base.zombies,...extra.zombies,mummy_flag:read('battle/flag.json')},armors:{...base.armors,...extra.armors}};
@@ -678,6 +679,17 @@ test('Pirate 31 completes within its authored budget with garden-boosted Kernel-
  }
  assert.equal(g.phase,'won',`reason ${g.lossReason}, time ${g.time}, wave ${g.wave}`);assert.equal(g.sun,0);assert.equal(g.sunSpent,1850);
 });
+for(const seed of [1234,42,1])test(`Pirate 34 completes within 1600 sun with a garden boost (seed ${seed})`,()=>{
+ const g=new Game(level(34),props,timing,z=>({x:z.x-25,y:rowY(z.row)-95}),seed);
+ g.boosts=new Set(['kernelpult']);g.startLastStand();
+ for(let frame=0;frame<60*600&&g.phase==='playing';frame++){
+  playPirate34(g,frame);g.tick(1/60);g.events.length=0;
+ }
+ assert.equal(g.phase,'won',`reason ${g.lossReason}, time ${g.time}, wave ${g.wave}`);
+ assert.equal(g.wave,10);assert.equal(g.plantsLost,0);assert.equal(g.sunSpent,1600);assert.equal(g.sun,0);
+ assert.deepEqual([...g.usedBoosts],['kernelpult']);
+});
+
 // This is a losing strategy, deliberately retained to exercise the loss limit
 // through the full source wave sequence; it is not a successful clear claim.
 test('Pirate 34 stops on a second loss after reaching the final authored wave',()=>{

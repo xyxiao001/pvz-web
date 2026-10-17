@@ -8,6 +8,7 @@ import {Scene} from '../src/rendering/scene';
 import {Game} from '../src/game/model';
 import {readLevel,rowY,cellX,type Properties,type SourceLevel} from '../src/game/level';
 import {json,assetUrl} from '../src/assets/load';
+import {playPirate34} from './pirate34-strategy';
 const font=new FontFace('PvZMap',`url('${assetUrl('shell/map-font.woff2')}')`);document.fonts.add(await font.load());
 const data=new Map<string,string>(),storage={getItem:(k:string)=>data.get(k)??null,setItem:(k:string,v:string)=>{data.set(k,v);},removeItem:(k:string)=>{data.delete(k);}},progress=new ProgressStore(storage);
 progress.finish('egypt','egypt8');progress.finishPresentation();
@@ -68,3 +69,20 @@ button('终章植物与鹈鹕',()=>{
 });
 button('终章植物大招',()=>{for(const p of [...game!.plants]){game!.food=1;game!.plantFood(p.row,p.column);}scene!.sync(game!,0);scene!.render();});
 button('击落鹈鹕',()=>{for(const z of game!.zombies)if(z.kind==='pelican')game!.damage(z,500);scene!.sync(game!,0);scene!.render();});
+
+let replayFrame=0;
+button('第34关合法通关回放',async()=>{
+ await clean();sceneHost.hidden=false;scene=new Scene();const config=BATTLE_LEVELS.pirate34;
+ const [source,base,campaign,extra,flag]=await Promise.all([json<SourceLevel>(config.source),json<Properties>('levels/properties.json'),json<Properties>('campaign/properties.json'),json<Properties>('pirate/properties.json'),json<Properties['zombies']['mummy_flag']>('battle/flag.json')]);
+ const level=readLevel(source),props={...campaign,plants:{...base.plants,...campaign.plants,...extra.plants},zombies:{...base.zombies,...campaign.zombies,...extra.zombies,mummy_flag:flag},armors:{...base.armors,...campaign.armors,...extra.armors},projectiles:{...campaign.projectiles,...extra.projectiles},plantAnimations:{...campaign.plantAnimations,...extra.plantAnimations}};
+ await scene.init(sceneHost,()=>{},config,['kernelpult'],level);scene.frameCombat();
+ game=new Game(level,props,scene.timing,z=>scene!.absorptionTarget(z),1234,false);
+ game.boosts=new Set(['kernelpult']);game.startLastStand();replayFrame=0;
+ scene.sync(game,0);scene.render();status.textContent='第34关回放：1600阳光、2颗能量豆、花园强化玉米投手';
+});
+button('回放推进20秒',()=>{
+ for(let i=0;i<1200&&game!.phase==='playing';i++,replayFrame++){
+  playPirate34(game!,replayFrame);game!.tick(1/60);scene!.sync(game!,1/60);game!.events.length=0;
+ }
+ scene!.render();status.textContent=`第34关 ${game!.time.toFixed(1)}s / ${game!.phase} / ${game!.wave}波 / 阳光${game!.sun} / 损失${game!.plantsLost}`;
+});
