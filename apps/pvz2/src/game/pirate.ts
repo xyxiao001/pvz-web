@@ -44,12 +44,13 @@ export class PirateBattle {
     if(z.kind==='pirate_barrel'&&z.pusher!==undefined){const parent=g.zombies.find(p=>p.id===z.pusher);if(parent)delete parent.barrel;delete z.pusher;z.detachedAt=g.time;}
     z.leap={fromX:z.x,fromY:rowY(z.row),toX:z.x+g.props.plants.springbean.KnockbackDistance*BOARD.cellWidth,toRow:row,at:g.time};
   }
+  private consumeSpike(p:Plant){if(p.action==='food')return;if(p.kind==='spikerock'){p.spikes!--;if(p.spikes===0)p.hp=0;}else p.hp=0;}
   private tickGroundPlant(p:Plant,dt:number){
     const g=this.#game,props=g.props.plants[p.kind],x=cellX(p.column),timelines=g.props.plantAnimations[p.kind];
     const ground=g.zombies.filter(z=>z.hp>0&&!isFlying(z)&&!z.leap&&!swinging(z,g.time));
     const targets=ground.filter(z=>z.row===p.row&&Math.abs(z.x-x)<BOARD.cellWidth/2);
     const start=(animation:string,action:Plant['action']='shoot')=>{p.animation=animation;p.action=action;p.actionAt=g.time;p.eventIndex=0;};
-    if(p.kind==='spikeweed'){
+    if(p.kind==='spikeweed'||p.kind==='spikerock'){
       if(p.action==='food'){
         if(g.time-p.actionAt>=props.PlantfoodDuration){p.action='idle';p.animation='Idle';return;}
         for(const z of ground.filter(z=>z.row===p.row)){
@@ -62,7 +63,7 @@ export class PirateBattle {
       }
       if((p.action==='idle'||p.fired)&&targets.length&&g.time>=p.nextAction){p.fired=false;start('Attack');p.nextAction=g.time+props.AttackInterval;}
       if(p.action==='shoot'){
-        if(!p.fired&&g.time-p.actionAt>=this.eventTime('spikeweed','Attack','attack')){p.fired=true;for(const z of targets){if(z.kind==='pirate_barrel'){z.hp=0;p.hp=0;}else g.damage(z,props.Damage);}}
+        if(!p.fired&&g.time-p.actionAt>=this.eventTime(p.kind,'Attack','attack')){p.fired=true;for(const z of targets){if(z.kind==='pirate_barrel'){z.hp=0;this.consumeSpike(p);}else g.damage(z,props.Damage);}}
         if(g.time-p.actionAt>=timelines.Attack.duration){p.action='idle';p.animation='Idle';p.fired=false;}
       }
       return;
@@ -86,7 +87,7 @@ export class PirateBattle {
     }
     if(elapsed>=timeline.duration){p.action='idle';p.animation=animation==='Ready'?'Idle_Ready':'Idle';}
   }
-  private capturable(p:Plant){return p.hp>0&&p.action!=='food'&&!p.hidden&&!['potatomine','spikeweed','iceweed','iceburg','cherry_bomb','imitater'].includes(p.kind)&&!(p.kind==='springbean'&&['Ready','Idle_Ready'].includes(p.animation!));}
+  private capturable(p:Plant){return p.hp>0&&p.action!=='food'&&!p.hidden&&!['potatomine','spikeweed','spikerock','iceweed','iceburg','cherry_bomb','imitater'].includes(p.kind)&&!(p.kind==='springbean'&&['Ready','Idle_Ready'].includes(p.animation!));}
   private pickParrotTarget(){
     const g=this.#game,plants=g.plants.filter(p=>this.capturable(p)),rows=[...new Set(plants.map(p=>p.row))];
     if(!rows.length)return null;
@@ -125,7 +126,7 @@ export class PirateBattle {
       const p=g.zombies.find(p=>p.id===z.pusher&&p.hp>0);
       if(p){z.x=p.x-62;z.row=p.row;
         for(const plant of g.plants)if(plant.hp>0&&plant.row===z.row&&Math.abs(cellX(plant.column)-z.x)<45){
-          if(plant.kind==='spikeweed'||plant.kind==='iceweed'){z.hp=0;if(plant.action!=='food')plant.hp=0;}
+          if(plant.kind==='spikeweed'||plant.kind==='spikerock'||plant.kind==='iceweed'){z.hp=0;this.consumeSpike(plant);}
           else if(!(plant.kind==='springbean'&&['Ready','Idle_Ready'].includes(plant.animation!))){plant.hp=0;plant.armor=0;p.stunnedUntil=g.time+.5;}
         }
       }else {if(g.time-z.detachedAt!>=10)z.hp=0;z.x-=.01*BOARD.cellWidth*step;}
@@ -160,7 +161,7 @@ export class PirateBattle {
     const event=state.animation==='Smash'?'smash':'impThrow';
     if(!state.fired&&state.elapsed>=this.eventTime(name,state.animation,event)){
       state.fired=true;
-      if(event==='smash'&&target){if(target.kind==='spikeweed')g.damage(z,g.props.plants.spikeweed.Damage);if(target.action!=='food'||target.kind!=='spikeweed'){target.hp=0;target.armor=0;}}
+      if(event==='smash'&&target){if(target.kind==='spikeweed'||target.kind==='spikerock'){g.damage(z,g.props.plants[target.kind].Damage);this.consumeSpike(target);}else {target.hp=0;target.armor=0;}}
       if(event==='impThrow'){state.imp=false;this.throwImp(z,Math.floor(g.random()*5),2,1.5);this.throwImp(z,Math.floor(g.random()*5),4,1.5);}
     }
     if(state.elapsed>=timelines[state.animation].duration)start('Walk');
@@ -180,7 +181,7 @@ export class PirateBattle {
     }
     if(g.level.cannon){
       const points=g.level.cannon.Lanes[z.row].SplinePoints.map(p=>({x:BOARD.left+(p.x-200)/64*BOARD.cellWidth,y:rowY(0)-BOARD.cellHeight/2+(p.y-160)/76*BOARD.cellHeight}));
-      z.route={points,index:0,y:rowY(z.row),angle:Math.PI};
+      z.route={spawnLane:z.row,spawnWave:g.wave,points,index:0,y:rowY(z.row),angle:Math.PI};
     }
   }
   tickZombie(z:Zombie,dt:number){
@@ -203,7 +204,7 @@ export class PirateBattle {
     p.action='shoot';p.animation='Shoot';p.actionAt=g.time;p.eventIndex=0;return true;
   }
   tickPlant(p:Plant,dt:number){
-    if(p.kind==='spikeweed'||p.kind==='springbean'){this.tickGroundPlant(p,dt);return;}
+    if(p.kind==='spikeweed'||p.kind==='spikerock'||p.kind==='springbean'){this.tickGroundPlant(p,dt);return;}
     const g=this.#game,props=g.props.plants[p.kind],timelines=g.props.plantAnimations[p.kind],x=cellX(p.column);
     if(p.action==='idle'){
       if(p.kind==='coconutcannon'){
@@ -250,10 +251,13 @@ export class PirateBattle {
       }
       const target=g.zombies.filter(z=>z.hp>0&&!swinging(z,g.time)&&z.x>=old-25&&z.x<=shot.x+25&&Math.abs(zombieY(z)-44-shot.y)<45).sort((a,b)=>a.x-b.x)[0];
       if(!shot.food&&!target)continue;
-      const x=shot.food?shot.x:target!.x,y=shot.food?rowY(shot.row):zombieY(target!),projectile=g.props.projectiles[shot.food?'coconut_pf':'coconut'],splash=projectile.SplashDamage[0];let killed=0;
+      const x=shot.food?shot.x:target!.x,y=shot.food?rowY(shot.row):zombieY(target!),projectile=g.props.projectiles[shot.food?'coconut_pf':'coconut'],splash=projectile.SplashDamage[0];const killed:Zombie[]=[];
       const width=g.level.cannon?2.5:splash.Range.w,height=g.level.cannon?2:splash.Range.h;
-      for(const z of g.zombies)if(z.hp>0&&Math.abs(z.x-x)<=width*BOARD.cellWidth/2&&Math.abs(zombieY(z)-y)<=height*BOARD.cellHeight/2){g.damage(z,z===target?projectile.Damage:splash.Damage!,'potato');if(z.hp<=0)killed++;}
-      if(g.level.cannon){const bracket=g.level.cannon.ComboBrackets.filter(b=>killed>=b.ZombiesKilled).at(-1);this.score+=killed*g.level.cannon.BaseZombieKillScore*(bracket?bracket.ScoreMultiplier:1);this.combo=killed;this.comboUntil=g.time+1.8;}
+      for(const z of g.zombies)if(z.hp>0&&Math.abs(z.x-x)<=width*BOARD.cellWidth/2&&Math.abs(zombieY(z)-y)<=height*BOARD.cellHeight/2){g.damage(z,z===target?projectile.Damage:splash.Damage!,'potato');if(z.hp<=0)killed.push(z);}
+      if(g.level.cannon){const bracket=g.level.cannon.ComboBrackets.filter(b=>killed.length>=b.ZombiesKilled).at(-1);this.score+=killed.length*g.level.cannon.BaseZombieKillScore*(bracket?bracket.ScoreMultiplier:1);this.combo=killed.length;this.comboUntil=g.time+1.8;
+        const stun=g.level.cannon.SlowdownMovementRate*g.random()/60;
+        for(const z of g.zombies)if(z.hp>0&&z.route&&killed.some(dead=>dead.route&&dead.route.spawnLane===z.route!.spawnLane&&dead.route.spawnWave===z.route!.spawnWave))z.stunnedUntil=Math.max(z.stunnedUntil??0,g.time+stun);
+      }
       this.effects.push({id:++this.serial,kind:shot.food?'coconutFoodHit':'coconutHit',x,y,at:g.time});shot.age=Infinity;
     }
     this.shots=this.shots.filter(p=>p.age<(p.food?8:4)&&p.x<1250);

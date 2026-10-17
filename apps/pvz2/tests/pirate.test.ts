@@ -67,10 +67,10 @@ test('world key opens Pirate once and world completion preserves independent pro
  const progress=new ProgressStore(storage);assert.equal(progress.worldUnlocked('pirate'),false);assert.equal(progress.unlockWorld('pirate'),false);
  progress.finish('egypt','egypt8');assert.equal(progress.worldKeys(),1);assert.equal(progress.unlockWorld('pirate'),true);assert.equal(progress.unlockWorld('pirate'),false);assert.equal(progress.worldKeys(),0);
  const map=read<WorldMap>('shell/maps/pirate.json');
- for(let day=1;day<=15;day++){const id=`pirate${day}`;progress.finish('pirate',id);for(const event of completionEvents(map,id,progress.completed(map),progress.rewardNodes('pirate')))if(event.action==='reward')progress.award('pirate',map.islands.find(n=>n.node===event.node)!);progress.finishPresentation();}
- assert.ok(progress.ownedPlants().has(30));assert.ok(progress.ownedPlants().has(59));assert.ok(progress.ownedPlants().has(37));assert.ok(progress.ownedPlants().has(32));assert.ok(progress.ownedPlants().has(57));assert.ok(progress.ownedPlants().has(17));assert.ok(progress.ownedUpgrades().has(6));assert.equal(progress.battleBonuses().shovelRefund,.25);assert.equal(progress.worldKeys(),1);assert.equal(progress.isComplete('egypt1'),false);
+ for(let day=1;day<=20;day++){const id=`pirate${day}`;progress.finish('pirate',id);for(const event of completionEvents(map,id,progress.completed(map),progress.rewardNodes('pirate')))if(event.action==='reward')progress.award('pirate',map.islands.find(n=>n.node===event.node)!);progress.finishPresentation();}
+ assert.ok(progress.ownedPlants().has(30));assert.ok(progress.ownedPlants().has(59));assert.ok(progress.ownedPlants().has(37));assert.ok(progress.ownedPlants().has(32));assert.ok(progress.ownedPlants().has(57));assert.ok(progress.ownedPlants().has(17));assert.ok(progress.ownedPlants().has(38));assert.ok(progress.ownedUpgrades().has(6));assert.equal(progress.battleBonuses().shovelRefund,.25);assert.equal(progress.worldKeys(),1);assert.equal(progress.isComplete('egypt1'),false);
  assert.equal(new ProgressStore(storage).worldUnlocked('pirate'),true);
- assert.deepEqual(progress.campaignRewards().filter(r=>r.level.startsWith('pirate')).map(r=>r.id),['dangerroom_pirate','spine_pirate','note_pirate','worldkey']);
+ assert.deepEqual(progress.campaignRewards().filter(r=>r.level.startsWith('pirate')).map(r=>r.id),['dangerroom_pirate','spine_pirate','note_pirate','worldkey','spine_pirate','spine_pirate']);
 });
 for(const day of [1,2,4,5])test(`Pirate ${day} completes using legal seed planting and plant food`,()=>{
  const g=create(day),attacker=day===1?'cabbagepult':'kernelpult';
@@ -282,4 +282,117 @@ test('Pirate 14 completes with its starting sun and earned plant food',()=>{
   g.tick(1/60);g.events.length=0;
  }
  assert.equal(g.phase,'won',`reason ${g.lossReason}, time ${g.time}, wave ${g.wave}`);
+});
+
+test('Pirate 16–20 preserve protection, rolling kills, preset cards and combined objectives',()=>{
+ assert.deepEqual([16,17,18,19,20].map(d=>level(d).waves.length),[10,16,16,10,16]);
+ assert.deepEqual([16,17,18,19,20].map(d=>level(d).planks),[[1,2],[3,4],[3,4],[0,1,3,4],[]]);
+ assert.equal(level(16).mustProtect,2);assert.deepEqual(level(16).protectedPlants,[{kind:'springbean',row:1,column:4},{kind:'springbean',row:2,column:4}]);
+ assert.deepEqual(level(17).killChallenge,{seconds:30,count:20});
+ assert.deepEqual(level(18).preset,['peashooter','repeater','iceburg','spikeweed','springbean','wallnut']);
+ assert.equal(level(19).targetSun,1750);assert.equal(level(19).flowerLine,4);
+ assert.equal(level(20).cannon!.MinScore,40000);assert.equal(level(20).cannon!.Lanes.length,5);assert.equal(level(20).sunDrops,false);assert.equal(level(20).mowers,false);
+});
+test('protected spring beans cannot be shoveled and losing either fails Pirate 16',()=>{
+ const g=create(16);g['nextWave']=Infinity;g.shovel(1,4);assert.equal(g.plants.length,2);
+ g.plants[0].hp=0;g.tick(1/60);assert.equal(g.phase,'lost');assert.equal(g.lossReason,'protected');
+});
+test('kill challenge uses a rolling window and permanently records success',()=>{
+ const g=create(17);g['nextWave']=Infinity;
+ const kill=(count:number)=>{for(let i=0;i<count;i++)g.spawnZombie('pirate',2,1000).hp=0;g.tick(1/60);};
+ kill(10);tick(g,29);kill(9);assert.equal(g.killChallengeComplete,false);tick(g,1.1);assert.equal(g.recentKills.length,9);
+ kill(11);assert.equal(g.killChallengeComplete,true);tick(g,31);assert.equal(g.killChallengeComplete,true);
+ g.level.waves=[];g.level.actions=[];g.tick(1/60);assert.equal(g.phase,'won');
+ const failed=create(17);failed.level.waves=[];failed.level.actions=[];failed.tick(1/60);assert.equal(failed.phase,'lost');assert.equal(failed.lossReason,'killChallenge');
+});
+test('spikerock survives two barrels, loses its third spike to the third and releases their imps',()=>{
+ const g=create(19);g['nextWave']=Infinity;g.sun=999;g.plant('spikerock',0,3);const rock=g.plants[0];
+ for(let i=0;i<3;i++){const pusher=g.spawnZombie('barrelroller',0,cellX(3)+62);g.tick(1/60);assert.equal(pusher.barrel,undefined);assert.equal(rock.spikes,2-i);assert.equal(g.plants.includes(rock),i<2);}
+ assert.equal(g.zombies.filter(z=>z.kind==='pirate_imp').length,6);
+});
+test('spikerock repair costs sun, food restores spikes and native damage excludes flyers',()=>{
+ const g=create(19);g['nextWave']=Infinity;g.sun=1000;g.plant('spikerock',2,3);const rock=g.plants[0];rock.spikes=1;tick(g,5.1);
+ assert.equal(g.plant('spikerock',2,3),true);assert.equal(rock.spikes,3);assert.equal(g.sun,500);assert.equal(g.plants.length,1);
+ const z=g.spawnZombie('pirate_armor2',2,cellX(3)),bird=g.spawnZombie('seagull',2,cellX(3));z.frozenUntil=100;bird.frozenUntil=100;
+ tick(g,.3);assert.equal(z.armor,1080);assert.equal(bird.hp,props.zombies.seagull.Toughness);
+ rock.spikes=1;g.food=1;g.plantFood(2,3);assert.equal(rock.spikes,3);
+ const roller=g.spawnZombie('barrelroller',2,cellX(3)+62);tick(g,.1);assert.equal(roller.barrel,undefined);assert.equal(rock.spikes,3);tick(g,5);assert.equal(rock.action,'idle');
+});
+
+for(const day of [16,17,19])test(`Pirate ${day} completes with normal planting and collected food`,()=>{
+ const g=create(day);
+ for(let frame=0;frame<60*1000&&g.phase==='playing';frame++){
+  for(const s of [...g.suns])g.collect(s.id);for(const p of [...g.pickups])g.collectPickup(p.id);
+  if(frame%15===0){
+   const occupied=(r:number,c:number)=>g.plants.some(p=>p.row===r&&p.column===c),threats=g.zombies.filter(z=>z.hp>0&&!z.swing&&!z.parrot).sort((a,b)=>a.x-b.x);
+   for(const z of threats)if(!g.plants.some(p=>p.row===z.row&&p.kind==='kernelpult'))g.plant('kernelpult',z.row,2);
+   for(const col of [0,1])for(let row=0;row<5;row++)if(!occupied(row,col))g.plant('sunflower',row,col);
+   for(const col of [2,3])for(let row=0;row<5;row++)if(!occupied(row,col))g.plant(col===3?'threepeater':'kernelpult',row,col);
+   for(let row=0;row<5;row++)if(!occupied(row,4))g.plant('snapdragon',row,4);
+   const target=threats.find(z=>z.x<(day===19?650:850));if(target){const p=g.plants.find(p=>p.row===target.row&&p.kind==='kernelpult');if(p)g.plantFood(p.row,p.column);}
+  }
+  g.tick(1/60);g.events.length=0;
+ }
+ assert.equal(g.phase,'won',`day ${day}, reason ${g.lossReason}, sun ${g.sunProduced}, time ${g.time}, wave ${g.wave}`);
+});
+
+test('Pirate 20 reaches 40000 by waiting for clustered birds and firing reloaded cannons',()=>{
+ const g=create(20);
+ for(let frame=0;frame<60*800&&g.phase==='playing';frame++){
+  if(frame%6===0&&!g.pirate.shots.length&&!g.plants.some(p=>p.action==='shoot')){
+   let best={row:0,kills:0,wait:0};
+   for(let row=0;row<5;row++){
+    const plant=g.plants.find(p=>p.row===row)!;if(plant.action!=='idle'||g.time<plant.nextAction)continue;
+    for(const delay of [0,12,24,36,48]){
+    const targets=g.zombies.filter(z=>z.route).map(z=>({...z,route:{...z.route!}}));let x=cellX(1)+38;
+    for(let n=0;n<150+delay;n++){
+     for(const z of targets)if(g.time+n/60>=(z.stunnedUntil??0))g.pirate.tickZombie(z,1/60);
+     if(n<12+delay)continue;
+     const old=x;x+=510/60;
+     const hit=targets.filter(z=>z.x>=old-25&&z.x<=x+25&&Math.abs(z.route.y-rowY(row))<45).sort((a,b)=>a.x-b.x)[0];
+     if(hit){const kills=targets.filter(z=>Math.abs(z.x-hit.x)<=2.5*82/2&&Math.abs(z.route.y-hit.route.y)<=98).length;if(kills>best.kills)best={row,kills,wait:delay};break;}
+    }
+   }
+   }
+   if(best.wait===0&&best.kills>=4)g.pirate.fire(best.row,1);
+  }
+  g.tick(1/60);g.events.length=0;
+ }
+ assert.equal(g.phase,'won',`score ${g.pirate.score}, wave ${g.wave}`);
+});
+
+test('Pirate 18 completes with only its six authored preset cards',()=>{
+ const g=create(18);
+ for(let frame=0;frame<60*1000&&g.phase==='playing';frame++){
+  for(const s of [...g.suns])g.collect(s.id);for(const p of [...g.pickups])g.collectPickup(p.id);
+  if(frame%15===0){
+   const threats=g.zombies.filter(z=>z.hp>0&&!z.swing).sort((a,b)=>a.x-b.x);
+   for(const z of threats){
+    const r=z.row;
+    if(!g.plants.some(p=>p.row===r&&['peashooter','repeater'].includes(p.kind)))g.plant('peashooter',r,1);
+    if(!g.plants.some(p=>p.row===r&&p.kind==='springbean'))g.plant('springbean',r,4);
+    if(z.x<800)g.plant('wallnut',r,3);
+    if(z.x<650)g.plant('iceburg',r,Math.floor((z.x-190)/82));
+   }
+   for(let row=0;row<5;row++)g.plant('repeater',row,2);
+   const target=threats.find(z=>z.x<700);if(target){const p=g.plants.find(p=>p.row===target.row&&p.kind==='repeater')??g.plants.find(p=>p.row===target.row&&p.kind==='peashooter');if(p)g.plantFood(p.row,p.column);}
+  }
+  g.tick(1/60);g.events.length=0;
+ }
+ assert.equal(g.phase,'won',`time ${g.time}, wave ${g.wave}`);
+});
+
+test('a cannon hit briefly stalls surviving birds from the same original wave and lane only',()=>{
+ const g=create(20);g['nextWave']=Infinity;
+ const group=Array.from({length:4},(_,i)=>g.spawnZombie('seagull',2,cellX(4)+i*40));
+ for(const z of group){z.route!.points=[];z.route!.index=0;z.route!.y=rowY(2);z.frozenUntil=100;}
+ const other=g.spawnZombie('seagull',3,cellX(7));other.frozenUntil=100;
+ const nextWave=g.spawnZombie('seagull',2,cellX(8));nextWave.route!.spawnWave=1;nextWave.frozenUntil=100;
+ g.pirate.fire(2,1);tick(g,1);
+ assert.ok(group[3].hp>0);assert.ok(group[3].stunnedUntil!>0);assert.equal(other.stunnedUntil,undefined);assert.equal(nextWave.stunnedUntil,undefined);
+});
+
+test('pirate giant consumes one spikerock spike per native smash instead of instantly crushing it',()=>{
+ const g=create(17);g['nextWave']=Infinity;g.sun=999;g.plant('spikerock',2,3);const rock=g.plants[0],giant=g.spawnZombie('pirate_gargantuar',2,cellX(3)+60);
+ tick(g,1.3);assert.equal(rock.spikes,3);tick(g,.1);assert.equal(rock.spikes,2);assert.equal(rock.hp,900);assert.equal(giant.hp,props.zombies.pirate_gargantuar.Toughness-20);
 });
