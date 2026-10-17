@@ -1,3 +1,4 @@
+import { BATTLE_LEVELS } from '../src/game/levels';
 // Manual visual regression harness. Vite's production entry does not include this page.
 import { Scene } from '../src/rendering/scene';
 import { Game, type Zombie } from '../src/game/model';
@@ -6,10 +7,11 @@ import { cellX, rowY, readLevel, type Properties, type SourceLevel, type ZombieK
 
 const state=document.querySelector<HTMLElement>('#state')!;
 const scene=new Scene();
-await scene.init(document.querySelector<HTMLElement>('#canvas')!,(done,total)=>{state.textContent=`加载 ${done}/${total}`;});
+const level=readLevel(await json<SourceLevel>('levels/egypt1.source.json'));
+await scene.init(document.querySelector<HTMLElement>('#canvas')!,(done,total)=>{state.textContent=`加载 ${done}/${total}`;},BATTLE_LEVELS.egypt1,['peashooter','sunflower','wallnut','potatomine'],level);
 const props=await json<Properties>('levels/properties.json');
 props.zombies.mummy_flag=await json<ZombieProperties>('battle/flag.json');
-const level=readLevel(await json<SourceLevel>('levels/egypt1.source.json'));
+
 let game:Game;
 let serial=9000;
 function zombie(kind:ZombieKind,x:number,row=2):Zombie {

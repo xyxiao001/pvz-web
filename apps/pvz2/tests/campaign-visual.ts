@@ -12,7 +12,7 @@ let battle:ReturnType<typeof createBattle>;
 const state=document.querySelector<HTMLElement>('#state')!;
 for(const button of document.querySelectorAll<HTMLButtonElement>('[data-day]'))button.onclick=async()=>{
  for(const b of document.querySelectorAll<HTMLButtonElement>('[data-day]'))b.disabled=true;
- battle?.dispose();
+ await battle?.dispose();
  const day=Number(button.dataset.day),data=new Map<string,string>();
  const progress=new ProgressStore({getItem:k=>data.get(k)??null,setItem:(k,v)=>{data.set(k,v);},removeItem:k=>{data.delete(k);}});
  for(let i=1;i<day;i++)progress.finish('egypt',`egypt${i}`);

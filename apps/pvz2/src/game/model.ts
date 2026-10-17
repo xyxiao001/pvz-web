@@ -1,3 +1,4 @@
+import mowerPresentation from '../../public/assets/battle/mower.json';
 import { EgyptBoss } from './egypt-boss';
 import { EGYPT_RULES as RULES } from './rules';
 import { BOARD, cellX, rowY, PLANT_KINDS, type AnimationTiming, type Level, type PlantKind, type Properties, type ZombieKind, type SpawnAction, type ConveyorPlant } from './level';
@@ -6,7 +7,7 @@ export interface Plant {
   id: number; kind: PlantKind; row: number; column: number; hp: number; armor: number;
   age: number; nextAction: number; action: 'idle' | 'shoot' | 'produce' | 'food' | 'grow' | 'explode' | 'catch';
   leap?:{x:number;y:number;at:number};heads?:number;imitate?:PlantKind;hidden?:boolean;retreat?:number;animation?:string;variant?:boolean;eventIndex?:number;
-  endangered?:boolean; facing?:number;heavy?:boolean;
+  boosted?:boolean; endangered?:boolean; facing?:number;heavy?:boolean;
   actionAt: number; fired: boolean; burst: number; nextBurst: number;
 }
 export interface Zombie { sappedUntil?:number; butteredUntil?:number;reversed?:boolean;landUntil?:number; id: number; kind: ZombieKind; row: number; x: number; hp: number; armor: number; eating: boolean; absorbed: number; absorbUntil: number; absorbState:'idle'|'start'|'loop'|'end'; absorbAt:number;deathCause:DeathCause; frozenUntil:number;chilledUntil:number;food:boolean;entry:SpawnAction['mode'];entryAt:number;entryX:number;camelPart:number;team:number;leap:{fromX:number;fromY:number;toX:number;toRow:number;at:number;duration?:number}|null }
@@ -23,9 +24,9 @@ export const POWER_TYPES:Record<PowerKind,string>={fire:'powerupflamethrower',sn
 export interface ZombieDeath { zombie: Zombie; cause: DeathCause; at: number }
 export interface Pea { mega?:boolean; speed?:number; id: number; row: number; x: number; y: number; damage: number; powered: boolean }
 export interface Sun { id: number; x: number; y: number; targetY: number; value: number; age: number; from: 'sky' | 'plant' | 'ra';vx:number;vy:number;groundAge:number;absorber:number|null;absorbAge:number }
-export interface Mower { row: number; x: number; active: boolean; spent: boolean }
+export interface Mower { row: number; x: number; active: boolean; spent: boolean; starting: number; hold: number }
 export interface Effect { id: number; x: number; y: number; kind: 'plant' | 'remove' | 'hit' | 'explode' | 'food' | 'collect' | 'freeze' | 'ground' | 'toss' | 'cabbageHit' | 'boomerangHit' | 'graveHit' | 'cherry' | 'snowHit' | 'graveSpawn' | 'pharaoh' | 'projectileHit'; projectile?:string; age: number; stage?:number }
-export type GameEvent = { type: 'shot' | 'plant' | 'sun' | 'explode' | 'win' | 'lose' | 'food' | 'wave' | 'storm' | 'sprout' | 'flip' | 'match' };
+export type GameEvent = { type: 'shot' | 'plant' | 'sun' | 'explode' | 'win' | 'lose' | 'food' | 'wave' | 'storm' | 'sprout' | 'flip' | 'match' | 'mower' };
 
 export class Game {
   boss:EgyptBoss|null=null;
@@ -36,6 +37,9 @@ export class Game {
   lossReason:'brains'|'protected'|'plants'|'sun'|'flowers'='brains';
   preparing=false;
   foodLimit=3;
+  shovelRefund=0;
+  manualMowers=0;
+  private heldMower: number | null = null;
   sunSpent=0;
   time = 0;
   sun: number = RULES.startingSun;
@@ -67,7 +71,7 @@ export class Game {
   fires:{row:number;column:number;until:number}[]=[];
   suns: Sun[] = [];
   effects: Effect[] = [];
-  mowers: Mower[] = Array.from({ length: BOARD.rows }, (_, row) => ({ row, x: BOARD.left - 40, active: false, spent: false }));
+  mowers: Mower[] = Array.from({ length: BOARD.rows }, (_, row) => ({ row, x: BOARD.left - 40, active: false, spent: false, starting: 0, hold: 0 }));
   cooldowns = Object.fromEntries(PLANT_KINDS.map(kind => [kind, 0])) as Record<PlantKind, number>;
   events: GameEvent[] = [];
   private id = 0;
@@ -99,6 +103,8 @@ export class Game {
     if(level.boss)this.boss=new EgyptBoss(this);
   }
 
+  boosts=new Set<PlantKind>();
+  usedBoosts=new Set<PlantKind>();
   random() { this.seed = (Math.imul(this.seed, 1664525) + 1013904223) >>> 0; return this.seed / 4294967296; }
   private effect(kind: Effect['kind'], x: number, y: number) { this.effects.push({ id: ++this.id, kind, x, y, age: 0 }); }
 
@@ -116,6 +122,7 @@ export class Game {
     if(packet){this.conveyor.splice(this.conveyor.indexOf(packet),1);this.nextCard=Math.min(this.nextCard,this.time+this.conveyorDelay());}
     else {this.sun -= p.SunCost; this.sunSpent+=p.SunCost;this.cooldowns[kind] = this.preparing?0:p.Cooldown;}
     if(stacking){existing.heads!++;existing.hp=p.Toughness;}else this.addPlant(kind, row, column);
+    if(this.boosts.has(kind)&&!this.preparing){this.usedBoosts.add(kind);if(kind==='imitater')this.plants.at(-1)!.boosted=true;else this.plantFood(row,column,true);}
     this.checkChallenges();
     this.events.push({ type: 'plant' });
     return true;
@@ -136,10 +143,27 @@ export class Game {
 
   shovel(row: number, column: number) {
     if (this.phase !== 'playing'||this.plants.some(p=>p.row===row&&p.column===column&&p.endangered)) return;
-    if(this.preparing){const plant=this.plants.find(p=>p.row===row&&p.column===column);if(plant){this.sun+=this.props.plants[plant.kind].SunCost;this.sunSpent-=this.props.plants[plant.kind].SunCost;}}
+    const plant=this.plants.find(p=>p.row===row&&p.column===column);
+    if(plant){
+      const cost=this.props.plants[plant.kind].SunCost*(plant.kind==='peapod'?plant.heads!:1);
+      if(this.preparing){this.sun+=cost;this.sunSpent-=cost;}
+      else if(this.shovelRefund>0&&!this.level.conveyor&&!this.level.match&&!this.level.powerups){
+        // Native produceSun splits the refund into 75/50/25/5 sun pickups.
+        this.sun+=Math.floor(cost*this.shovelRefund/5)*5;this.effect('collect',cellX(column),rowY(row)-35);this.events.push({type:'sun'});
+      }
+    }
     if(this.plants.some(p=>p.row===row&&p.column===column))this.effect('remove',cellX(column),rowY(row));
     this.plants = this.plants.filter(p => p.row !== row || p.column !== column);
   }
+
+  mowerPointer(x:number,y:number,held:boolean,begin=false) {
+    const mower=held&&this.phase==='playing'&&this.manualMowers>0?this.mowers.find(m=>!m.active&&!m.spent&&Math.abs(x-m.x)<mowerPresentation.hitSize[0]*mowerPresentation.scale/2&&Math.abs(y-(rowY(m.row)+mowerPresentation.holdY*mowerPresentation.scale))<mowerPresentation.hitSize[1]*mowerPresentation.scale/2):undefined;
+    // A drag away cancels the hold; returning without a new press does not restart it.
+    if(this.heldMower!==null&&this.heldMower!==mower?.row)this.releaseMower();
+    if(mower&&(begin||this.heldMower!==null))this.heldMower=mower.row;
+  }
+  releaseMower(){this.heldMower=null;for(const mower of this.mowers)mower.hold=0;}
+  private launchMower(mower:Mower){mower.active=true;mower.starting=mowerPresentation.startSeconds;mower.hold=0;this.events.push({type:'mower'});}
 
   collect(id: number) {
     if (this.phase !== 'playing') return;
@@ -149,10 +173,10 @@ export class Game {
     this.suns = this.suns.filter(s => s.id !== id); this.events.push({ type: 'sun' });
   }
 
-  plantFood(row: number, column: number): boolean {
-    const plant = this.plants.find(p => p.row === row && p.column === column);
-    if (!plant || this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['gravebuster','imitater','cherry_bomb'].includes(plant.kind)) return false;
-    this.food--; plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
+  plantFood(row: number, column: number, boost=false): boolean {
+    const plant = this.plants.find(p => p.row === row && p.column === column && p.hp>0);
+    if (!plant || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['gravebuster','imitater','cherry_bomb'].includes(plant.kind)) return false;
+    if(!boost)this.food--; plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
     if (plant.kind === 'repeater') {plant.burst=this.props.plants.repeater.PlantfoodPeaCount;plant.nextBurst=this.time+2/plant.burst;plant.animation='Food';plant.eventIndex=0;}
     if(['kernelpult','melonpult','snowdrop','sapfling','celerystalker'].includes(plant.kind)){plant.animation='Food';plant.eventIndex=0;}
@@ -440,7 +464,7 @@ export class Game {
     const elapsed=(this.time-p.actionAt)*(p.kind==='parsnip'&&p.action==='shoot'?Math.max(1,1/props.AttackInterval):1);
     if(p.kind==='imitater'){
       if(elapsed>=timelines.Death.events.find(e=>e.name==='showPlant')!.at){
-        this.addPlant(p.imitate!,p.row,p.column);p.hp=0;
+        this.addPlant(p.imitate!,p.row,p.column);p.hp=0;if(p.boosted)this.plantFood(p.row,p.column,true);
       }return;
     }
     if(p.kind==='cherry_bomb'){
@@ -673,6 +697,11 @@ export class Game {
   tick(dt: number) {
     if (this.phase !== 'playing'||this.preparing) return;
     this.time += dt;
+    if(this.heldMower!==null){
+      const mower=this.mowers[this.heldMower];
+      if(mower.active||mower.spent||this.manualMowers===0)this.releaseMower();
+      else {mower.hold+=dt;if(mower.hold>mowerPresentation.holdSeconds){this.launchMower(mower);this.manualMowers--;this.releaseMower();}}
+    }
     this.boss?.tick(dt);
     if(this.boss&&this.boss.zombie.hp<=0)this.pendingPharaohs=[];
     for(const pending of this.pendingGraveSpawns.filter(p=>p.at<=this.time)){
@@ -813,12 +842,13 @@ export class Game {
         if(z.absorbState==='end'&&this.time>=z.absorbUntil)z.absorbState='idle';
       }
       const mower = this.mowers[z.row];
-      if (z.x < BOARD.left - 15 && !mower.spent) mower.active = true;
+      if (z.x < BOARD.left - 15 && !mower.spent&&!mower.active) this.launchMower(mower);
       if(this.level.flowerLine!==null&&Math.abs(z.x-(BOARD.left+this.level.flowerLine*BOARD.cellWidth))<10&&!z.eating&&!z.reversed&&!z.leap&&this.phase==='playing'){this.lossReason='flowers';this.phase='lost';this.events.push({type:'lose'});}
       if (z.x < BOARD.left - 100) { this.phase = 'lost'; this.events.push({ type: 'lose' }); }
     }
     for (const mower of this.mowers) if (mower.active) {
-      mower.x += 600 * dt;
+      if(mower.starting>0)mower.starting=Math.max(0,mower.starting-dt);
+      else mower.x += 600 * dt;
       for (const z of this.zombies) if (z!==this.boss?.zombie&&z.hp>0 && z.row === mower.row && z.x < mower.x + 40) {z.hp = 0;z.deathCause=this.props.zombies[z.kind].NormalDeathWhenMowed?'normal':'mower';}
       if (mower.x > 1230) { mower.spent = true; mower.active = false; }
     }

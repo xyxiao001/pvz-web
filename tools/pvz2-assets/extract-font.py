@@ -20,3 +20,8 @@ font=TTFont(io.BytesIO(data),recalcTimestamp=False);subsetter=subset.Subsetter(o
 output=c.OUT/'shell/map-font.woff2';font.save(output)
 manifest=c.ROOT/'apps/pvz2/shell-provenance.json';provenance=json.loads(manifest.read_text());provenance['outputs']['shell/map-font.woff2']={'bytes':output.stat().st_size,'sha256':hashlib.sha256(output.read_bytes()).hexdigest()};c.write_json(manifest,provenance)
 print('Font subset:',output.stat().st_size,'bytes')
+text+=json.dumps(json.loads((c.OUT/'outer/catalog.json').read_text()),ensure_ascii=False)
+font=TTFont(io.BytesIO(data),recalcTimestamp=False);subsetter=subset.Subsetter(options=options);subsetter.populate(text=text);subsetter.subset(font);font.flavor='woff2'
+output=c.OUT/'outer/outer-font.woff2';font.save(output)
+manifest=c.ROOT/'apps/pvz2/outer-provenance.json';provenance=json.loads(manifest.read_text());provenance['outputs']['outer/outer-font.woff2']={'bytes':output.stat().st_size,'sha256':hashlib.sha256(output.read_bytes()).hexdigest()};c.write_json(manifest,provenance)
+print('Outer font subset:',output.stat().st_size,'bytes')

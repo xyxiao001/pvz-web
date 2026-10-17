@@ -1,3 +1,4 @@
+import { BATTLE_LEVELS } from '../src/game/levels';
 import {Scene} from '../src/rendering/scene';
 import {Game,type Zombie} from '../src/game/model';
 import {json} from '../src/assets/load';
@@ -11,13 +12,14 @@ const zombie=(row:number,x:number):Zombie=>({id:serial++,kind:'mummy',row,x,hp:1
 function render(){scene.sync(game,0);scene.render();state.textContent=`时间 ${game.time.toFixed(2)} · 僵尸 ${game.zombies.length} · 墓碑 ${game.graves.length} · 演出 ${scene.hasDeathAnimations?'进行中':'结束'}`;}
 function advance(seconds:number){for(let i=0;i<seconds*60;i++){game.tick(1/60);scene.sync(game,1/60);game.events.length=0;}render();}
 async function setup(name:string){
- fieldset.disabled=true;scene?.dispose();scene=new Scene();
+ fieldset.disabled=true;await scene?.dispose();scene=new Scene();
  const day=name==='lateplants'?21:name==='pharaoh'?12:name==='mold'?13:name==='bonk'?14:name==='protect'?15:name==='match16'?16:name==='match'?7:name==='garg'?8:name==='explorer'?9:name==='tomb'?10:name==='preset'?11:name==='power'?5:6;
- await scene.init(document.querySelector('#canvas')!,(n,total)=>{state.textContent=`加载 ${n}/${total}`;},day,['cabbagepult','bloomerang','iceburg',...(day===21?['repeater' as const,'kernelpult' as const,'melonpult' as const]:[]),...(day===9?['iceweed' as const]:[]),...(day===10?['gravebuster' as const]:[]),...(day===11?['twinsunflower' as const]:[]),...(day===14?['bonkchoy' as const]:[])]);
+
  const level=readLevel(await json<SourceLevel>(`campaign/egypt${day}.source.json`));
  if(name==='camel'){level.actions=[[{...level.actions[0][0],zombies:[{kind:'camel_onehump',row:2}]}]];level.waves=[['camel_onehump']];level.flagInterval=100;}
  if(name==='storm'){level.actions=[level.actions[9].filter(a=>a.mode==='storm')];level.waves=[level.actions[0].flatMap(a=>a.zombies.map(z=>z.kind))];level.flagInterval=100;}
  if(['garg','explorer','tomb','pharaoh','bonk'].includes(name)){const kind=name==='garg'?'egypt_gargantuar':name==='explorer'?'explorer':name==='pharaoh'||name==='bonk'?'pharaoh':'tomb_raiser';level.actions=[[{...level.actions[0][0],zombies:[{kind,row:2}],food:0}]];level.waves=[[kind]];level.flagInterval=100;}
+ await scene.init(document.querySelector('#canvas')!,(n,total)=>{state.textContent=`加载 ${n}/${total}`;},BATTLE_LEVELS[`egypt${day}`],['cabbagepult','bloomerang','iceburg',...(day===21?['repeater' as const,'kernelpult' as const,'melonpult' as const]:[]),...(day===9?['iceweed' as const]:[]),...(day===10?['gravebuster' as const]:[]),...(day===11?['twinsunflower' as const]:[]),...(day===14?['bonkchoy' as const]:[])],level);
  game=new Game(level,props,scene.timing,z=>scene.absorptionTarget(z),42,false);scene.frameCombat();
  if(name==='match'||name==='match16'){advance(6);}
  else if(['garg','explorer','tomb','pharaoh','bonk'].includes(name)){advance(15.6);game.zombies[0].x=cellX(6);if(name==='garg'){game.zombies[0].hp=1700;advance(.1);}if(name==='tomb')advance(7);if(name==='bonk'){game.graves=[];game.sun=500;game.plant('bonkchoy',2,4);game.zombies[0].x=cellX(5);advance(.5);}render();}

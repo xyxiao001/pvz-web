@@ -20,7 +20,6 @@ for category in ['Plants','Upgrade','Coin','Gem']:
     for index, item in enumerate(source[category]):
         kind = item['CommodityType']; name = item.get('CommodityName','')
         if kind == 'plant' and name not in ['iceweed','snowdrop']: continue
-        if kind == 'upgrade' and name not in ['upgrade_8_slots','upgrade_pf_slots_lvl2','upgrade_starting_sun_lvl2']: continue
         result = {'id': f'{category}-{index}', 'category': category, 'type': kind, 'name': name,
                   'currency': item['CurrencyType'], 'price': item['CurrencyRequired'], 'count': item.get('CommodityCount',1)}
         if 'UnlockLevel' in item: result['unlockLevel'] = item['UnlockLevel']

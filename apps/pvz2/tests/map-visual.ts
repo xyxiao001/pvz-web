@@ -1,3 +1,4 @@
+import { BATTLE_LEVELS } from '../src/game/levels';
 import { json, assetUrl } from '../src/assets/load';
 import { MapRenderer } from '../src/shell/renderer';
 import { ProgressStore, completionEvents } from '../src/shell/progression';
@@ -47,10 +48,10 @@ document.querySelector<HTMLButtonElement>('#lifecycle')!.onclick=async()=>{
   result.textContent=`第 ${index+1}/3 次：加载第 ${day} 关`;
   renderer.stop();mapHost.hidden=true;battleHost.hidden=false;
   const scene=new Scene(),level=readLevel(await json<import('../src/game/level').SourceLevel>(`campaign/egypt${day}.source.json`));
-  await scene.init(battleHost,()=>{},day,['peashooter','sunflower','wallnut','potatomine','cabbagepult'],level);
+  await scene.init(battleHost,()=>{},BATTLE_LEVELS[`egypt${day}`],['peashooter','sunflower','wallnut','potatomine','cabbagepult'],level);
   const game=new Game(level,props,scene.timing,z=>scene.absorptionTarget(z),42,false);game.sun=500;game.plant('peashooter',2,0);game.plant('sunflower',1,0);game.food=1;game.plantFood(2,0);
   scene.frameCombat();for(let frame=0;frame<60;frame++){game.tick(1/60);scene.sync(game,1/60);}scene.render();
-  scene.dispose();battleHost.hidden=true;mapHost.hidden=false;
+  await scene.dispose();battleHost.hidden=true;mapHost.hidden=false;
   if(battleHost.querySelector('canvas'))throw new Error('Battle canvas was not removed');
   // Cover both cached instructions and a rebuilt map/reward instruction set.
   renderer.app.render();

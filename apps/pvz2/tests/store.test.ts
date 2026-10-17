@@ -23,7 +23,7 @@ test('one-time upgrades apply alongside earned upgrades and cannot be charged tw
   for(const name of ['upgrade_8_slots','upgrade_pf_slots_lvl2','upgrade_starting_sun_lvl2'])assert.equal(store.buy(item(name),()=>true),true);
   assert.equal(store.buy(item('upgrade_8_slots'),()=>true),false);
   assert.equal(store.read().gem,99909);
-  assert.deepEqual(new ProgressStore(data).battleBonuses(),{seedSlots:7,foodLimit:5,startingSun:50});
+  assert.deepEqual(new ProgressStore(data).battleBonuses(),{seedSlots:7,foodLimit:5,startingSun:50,shovelRefund:0,manualMowers:0});
 });
 test('native plant unlock prerequisites and purchased plants feed normal seed selection',()=>{
   const data=storage(), progress=new ProgressStore(data), store=progress.shop();
@@ -51,4 +51,13 @@ test('store art and native prices retain pinned provenance', () => {
     const arm=skeleton.armature.find((a:{name:string})=>a.name===name);
     for(const animation of ['Idle','Chosen'])assert.ok(arm.animation.some((a:{name:string})=>a.name===animation));
   }
+});
+
+test('remaining native upgrades persist and compose with earned tiers',()=>{
+  const data=storage(),progress=new ProgressStore(data),shop=progress.shop();
+  for(const name of ['upgrade_sunshovel_lvl3','upgrade_manual_mowers_2'])assert.ok(shop.buy(item(name),()=>true));
+  assert.equal(progress.battleBonuses().shovelRefund,.25);assert.equal(progress.battleBonuses().manualMowers,1);
+  data.setItem('pvz2-web:map-rewards',JSON.stringify([6,7,11].map((id,node)=>({world:'egypt',node,kind:'upgrade',id}))));
+  const reloaded=new ProgressStore(data).battleBonuses();assert.equal(reloaded.shovelRefund,.75);assert.equal(reloaded.manualMowers,2);
+  assert.equal(shop.buy(item('upgrade_manual_mowers_2'),()=>true),false);assert.equal(shop.read().gem,99939);
 });

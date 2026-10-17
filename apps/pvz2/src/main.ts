@@ -9,9 +9,9 @@ const host = app.querySelector<HTMLElement>('.world-shell')!;
 const battleHost = app.querySelector<HTMLElement>('.battle-app')!;
 let battle: ReturnType<typeof import('./battle').createBattle>|undefined;
 const shell = new WorldShell(host, async (level, progress) => {
-  battle?.dispose();
+  await battle?.dispose();
   const { createBattle } = await import('./battle');
-  battle = createBattle(battleHost, () => { battle!.dispose();battle=undefined;void shell.resume(); }, BATTLE_LEVELS[level], progress);
+  battle = createBattle(battleHost, async () => { await battle!.dispose();battle=undefined;await shell.resume(); }, BATTLE_LEVELS[level], progress);
   await battle.enter();
 });
 void shell.init();

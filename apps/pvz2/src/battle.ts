@@ -96,7 +96,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   async function enter() {
     host.hidden=false; screen='loading'; host.dataset.screen=screen; preferences=readAudio();
     $('#overlay').innerHTML = `<section class="battle-loading" aria-label="${title}加载中">
-      <img class="loading-scenery" src="${assetUrl('egypt/preview.webp')}" alt="">
+      <img class="loading-scenery" src="${assetUrl(levelConfig.presentation.loading)}" alt="">
       <div class="loading-destination"><span class="loading-chapter">时空之旅</span><h2>${levelConfig.worldName}</h2><span class="loading-day">第${levelConfig.day}天</span></div>
       <div class="loading-progress"><p id="load-status" role="status">正在准备庭院…</p><progress id="load-progress" aria-label="关卡资源加载进度" max="7" value="0"></progress></div>
     </section>`;
@@ -104,7 +104,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     cardOrder=availablePlants(levelConfig,progress.ownedPlants());
 
     if (!scene) {
-      const [{ Scene },props,level,flag,campaign] = await Promise.all([import('./rendering/scene'),json<Properties>('levels/properties.json'),json<SourceLevel>(levelConfig.source),json<ZombieProperties>('battle/flag.json'),levelConfig.day>1?json<Properties>('campaign/properties.json'):Promise.resolve(null)]);
+      const [{ Scene },props,level,flag,campaign] = await Promise.all([import('./rendering/scene'),json<Properties>('levels/properties.json'),json<SourceLevel>(levelConfig.source),json<ZombieProperties>('battle/flag.json'),levelConfig.assets==='campaign'?json<Properties>('campaign/properties.json'):Promise.resolve(null)]);
       if(campaign){Object.assign(props.plants,campaign.plants);Object.assign(props.zombies,campaign.zombies);Object.assign(props.armors,campaign.armors);Object.assign(props,{grave:campaign.grave,projectiles:campaign.projectiles,powerups:campaign.powerups,plantAnimations:campaign.plantAnimations});}
       properties=props; properties.zombies.mummy_flag=flag; source=level; scene=new Scene();
       const parsed=readLevel(source);
@@ -113,8 +113,8 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       await scene.init($('#canvas-host'),(done,total)=>{
         $('#load-status').textContent=`正在准备植物与庭院 ${done} / ${total}`;
         const progress=$<HTMLProgressElement>('#load-progress');progress.max=total;progress.value=done;
-      },levelConfig.day,actorPlants,parsed);
-      scene.onPoint=(x,y)=>{pointerDown=true;interact(x,y);};scene.onHover=hover;scene.onRelease=()=>{pointerDown=false;if(game?.power)game.powerPointer(game.power.x,game.power.y,false);};scene.onTick=tick;
+      },levelConfig,actorPlants,parsed);
+      scene.onPoint=(x,y)=>{pointerDown=true;interact(x,y);};scene.onHover=hover;scene.onRelease=()=>{pointerDown=false;game?.releaseMower();if(game?.power)game.powerPointer(game.power.x,game.power.y,false);};scene.onTick=tick;
       scene.onSound=sound;
       scene.onNPCEvent=(character,event)=>{
         const sounds:Record<string,string>={enter:'Enter',exit:'Exit',enter_brake:'Enter_Brake',exit_brake:'Exit_Brake',enter_shake:'Enter_Shake',exit_shake:'Exit_Shake'};
@@ -125,9 +125,9 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       for(const kind of [...new Set([...actorPlants,...(levelConfig.firstReward.plant?[levelConfig.firstReward.plant]:[])])]){cards.set(kind,scene.art.card(scene.app,kind));if(actorPlants.includes(kind))portraits.set(kind,scene.portrait(kind));}
 
       $<HTMLImageElement>('.sun-counter img').src=scene.art.image(scene.app,'sunIcon');
-      $<HTMLImageElement>('#shovel img').src=scene.art.image(scene.app,'shovel','Idle');
+      $<HTMLImageElement>('#shovel img').src=scene.art.image(scene.app,'shovel',bonuses.shovelRefund>0?'IdleSunback':'Idle');
       for(const [name,paths] of Object.entries(scene.art.catalog.sounds)) clips.set(name,paths.map(path=>{const audio=new Audio(assetUrl(path));audio.preload='none';return audio;}));
-      music.src=assetUrl(levelConfig.night||levelConfig.mode==='preset'||levelConfig.day===15?'campaign/minigame.mp3':'egypt/music.mp3');
+      music.src=assetUrl(levelConfig.presentation.music);
       if(levelConfig.day>1){
         $<HTMLImageElement>('#plant-food img').src=scene.art.image(scene.app,'food','Idle');
         if(levelConfig.mode==='powerups')for(const kind of ['fire','snow','toss','zap','cherry'])$<HTMLImageElement>(`[data-power="${kind}"] img`).src=assetUrl(scene.art.catalog.ui['power-'+kind].image);
@@ -135,7 +135,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       }
     }
     cardOrder = availablePlants(levelConfig,progress.ownedPlants()).filter(kind=>!readLevel(source).blacklist.includes(kind));
-    $('.chooser-cards').innerHTML = cardOrder.map(kind=>`<button data-choose="${kind}" class="seed choose-card" aria-label="选择${plantLabels[kind]}" aria-pressed="false"><img alt="${plantLabels[kind]}" src="${cards.get(kind)!}"><span class="seed-price">${properties.plants[kind].SunCost}</span></button>`).join('');
+    $('.chooser-cards').innerHTML = cardOrder.map(kind=>`<button data-choose="${kind}" class="seed choose-card${progress.gardenBoosts()[kind]>0?' boosted':''}" aria-label="选择${plantLabels[kind]}${progress.gardenBoosts()[kind]>0?'（爆发）':''}" aria-pressed="false"><img alt="${plantLabels[kind]}" src="${cards.get(kind)!}"><span class="seed-price">${properties.plants[kind].SunCost}</span></button>`).join('');
     for(const kind of cardOrder)$(`[data-choose="${kind}"]`).onclick=()=>{
       describe(kind);const index=deck.indexOf(kind);if(index===-1&&deck.length<seedSlots){deck.push(kind);sound('cardChosen');}else if(index!==-1){deck.splice(index,1);sound('cardCancel');}updateDeck();
     };
@@ -157,10 +157,13 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     $('#narrative').hidden=false;$('#narrative').dataset.character=step.Character;
     $('#speech-line').textContent=step.Lines!.zh;scene.setNarrativeCast(narrativeCast(narrativeIndex-1));scene.narrative(step.Character,step.Animation!);voice=sound(step.Voice!);
   }
+  function settleBoosts(){if(game){progress.consumeGardenBoosts(game.usedBoosts);game.usedBoosts.clear();}}
   function prepareGame(){
+    settleBoosts();
     bossMusicStage=-1;
     game=new Game(readLevel(source),properties,scene.timing,zombie=>scene.absorptionTarget(zombie),Date.now()>>>0,!progress.isComplete(levelConfig.id));
-    game.foodLimit=bonuses.foodLimit;
+    game.boosts=new Set(Object.entries(progress.gardenBoosts()).filter(([,count])=>count>0).map(([kind])=>kind as PlantKind));
+    game.foodLimit=bonuses.foodLimit;game.shovelRefund=bonuses.shovelRefund;game.manualMowers=bonuses.manualMowers;
     if(!game.level.lastStand)game.sun+=bonuses.startingSun;
     const objective=[game.level.mold.length?'霉菌覆盖的地块不能种植':'',game.level.mustProtect?`保护好 ${game.level.mustProtect} 株植物`:'',game.level.maxPlants!==null?`同时种植不超过 ${game.level.maxPlants} 株植物`:'',game.level.flowerLine!==null?'不要让僵尸踩到花坛':'',game.level.maxSun!==null?`消耗阳光不超过 ${game.level.maxSun}`:'',game.level.lastStand?`用 ${game.level.lastStand.sun} 阳光布置防线，再开始进攻`:''].filter(Boolean).join(' · ');
     for(const element of host.querySelectorAll<HTMLElement>('.challenge-objective')){element.textContent=objective;element.hidden=!objective;}
@@ -233,10 +236,12 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   function hover(x: number,y: number) {
     if(screen!=='playing')return;
     if(game.power){game.powerPointer(x,y,pointerDown);return;}
+    if(!selected&&pointerDown)game.mowerPointer(x,y,true);
     scene.highlightCell(selected?Math.floor((y-BOARD.top)/BOARD.cellHeight):-1,Math.floor((x-BOARD.left)/BOARD.cellWidth),selected==='shovel'?0xedb56a:0xe7fbb0);
   }
   function interact(x: number,y: number) {
     if(screen!=='playing')return;
+    if(!selected)game.mowerPointer(x,y,true,true);
     if(game.level.match){const z=[...game.zombies].sort((a,b)=>b.row-a.row).find(z=>Math.abs(z.x-x)<32&&y>rowY(z.row)-145&&y<rowY(z.row));if(z)game.flipCamel(z.id);return;}
     if(game.power){game.powerPointer(x,y,true,true);return;}
     const pickup=game.pickups.find(p=>Math.hypot(x-p.x,y-p.y)<38);
@@ -276,12 +281,15 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(screen==='ending'){scene.sync(game,dt);if(!scene.hasDeathAnimations){if(game.phase==='won'&&levelConfig.outro&&!progress.isComplete(levelConfig.id)){outro=true;narrativeLines=scene.art.campaign.narratives[levelConfig.outro];narrativeIndex=0;screen='npc-enter';host.dataset.screen=screen;$('#hud').hidden=true;scene.enterNarrative(narrativeCast(0));}else finish();}return;}
     if(screen!=='playing')return;
     accumulator+=Math.min(dt,.1)*speed;let advanced=0;
+    if(selected)game.releaseMower();
     while(accumulator>=1/60&&game.phase==='playing'){game.tick(1/60);accumulator-=1/60;advanced+=1/60;}
+    if(game.phase!=='playing')game.releaseMower();
     scene.sync(game,advanced);updateHud();
     for(const event of game.events) {
       if(event.type==='flip')sound('camelTouch/flipSound');
       if(event.type==='match')sound('camelTouch/matchSound');
       if(event.type==='plant')sound('plantOnFloor');
+      if(event.type==='mower')sound('mower');
       if(event.type==='shot')sound('shoot');
       if(event.type==='sun')sound('collect');
       if(event.type==='explode')sound('spudow');
@@ -313,7 +321,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   }
   function pause() {
     if(screen!=='playing')return;
-    game.phase='paused';screen='pause';scene.stop();music.pause();sound('pause');
+    game.releaseMower();pointerDown=false;game.phase='paused';screen='pause';scene.stop();music.pause();sound('pause');
     panel('暂停',`<p>${title}</p>${audioControls(preferences)}<div class="pause-actions"><button id="exit" class="battle-button">退出地图</button><button id="restart" class="battle-button">重新开始</button><button id="resume" class="battle-button">继续</button></div>`);
     $('#resume').onclick=resume;$('#restart').onclick=chooseSeeds;$('#exit').onclick=menu;bindAudio();
   }
@@ -352,5 +360,5 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     updateHud();
   },{signal:listeners.signal});
   document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();},{signal:listeners.signal});
-  return {enter,dispose(){listeners.abort();voice?.pause();music.pause();for(const variants of clips.values())for(const clip of variants)clip.pause();scene.dispose();host.innerHTML='';}};
+  return {enter,async dispose(){settleBoosts();listeners.abort();voice?.pause();music.pause();for(const variants of clips.values())for(const clip of variants)clip.pause();await scene.dispose();host.innerHTML='';}};
 }

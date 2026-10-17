@@ -636,3 +636,10 @@ test('finale native rigs, rewards and NPC voices resolve without substitutions',
  const battle=read<{rigs:Record<string,{rig:string;armature:string}>}>('battle/catalog.json'),reward=battle.rigs.reward,s=read<Skeleton>(`battle/rigs/${reward.rig}/skeleton.json`);
  for(const animation of ['egypt','dangerroom_egypt'])assert.ok(animationTimeline(s,reward.armature,animation).duration>=0);
 });
+
+test('garden-boosted imitater applies its boost to the transformed plant',()=>{
+ const g=create(28);g.graves=[];g.sun=2000;g.food=0;g.imitateKind='peashooter';g.boosts.add('imitater');
+ assert.equal(g.plant('imitater',1,0),true);tick(g,4);
+ const transformed=g.plants.find(p=>p.kind==='peashooter'&&p.row===1)!;
+ assert.ok(transformed);assert.ok(g.events.some(e=>e.type==='food'));assert.equal(g.food,0);assert.deepEqual([...g.usedBoosts],['imitater']);
+});

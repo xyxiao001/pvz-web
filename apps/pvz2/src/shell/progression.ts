@@ -1,3 +1,4 @@
+import { GARDEN_KEY, type GardenData } from '../outer/garden';
 import { LocalStore } from './store';
 import { islandStates } from './navigation';
 import type { Island, WorldMap } from './types';
@@ -19,9 +20,15 @@ export class ProgressStore {
   shop() { return new LocalStore(this.storage); }
   ownedPlants() { return new Set([0, 1, 2, 3, ...this.shop().read().plants, ...this.rewards().filter(r => r.kind === 'plant').map(r => r.id)]); }
   ownedUpgrades() { return new Set([...this.shop().read().upgrades, ...this.rewards().filter(r => r.kind === 'upgrade').map(r => r.id)]); }
+  gardenBoosts(){const saved=this.storage.getItem(GARDEN_KEY);return saved===null?{}:(JSON.parse(saved) as GardenData).boosts;}
+  consumeGardenBoosts(kinds:ReadonlySet<string>){
+    if(kinds.size===0)return;
+    const data=JSON.parse(this.storage.getItem(GARDEN_KEY)!) as GardenData;
+    for(const kind of kinds)data.boosts[kind]--;this.storage.setItem(GARDEN_KEY,JSON.stringify(data));
+  }
   battleBonuses() {
     const upgrades = this.ownedUpgrades();
-    return { seedSlots: 6 + Number(upgrades.has(9)) + Number(upgrades.has(10)), foodLimit: 3 + Number(upgrades.has(2)) + Number(upgrades.has(3)), startingSun: 25 * (Number(upgrades.has(0)) + Number(upgrades.has(1))) };
+    return { shovelRefund: .25 * [6,7,8].filter(id=>upgrades.has(id)).length, manualMowers: [11,12].filter(id=>upgrades.has(id)).length, seedSlots: 6 + Number(upgrades.has(9)) + Number(upgrades.has(10)), foodLimit: 3 + Number(upgrades.has(2)) + Number(upgrades.has(3)), startingSun: 25 * (Number(upgrades.has(0)) + Number(upgrades.has(1))) };
   }
   pending(): PendingCompletion | null {
     const saved = this.storage.getItem(PENDING_KEY);

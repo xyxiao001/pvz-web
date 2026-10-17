@@ -1,7 +1,11 @@
+import { textureScope } from '../assets/textures';
+import { battleActors, zombieRig } from './resource-plan';
+import type { BattleLevel } from '../game/levels';
+import mowerPresentation from '../../public/assets/battle/mower.json';
 import 'pixi.js/prepare';
 import { BattleArt } from './battle-art';
 import { animationTimeline, specialAnimationTiming, bonkAnimationTiming, COMBAT_VIEW, type Skeleton } from './presentation';
-import { Application, Assets, Container, Graphics, Sprite, Texture, type Ticker } from 'pixi.js';
+import { Application, Container, Graphics, Sprite, Texture, type Ticker } from 'pixi.js';
 import { EventObject, PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
 import { assetUrl, json, loadInBatches } from '../assets/load';
 import { BOARD, cellX, rowY, PLANT_KINDS, type AnimationTiming, type PlantKind, type ZombieKind, type Level } from '../game/level';
@@ -34,15 +38,18 @@ const RIGS: Record<RigName, { armature: string; idle: string; scale: number }> =
   mummy: { armature: 'EgyptBasicZombie', idle: 'Walk', scale: .51 },
   ra: { armature: 'RaZombie', idle: 'Walk', scale: .51 },
 };
-const zombieRig=(kind:ZombieKind):RigName=>kind.startsWith('zombossmech_')?'boss':kind==='explorer_veteran'?'torchlight':kind==='pharaoh_weak'?'pharaohWeak':kind==='pharaoh'?'pharaoh':kind==='pharaoh_inner'?'pharaohInner':isMatchCamel(kind)?'camelTouch':isCamel(kind)?'camel':kind==='egypt_gargantuar'?'gargantuar':kind==='egypt_imp'?'imp':kind==='explorer'?'explorer':kind==='tomb_raiser'?'tombraiser':kind==='ra'?'ra':'mummy';
+
 interface Actor { root: Container; rig: PixiArmatureDisplay; kind: RigName; animation: string; actionAt: number; armor?: PixiArmatureDisplay; armLost: boolean; mask?:Graphics;camelFrame?:number;plank?:PixiArmatureDisplay;plankState?:string;plankAt?:number; death?: {cause:DeathCause|'plant';elapsed:number;fadeAt:number;fallAt:number} }
 interface Fragment {rig:PixiArmatureDisplay;x:number;y:number;ground:number;vx:number;vy:number;spin:number;age:number;landed:number}
 
 export class Scene {
+  private textures=textureScope();
   readonly app = new Application();
   readonly art = new BattleArt();
   private clock = new WorldClock();
   private npcs = new Map<string,PixiArmatureDisplay>();
+  private mowerHolds=new Map<number,{root:Container;mask:Graphics}>();
+  private mowerHoldTexture!:Texture;
   private objects = new Map<string, PixiArmatureDisplay>();
   timing!: AnimationTiming;
   onTick: (dt: number) => void = () => {};
@@ -74,20 +81,21 @@ export class Scene {
   private scale = 1;
   private tick = (ticker: Ticker) => this.onTick(ticker.deltaMS / 1000);
 
-  async init(host: HTMLElement, progress: (done: number, total: number) => void,day=1,plantActors:PlantKind[]=['peashooter','sunflower','wallnut','potatomine'],level?:Level) {
+  async init(host: HTMLElement, progress: (done: number, total: number) => void,config:BattleLevel,plantActors:PlantKind[],level:Level) {
     this.bossView=!!level?.boss;
     await this.app.init({ width: BOARD.width, height: BOARD.height, background: '#b5924c', antialias: true,
       resolution: Math.min(window.devicePixelRatio, 2), autoDensity: true, autoStart: false });
     host.append(this.app.canvas);
-    this.app.canvas.setAttribute('aria-label', '神秘埃及战场，五行九列。选择植物后点击地块种植。');
+    this.app.canvas.setAttribute('aria-label', `${config.worldName}战场，五行九列。选择植物后点击地块种植。`);
     this.app.stage.eventMode = 'none';
     this.app.stage.addChild(this.world,this.conveyorLayer);
-    const lawn = new Sprite(await Assets.load<Texture>(assetUrl([4,5,7,8,16,18,23,24,25,29,33,35].includes(day)?'campaign/night.webp':'egypt/lawn.webp')));
+    const lawn = new Sprite(await this.textures.load(assetUrl(config.presentation.lawn)));
     lawn.width=1974;lawn.height=768;
     lawn.position.set(-340, -40); this.world.addChild(lawn, this.highlight, this.actorLayer);
     this.actorLayer.sortableChildren = true;
-    const actorNames:RigName[]=[...new Set<RigName>(['peashooter','sunflower','wallnut','potatomine','mummy','ra',...plantActors,...(level?.boss?['boss','mummy','gargantuar','imp','tombraiser','explorer','torchlight','pharaoh','pharaohInner'] as RigName[]:[]),...(level?[...new Set(level.waves.flat().map(zombieRig)),...(level.waves.flat().includes('egypt_gargantuar')?['imp' as const]:[]),...(level.waves.flat().some(k=>k==='pharaoh'||k==='pharaoh_weak')?['pharaohInner' as const]:[])]:[]),...([6,8,9,10,11,12,13,14,15].includes(day)?['camel' as const]:[]),...([7,16].includes(day)?['camelTouch' as const]:[]),...(day===8?['gargantuar' as const,'imp' as const]:[]),...(day===9?['explorer' as const]:[]),...([10,14].includes(day)?['tombraiser' as const]:[]),...([12,14,15].includes(day)?['pharaoh' as const,'pharaohInner' as const]:[])])];
-    const artCount=await this.art.init(this.app,(done,total)=>progress(done+1,total+actorNames.length+1),day,plantActors);
+    const actorNames=battleActors(level,plantActors) as RigName[];
+    const artCount=await this.art.init(this.app,(done,total)=>progress(done+1,total+actorNames.length+1),config,plantActors,level,this.textures);
+    this.mowerHoldTexture=await this.textures.load(assetUrl(this.art.catalog.ui.mowerHold.image));
     if(level?.conveyor){for(const lane of [0,1]){
       const rig=this.art.build('conveyor','Idle'),bounds=rig.getLocalBounds();
       // The native horizontal lanes rotate the vertical armature by 90° (Y-up).
@@ -98,11 +106,11 @@ export class Scene {
     let done = artCount+1; const total=artCount+actorNames.length+1;
     const skeletons = new Map<RigName, Skeleton>();
     await loadInBatches(actorNames, 2, async name => {
-      const spec=day>1?this.art.campaign.actors[name]:undefined;
+      const spec=config.assets==='campaign'?this.art.campaign.actors[name]:undefined;
       const base=spec?`campaign/rigs/${spec.rig}`:`actors/${name}`;
       const [skeleton, atlas, texture] = await Promise.all([
         json<Skeleton>(`${base}/skeleton.json`), json<object>(`${base}/atlas.json`),
-        Assets.load<Texture>(assetUrl(`${base}/texture.webp`)),
+        this.textures.load(assetUrl(`${base}/texture.webp`)),
       ]);
       this.factory.parseDragonBonesData(skeleton, name);
       this.factory.parseTextureAtlasData(atlas, texture, name);
@@ -114,12 +122,12 @@ export class Scene {
     const grow=animationTimeline(skeletons.get('potatomine')!,'PotatoMine','Grow'),mine=animationTimeline(skeletons.get('potatomine')!,'PotatoMine','Charging');
     this.timing = { wallnutArmor:animationTimeline(skeletons.get('wallnut')!,'Wall-nut','Food').events.wearArmor,wallnutFoodEnd:animationTimeline(skeletons.get('wallnut')!,'Wall-nut','Food').events.foodEnd,shoot:shoot.events.Shoot,shootDuration:shoot.duration,produce:produce.events.Produce,produceDuration:produce.duration,mineGrow:grow.events.activate,mineExplode:mine.events.explode,mineDeath:mine.events.die,
       raStart:animationTimeline(skeletons.get('ra')!,'RaZombie','AbsorbStart').duration,raEnd:animationTimeline(skeletons.get('ra')!,'RaZombie','AbsorbEnd').duration };
-    if(day>1){
+    if(config.assets==='campaign'){
       for(const name of ['cabbagepult','bloomerang','iceburg'] as const)if(!skeletons.has(name))skeletons.set(name,await json<Skeleton>(`campaign/rigs/${this.art.campaign.actors[name].rig}/skeleton.json`));
       const cabbage=animationTimeline(skeletons.get('cabbagepult')!,'Cabbage-Pult','Lob'),boom=animationTimeline(skeletons.get('bloomerang')!,'Bloomerang','Shoot'),ice=animationTimeline(skeletons.get('iceburg')!,'IcebergLettuce','Death');
       this.timing.campaign={cabbage:cabbage.events.Lob,cabbageDuration:cabbage.duration,cabbageFood:animationTimeline(skeletons.get('cabbagepult')!,'Cabbage-Pult','Food').events.lobFood,cabbageFoodEnd:animationTimeline(skeletons.get('cabbagepult')!,'Cabbage-Pult','Food').events.foodEnd,boomerang:boom.events.Shoot,boomerangDuration:boom.duration,boomerangCatch:animationTimeline(skeletons.get('bloomerang')!,'Bloomerang','Catch').duration,ice:ice.events.explode,iceDuration:ice.duration,iceFood:animationTimeline(skeletons.get('iceburg')!,'IcebergLettuce','Food').events.foodExplode/.8,iceFoodEnd:animationTimeline(skeletons.get('iceburg')!,'IcebergLettuce','Food').events.foodEnd/.8};
     }
-    if(day>=7||plantActors.includes('iceweed')){
+    if(actorNames.some(name=>['gargantuar','tombraiser','gravebuster','twinsunflower','iceweed'].includes(name))){
       for(const name of ['gargantuar','tombraiser','gravebuster','twinsunflower','iceweed'] as const)if(!skeletons.has(name))skeletons.set(name,await json<Skeleton>(`campaign/rigs/${this.art.campaign.actors[name].rig}/skeleton.json`));
       this.timing.special=specialAnimationTiming(skeletons);
     }
@@ -411,7 +419,20 @@ export class Scene {
       rig.position.set(x,y); rig.scale.set(scale); rig.zIndex = name === 'sun' ? 1000 : y;
       return rig;
     };
-    for (const mower of game.mowers) if (!mower.spent) object(`mower-${mower.row}`,'mower',mower.active?'Attack':'Idle',mower.x,rowY(mower.row),.5);
+    for (const mower of game.mowers) {
+      if(!mower.spent)object(`mower-${mower.row}`,'mower',mower.starting>0?'Trans':mower.active?'Attack':'Idle',mower.x,rowY(mower.row),mowerPresentation.scale);
+      let hold=this.mowerHolds.get(mower.row);
+      if(mower.hold>0&&!hold){
+        const root=new Container(),background=new Sprite(this.mowerHoldTexture),fill=new Sprite(this.mowerHoldTexture),mask=new Graphics();
+        background.anchor.set(.5);background.width=background.height=mowerPresentation.holdBackgroundSize*mowerPresentation.scale;
+        const color=mowerPresentation.holdColors[0];background.tint=((color&255)<<16)|(color&0xff00)|((color>>>16)&255);background.alpha=(color>>>24)/255;
+        fill.anchor.set(.5);fill.width=fill.height=mowerPresentation.holdSize*mowerPresentation.scale;fill.tint=0xffffff;fill.alpha=(mowerPresentation.holdColors[1]>>>24)/255;
+        fill.mask=mask;root.addChild(background,fill,mask);root.zIndex=1000;this.actorLayer.addChild(root);hold={root,mask};this.mowerHolds.set(mower.row,hold);
+      }
+      if(hold){hold.root.visible=mower.hold>0;hold.root.position.set(mower.x,rowY(mower.row)+mowerPresentation.holdY*mowerPresentation.scale);
+        hold.mask.clear().moveTo(0,0).arc(0,0,mowerPresentation.holdSize*mowerPresentation.scale/2,-mowerPresentation.fillStart*Math.PI*2,-mowerPresentation.fillStart*Math.PI*2-Math.PI*2*mower.hold/mowerPresentation.holdSeconds,true).lineTo(0,0).fill(0xffffff);
+      }
+    }
     for (const sun of game.suns) {
       const key=`sun-${sun.id}`,previous=this.objects.get(key)?.animation.lastAnimationName;
       const animation=sun.absorber===null?(previous==='Red'||previous==='N-R'?'R-N':previous==='R-N'&&!this.objects.get(key)!.animation.isCompleted?'R-N':'Normal'):(previous==='Normal'?'N-R':previous==='N-R'&&!this.objects.get(key)!.animation.isCompleted?'N-R':'Red');
@@ -557,10 +578,11 @@ export class Scene {
     const view=this.bossView?{x:0,y:0,zoom:1}:COMBAT_VIEW;
     this.setCamera(start+(view.x-start)*progress,1+(view.zoom-1)*progress,view.y*progress);
   }
-  dispose(){
-    this.reset();for(const child of this.conveyorLayer.children){(child as PixiArmatureDisplay).dispose();}this.observer.disconnect();this.clock.clear();this.art.dispose();this.factory.clear(false);
+  async dispose(){
+    this.reset();for(const child of this.conveyorLayer.children){(child as PixiArmatureDisplay).dispose();}this.observer.disconnect();this.clock.clear();this.art.dispose();this.factory.clear(false);PixiFactory.advanceTime(0);
     // The map application is still alive; destroy(true) also releases its shared Pixi batch pools.
     this.app.destroy({removeView:true,releaseGlobalResources:false},{children:true,texture:false,textureSource:false});
+    await this.textures.dispose();
   }
   render() { this.app.render(); }
   start() { this.app.start(); }
@@ -568,6 +590,7 @@ export class Scene {
   reset() {
     this.stop();this.conveyorLayer.visible=false;
     for (const [id,actor] of this.actors)this.removeActor(id,actor);
+    for(const hold of this.mowerHolds.values())hold.root.destroy({children:true});this.mowerHolds.clear();
     for (const rig of this.objects.values()) {rig.removeFromParent();rig.dispose();} this.objects.clear();
     for(const rig of this.npcs.values()){rig.removeFromParent();rig.dispose();}this.npcs.clear();
     for(const rig of this.particles.values()){rig.removeFromParent();rig.dispose();}this.particles.clear();

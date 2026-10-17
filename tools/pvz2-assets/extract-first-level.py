@@ -28,6 +28,23 @@ ui = {name:art(scene,node) for name,node in {'start':9,'speed':13,'pause':14,'pr
 ui.update({name:art(chooser,node) for name,node in {'chooserFrame':2,'chooserBorder':20,'chooserTop':4,'plantDisplay':27}.items()})
 ui.update({'sunCounter':art(slot,3),'window':art(window,3),'windowBorder':art(window,4),'close':art(window,5),'button':art(window,2)})
 rigs = {'shovel':rig_node(e.read('26c29140-145e-4efa-bd59-1725cd43cbcb'),1),'sunIcon':rig_node(slot,4),'sun':rig_node(e.read('2ca57a22-8169-4284-81e9-ebde2619ba92'),1), 'mower':rig_node(e.read('projectiles/EgyptMowerPRJ'),1), 'reward':rig_node(e.read('077cd1ab-0ddf-412d-bbc3-cdc4af68463a'),3)}
+mower=e.read('projectiles/EgyptMowerPRJ')
+mower_props=e.component(mower,mower.objects[1],'86d7b6q8DBBkaS7T/MqkW7o')
+ui['mowerHold']=art(mower,4)
+mower_skeleton=json.loads((e.OUT/'rigs'/rigs['mower']['rig']/'skeleton.json').read_text())
+mower_arm=next(a for a in mower_skeleton['armature'] if a['name']==rigs['mower']['armature'])
+trans=next(a for a in mower_arm['animation'] if a['name']=='Trans')
+frame=0
+for f in trans['frame']:
+    if any(event['name']=='switchingFalse' for event in f.get('events',[])): break
+    frame+=f.get('duration',1)
+c.write_json(e.OUT/'mower.json',{'holdSeconds':1,'startSeconds':frame/mower_skeleton['frameRate'],
+    'scale':mower.objects[1]['_lscale'][1], 'holdY':-mower.objects[4]['_lpos'][2],
+    'holdSize':e.component(mower,mower.objects[4],'cc.UITransform')['_contentSize'][1],
+    'holdBackgroundSize':e.component(mower,mower.objects[3],'cc.UITransform')['_contentSize'][1],
+    'holdColors':[mower.objects[i]['_color'][1] for i in [6,7]],
+    'fillStart':mower.objects[7]['_fillStart'],
+    'hitSize':e.component(mower,mower.objects[1],'cc.UITransform')['_contentSize'][1:]})
 npc=e.read('b697cdfd-e783-4f80-abbe-ac197db6cf97')
 rigs['crazydave']=rig_node(npc,25)
 rigs['winnie']=rig_node(npc,26)
@@ -52,10 +69,11 @@ c.write_json(e.OUT/'flag.json',flag)
 sounds = {}
 sound_asset=e.read('resouce_prefabs/SoundsRP')
 sound_props=sound_asset.objects[1]['_components'][0]
+sound_props['mower']=mower_props['attackSound']
 sound_props['shoot']=[{'asset':'d552833f-d03f-4f93-8377-c7ff7fbfcba4'}]
 sound_props['collect']=[{'asset':uuid} for uuid in ['3473f3c0-cb03-4c91-8bf8-f9f048b56fc4','6090751a-f6a6-4ec5-b7c0-200bfd27aa29','ff4b9476-3eec-4532-90d6-7085710e5770','19b86297-d8d4-458f-a122-9723f11dc6df']]
 sound_props['peaHit']=pea.objects[1]['_components'][1]['PopSound']
-sound_names=['shoot','collect','plantOnFloor','spudow','awooga','finalWave','readySetPlant','cardChosen','cardCancel','pause','shovelDig','letsRock','cameraMove','zombieLie','zombieLimbPop','peaHit']
+sound_names=['mower','shoot','collect','plantOnFloor','spudow','awooga','finalWave','readySetPlant','cardChosen','cardCancel','pause','shovelDig','letsRock','cameraMove','zombieLie','zombieLimbPop','peaHit']
 # NPC.ts chooses a voice by action and graphical line length (ZH multiplier 3.1).
 for step in intro:
     if 'Lines' in step:

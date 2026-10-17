@@ -1,3 +1,5 @@
+import type { OuterFeatures, Feature } from '../outer/controller';
+import { Tickets } from '../outer/tickets';
 import { readAudio, saveAudio, audioControls } from '../audio';
 import { assetUrl, json } from '../assets/load';
 import { NAVIGATION_KEY, LEVEL_ROUTES, initialNavigation, islandStates, type Navigation } from './navigation';
@@ -8,6 +10,7 @@ import type { MapRenderer } from './renderer';
 
 export class WorldShell {
   private renderer!: MapRenderer;
+  private feature:OuterFeatures|null=null;
   private catalog!: Catalog;
   private navigation: Navigation;
   private map: WorldMap | null = null;
@@ -53,11 +56,12 @@ export class WorldShell {
     for (const [name, path] of Object.entries(catalog.sounds)) {
       const clip = new Audio(); clip.preload = 'none'; clip.src = assetUrl(path); this.clickSounds.set(name, clip);
     }
-    this.host.addEventListener('pointerdown', () => { this.startMusic(); this.clickSound('touchStartSound'); });
+    this.host.addEventListener('pointerdown', () => { if(!this.feature)this.startMusic(); this.clickSound('touchStartSound'); });
     this.host.addEventListener('pointerup', () => this.clickSound('touchEndSound'));
     this.$('.map-arrow-left').onclick = () => this.step(-1); this.$('.map-arrow-right').onclick = () => this.step(1);
     window.addEventListener('keydown', event => {
       if (this.host.hidden || this.busy) return;
+      if(this.feature){if(event.key==='Escape'){event.preventDefault();void this.closeFeature();}return;}
       if (event.key === 'Escape') { event.preventDefault(); void this.back(); }
       if (this.$('.map-modal').hidden && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) { event.preventDefault(); this.step(event.key === 'ArrowLeft' ? -1 : 1); }
     });
@@ -67,12 +71,15 @@ export class WorldShell {
   private save() { this.storage.setItem(NAVIGATION_KEY, JSON.stringify(this.navigation)); }
   private loading(show: boolean) { this.busy = show; this.$('.map-loading').hidden = !show; this.$('.map-controls').inert = show; }
   private makeControls() {
-    const names: Record<string,string> = { exitButton: '返回', settingButton: '设置', arcadeButton: '小游戏 · 尚未接入', almanacButton: '图鉴 · 尚未接入', zengardenButton: '禅境花园 · 尚未接入', storeButton: '商店' };
-    this.$('.map-controls').innerHTML = Object.entries(this.catalog.buttons).map(([id,b]) => `<button class="native-icon" data-control="${id}" aria-label="${names[id]}" title="${names[id]}" ${id === 'exitButton' || id === 'settingButton' || id === 'storeButton' ? '' : 'disabled'} style="left:${b.x/10.24}%;top:${b.y/6.4}%;width:${b.w/10.24}%;height:${b.h/6.4}%;--normal:url('${assetUrl(b.normal.image)}');--hover:url('${assetUrl(b.hover.image)}');--pressed:url('${assetUrl(b.pressed.image)}')"></button>`).join('');
+    const names: Record<string,string> = { exitButton: '返回', settingButton: '设置', arcadeButton: '小游戏', almanacButton: '图鉴', zengardenButton: '禅境花园', storeButton: '商店' };
+    this.$('.map-controls').innerHTML = Object.entries(this.catalog.buttons).map(([id,b]) => `<button class="native-icon" data-control="${id}" aria-label="${names[id]}" title="${names[id]}"  style="left:${b.x/10.24}%;top:${b.y/6.4}%;width:${b.w/10.24}%;height:${b.h/6.4}%;--normal:url('${assetUrl(b.normal.image)}');--hover:url('${assetUrl(b.hover.image)}');--pressed:url('${assetUrl(b.pressed.image)}')"></button>`).join('');
     this.$('[data-control="exitButton"]').onclick = () => { void this.back(); };
     this.$('[data-control="settingButton"]').onclick = () => this.settings();
     this.$('[data-control="storeButton"]').onclick = () => { void this.openStore(); };
-    this.renderer.setCurrencies(this.progress.shop().read());
+    for(const [control,feature] of Object.entries({arcadeButton:'arcade',almanacButton:'almanac',zengardenButton:'garden'}))this.$(`[data-control="${control}"]`).onclick=()=>{void this.openFeature(feature as Feature);};
+    const ticket=this.catalog.toolbar.find(d=>d.name==='TicketCounter')!;
+    const target=document.createElement('button');target.className='ticket-target';target.setAttribute('aria-label','门票');target.style.cssText=`left:${(512+ticket.x)/10.24}%;top:${(320+ticket.y)/6.4}%;width:${ticket.w!*ticket.sx/10.24}%;height:${ticket.h!*ticket.sy/6.4}%;`;target.onclick=()=>{void this.openFeature('tickets');};this.$('.map-controls').append(target);
+    new Tickets(this.storage,this.progress.shop()).refresh();this.renderer.setCurrencies(this.progress.shop().read());
     const skin = this.catalog.window;
     this.host.style.setProperty('--window-fill',`url('${assetUrl(skin.windowCommon.image)}')`);
     this.host.style.setProperty('--window-border',`url('${assetUrl(skin.windowCommonBorder.image)}')`);
@@ -179,6 +186,17 @@ export class WorldShell {
       this.save(); this.renderer.stop(); if(this.musicPlay) await this.musicPlay; this.music.pause(); this.musicPlay=null; this.host.hidden=true; await this.play(id, this.progress); return;
     }
     this.modal(`${this.currentWorld.name} · 第 ${island.name} 关`, `<p>此关卡尚未接入。</p><button class="native-button close-dialog">返回地图</button>`);
+  }
+  private async openFeature(feature:Feature){
+    this.loading(true);this.renderer.stop();if(this.musicPlay)await this.musicPlay;this.music.pause();this.musicPlay=null;
+    const {OuterFeatures}=await import('../outer/controller');
+    const host=document.createElement('div');this.$('.world-frame').append(host);
+    this.feature=new OuterFeatures(host,this.progress,this.storage,this.catalog,()=>this.closeFeature());
+    await this.feature.open(feature);this.loading(false);this.$('.map-controls').inert=true;this.$('.map-level-targets').inert=true;
+  }
+  private async closeFeature(){
+    if(this.busy||!this.feature)return;this.busy=true;
+    await this.feature.dispose();this.feature=null;this.$('.map-controls').inert=false;this.$('.map-level-targets').inert=false;this.renderer.setCurrencies(this.progress.shop().read());this.renderer.start();this.startMusic();this.busy=false;
   }
   private async openStore() {
     if (this.busy) return;

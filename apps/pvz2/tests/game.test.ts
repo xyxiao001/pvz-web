@@ -193,3 +193,31 @@ test('wall-nut wears native armor at the Food event, ends once, and absorbs bite
   game.zombies.push(mummy(cellX(2)+20));tick(game,1);assert.ok(nut.armor<4000);assert.equal(nut.hp,4000);
   game.zombies=[];tick(game,2);assert.equal(nut.action,'idle');assert.ok(nut.armor<4000,'Food must not replay and restore armor');
 });
+
+test('sun shovel refunds native plant cost once, while preparation returns the full cost',()=>{
+  const game=create();game.sun=100;game.shovelRefund=.25;game.plant('peashooter',2,0);game.shovel(2,0);
+  assert.equal(game.sun,25);game.shovel(2,0);assert.equal(game.sun,25);
+  game.sun=50;game.plant('sunflower',1,0);game.shovel(1,0);assert.equal(game.sun,10); // Native sun drops use multiples of five.
+  game.preparing=true;game.sun=100;game.plant('peashooter',2,0);game.shovel(2,0);assert.equal(game.sun,100);
+});
+test('manual mowers need an uninterrupted hold, play startup, and consume only one use',()=>{
+  const game=create(),mower=game.mowers[2],x=mower.x,y=rowY(2)-35;
+  game.mowerPointer(x,y,true,true);tick(game,1.2);assert.equal(mower.active,false);
+  game.manualMowers=1;game.mowerPointer(x,y,true,true);tick(game,.5);game.mowerPointer(x+200,y,true);game.mowerPointer(x,y,true);tick(game,.6);
+  assert.equal(mower.active,false);assert.equal(mower.hold,0);
+  game.mowerPointer(x,y,true,true);tick(game,1.05);assert.equal(mower.active,true);assert.equal(game.manualMowers,0);assert.equal(mower.x,x);assert.ok(mower.starting>0);
+  tick(game,.3);assert.ok(mower.x>x);assert.equal(game.events.filter(e=>e.type==='mower').length,1);
+  game.mowerPointer(game.mowers[1].x,rowY(1)-35,true,true);tick(game,1.1);assert.equal(game.mowers[1].active,false);
+});
+
+test('garden boost activates each planted seed without consuming plant food and records one charge per plant type',()=>{
+ const game=create();game.sun=1000;game.food=0;game.boosts.add('peashooter');
+ assert.equal(game.plant('peashooter',0,0),true);assert.equal(game.plants[0].action,'food');assert.equal(game.food,0);
+ game.cooldowns.peashooter=0;assert.equal(game.plant('peashooter',1,0),true);assert.deepEqual([...game.usedBoosts],['peashooter']);
+ assert.equal(game.plant('sunflower',2,0),true);assert.equal(game.plants.at(-1)!.action,'idle');
+});
+
+test('last stand preparation does not spend or activate a garden boost',()=>{
+ const game=create();game.preparing=true;game.sun=1000;game.boosts.add('peashooter');
+ assert.equal(game.plant('peashooter',0,0),true);assert.equal(game.plants[0].action,'idle');assert.equal(game.usedBoosts.size,0);
+});

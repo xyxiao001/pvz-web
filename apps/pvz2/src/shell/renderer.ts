@@ -1,3 +1,4 @@
+import { textureScope } from '../assets/textures';
 import 'pixi.js/prepare';
 import { Application, Assets, Container, Sprite, Texture, Text, ColorMatrixFilter, Rectangle } from 'pixi.js';
 import { PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
@@ -12,6 +13,7 @@ import type { Catalog, Draw, Island, WorldMap, ProgressionArt } from './types';
 interface MapDraw extends Draw { island?: number; role?: 'node' | 'path' | 'reward' }
 interface View { root: Container; rigs: PixiArmatureDisplay[]; draw: MapDraw }
 export class MapRenderer {
+  private textures=textureScope();
   readonly app = new Application();
   private factory = new PixiFactory(null, false);
   private clock = new WorldClock();
@@ -122,7 +124,7 @@ export class MapRenderer {
   private async load(keys: string[]) {
     await loadInBatches([...new Set(keys)].filter(key => !this.loaded.has(key)), 2, async key => {
       const path = `shell/rigs/${key}/`;
-      const [skeleton, atlas, texture] = await Promise.all([json<object>(path + 'skeleton.json'), json<object>(path + 'atlas.json'), Assets.load<Texture>(assetUrl(path + 'texture.webp'))]);
+      const [skeleton, atlas, texture] = await Promise.all([json<object>(path + 'skeleton.json'), json<object>(path + 'atlas.json'), this.textures.load(assetUrl(path + 'texture.webp'))]);
       this.factory.parseDragonBonesData(skeleton, key); this.factory.parseTextureAtlasData(atlas, texture, key);
       await this.app.renderer.prepare.upload(texture); this.loaded.add(key);
     });
@@ -135,7 +137,7 @@ export class MapRenderer {
     for (const draw of this.catalog.toolbar) if (draw.kind === 'rig') keys.add(draw.rig!);
     for (const key of this.loaded) if (!keys.has(key)) {
       this.factory.removeDragonBonesData(key); this.factory.removeTextureAtlasData(key);
-      await Assets.unload(assetUrl(`shell/rigs/${key}/texture.webp`)); this.loaded.delete(key);
+      await this.textures.release(assetUrl(`shell/rigs/${key}/texture.webp`)); this.loaded.delete(key);
     }
     PixiFactory.advanceTime(0);
   }
@@ -154,7 +156,7 @@ export class MapRenderer {
   }
   private async prepare(draws: Draw[]) {
     await this.load(draws.filter(d => d.kind === 'rig').map(d => d.rig!));
-    await Promise.all([...new Set(draws.filter(d => d.kind === 'sprite').map(d => assetUrl(d.image!)))].map(path => Assets.load(path)));
+    await Promise.all([...new Set(draws.filter(d => d.kind === 'sprite').map(d => assetUrl(d.image!)))].map(path => this.textures.load(path)));
   }
   setWorldKeys(count:number){const index=this.catalog.toolbar.findIndex(d=>d.owner===14&&d.kind==='label');(this.toolbar.children[index].children[0] as Text).text=String(count);}
   setStoreOpen(open: boolean) { this.layer.visible = !open; this.toolbar.visible = !open; }
@@ -171,6 +173,7 @@ export class MapRenderer {
     const upgradeKey = this.catalog.nodes.upgrade.find(d => d.kind === 'rig')!.rig!;
     await this.load([catalog.rig, upgradeKey]);
     const images = new Map<string, string>();
+    const previews=textureScope();
     const capture = (id: string, layers: PixiArmatureDisplay[]) => {
       const root = new Container();
       for (const rig of layers) { rig.armature.advanceTime(.001); root.addChild(rig); }
@@ -184,7 +187,7 @@ export class MapRenderer {
     for (const item of catalog.items) {
       if (item.type === 'plant') {
         const spec = campaign.actors[item.name], base = `campaign/rigs/${spec.rig}/`;
-        const [skeleton, atlas, texture] = await Promise.all([json<object>(base + 'skeleton.json'), json<object>(base + 'atlas.json'), Assets.load<Texture>(assetUrl(base + 'texture.webp'))]);
+        const [skeleton, atlas, texture] = await Promise.all([json<object>(base + 'skeleton.json'), json<object>(base + 'atlas.json'), previews.load(assetUrl(base + 'texture.webp'))]);
         const factory = new PixiFactory(null, false);
         factory.parseDragonBonesData(skeleton, spec.rig); factory.parseTextureAtlasData(atlas, texture, spec.rig);
         const rig = factory.buildArmatureDisplay(spec.armature, spec.rig)!; rig.animation.play('Idle', 0);
@@ -192,6 +195,7 @@ export class MapRenderer {
       } else if (item.type === 'upgrade') capture(item.id, [this.makeRig(upgradeKey, 'Upgrades', item.animation!)]);
       else capture(item.id, [this.makeRig(catalog.rig, item.type + 'Stack', item.animation!)]);
     }
+    PixiFactory.advanceTime(0);await previews.dispose();
     return images;
   }
   async showChooser(index: number) {

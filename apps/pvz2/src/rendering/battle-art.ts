@@ -1,7 +1,10 @@
-import { Assets, Container, Rectangle, Texture, type Application } from 'pixi.js';
+import { battleEffects } from './resource-plan';
+import type { BattleLevel } from '../game/levels';
+import type { ResourceScope } from '../assets/resource-pool';
+import { Container, Rectangle, Texture, type Application } from 'pixi.js';
 import { PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
 import { assetUrl, json, loadInBatches } from '../assets/load';
-import type { PlantKind } from '../game/level';
+import type { Level, PlantKind } from '../game/level';
 import type { SpriteArt } from '../shell/types';
 import type { CameraIntro } from './presentation';
 export interface Rig { rig: string; armature: string; animation: string; group?: string }
@@ -15,11 +18,11 @@ export class BattleArt {
   catalog!: BattleCatalog;
   private factory = new PixiFactory(null, false);
   readonly clock = new WorldClock();
-  async init(app: Application, progress: (done:number,total:number)=>void,day=1,plants:PlantKind[]=[]) {
+  async init(app: Application, progress: (done:number,total:number)=>void,config:BattleLevel,plants:PlantKind[],level:Level,textures:ResourceScope<Texture>) {
     this.catalog = await json<BattleCatalog>('battle/catalog.json');
-    if(day>1){
+    if(config.assets==='campaign'){
       this.campaign=await json<CampaignCatalog>('campaign/catalog.json');
-      const names=['food','iceTrap',...(day===27?['flower']:[]),...([25,35].includes(day)?['bossMissile','bossTarget','bossEscape','bossPortal','zombossicon']:[]),...(plants.includes('snowdrop')?['snowdrop','snowdrop_freeze']:[]),...(plants.includes('sapfling')?['sapfling','sapfling_pf','sapTile']:[]),...(plants.includes('parsnip')?['parsnip_child','parsnip_child_small']:[]),...(plants.includes('cherry_bomb')?['cherryExplosion']:[]),...(day>=17?['dirtSpawn','tombBone','mold','endangered','pharaohBreak']:[]),...(plants.includes('kernelpult')?['corn','butter','butter2']:[]),...(plants.includes('melonpult')?['melon','melon_pf']:[]),...(day>=3?['grave','sandstorm']:[]),...(plants.includes('cabbagepult')?['cabbage']:[]),...(plants.includes('bloomerang')?['boomerang']:[]),...([4,8,25,29,35].includes(day)?['conveyor']:[]),...([7,10,14,16].includes(day)?['dirtSpawn']:[]),...([10,14].includes(day)?['tombBone']:[]),...(day===13?['mold']:[]),...(day===15?['endangered']:[]),...(plants.includes('iceweed')?['iceSaw']:[]),...(day===8?['pharaohBreak']:[]),...(day===5?['dirtSpawn','sprout','powerSnow','snowHit','cherryExplosion','wizardFinger','wizardPoint','tossPar','flameFinger','flameSquare']:[])];
+      const names=battleEffects(level,plants);
       const rigs=Object.fromEntries(names.map(name=>[name,this.campaign.rigs[name]]));
       this.catalog={...this.catalog,rigs:{...this.catalog.rigs,...rigs},ui:{...this.catalog.ui,...this.campaign.ui},sounds:{...this.catalog.sounds,...this.campaign.sounds}};
     }
@@ -27,7 +30,7 @@ export class BattleArt {
     let done=0;progress(done,rigs.length);
     await loadInBatches(rigs, 2, async rig => {
       const base = `${rig.group ?? 'battle'}/rigs/${rig.rig}`;
-      const [skeleton, atlas, texture] = await Promise.all([json<object>(`${base}/skeleton.json`), json<object>(`${base}/atlas.json`), Assets.load<Texture>(assetUrl(`${base}/texture.webp`))]);
+      const [skeleton, atlas, texture] = await Promise.all([json<object>(`${base}/skeleton.json`), json<object>(`${base}/atlas.json`), textures.load(assetUrl(`${base}/texture.webp`))]);
       this.factory.parseDragonBonesData(skeleton, rig.rig);
       this.factory.parseTextureAtlasData(atlas, texture, rig.rig);
       await app.renderer.prepare.upload(texture);

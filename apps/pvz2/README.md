@@ -160,8 +160,31 @@ python3 tools/pvz2-assets/extract-egypt-campaign.py
 
 The store uses the pinned native category tabs, commodity panels, currency buttons and product art. `extract-store.py` exports its catalog and records hashes in `store-provenance.json`; store art loads on first opening.
 
-`pvz2-web:wallet` stores coins, gems, tickets and one-time purchases independently from PVZ1. Gems start at 99999 once; reopening or refreshing does not replenish them. Coin/gem bundles retain upstream prices. The three available upgrades each add one seed slot, one plant-food slot or 25 starting sun, and stack with earned map rewards. Iceweed and Snowdrop retain the Egypt 9/28 completion prerequisites and become selectable in normal battles from day 2 onward. Day 1 retains its tutorial roster. Fixed decks and conveyor pools remain authored by the level.
+`pvz2-web:wallet` stores coins, gems, tickets and one-time purchases independently from PVZ1. Gems start at 99999 once; reopening or refreshing does not replenish them. Coin/gem bundles retain upstream prices. All five native shop upgrades are available: seed slot, plant-food slot, starting sun, sun-shovel refund and manual mower. They stack with earned map rewards. Each sun-shovel tier adds 25% refund, split into native multiples of five; each manual-mower tier adds one launch per battle. Hold a mower for one second without a selected card/tool to launch it; moving away, releasing or pausing cancels the hold. Native Trans events, hold-circle art and launch audio are retained. Iceweed and Snowdrop retain the Egypt 9/28 completion prerequisites and become selectable in normal battles from day 2 onward. Day 1 retains its tutorial roster. Fixed decks and conveyor pools remain authored by the level.
 
-Other shop plants, shovel/manual-mower upgrades, costumes, garden purchases, tickets and battle coin settlement are not implemented. Store product previews currently use native idle stills. Locked map nodes now follow upstream `WorldMap.ts`: clicking does not open a dialog. The old migration explanation has been removed.
+Other shop plants, costumes and battle coin settlement are not implemented. Garden purchases and tickets are described below. Store product previews currently use native idle stills. Locked map nodes now follow upstream `WorldMap.ts`: clicking does not open a dialog. The old migration explanation has been removed.
 
 `tests/store-visual.html` exercises purchases and battle entry with a separate memory profile.
+
+### Scene resources and world configuration
+
+`src/game/worlds/egypt.ts` owns Egypt's level roster, mode, rewards, narrative, lawn and music. `levels.ts` is the battle registry. `rendering/resource-plan.ts` derives actors and effects from actual plants, waves, summons and challenge modules rather than day-number ranges. Future world registrations still require their own gameplay/actor support; registering a map alone does not make its levels playable.
+
+Map, store previews and battle each hold explicit texture leases. Store snapshots release their source textures after capture; battle teardown awaits release of its own textures. Shared map/card textures remain alive while another view holds them. Pixi global batch pools remain owned by the surviving map application.
+
+The resource-plan comparison used identical actor sets and all available Egypt plants (or the native preset/conveyor pool), with WebP byte sizes and RGBA pixel sizes from exported atlases. Egypt 23 decreases from 26 to 20 unique atlases: 5,965,886 to 5,504,380 WebP bytes and 118,816,768 to 108,789,760 RGBA bytes. These figures describe texture assets, not measured browser heap or load-time improvements.
+
+`tests/resources.test.ts` covers shared ownership, reentry during asynchronous unloading and dependency resolution for all 35 levels. `tests/upgrades-visual.html` purchases the two upgrades in a separate memory profile and exercises hold/startup/removal/refund. `tests/map-visual.html` covers repeated battle disposal with a live map renderer.
+
+
+### 通用入口与本地养成
+
+- 小游戏入口接入原版植物解码：3–10 株基础植物、密码长度选择、双植物合成、栏位交换/清空、四类判定、推测记录和每日首次挑战钻石奖励。开始挑战即占用当日奖励机会，与原版一致。
+- 图鉴可分页查看 231 株植物、僵尸和升级的原版卡片、中文介绍与属性。图鉴展示不解锁对应战斗植物；详情目前使用卡片肖像，尚未复刻原版全角色动态展示和换装。
+- 门票入口每次本地领取 100 张，周六零点换周时清空旧门票。门票植物和每周特惠商品仍随对应植物战斗能力迁移，未提前售卖。
+- 禅境花园接入四个原版场景，幼苗套餐（5/15/60/75/90/120 钻石）、4000 金币花盆、随机种植已拥有植物、浇水/施肥/音乐/除虫动画、分阶段离线生长、移动与手推车、铲除及成熟爆发奖励。生长使用原版 24 小时周期，在下一照料节点暂停，不跳过照料阶段。成长货币直接计入本地余额。
+- 成熟爆发用于战斗中同类种子的种植，不消耗叶绿素；按实际使用过的植物种类在离开/重开战斗时扣除一次，坚不可摧布阵阶段不触发。花园、小游戏和门票分别使用 `pvz2-web:garden`、`pvz2-web:arcade`、`pvz2-web:ticket-week` 存档。
+- 通用入口通过动态模块及独立纹理作用域加载。未打开时不加载 `outer` 图集，关闭时释放实例与纹理引用，保留地图仍在使用的资源；原版共享图集复用既有导出文件。图鉴字体独立延迟加载，首页字体包保持约 221 KiB，不携带整本图鉴的字形。
+- `tests/store-visual.html?garden-fixture` 使用独立内存存档检查成熟、施肥、购买和爆发流程；不写入真实玩家存档。`tests/outer.test.ts` 覆盖每日奖励、周切换、花园照料和跨场景存档，及图鉴动画引用完整性。
+
+本轮验证：146 项测试通过，一代、二代生产构建通过；浏览器检查本地购买、长按小推车、四个花园切换与成熟奖励、图鉴分类、解码合成反馈，以及连续三次战斗销毁后返图。

@@ -15,6 +15,8 @@ export class LocalStore {
   }
   read(): Wallet { return JSON.parse(this.storage.getItem(WALLET_KEY)!); }
   private save(wallet: Wallet) { this.storage.setItem(WALLET_KEY, JSON.stringify(wallet)); }
+  credit(currency:'coin'|'gem'|'ticket',amount:number){const wallet=this.read();wallet[currency]+=amount;this.save(wallet);}
+  spend(currency:'coin'|'gem'|'ticket',amount:number){const wallet=this.read();if(wallet[currency]<amount)return false;wallet[currency]-=amount;this.save(wallet);return true;}
   owned(item: StoreItem) {
     const wallet = this.read();
     return item.type === 'plant' ? wallet.plants.includes(item.plant!) : item.type === 'upgrade' && wallet.upgrades.includes(item.upgrade!);
