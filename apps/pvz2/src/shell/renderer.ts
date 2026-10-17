@@ -3,9 +3,11 @@ import { Application, Assets, Container, Sprite, Texture, Text, ColorMatrixFilte
 import { PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
 import { assetUrl, json, loadInBatches } from '../assets/load';
 import { clampCamera, islandStates } from './navigation';
-import type { Catalog, Draw, Island, WorldMap } from './types';
+import type { MapEvent } from './progression';
+import type { Catalog, Draw, Island, WorldMap, ProgressionArt } from './types';
 
-interface View { root: Container; rigs: PixiArmatureDisplay[]; draw: Draw }
+interface MapDraw extends Draw { island?: number; role?: 'node' | 'path' | 'reward' }
+interface View { root: Container; rigs: PixiArmatureDisplay[]; draw: MapDraw }
 export class MapRenderer {
   readonly app = new Application();
   private factory = new PixiFactory(null, false);
@@ -16,7 +18,8 @@ export class MapRenderer {
   private toolbar = new Container();
   private loaded = new Set<string>();
   private views = new Map<number, View>();
-  private draws: Draw[] = [];
+  private draws: MapDraw[] = [];
+  private progression!: ProgressionArt;
   private map: WorldMap | null = null;
   private camera = 0;
   private velocity = 0;
@@ -127,7 +130,7 @@ export class MapRenderer {
     }
     PixiFactory.advanceTime(0);
   }
-  private make(draw: Draw): View {
+  private make(draw: MapDraw): View {
     const root = new Container(), rigs: PixiArmatureDisplay[] = [];
     if (draw.kind === 'rig') { const rig = this.makeRig(draw.rig!, draw.armature!, draw.animation!); root.addChild(rig); rigs.push(rig); }
     if (draw.kind === 'sprite') {
@@ -190,25 +193,27 @@ export class MapRenderer {
       view.root.position.set(512 + x, 320 + draw.y); view.root.scale.set(draw.sx * scale, draw.sy * scale);
     }
   }
-  async showMap(map: WorldMap, camera: number, completed: ReadonlySet<string>, night: boolean) {
+  async showMap(map: WorldMap, camera: number, completed: ReadonlySet<string>, night: boolean, rewards: ReadonlySet<number>, progression: ProgressionArt, events: MapEvent[] = []) {
     this.stop(); this.clear(); this.toolbar.children.forEach((child,i) => { child.visible = this.catalog.toolbar[i].owner !== 14; }); this.map = map; this.mode = 'map'; this.velocity = 0; this.setNight(night);
-    const states = islandStates(map, completed), dynamic: Draw[] = [], paths: Draw[] = [];
+    this.progression = progression;
+    const states = islandStates(map, completed, rewards), dynamic: MapDraw[] = [], paths: MapDraw[] = [];
     for (const island of map.islands) {
       const state = states.get(island.node)!;
       for (const next of island.next) {
         const target = map.islands.find(n => n.node === next)!, dx = target.x - island.x, dy = target.y - island.y;
-        for (const style of this.catalog.nodes.path) if (style.kind === 'rig') paths.push({ ...style, x: island.x, y: island.y, sx: Math.hypot(dx, dy) / 330, sy: .4, rotation: Math.atan2(dy, dx), parallax: 1, animation: state === 'finished' ? 'Idle' : 'Idle_Thin' });
+        for (const style of this.catalog.nodes.path) if (style.kind === 'rig') paths.push({ ...style, island: island.node, role: 'path', x: island.x, y: island.y, sx: Math.hypot(dx, dy) / 330, sy: .4, rotation: Math.atan2(dy, dx), parallax: 1, animation: state === 'finished' ? 'Idle' : 'Idle_Thin' });
       }
       if (island.kind === 0) {
         const key = island.appearance === 0 ? 'normalNode' : island.appearance === 1 ? 'minigameNode' : 'gargantuarNode';
         for (const style of this.catalog.nodes[key]) {
-          if (style.kind === 'sprite' || style.kind === 'rig' || style.kind === 'label') dynamic.push({ ...style, x: island.x + style.x, y: island.y + style.y, parallax: 1,
+          if (style.kind === 'sprite' || style.kind === 'rig' || style.kind === 'label') dynamic.push({ ...style, island: island.node, role: 'node', x: island.x + style.x, y: island.y + style.y, parallax: 1,
             ...(style.kind === 'label' ? { text: island.name } : {}), ...(style.kind === 'rig' ? { animation: state === 'finished' ? 'IdleFinished' : state === 'open' ? 'IdleUnfinish' : 'IdleUnopen' } : {}) });
         }
       }
-      if (island.kind === 1) {
+      if (island.kind === 1 && rewards.has(island.node)) dynamic.push(...this.plantDraws(island));
+      if (island.kind === 1 && !rewards.has(island.node)) {
         const card = this.catalog.plantCards[island.plant];
-        for (const style of this.catalog.nodes.plantCard) dynamic.push({ ...style, x: island.x, y: island.y - 30, sx: .4, sy: .4, parallax: 1,
+        for (const style of this.catalog.nodes.plantCard) dynamic.push({ ...style, island: island.node, role: 'reward', x: island.x, y: island.y - 30, sx: .4, sy: .4, parallax: 1,
           animation: style.armature === 'plants' ? card.animation : card.background });
       }
       if (island.kind === 3) for (const style of this.catalog.nodes.upgrade) dynamic.push({ ...style, x: island.x, y: island.y, sx: .4, sy: .4, parallax: 1, animation: this.catalog.upgrades[island.upgrade] });
@@ -217,9 +222,53 @@ export class MapRenderer {
       }
     }
     this.draws = [...map.draws.filter(d => !['DeltaArrow', 'BtnPurpleBigUp'].includes(d.name)), ...paths, ...dynamic];
-    await this.prepare(this.draws);
-    await this.releaseExcept(new Set([this.catalog.background, ...this.draws.filter(d => d.kind === 'rig').map(d => d.rig!)]));
+    const rewardDraws = events.filter(e => e.action === 'reward').flatMap(e => {
+      const island = map.islands.find(n => n.node === e.node)!;
+      return island.kind === 1 ? this.plantDraws(island) : [];
+    });
+    await this.prepare([...this.draws, ...rewardDraws]);
+    await this.releaseExcept(new Set([this.catalog.background, ...[...this.draws, ...rewardDraws].filter(d => d.kind === 'rig').map(d => d.rig!)]));
     this.camera = clampCamera(map, camera); this.positionMap(); this.start();
+  }
+  private plantDraws(island: Island): MapDraw[] {
+    return this.progression.plants[island.plant].map(draw => ({ ...draw,
+      island: island.node, role: 'reward', x: island.x + draw.x, y: island.y + draw.y, parallax: 1,
+    }));
+  }
+  private animateIsland(node: number, role: MapDraw['role'], animation: string, idle: string) {
+    for (const [index, draw] of this.draws.entries()) if (draw.island === node && draw.role === role && draw.kind === 'rig') {
+      draw.animation = idle;
+      for (const rig of (this.views.get(index)?.rigs ?? [])) rig.animation.play(animation, 1);
+    }
+  }
+  private revealPlant(island: Island) {
+    for (const [index, draw] of this.draws.entries()) if (draw.island === island.node && draw.role === 'reward') {
+      const view = this.views.get(index);
+      if (view) { view.rigs.forEach(r => r.dispose()); view.root.destroy({ children: true }); this.views.delete(index); }
+      // Retain indices of the other map views while replacing the card's two layers.
+      draw.kind = 'label'; draw.text = ''; delete draw.animation;
+    }
+    this.draws.push(...this.plantDraws(island)); this.positionMap();
+  }
+  async presentCompletion(events: MapEvent[], onEvent: (event: MapEvent) => void, sound: (name: string) => void) {
+    let elapsed = 0, next = 0;
+    const end = Math.max(...events.map(e => e.at + (e.action === 'reward' ? 0 : this.progression.durations[e.action])));
+    await new Promise<void>(resolve => {
+      const tick = () => {
+        elapsed += Math.min(this.app.ticker.deltaMS / 1000, .05);
+        while (next < events.length && events[next].at <= elapsed) {
+          const event = events[next++], island = this.map!.islands.find(n => n.node === event.node)!;
+          if (event.action === 'finish') this.animateIsland(event.node, 'node', 'Finish', 'IdleFinished');
+          if (event.action === 'path') this.animateIsland(event.node, 'path', 'Push', 'Idle');
+          if (event.action === 'open') this.animateIsland(event.node, 'node', 'Open', 'IdleUnfinish');
+          if (event.action === 'reward' && island.kind === 1) this.revealPlant(island);
+          onEvent(event);
+          sound({ finish: 'levelNodeFinish', path: 'levelPathPush', open: 'levelNodeReveal', reward: 'plantNodeUnlock' }[event.action]);
+        }
+        if (elapsed >= end) { this.app.ticker.remove(tick); resolve(); }
+      };
+      this.app.ticker.add(tick);
+    });
   }
   private positionMap() {
     for (const [index, draw] of this.draws.entries()) {

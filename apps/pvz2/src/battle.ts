@@ -3,7 +3,8 @@ import { json, assetUrl } from './assets/load';
 import { readAudio, saveAudio, audioControls } from './audio';
 import { BOARD, PLANT_KINDS, plantLabels, readLevel, type PlantKind, type Properties, type SourceLevel, type ZombieProperties } from './game/level';
 import { Game } from './game/model';
-import { COMPLETE_KEY } from './shell/navigation';
+import type { ProgressStore } from './shell/progression';
+import { availablePlants, type BattleLevel } from './game/levels';
 import type { Scene } from './rendering/scene';
 import { cubicInOut, introCamera } from './rendering/presentation';
 
@@ -13,11 +14,12 @@ const DESCRIPTIONS: Record<PlantKind,string> = {
   wallnut:'坚果用坚硬的外壳保护身后的植物。',
   potatomine:'土豆地雷需要时间准备，然后炸飞靠近的僵尸。',
 };
-const CARD_ORDER: PlantKind[] = ['peashooter','sunflower','wallnut','potatomine'];
 
-export function createBattle(host: HTMLElement, onReturn: () => void) {
+export function createBattle(host: HTMLElement, onReturn: () => void, levelConfig: BattleLevel, progress: ProgressStore) {
+  const title = `${levelConfig.worldName} - 第${levelConfig.day}天`;
+  let cardOrder: PlantKind[] = [];
   const $ = <T extends HTMLElement>(selector: string) => host.querySelector<T>(selector)!;
-  host.innerHTML = `<section class="battle-frame" aria-label="神秘埃及第1天">
+  host.innerHTML = `<section class="battle-frame" aria-label="${title}">
     <div id="canvas-host"></div>
     <div id="hud" hidden>
       <div class="sun-counter"><img alt="阳光"><b id="sun-count">50</b></div>
@@ -25,20 +27,20 @@ export function createBattle(host: HTMLElement, onReturn: () => void) {
       <button id="speed" class="battle-icon" aria-label="切换二倍速" aria-pressed="false"></button>
       <button id="pause" class="battle-icon" aria-label="暂停游戏"></button>
       <button id="shovel" class="battle-icon" aria-label="使用铲子"><img alt="铲子"></button>
-      <div class="level-name">神秘埃及 - 第1天</div>
+      <div class="level-name">${title}</div>
       <div id="wave-hud"><div id="wave-fill"></div><span id="wave-label"></span></div>
     </div>
     <button id="narrative" aria-label="继续对白" hidden><span class="speech"><span id="speech-line"></span><small>点击继续</small></span></button>
     <div id="seed-chooser" hidden>
       <section class="chooser-window" aria-label="选择植物">
         <div class="plant-description"><img id="plant-portrait" alt=""><div><h2 id="plant-name"></h2><p id="plant-description"></p></div></div>
-        <div class="chooser-cards">${CARD_ORDER.map(kind=>`<button data-choose="${kind}" class="seed choose-card" aria-label="选择${plantLabels[kind]}" aria-pressed="false"><img alt="${plantLabels[kind]}"><span class="seed-price"></span></button>`).join('')}</div>
+        <div class="chooser-cards"></div>
       </section>
       <button id="ready-back" class="battle-button">返回地图</button><button id="start" class="battle-button" disabled>开始战斗</button>
     </div>
     <div id="battle-announcement" role="status" hidden></div>
     <div id="overlay" hidden></div>
-  </section><div class="battle-caption"><span>神秘埃及 · 第1天</span><span>1–4 选卡 · 点击阳光收集 · 空格暂停</span></div>`;
+  </section><div class="battle-caption"><span>${title}</span><span>1–4 选卡 · 点击阳光收集 · 空格暂停</span></div>`;
 
   let scene: Scene, properties: Properties, source: SourceLevel, game: Game;
   let selected: PlantKind | 'shovel' | null = null;
@@ -67,14 +69,14 @@ export function createBattle(host: HTMLElement, onReturn: () => void) {
 
   async function enter() {
     host.hidden=false; screen='loading'; host.dataset.screen=screen; preferences=readAudio();
-    $('#overlay').innerHTML = `<section class="battle-loading" aria-label="神秘埃及第1天加载中">
+    $('#overlay').innerHTML = `<section class="battle-loading" aria-label="${title}加载中">
       <img class="loading-scenery" src="${assetUrl('egypt/preview.webp')}" alt="">
-      <div class="loading-destination"><span class="loading-chapter">时空之旅</span><h2>神秘埃及</h2><span class="loading-day">第1天</span></div>
+      <div class="loading-destination"><span class="loading-chapter">时空之旅</span><h2>${levelConfig.worldName}</h2><span class="loading-day">第${levelConfig.day}天</span></div>
       <div class="loading-progress"><p id="load-status" role="status">正在准备庭院…</p><progress id="load-progress" aria-label="关卡资源加载进度" max="7" value="0"></progress></div>
     </section>`;
     $('#overlay').hidden = false;
     if (!scene) {
-      const [{ Scene },props,level,flag] = await Promise.all([import('./rendering/scene'),json<Properties>('levels/properties.json'),json<SourceLevel>('levels/egypt1.source.json'),json<ZombieProperties>('battle/flag.json')]);
+      const [{ Scene },props,level,flag] = await Promise.all([import('./rendering/scene'),json<Properties>('levels/properties.json'),json<SourceLevel>(levelConfig.source),json<ZombieProperties>('battle/flag.json')]);
       properties=props; properties.zombies.mummy_flag=flag; source=level; scene=new Scene();
       await scene.init($('#canvas-host'),(done,total)=>{
         $('#load-status').textContent=`正在准备植物与庭院 ${done} / ${total}`;
@@ -89,17 +91,19 @@ export function createBattle(host: HTMLElement, onReturn: () => void) {
       for(const [name,art] of Object.entries(scene.art.catalog.ui)) host.style.setProperty(`--art-${name}`,`url('${assetUrl(art.image)}')`);
       host.style.setProperty('--art-emptySlot',`url('${scene.art.image(scene.app,'cards','emptyslot','emptyslot')}')`);
       for(const kind of PLANT_KINDS) {cards.set(kind,scene.art.card(scene.app,kind));portraits.set(kind,scene.portrait(kind));}
-      for(const kind of CARD_ORDER) {
-        $<HTMLImageElement>(`[data-choose="${kind}"] img`).src=cards.get(kind)!;
-        $(`[data-choose="${kind}"] .seed-price`).textContent=String(properties.plants[kind].SunCost);
-      }
+
       $<HTMLImageElement>('.sun-counter img').src=scene.art.image(scene.app,'sunIcon');
       $<HTMLImageElement>('#shovel img').src=scene.art.image(scene.app,'shovel','Idle');
       for(const [name,paths] of Object.entries(scene.art.catalog.sounds)) clips.set(name,paths.map(path=>{const audio=new Audio(assetUrl(path));audio.preload='none';return audio;}));
       music.src=assetUrl('egypt/music.mp3');
     }
+    cardOrder = availablePlants(levelConfig,progress.ownedPlants());
+    $('.chooser-cards').innerHTML = cardOrder.map(kind=>`<button data-choose="${kind}" class="seed choose-card" aria-label="选择${plantLabels[kind]}" aria-pressed="false"><img alt="${plantLabels[kind]}" src="${cards.get(kind)!}"><span class="seed-price">${properties.plants[kind].SunCost}</span></button>`).join('');
+    for(const kind of cardOrder)$(`[data-choose="${kind}"]`).onclick=()=>{
+      describe(kind);const index=deck.indexOf(kind);if(index===-1){deck.push(kind);sound('cardChosen');}else{deck.splice(index,1);sound('cardCancel');}updateDeck();
+    };
     $('#overlay').hidden=true;
-    if(localStorage.getItem(COMPLETE_KEY)==='1')survey();else {narrativeIndex=0;screen='npc-enter';host.dataset.screen=screen;scene.enterNarrative();}
+    if(progress.isComplete(levelConfig.id))survey();else {narrativeIndex=0;screen='npc-enter';host.dataset.screen=screen;scene.enterNarrative();}
   }
   function nextNarrative() {
     voice?.pause();voice=null;
@@ -130,7 +134,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void) {
       const cooldown=button.querySelector<HTMLElement>('.seed-cooldown')!;
       cooldown.style.height=kind&&screen!=='choosing'?`${game.cooldowns[kind]/properties.plants[kind].Cooldown*100}%`:'0';
     }
-    for(const kind of CARD_ORDER) $(`[data-choose="${kind}"]`).setAttribute('aria-pressed',String(deck.includes(kind)));
+    for(const kind of cardOrder) $(`[data-choose="${kind}"]`).setAttribute('aria-pressed',String(deck.includes(kind)));
     $<HTMLButtonElement>('#start').disabled=deck.length===0;
   }
   function chooseSeeds() {
@@ -223,16 +227,16 @@ export function createBattle(host: HTMLElement, onReturn: () => void) {
   function pause() {
     if(screen!=='playing')return;
     game.phase='paused';screen='pause';scene.stop();music.pause();sound('pause');
-    panel('暂停',`<p>神秘埃及 - 第1天</p>${audioControls(preferences)}<div class="pause-actions"><button id="exit" class="battle-button">退出地图</button><button id="restart" class="battle-button">重新开始</button><button id="resume" class="battle-button">继续</button></div>`);
+    panel('暂停',`<p>${title}</p>${audioControls(preferences)}<div class="pause-actions"><button id="exit" class="battle-button">退出地图</button><button id="restart" class="battle-button">重新开始</button><button id="resume" class="battle-button">继续</button></div>`);
     $('#resume').onclick=resume;$('#restart').onclick=chooseSeeds;$('#exit').onclick=menu;bindAudio();
   }
   function resume() {game.phase='playing';screen='playing';accumulator=0;$('#overlay').hidden=true;playMusic();scene.start();}
   function finish() {
     screen='result';scene.stop();scene.render();music.pause();$('#battle-announcement').hidden=true;
     if(game.phase==='won') {
-      const first=localStorage.getItem(COMPLETE_KEY)!=='1';
-      panel('关卡完成',`${first?`<img class="map-reward" src="${scene.art.image(scene.app,'reward','map')}" alt="世界地图奖励"><p>获得世界地图</p>`:'<p>神秘埃及 - 第1天</p>'}<button id="result-map" class="battle-button">继续</button>`);
-      $('#result-map').onclick=()=>{localStorage.setItem(COMPLETE_KEY,'1');menu();};
+      const first=!progress.isComplete(levelConfig.id);
+      panel('关卡完成',`${first?`<img class="map-reward" src="${scene.art.image(scene.app,'reward',levelConfig.firstReward.image)}" alt="${levelConfig.firstReward.label}"><p>获得${levelConfig.firstReward.label}</p>`:`<p>${title}</p>`}<button id="result-map" class="battle-button">继续</button>`);
+      $('#result-map').onclick=()=>{progress.finish(levelConfig.world,levelConfig.id);menu();};
     } else {
       panel('僵尸吃掉了你的脑子！','<button id="again" class="battle-button">重新开始</button><button id="result-map" class="battle-button">返回地图</button>');
       $('#again').onclick=chooseSeeds;$('#result-map').onclick=menu;
@@ -242,9 +246,6 @@ export function createBattle(host: HTMLElement, onReturn: () => void) {
   $('#pause').onclick=pause;$('#start').onclick=start;$('#ready-back').onclick=menu;
   $('#speed').onclick=()=>{if(screen==='playing'){speed=speed===1?2:1;$('#speed').setAttribute('aria-pressed',String(speed===2));}};
   $('#shovel').onclick=()=>{if(screen==='playing'){selected=selected==='shovel'?null:'shovel';updateHud();}};
-  for(const kind of CARD_ORDER)$(`[data-choose="${kind}"]`).onclick=()=>{
-    describe(kind);const index=deck.indexOf(kind);if(index===-1){deck.push(kind);sound('cardChosen');}else{deck.splice(index,1);sound('cardCancel');}updateDeck();
-  };
   for(let i=0;i<6;i++)$(`[data-slot="${i}"]`).onclick=()=>{
     if(screen==='choosing'){deck.splice(i,1);sound('cardCancel');updateDeck();}
     else if(screen==='playing'){selected=selected===deck[i]?null:deck[i];updateHud();}

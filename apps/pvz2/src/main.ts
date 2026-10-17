@@ -1,4 +1,5 @@
 import './shell/style.css';
+import { BATTLE_LEVELS } from './game/levels';
 import { WorldShell } from './shell/controller';
 
 const app = document.querySelector<HTMLElement>('#app')!;
@@ -6,10 +7,10 @@ app.innerHTML = '<main class="world-shell"></main><div class="battle-app" hidden
 const host = app.querySelector<HTMLElement>('.world-shell')!;
 const battleHost = app.querySelector<HTMLElement>('.battle-app')!;
 let battle: ReturnType<typeof import('./battle').createBattle>;
-const shell = new WorldShell(host, async () => {
+const shell = new WorldShell(host, async (level, progress) => {
   if (!battle) {
     const { createBattle } = await import('./battle');
-    battle = createBattle(battleHost, () => { void shell.resume(); });
+    battle = createBattle(battleHost, () => { void shell.resume(); }, BATTLE_LEVELS[level], progress);
   }
   await battle.enter();
 });
