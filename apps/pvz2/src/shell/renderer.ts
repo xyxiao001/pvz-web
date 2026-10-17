@@ -3,6 +3,7 @@ import { Application, Assets, Container, Sprite, Texture, Text, ColorMatrixFilte
 import { PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
 import { assetUrl, json, loadInBatches } from '../assets/load';
 import { clampCamera, islandStates } from './navigation';
+import { WorldScrollGesture } from './world-scroll';
 import type { MapEvent } from './progression';
 import type { Catalog, Draw, Island, WorldMap, ProgressionArt } from './types';
 
@@ -25,6 +26,7 @@ export class MapRenderer {
   private velocity = 0;
   private mode: 'chooser' | 'map' = 'chooser';
   private carousel = 0;
+  private worldScroll = new WorldScrollGesture();
   private carouselStart = 0;
   private carouselTarget = 0;
   private transition = .2;
@@ -85,7 +87,12 @@ export class MapRenderer {
     this.app.canvas.addEventListener('pointercancel', () => { this.pointer = null; this.velocity = 0; });
     this.app.canvas.addEventListener('wheel', event => {
       event.preventDefault();
-      if (this.mode === 'chooser') this.onStep(event.deltaY > 0 || event.deltaX > 0 ? 1 : -1);
+      if (this.mode === 'chooser') {
+        const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+        const unit = event.deltaMode === WheelEvent.DOM_DELTA_LINE ? 16 : event.deltaMode === WheelEvent.DOM_DELTA_PAGE ? this.host.clientWidth : 1;
+        const direction = this.worldScroll.step(delta * unit,event.timeStamp);
+        if (direction !== 0) this.onStep(direction);
+      }
       else { this.velocity = 0; this.setCamera(this.camera + (Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY) * .2); }
     }, { passive: false });
     this.app.ticker.add(ticker => {
