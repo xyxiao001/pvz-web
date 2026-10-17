@@ -20,8 +20,18 @@ export class ProgressStore {
     const saved = this.storage.getItem(PENDING_KEY);
     return saved === null ? null : JSON.parse(saved);
   }
-  finish(world: string, level: string) {
+  campaignRewards():{level:string;type:'worldtrophy'|'pinata'|'sprout';id:string;count:number}[]{
+    const saved=this.storage.getItem('pvz2-web:campaign-rewards');return saved===null?[]:JSON.parse(saved);
+  }
+  finish(world: string, level: string, sprouts=0) {
     if (this.isComplete(level)) return;
+    if(level==='egypt4'||level==='egypt6'||level==='egypt5'&&sprouts>0){
+      const rewards=this.campaignRewards();
+      if(level==='egypt4')rewards.push({level,type:'worldtrophy',id:'powerupgadget',count:1});
+      if(level==='egypt6')rewards.push({level,type:'pinata',id:'spine_egypt',count:1});
+      if(level==='egypt5')rewards.push({level,type:'sprout',id:'sprout',count:sprouts});
+      this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));
+    }
     this.storage.setItem(completionKey(level), '1');
     this.storage.setItem(PENDING_KEY, JSON.stringify({ world, level }));
   }

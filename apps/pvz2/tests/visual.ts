@@ -13,7 +13,7 @@ const level=readLevel(await json<SourceLevel>('levels/egypt1.source.json'));
 let game:Game;
 let serial=9000;
 function zombie(kind:ZombieKind,x:number,row=2):Zombie {
-  return {id:serial++,kind,row,x,hp:props.zombies[kind].Toughness,armor:kind==='mummy_armor1'?370:0,eating:false,absorbed:0,absorbUntil:0,absorbState:'idle',absorbAt:0,deathCause:'normal'};
+  return {id:serial++,kind,row,x,hp:props.zombies[kind].Toughness,armor:kind==='mummy_armor1'?370:0,eating:false,absorbed:0,absorbUntil:0,absorbState:'idle',absorbAt:0,deathCause:'normal',frozenUntil:0,chilledUntil:0,food:false,entry:'walk',entryAt:0,entryX:x,camelPart:0,team:0,leap:null};
 }
 function report(){state.textContent=`时间 ${game.time.toFixed(2)} · 活僵尸 ${game.zombies.length} · 死亡记录 ${game.deaths.length} · 阳光 ${game.suns.length} · 演出 ${scene.hasDeathAnimations?'进行中':'已结束'}`;}
 function render(){scene.sync(game,0);scene.render();report();}

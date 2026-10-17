@@ -1,0 +1,36 @@
+import {Scene} from '../src/rendering/scene';
+import {Game,type Zombie} from '../src/game/model';
+import {json} from '../src/assets/load';
+import {readLevel,cellX,rowY,type SourceLevel,type Properties} from '../src/game/level';
+const base=await json<Properties>('levels/properties.json'),extra=await json<Properties>('campaign/properties.json');
+const props:Properties={...extra,plants:{...base.plants,...extra.plants},zombies:{...base.zombies,...extra.zombies,mummy_flag:await json('battle/flag.json')},armors:{...base.armors,...extra.armors}};
+const state=document.querySelector<HTMLElement>('#state')!,fieldset=document.querySelector('fieldset')!;
+let scene:Scene,game:Game,serial=9000;
+const zombie=(row:number,x:number):Zombie=>({id:serial++,kind:'mummy',row,x,hp:190,armor:0,eating:false,absorbed:0,absorbUntil:0,absorbState:'idle',absorbAt:0,deathCause:'normal',frozenUntil:0,chilledUntil:0,food:false,entry:'walk',entryAt:0,entryX:x,camelPart:0,team:0,leap:null});
+function render(){scene.sync(game,0);scene.render();state.textContent=`时间 ${game.time.toFixed(2)} · 僵尸 ${game.zombies.length} · 墓碑 ${game.graves.length} · 演出 ${scene.hasDeathAnimations?'进行中':'结束'}`;}
+function advance(seconds:number){for(let i=0;i<seconds*60;i++){game.tick(1/60);scene.sync(game,1/60);game.events.length=0;}render();}
+async function setup(name:string){
+ fieldset.disabled=true;scene?.dispose();scene=new Scene();
+ const day=name==='power'?5:6;
+ await scene.init(document.querySelector('#canvas')!,(n,total)=>{state.textContent=`加载 ${n}/${total}`;},day,['cabbagepult','bloomerang','iceburg']);
+ const level=readLevel(await json<SourceLevel>(`campaign/egypt${day}.source.json`));
+ if(name==='camel'){level.actions=[[{...level.actions[0][0],zombies:[{kind:'camel_onehump',row:2}]}]];level.waves=[['camel_onehump']];level.flagInterval=100;}
+ if(name==='storm'){level.actions=[level.actions[9].filter(a=>a.mode==='storm')];level.waves=[level.actions[0].flatMap(a=>a.zombies.map(z=>z.kind))];level.flagInterval=100;}
+ game=new Game(level,props,scene.timing,z=>scene.absorptionTarget(z),42,false);scene.frameCombat();
+ if(name==='plants'){
+  game.sun=1000;game.plant('cabbagepult',1,2);game.plant('bloomerang',2,2);game.plant('iceburg',3,4);
+  for(const row of [1,2,3])game.zombies.push(zombie(row,row===3?cellX(4)+30:cellX(8)));
+  render();
+ }else {advance(name==='storm'?18.8:15.6);if(name==='camel'){game.zombies.forEach((z,i)=>{z.x=650+i*60;});render();}}
+ fieldset.disabled=false;
+}
+for(const b of document.querySelectorAll<HTMLButtonElement>('[data-scene]'))b.onclick=()=>{void setup(b.dataset.scene!);};
+for(const b of document.querySelectorAll<HTMLButtonElement>('[data-action]'))b.onclick=()=>{
+ const action=b.dataset.action!;
+ if(action==='step')advance(.2);if(action==='second')advance(1);
+ if(action==='board'){for(const z of [...game.zombies])game.peas.push({id:serial++,row:z.row,x:z.x-25,y:rowY(z.row)-48,damage:251,powered:false});advance(.05);}
+ if(action==='food'){game.food=3;for(const p of game.plants)game.plantFood(p.row,p.column);advance(.5);}
+ if(action==='kill'){for(const z of game.zombies){z.hp=0;z.deathCause='normal';}advance(.05);}
+ if(action==='zap'||action==='snow'||action==='cherry'){game.power=null;game.selectPower(action);const z=game.zombies[0];game.powerPointer(z.x,rowY(z.row)-50,true,true);advance(.25);}
+};
+await setup('plants');

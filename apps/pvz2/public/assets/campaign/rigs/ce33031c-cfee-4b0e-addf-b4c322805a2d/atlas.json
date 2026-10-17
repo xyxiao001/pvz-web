@@ -1,0 +1,1 @@
+{"width":256,"SubTexture":[{"width":253,"y":1539,"height":36,"name":"main","x":1},{"frameX":0,"y":1,"frameY":0,"frameWidth":25,"width":21,"frameHeight":1536,"height":1536,"name":"A","x":1},{"width":253,"y":1577,"height":19,"name":"B","x":1}],"height":2048,"name":"ConveyorAnimate","imagePath":"texture.webp"}

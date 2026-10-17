@@ -36,3 +36,12 @@ button{font:inherit;cursor:pointer;border:0;padding:0;background:transparent;col
 @scope (.battle-app) {
 .speech::before{content:"";position:absolute;inset:0;background:var(--art-speechBubble) center/100% 100% no-repeat;z-index:-1}#narrative[data-character=winnie] .speech::before{transform:scaleX(-1)}
 }
+
+@scope (.battle-app) {
+#plant-food{position:absolute;left:1.5%;bottom:2%;width:11%;height:9%;display:flex;align-items:center;gap:.3cqw;background:#133d20dd;border:.2cqw solid #8ec75a;border-radius:1cqw;font-size:1.5cqw;text-shadow:0 1px #162b0b}#plant-food img{width:48%;height:100%;object-fit:contain}#plant-food.selected{box-shadow:0 0 1cqw #b5ff53}
+#game-tip{position:absolute;left:22%;right:22%;bottom:3%;padding:.7cqw 1.4cqw;text-align:center;background:#211b15dd;border-radius:.7cqw;color:#fff3c8;font:1.4cqw/1.5 "PingFang SC",sans-serif;pointer-events:none}
+#conveyor{position:absolute;left:8%;top:1%;width:43%;height:18%;overflow:hidden;pointer-events:auto;border-radius:.5cqw}#conveyor .seed{position:absolute;width:19%;transition:top .15s;aspect-ratio:238/150}
+#powerups{position:absolute;left:24%;bottom:1%;width:52%;height:11%;display:flex;justify-content:center;gap:1.3cqw;pointer-events:auto}#powerups button{width:14%;height:90%;position:relative}#powerups img{width:100%;height:100%;object-fit:contain}#powerups .selected{filter:drop-shadow(0 0 .6cqw #ffffa0)}#powerups button:disabled:not(.selected){filter:brightness(.6)}#power-time{position:absolute;bottom:0;width:77%;height:.5cqw}
+:scope[data-mode=conveyor] .seed-bank,:scope[data-mode=conveyor] .sun-counter,:scope[data-mode=powerups] .seed-bank,:scope[data-mode=powerups] .sun-counter,:scope[data-mode=powerups] #shovel{display:none}
+:scope[data-mode=powerups] #game-tip{bottom:14%}
+}

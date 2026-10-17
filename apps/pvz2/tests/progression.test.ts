@@ -52,7 +52,7 @@ test('Egypt 2 and 3 grant their native plants before opening the following level
   }
   assert.equal(progress.rewards().length,2);
   assert.ok(Object.keys(LEVEL_ROUTES).every(id=>Object.hasOwn(BATTLE_LEVELS,id)));
-  assert.equal(LEVEL_ROUTES.egypt2,undefined);
+  assert.equal(LEVEL_ROUTES.egypt2,'egypt2');
 });
 
 test('pending reward presentation survives reload without granting the plant twice', () => {

@@ -9,10 +9,10 @@ const read = <T>(path: string): T => JSON.parse(readFileSync(new URL(path, root)
 const catalog = read<Catalog>('shell/catalog.json');
 const maps = catalog.worlds.filter(w => w.enterable).map(w => read<WorldMap>(`shell/maps/${w.id}.json`));
 
-test('13 native maps retain connected source level graphs and only Egypt 1 has a battle route', () => {
+test('13 native maps retain connected source level graphs and only Egypt 1–6 have battle routes', () => {
   assert.equal(maps.length,13);
   assert.equal(catalog.worlds.length,15);
-  assert.deepEqual(Object.keys(LEVEL_ROUTES), ['egypt1']);
+  assert.deepEqual(Object.keys(LEVEL_ROUTES), ['egypt1','egypt2','egypt3','egypt4','egypt5','egypt6']);
   for (const map of maps) {
     const nodes = new Set(map.islands.map(n => n.node));
     assert.equal(nodes.size,map.islands.length);

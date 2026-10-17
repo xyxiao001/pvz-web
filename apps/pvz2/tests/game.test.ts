@@ -11,7 +11,7 @@ const source: SourceLevel = read('levels/egypt1.source.json');
 const timing = { shoot: 15 / 30, shootDuration: 26 / 30, produce: 23 / 30, produceDuration: 40 / 30, mineGrow:18/30,mineExplode:14/30,mineDeath:15/30,raStart:25/30,raEnd:25/30 };
 const create = () => new Game(readLevel(source), props, timing, zombie=>({x:zombie.x-25,y:rowY(zombie.row)-95}), 1234);
 const tick = (game: Game, seconds: number) => { for (let i = 0; i < Math.round(seconds * 60); i++) game.tick(1 / 60); };
-const mummy = (x: number, armor = 0): Zombie => ({ id: 9000, kind: 'mummy', row: 2, x, hp: 190, armor, eating: false, absorbed: 0, absorbUntil: 0,absorbState:'idle',absorbAt:0,deathCause:'normal' });
+const mummy = (x: number, armor = 0): Zombie => ({ id: 9000, kind: 'mummy', row: 2, x, hp: 190, armor, eating: false, absorbed: 0, absorbUntil: 0,absorbState:'idle',absorbAt:0,deathCause:'normal',frozenUntil:0,chilledUntil:0,food:false,entry:'walk',entryAt:0,entryX:x,camelPart:0,team:0,leap:null });
 
 test('Egypt 1 retains all ten explicit spawn waves and the three source zombie types', () => {
   const level = readLevel(source);
