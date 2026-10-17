@@ -163,7 +163,7 @@ export class Game {
     if(plant.kind==='sunflower'||plant.kind==='twinsunflower'){plant.burst=this.props.plants[plant.kind].PlantfoodTime;plant.nextBurst=this.time+4/30;}
     if(plant.kind==='bonkchoy'){plant.burst=this.props.plants.bonkchoy.PlantfoodHitCount;plant.nextBurst=this.time+this.timing.bonk!.foodStart;plant.facing=1;}
     if(plant.kind==='iceweed')this.iceweedSpikes.set(plant.id,3);
-    if (plant.kind === 'wallnut') { plant.hp = this.props.plants.wallnut.Toughness; plant.armor = this.props.plants.wallnut.ArmorToughness; }
+    if (plant.kind === 'wallnut') { plant.hp = this.props.plants.wallnut.Toughness; }
     if (plant.kind === 'potatomine') {
       plant.age = this.props.plants.potatomine.ChargeTime;
       const cells = Array.from({ length: 45 }, (_, index) => ({ row: Math.floor(index / 9), column: index % 9 }))
@@ -741,6 +741,7 @@ export class Game {
         if(this.time-p.actionAt>=this.timing.campaign!.iceDuration)p.hp=0;continue;
       }
       if (p.action === 'food') {
+        if(p.kind==='wallnut'&&!p.fired&&this.time-p.actionAt>=this.timing.wallnutArmor){p.fired=true;p.armor=this.props.plants.wallnut.ArmorToughness;}
         if((p.kind==='sunflower'||p.kind==='twinsunflower')&&p.burst>0&&this.time>=p.nextBurst){this.produceSun(p);p.burst--;p.nextBurst+=8/30;}
         while (p.kind === 'peashooter' && p.burst > 0 && this.time >= p.nextBurst) { this.shoot(p, true); p.burst--; p.nextBurst += 2 / this.props.plants.peashooter.PlantfoodPeaCount; }
         if(p.kind==='cabbagepult'&&!p.fired&&this.time-p.actionAt>=this.timing.campaign!.cabbageFood){p.fired=true;for(const z of this.zombies.filter(z=>z.hp>0))this.lob(p,z.id,z.x,rowY(z.row)-45,true);for(const g of this.graves)this.lob(p,g.id,cellX(g.column),rowY(g.row)-40,true);}
@@ -750,7 +751,7 @@ export class Game {
           p.fired=true;const x=cellX(p.column),y=rowY(p.row)-20;
           this.missiles.push({id:++this.id,kind:'saw',row:p.row,x,y,startX:x,startY:y,targetX:1070,targetY:y,targetId:p.id,age:0,duration:4,damage:200,powered:true,returning:false,hits:[],dx:1,dy:0});
         }
-        const duration=p.kind==='peashooter'?2:p.kind==='sunflower'||p.kind==='twinsunflower'?this.props.plants[p.kind].PlantfoodTime*8/30:p.kind==='iceweed'?this.timing.special!.iceweedFoodEnd:p.kind==='cabbagepult'?this.timing.campaign!.cabbageFoodEnd:p.kind==='iceburg'?this.timing.campaign!.iceFoodEnd:p.kind==='bloomerang'?2:4;
+        const duration=p.kind==='wallnut'?this.timing.wallnutFoodEnd:p.kind==='peashooter'?2:p.kind==='sunflower'||p.kind==='twinsunflower'?this.props.plants[p.kind].PlantfoodTime*8/30:p.kind==='iceweed'?this.timing.special!.iceweedFoodEnd:p.kind==='cabbagepult'?this.timing.campaign!.cabbageFoodEnd:p.kind==='iceburg'?this.timing.campaign!.iceFoodEnd:p.kind==='bloomerang'?2:4;
         if(this.time-p.actionAt>=duration){p.action='idle';p.nextAction=this.time+((p.kind==='sunflower'||p.kind==='twinsunflower')?this.props.plants[p.kind].ProduceCountdownStart+this.random()*this.props.plants[p.kind].ProduceCountdownStartAdditional:p.kind==='bloomerang'?0:1);}
         continue;
       }

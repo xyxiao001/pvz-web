@@ -90,8 +90,10 @@ export class Scene {
     const artCount=await this.art.init(this.app,(done,total)=>progress(done+1,total+actorNames.length+1),day,plantActors);
     if(level?.conveyor){for(const lane of [0,1]){
       const rig=this.art.build('conveyor','Idle'),bounds=rig.getLocalBounds();
-      const sx=BOARD.width*.43/bounds.width,sy=BOARD.height*.09/bounds.height;
-      rig.scale.set(sx,sy);rig.position.set(BOARD.width*.08-bounds.x*sx,BOARD.height*(.01+lane*.09)-bounds.y*sy);this.conveyorLayer.addChild(rig);
+      // The native horizontal lanes rotate the vertical armature by 90° (Y-up).
+      const sx=BOARD.height*.09/bounds.width,sy=BOARD.width*.43/bounds.height;
+      rig.scale.set(sx,sy);rig.rotation=-Math.PI/2;
+      rig.position.set(BOARD.width*.08-bounds.y*sy,BOARD.height*(.01+lane*.09)+(bounds.x+bounds.width)*sx);this.conveyorLayer.addChild(rig);
     }this.conveyorLayer.visible=false;}
     let done = artCount+1; const total=artCount+actorNames.length+1;
     const skeletons = new Map<RigName, Skeleton>();
@@ -110,7 +112,7 @@ export class Scene {
     this.skeletons=skeletons;
     const shoot=animationTimeline(skeletons.get('peashooter')!,'Peashooter','Shoot'),produce=animationTimeline(skeletons.get('sunflower')!,'Sunflower','Produce');
     const grow=animationTimeline(skeletons.get('potatomine')!,'PotatoMine','Grow'),mine=animationTimeline(skeletons.get('potatomine')!,'PotatoMine','Charging');
-    this.timing = { shoot:shoot.events.Shoot,shootDuration:shoot.duration,produce:produce.events.Produce,produceDuration:produce.duration,mineGrow:grow.events.activate,mineExplode:mine.events.explode,mineDeath:mine.events.die,
+    this.timing = { wallnutArmor:animationTimeline(skeletons.get('wallnut')!,'Wall-nut','Food').events.wearArmor,wallnutFoodEnd:animationTimeline(skeletons.get('wallnut')!,'Wall-nut','Food').events.foodEnd,shoot:shoot.events.Shoot,shootDuration:shoot.duration,produce:produce.events.Produce,produceDuration:produce.duration,mineGrow:grow.events.activate,mineExplode:mine.events.explode,mineDeath:mine.events.die,
       raStart:animationTimeline(skeletons.get('ra')!,'RaZombie','AbsorbStart').duration,raEnd:animationTimeline(skeletons.get('ra')!,'RaZombie','AbsorbEnd').duration };
     if(day>1){
       for(const name of ['cabbagepult','bloomerang','iceburg'] as const)if(!skeletons.has(name))skeletons.set(name,await json<Skeleton>(`campaign/rigs/${this.art.campaign.actors[name].rig}/skeleton.json`));
@@ -189,7 +191,7 @@ export class Scene {
     if (plant.action === 'produce') return 'Produce';
     if (plant.action === 'grow') return 'Grow';
     if (plant.action === 'explode') return plant.kind==='iceburg'?'Death':'Charging';
-    if (plant.kind === 'wallnut') return plant.armor > 0 ? 'Idle4' : plant.hp < 1333 ? 'Idle3' : plant.hp < 2666 ? 'Idle2' : 'Idle1';
+    if (plant.kind === 'wallnut') return `Idle${5-Math.ceil(plant.hp/game.props.plants.wallnut.Toughness*4)}`;
     if (plant.kind === 'potatomine') return plant.age<14/30?'Spawn_Baby':plant.age < game.props.plants.potatomine.ChargeTime ? 'Idle_Baby' : 'Idle';
     return 'Idle';
   }
@@ -205,7 +207,7 @@ export class Scene {
       if(p.kind==='bonkchoy')actor.rig.scale.x=RIGS.bonkchoy.scale*(p.facing??1);
       actor.rig.animation.timeScale=p.kind==='parsnip'&&p.action==='shoot'?Math.max(1,1/game.props.plants.parsnip.AttackInterval):p.kind==='iceburg'&&p.action==='food'?.8:1;
       const animation = this.plantAnimation(p, game);
-      this.animate(actor, animation, p.action === 'idle' ? 0 : p.actionAt, animation==='FoodBig'?1:p.action==='food'&&(p.kind==='sunflower'||p.kind==='twinsunflower')?game.props.plants[p.kind].PlantfoodTime: ['shoot','produce','grow','explode','catch'].includes(p.action)||p.action==='food'&&['cabbagepult','iceburg'].includes(p.kind)||animation==='Spawn_Baby'?1:0);
+      this.animate(actor, animation, p.action === 'idle' ? 0 : p.actionAt, animation==='FoodBig'?1:p.action==='food'&&(p.kind==='sunflower'||p.kind==='twinsunflower')?game.props.plants[p.kind].PlantfoodTime: ['shoot','produce','grow','explode','catch'].includes(p.action)||p.action==='food'&&['cabbagepult','iceburg','wallnut'].includes(p.kind)||animation==='Spawn_Baby'?1:0);
     }
     for (const z of game.zombies) {
       alive.add(z.id);
@@ -268,6 +270,7 @@ export class Scene {
     for(const [id,actor] of this.actors){
       const state=game.specialZombies.get(id);
       for(const slot of actor.rig.armature.getSlots()){
+        if(actor.kind==='wallnut'&&slot.name==='ARMOR'){const p=game.plants.find(p=>p.id===id);slot.displayIndex=p&&p.armor>0?Math.max(0,2-Math.floor(p.armor/game.props.plants.wallnut.ArmorToughness*3)):-1;}
         if(actor.kind==='gargantuar'&&state&&!state.imp&&slot.name.includes('_IMP'))slot.displayIndex=-1;
         if(actor.kind==='gargantuar'&&game.pharaohs.has(id)&&slot.name.includes('PHARAOH'))slot.displayIndex=-1;
         if((actor.kind==='pharaoh'||actor.kind==='pharaohWeak')&&slot.name==='armor'){const z=game.zombies.find(z=>z.id===id);if(z)slot.displayIndex=z.armor<game.props.zombies.pharaoh.Toughness/3?2:z.armor<game.props.zombies.pharaoh.Toughness*2/3?1:0;}

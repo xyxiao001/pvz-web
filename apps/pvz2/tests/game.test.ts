@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { animationTimeline } from '../src/rendering/presentation';
 import { Game, type Zombie } from '../src/game/model';
 import { cellX, rowY, readLevel, type Properties, type SourceLevel } from '../src/game/level';
 
@@ -8,7 +9,8 @@ const read = (name: string) => JSON.parse(readFileSync(new URL(`../public/assets
 const props: Properties = read('levels/properties.json');
 props.zombies.mummy_flag=read('battle/flag.json');
 const source: SourceLevel = read('levels/egypt1.source.json');
-const timing = { shoot: 15 / 30, shootDuration: 26 / 30, produce: 23 / 30, produceDuration: 40 / 30, mineGrow:18/30,mineExplode:14/30,mineDeath:15/30,raStart:25/30,raEnd:25/30 };
+const nutFood=animationTimeline(read('actors/wallnut/skeleton.json'),'Wall-nut','Food');
+const timing = { wallnutArmor:nutFood.events.wearArmor,wallnutFoodEnd:nutFood.events.foodEnd,shoot: 15 / 30, shootDuration: 26 / 30, produce: 23 / 30, produceDuration: 40 / 30, mineGrow:18/30,mineExplode:14/30,mineDeath:15/30,raStart:25/30,raEnd:25/30 };
 const create = () => new Game(readLevel(source), props, timing, zombie=>({x:zombie.x-25,y:rowY(zombie.row)-95}), 1234);
 const tick = (game: Game, seconds: number) => { for (let i = 0; i < Math.round(seconds * 60); i++) game.tick(1 / 60); };
 const mummy = (x: number, armor = 0): Zombie => ({ id: 9000, kind: 'mummy', row: 2, x, hp: 190, armor, eating: false, absorbed: 0, absorbUntil: 0,absorbState:'idle',absorbAt:0,deathCause:'normal',frozenUntil:0,chilledUntil:0,food:false,entry:'walk',entryAt:0,entryX:x,camelPart:0,team:0,leap:null });
@@ -179,4 +181,15 @@ test('peashooter food fires its 60 normal peas in two seconds and returns to idl
  assert.ok(game.peas.every(p=>!p.mega&&p.damage===20&&p.speed!>=6.5*82&&p.speed!<=9.5*82));
  assert.ok(new Set(game.peas.map(p=>p.y)).size>1);
  tick(game,3);assert.equal(game.peas.length,0);
+});
+
+
+test('wall-nut wears native armor at the Food event, ends once, and absorbs bites after the transform',()=>{
+  const game=create();game.plant('wallnut',2,2);const nut=game.plants[0];nut.hp=500;game.food=1;
+  assert.ok(game.plantFood(2,2));assert.equal(nut.hp,4000);assert.equal(nut.armor,0);
+  tick(game,.3);assert.equal(nut.armor,0);assert.equal(nut.action,'food');
+  tick(game,.2);assert.equal(nut.armor,4000);assert.equal(nut.action,'food');
+  tick(game,.4);assert.equal(nut.action,'idle');assert.equal(nut.armor,4000);
+  game.zombies.push(mummy(cellX(2)+20));tick(game,1);assert.ok(nut.armor<4000);assert.equal(nut.hp,4000);
+  game.zombies=[];tick(game,2);assert.equal(nut.action,'idle');assert.ok(nut.armor<4000,'Food must not replay and restore armor');
 });

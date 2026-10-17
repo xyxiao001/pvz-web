@@ -1,4 +1,5 @@
 import './style.css';
+import './cursor.css';
 import { json, assetUrl } from './assets/load';
 import { readAudio, saveAudio, audioControls } from './audio';
 import { BOARD, rowY, plantLabels, readLevel, type PlantKind, type Properties, type SourceLevel, type ZombieProperties } from './game/level';

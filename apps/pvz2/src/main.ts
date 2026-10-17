@@ -1,4 +1,5 @@
 import './shell/style.css';
+import './cursor.css';
 import { BATTLE_LEVELS } from './game/levels';
 import { WorldShell } from './shell/controller';
 

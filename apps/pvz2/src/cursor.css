@@ -1,0 +1,8 @@
+/* The source desktop cursor is 32×56, with its tip at (1, 8). */
+@media (pointer: fine) {
+  .world-shell, .battle-app,
+  .world-shell button, .world-shell a, .world-shell input,
+  .battle-app button, .battle-app a, .battle-app input {
+    cursor: url('/pvz2/assets/shell/cursor.png') 1 8, auto;
+  }
+}

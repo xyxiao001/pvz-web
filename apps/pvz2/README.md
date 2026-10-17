@@ -6,7 +6,7 @@
 
 - 使用上游世界浮岛、背景、关卡节点、奖励卡、升级奖杯、路径、按钮、字体、音乐和点击音效。
 - 导出 13 个主世界的原始坐标、远景视差、主线与分支连接，保留另外两个不可进入的世界图标。
-- 世界选择支持点选、横向滑动、滚轮和方向键；地图支持拖动、惯性、滚轮、边缘箭头及关卡点击。
+- 世界选择支持点选、横向滑动、滚轮和方向键；地图支持拖动、惯性、滚轮、边缘箭头及关卡点击。桌面鼠标使用原版 32×56 白色指针，限定在二代页面。
 - 埃及主线第 1–35 关接入对应对白、选卡／传送带／道具战斗流程；其他关卡显示待接入状态。世界介绍中的“查看地图”仅供预览，不消耗钥匙、不解锁世界或授予奖励。
 - 商店、图鉴、花园、小游戏与经济系统未接入，顶部原版入口暂不可用，资源栏为零。设置提供独立的音乐、音效音量，并与二代战斗共享设置。
 
@@ -116,7 +116,7 @@ python3 tools/pvz2-assets/extract-egypt-campaign.py
 
 本批回归覆盖第 1–24 关的模型通关、新角色动作时机、翻牌暂停与消除、墓碑生成与吞噬、原地图奖励链。独立开发验证页 `/pvz2/tests/campaign-visual.html` 使用内存存档检查各关入口，不更改玩家进度；`/pvz2/tests/campaign-scenes.html` 可逐帧检查新角色与特效。
 
-资源更新顺序：先运行 `extract-egypt-campaign.py`、`extract-progression.py`，最后运行 `extract-font.py` 补齐 UI 与对白字形。三个脚本位于 `tools/pvz2-assets/`，依赖 Pillow、fonttools、brotli，输入固定在上游提交 `0e4a05348b6de328e2902a57afa24a3a454a4205`。
+资源更新顺序：先运行 `extract-egypt-campaign.py`、`extract-progression.py`，最后运行 `extract-font.py` 补齐 UI 与对白字形。原版桌面指针由 `extract-cursor.py` 单独导出并更新外层资源溯源。以上脚本位于 `tools/pvz2-assets/`，依赖 Pillow、fonttools、brotli，输入固定在上游提交 `0e4a05348b6de328e2902a57afa24a3a454a4205`。
 
 
 ## 埃及第 12–16 关
