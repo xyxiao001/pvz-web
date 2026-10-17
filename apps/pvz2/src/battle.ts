@@ -163,6 +163,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     bossMusicStage=-1;
     game=new Game(readLevel(source),properties,scene.timing,zombie=>scene.absorptionTarget(zombie),Date.now()>>>0,!progress.isComplete(levelConfig.id));
     game.boosts=new Set(Object.entries(progress.gardenBoosts()).filter(([,count])=>count>0).map(([kind])=>kind as PlantKind));
+    for(const kind of cardOrder){const card=$(`[data-choose="${kind}"]`),boosted=game.boosts.has(kind);card.classList.toggle('boosted',boosted);card.setAttribute('aria-label',`选择${plantLabels[kind]}${boosted?'（爆发）':''}`);}
     game.foodLimit=bonuses.foodLimit;game.shovelRefund=bonuses.shovelRefund;game.manualMowers=bonuses.manualMowers;
     if(!game.level.lastStand)game.sun+=bonuses.startingSun;
     const objective=[game.level.mold.length?'霉菌覆盖的地块不能种植':'',game.level.mustProtect?`保护好 ${game.level.mustProtect} 株植物`:'',game.level.maxPlants!==null?`同时种植不超过 ${game.level.maxPlants} 株植物`:'',game.level.flowerLine!==null?'不要让僵尸踩到花坛':'',game.level.maxSun!==null?`消耗阳光不超过 ${game.level.maxSun}`:'',game.level.lastStand?`用 ${game.level.lastStand.sun} 阳光布置防线，再开始进攻`:''].filter(Boolean).join(' · ');

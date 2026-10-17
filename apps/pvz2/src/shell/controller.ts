@@ -61,7 +61,7 @@ export class WorldShell {
     this.$('.map-arrow-left').onclick = () => this.step(-1); this.$('.map-arrow-right').onclick = () => this.step(1);
     window.addEventListener('keydown', event => {
       if (this.host.hidden || this.busy) return;
-      if(this.feature){if(event.key==='Escape'){event.preventDefault();void this.closeFeature();}return;}
+      if(this.feature){if(event.key==='Escape'){event.preventDefault();void this.feature.back();}return;}
       if (event.key === 'Escape') { event.preventDefault(); void this.back(); }
       if (this.$('.map-modal').hidden && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) { event.preventDefault(); this.step(event.key === 'ArrowLeft' ? -1 : 1); }
     });
