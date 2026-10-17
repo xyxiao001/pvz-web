@@ -45,3 +45,8 @@ button{font:inherit;cursor:pointer;border:0;padding:0;background:transparent;col
 :scope[data-mode=conveyor] .seed-bank,:scope[data-mode=conveyor] .sun-counter,:scope[data-mode=powerups] .seed-bank,:scope[data-mode=powerups] .sun-counter,:scope[data-mode=powerups] #shovel{display:none}
 :scope[data-mode=powerups] #game-tip{bottom:14%}
 }
+
+@scope (.battle-app) {
+
+:scope[data-mode=match] .seed-bank,:scope[data-mode=match] .sun-counter,:scope[data-mode=match] #shovel{display:none}
+}

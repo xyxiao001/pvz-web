@@ -14,7 +14,7 @@ export function animationTimeline(skeleton: Skeleton, armatureName: string, anim
   const events: Record<string, number> = {};
   let frame = 0;
   for (const item of animation.frame ?? []) {
-    for (const event of item.events ?? []) events[event.name] = frame / armature.frameRate;
+    for (const event of item.events ?? []) events[event.name] ??= frame / armature.frameRate;
     if (item.sound) events[item.sound] = frame / armature.frameRate;
     frame += item.duration ?? 1;
   }
@@ -33,4 +33,14 @@ export function introCamera(time: number, intro: CameraIntro, chooserX: number) 
   time -= intro.PanMoveRightTime + intro.PanRightDuration;
   if (time < 0) return intro.PanStreetOffset;
   return intro.PanStreetOffset + (chooserX-intro.PanStreetOffset)*cubicInOut(Math.min(1,time/intro.PanMoveLeftTime));
+}
+
+export function specialAnimationTiming(skeletons:ReadonlyMap<string,Skeleton>) {
+  const timeline=(actor:string,armature:string,animation:string)=>animationTimeline(skeletons.get(actor)!,armature,animation);
+  const smash=timeline('gargantuar','EgyptGargantuar','Smash'),throwImp=timeline('gargantuar','EgyptGargantuar','Throw');
+  const bone=timeline('tombraiser','TombRaiserZombie','Throw'),spawn=timeline('gravebuster','GraveBuster','Spawn'),bust=timeline('gravebuster','GraveBuster','Busting');
+  const twin=timeline('twinsunflower','TwinSunflower','Produce'),ice=timeline('iceweed','Iceweed','Food');
+  return {gargPharaoh:timeline('gargantuar','EgyptGargantuar','Death').events.pharaoh,gargSmash:smash.events.smash,gargSmashEnd:smash.duration,gargThrow:throwImp.events.impThrow,gargThrowEnd:throwImp.duration,
+    boneThrow:bone.events.throw,boneEnd:bone.duration,graveBust:spawn.events.bust,graveFinish:bust.events.finish,graveDie:bust.events.die,
+    twinProduce:twin.events.Produce,twinProduceEnd:twin.duration,iceweedShoot:ice.events.shoot,iceweedFoodEnd:ice.events.foodEnd};
 }

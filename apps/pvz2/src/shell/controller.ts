@@ -107,6 +107,7 @@ export class WorldShell {
     this.$('.map-level-targets').innerHTML = this.catalog.worlds.map((world,index) => `<button class="world-target" data-world-target="${index}" aria-label="${world.enterable ? '选择' : ''}${world.name}"></button>`).join('');
     for (const button of this.host.querySelectorAll<HTMLButtonElement>('[data-world-target]')) button.onclick = () => { void this.choose(Number(button.dataset.worldTarget)); };
 
+    this.renderer.setWorldKeys(this.progress.worldKeys());
     await this.renderer.showChooser(this.navigation.chooser);
     this.$('.map-caption').textContent = '世界地图 · 点击两侧世界切换，再次点击进入';
     this.save(); this.loading(false);
@@ -174,7 +175,7 @@ export class WorldShell {
     this.loading(true);
     const art=await this.renderer.worldDetails(world.id);
     this.loading(false);
-    this.modal(world.name,`<p>${world.description}</p><img class="world-banner" src="${art.background}" alt="${world.name}"><button class="native-button" disabled>世界钥匙 × 1 · 尚未获得</button><div class="world-plant-cards" aria-label="本世界植物">${art.cards.map(image=>`<img src="${image}" alt="本世界植物卡片">`).join('')}</div><button class="preview-world">预览地图 · 关卡尚未接入</button>`);
+    this.modal(world.name,`<p>${world.description}</p><img class="world-banner" src="${art.background}" alt="${world.name}"><button class="native-button" disabled>世界钥匙 × 1 · ${this.progress.worldKeys()>0?'已获得，关卡尚未接入':'尚未获得'}</button><div class="world-plant-cards" aria-label="本世界植物">${art.cards.map(image=>`<img src="${image}" alt="本世界植物卡片">`).join('')}</div><button class="preview-world">预览地图 · 关卡尚未接入</button>`);
     this.$('.native-window').classList.add('world-description');
     this.$('.preview-world').onclick=()=>{void this.openWorld(world);};
   }

@@ -154,6 +154,7 @@ export class MapRenderer {
     await this.load(draws.filter(d => d.kind === 'rig').map(d => d.rig!));
     await Promise.all([...new Set(draws.filter(d => d.kind === 'sprite').map(d => assetUrl(d.image!)))].map(path => Assets.load(path)));
   }
+  setWorldKeys(count:number){const index=this.catalog.toolbar.findIndex(d=>d.owner===14&&d.kind==='label');(this.toolbar.children[index].children[0] as Text).text=String(count);}
   async showChooser(index: number) {
     this.stop(); this.clear(); this.toolbar.children.forEach((child,i) => { child.visible = this.catalog.toolbar[i].owner === 14; }); this.mode = 'chooser'; this.map = null; this.velocity = 0;
     const selected = this.catalog.chooser.filter(d => d.kind === 'rig');

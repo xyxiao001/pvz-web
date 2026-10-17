@@ -20,15 +20,19 @@ export class ProgressStore {
     const saved = this.storage.getItem(PENDING_KEY);
     return saved === null ? null : JSON.parse(saved);
   }
-  campaignRewards():{level:string;type:'worldtrophy'|'pinata'|'sprout';id:string;count:number}[]{
+  campaignRewards():{level:string;type:'worldtrophy'|'pinata'|'sprout'|'note'|'coinbag';id:string;count:number}[]{
     const saved=this.storage.getItem('pvz2-web:campaign-rewards');return saved===null?[]:JSON.parse(saved);
   }
+  worldKeys(){return this.campaignRewards().filter(r=>r.type==='worldtrophy'&&r.id==='worldkey').reduce((n,r)=>n+r.count,0);}
   finish(world: string, level: string, sprouts=0) {
     if (this.isComplete(level)) return;
-    if(level==='egypt4'||level==='egypt6'||level==='egypt5'&&sprouts>0){
+    if(['egypt4','egypt6','egypt7','egypt8','egypt10','egypt11'].includes(level)||level==='egypt5'&&sprouts>0){
       const rewards=this.campaignRewards();
       if(level==='egypt4')rewards.push({level,type:'worldtrophy',id:'powerupgadget',count:1});
-      if(level==='egypt6')rewards.push({level,type:'pinata',id:'spine_egypt',count:1});
+      if(level==='egypt7')rewards.push({level,type:'note',id:'note_egypt',count:1});
+      if(level==='egypt8')rewards.push({level,type:'worldtrophy',id:'worldkey',count:1});
+      if(level==='egypt10')rewards.push({level,type:'coinbag',id:'CoinBag',count:1});
+      if(level==='egypt6'||level==='egypt11')rewards.push({level,type:'pinata',id:'spine_egypt',count:1});
       if(level==='egypt5')rewards.push({level,type:'sprout',id:'sprout',count:sprouts});
       this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));
     }
@@ -64,7 +68,7 @@ export function completionEvents(map: WorldMap, level: string, completed: Readon
       } else if (next.kind === 1 || next.kind === 3) {
         events.push({ at: at + .5, node: id, action: 'reward' });
         push(next, at + .5);
-      }
+      } else { push(next,at+.5); }
     }
   };
   push(first, .5);

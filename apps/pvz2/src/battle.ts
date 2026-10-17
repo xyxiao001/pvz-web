@@ -1,7 +1,7 @@
 import './style.css';
 import { json, assetUrl } from './assets/load';
 import { readAudio, saveAudio, audioControls } from './audio';
-import { BOARD, PLANT_KINDS, plantLabels, readLevel, type PlantKind, type Properties, type SourceLevel, type ZombieProperties } from './game/level';
+import { BOARD, rowY, plantLabels, readLevel, type PlantKind, type Properties, type SourceLevel, type ZombieProperties } from './game/level';
 import { Game, type PowerKind } from './game/model';
 import type { ProgressStore } from './shell/progression';
 import { availablePlants, type BattleLevel } from './game/levels';
@@ -9,6 +9,9 @@ import type { Scene } from './rendering/scene';
 import { cubicInOut, introCamera } from './rendering/presentation';
 
 const DESCRIPTIONS: Record<PlantKind,string> = {
+  gravebuster:'噬碑藤吞噬墓碑，为种植腾出空间。',
+  twinsunflower:'双胞向日葵一次生产双倍阳光。',
+  iceweed:'冰地刺伤害并减速踩在上面的僵尸。',
   peashooter:'豌豆射手向前发射豌豆，攻击所在行的僵尸。',
   sunflower:'向日葵为你生产额外的阳光。',
   wallnut:'坚果用坚硬的外壳保护身后的植物。',
@@ -49,7 +52,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     </div>
     <div id="battle-announcement" role="status" hidden></div>
     <div id="overlay" hidden></div>
-  </section><div class="battle-caption"><span>${title}</span><span>${levelConfig.mode==='powerups'?'选择道具 · 按住或拖动攻击':levelConfig.mode==='conveyor'?'点击传送带植物 · 点击地块种植':'1–6 选卡 · 点击阳光收集'} · 空格暂停</span></div>`;
+  </section><div class="battle-caption"><span>${title}</span><span>${levelConfig.mode==='match'?'翻开骆驼牌 · 配对相同图案':levelConfig.mode==='powerups'?'选择道具 · 按住或拖动攻击':levelConfig.mode==='conveyor'?'点击传送带植物 · 点击地块种植':'1–6 选卡 · 点击阳光收集'} · 空格暂停</span></div>`;
 
   let scene: Scene, properties: Properties, source: SourceLevel, game: Game;
   let selected: PlantKind | 'shovel' | 'food' | null = null;
@@ -61,6 +64,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   let foodTipShown=false;
   let narrativeLines:typeof scene.art.catalog.intro=[];
   let narrativeIndex=0;
+  let outro=false;
   let transitionTime=0;
   let voice:HTMLAudioElement|null=null;
   let accumulator = 0, countdown = 0, speed = 1, warningUntil = 0;
@@ -90,11 +94,13 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     </section>`;
     $('#overlay').hidden = false;
     cardOrder=availablePlants(levelConfig,progress.ownedPlants());
-    const actorPlants=levelConfig.mode==='powerups'?[]:levelConfig.mode==='conveyor'?['bloomerang','cabbagepult','wallnut','potatomine'] as PlantKind[]:cardOrder;
+
     if (!scene) {
       const [{ Scene },props,level,flag,campaign] = await Promise.all([import('./rendering/scene'),json<Properties>('levels/properties.json'),json<SourceLevel>(levelConfig.source),json<ZombieProperties>('battle/flag.json'),levelConfig.day>1?json<Properties>('campaign/properties.json'):Promise.resolve(null)]);
       if(campaign){Object.assign(props.plants,campaign.plants);Object.assign(props.zombies,campaign.zombies);Object.assign(props.armors,campaign.armors);Object.assign(props,{grave:campaign.grave,projectiles:campaign.projectiles,powerups:campaign.powerups});}
       properties=props; properties.zombies.mummy_flag=flag; source=level; scene=new Scene();
+      const parsed=readLevel(source);
+      const actorPlants=[...new Set([...(parsed.preset??(parsed.conveyor?parsed.conveyor.InitialPlantList.map(p=>p.PlantType):parsed.match||parsed.powerups?[]:cardOrder)),...parsed.initialPlants.map(p=>p.kind)])];
       await scene.init($('#canvas-host'),(done,total)=>{
         $('#load-status').textContent=`正在准备植物与庭院 ${done} / ${total}`;
         const progress=$<HTMLProgressElement>('#load-progress');progress.max=total;progress.value=done;
@@ -107,15 +113,15 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       };
       for(const [name,art] of Object.entries(scene.art.catalog.ui)) host.style.setProperty(`--art-${name}`,`url('${assetUrl(art.image)}')`);
       host.style.setProperty('--art-emptySlot',`url('${scene.art.image(scene.app,'cards','emptyslot','emptyslot')}')`);
-      for(const kind of levelConfig.day===1?levelConfig.actors:PLANT_KINDS){cards.set(kind,scene.art.card(scene.app,kind));if(actorPlants.includes(kind))portraits.set(kind,scene.portrait(kind));}
+      for(const kind of [...new Set([...actorPlants,...(levelConfig.firstReward.plant?[levelConfig.firstReward.plant]:[])])]){cards.set(kind,scene.art.card(scene.app,kind));if(actorPlants.includes(kind))portraits.set(kind,scene.portrait(kind));}
 
       $<HTMLImageElement>('.sun-counter img').src=scene.art.image(scene.app,'sunIcon');
       $<HTMLImageElement>('#shovel img').src=scene.art.image(scene.app,'shovel','Idle');
       for(const [name,paths] of Object.entries(scene.art.catalog.sounds)) clips.set(name,paths.map(path=>{const audio=new Audio(assetUrl(path));audio.preload='none';return audio;}));
-      music.src=assetUrl(levelConfig.night?'campaign/minigame.mp3':'egypt/music.mp3');
+      music.src=assetUrl(levelConfig.night||levelConfig.mode==='preset'?'campaign/minigame.mp3':'egypt/music.mp3');
       if(levelConfig.day>1){
         $<HTMLImageElement>('#plant-food img').src=scene.art.image(scene.app,'food','Idle');
-        for(const kind of ['fire','snow','toss','zap','cherry'])$<HTMLImageElement>(`[data-power="${kind}"] img`).src=assetUrl(scene.art.catalog.ui['power-'+kind].image);
+        if(levelConfig.mode==='powerups')for(const kind of ['fire','snow','toss','zap','cherry'])$<HTMLImageElement>(`[data-power="${kind}"] img`).src=assetUrl(scene.art.catalog.ui['power-'+kind].image);
 
       }
     }
@@ -137,10 +143,12 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     $('#narrative').hidden=false;$('#narrative').dataset.character=step.Character;
     $('#speech-line').textContent=step.Lines!.zh;scene.narrative(step.Character,step.Animation!);voice=sound(step.Voice!);
   }
+  function prepareGame(){game=new Game(readLevel(source),properties,scene.timing,zombie=>scene.absorptionTarget(zombie),Date.now()>>>0,!progress.isComplete(levelConfig.id));}
   function survey() {
+    prepareGame();
     screen='survey';host.dataset.screen=screen;transitionTime=0;
     $('#hud').hidden=true;$('#overlay').hidden=true;$('#seed-chooser').hidden=true;
-    scene.preview(readLevel(source).waves.flat(),readLevel(source).graves);scene.start();playMusic();
+    scene.preview(game.level.waves.flat(),game.graves,game.plants);scene.start();playMusic();
   }
   function describe(kind: PlantKind) {
     $('#plant-name').textContent=plantLabels[kind];$('#plant-description').textContent=DESCRIPTIONS[kind];
@@ -161,10 +169,11 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     $<HTMLButtonElement>('#start').disabled=deck.length===0;
   }
   function chooseSeeds() {
-    scene.preview(readLevel(source).waves.flat(),readLevel(source).graves);scene.setCamera(scene.art.catalog.presentation.seedChoosingCameraX);scene.start();openChooser();
+    prepareGame();
+    scene.preview(game.level.waves.flat(),game.graves,game.plants);scene.setCamera(scene.art.catalog.presentation.seedChoosingCameraX);scene.start();openChooser();
   }
   function openChooser() {
-    if(levelConfig.mode!=='seedbank'){deck=[];start();return;}
+    if(levelConfig.mode!=='seedbank'){deck=readLevel(source).preset??[];start();return;}
     screen='choosing';deck=[];selected=null;speed=1;
     $('#overlay').hidden=true;$('#hud').hidden=false;$('#seed-chooser').hidden=false;$('#battle-announcement').hidden=true;
     host.dataset.screen=screen;$('#sun-count').textContent='50';
@@ -172,11 +181,10 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     sound('cardChosen');playMusic();
   }
   function start() {
-    game=new Game(readLevel(source),properties,scene.timing,zombie=>scene.absorptionTarget(zombie),Date.now()>>>0,!progress.isComplete(levelConfig.id));
     selected=null;packetId=undefined;foodTipShown=false;tipUntil=0;$('#game-tip').hidden=true;pointerDown=false;
     accumulator=0;countdown=0;speed=1;screen='returning';transitionTime=0;host.dataset.screen=screen;
     $('#seed-chooser').hidden=true;$('#overlay').hidden=true;$('#battle-announcement').hidden=true;$('#hud').hidden=false;
-    $('#plant-food').hidden=levelConfig.day===1||levelConfig.mode==='powerups';$('#powerups').hidden=levelConfig.mode!=='powerups';$('#conveyor').hidden=levelConfig.mode!=='conveyor';
+    $('#plant-food').hidden=levelConfig.day===1||levelConfig.mode==='powerups'||levelConfig.mode==='match';$('#powerups').hidden=levelConfig.mode!=='powerups';$('#conveyor').hidden=levelConfig.mode!=='conveyor';
     $('#speed').setAttribute('aria-pressed','false');sound('letsRock');sound('cameraMove');
   }
   function menu() {
@@ -184,7 +192,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     $('#hud').hidden=true;$('#overlay').hidden=true;$('#seed-chooser').hidden=true;host.hidden=true;onReturn();
   }
   function updateHud() {
-    $('#sun-count').textContent=String(game.sun);if(levelConfig.mode==='seedbank')updateDeck();
+    $('#sun-count').textContent=String(game.sun);if(levelConfig.mode==='seedbank'||levelConfig.mode==='preset')updateDeck();
     $('#plant-food b').textContent=`${game.food} / 3`;$('#plant-food').classList.toggle('selected',selected==='food');
     if(levelConfig.mode==='conveyor')updateConveyor();
     for(const button of host.querySelectorAll<HTMLButtonElement>('[data-power]')){button.classList.toggle('selected',game.power?.kind===button.dataset.power);button.disabled=!!game.power&&game.power.remaining>0;}
@@ -202,6 +210,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   }
   function interact(x: number,y: number) {
     if(screen!=='playing')return;
+    if(game.level.match){const z=[...game.zombies].sort((a,b)=>b.row-a.row).find(z=>Math.abs(z.x-x)<32&&y>rowY(z.row)-145&&y<rowY(z.row));if(z)game.flipCamel(z.id);return;}
     if(game.power){game.powerPointer(x,y,true,true);return;}
     const pickup=game.pickups.find(p=>Math.hypot(x-p.x,y-p.y)<38);
     if(pickup){game.collectPickup(pickup.id);sound('collect');updateHud();return;}
@@ -215,7 +224,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   }
   function tick(dt: number) {
     if(screen==='npc-enter'||screen==='npc-exit') {
-      if(scene.narrativeTick(dt)){if(screen==='npc-enter')nextNarrative();else survey();}return;
+      if(scene.narrativeTick(dt)){if(screen==='npc-enter')nextNarrative();else if(outro){outro=false;finish();}else survey();}return;
     }
     if(screen==='narrative'){scene.narrativeTick(dt);return;}
     if(screen==='survey') {
@@ -234,15 +243,17 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(screen==='countdown') {
       const [ready,set,plant]=scene.art.catalog.presentation.readySetPlant;
       countdown+=dt;$('#battle-announcement').textContent=countdown<ready?'准备…':countdown<ready+set?'安放…':'种植！';scene.sync(game,dt);
-      if(countdown>=ready+set+plant){screen='playing';host.dataset.screen=screen;$('#battle-announcement').hidden=true;if(levelConfig.mode==='conveyor')tip('点击传送带上的植物，再点击地块种植。',8);if(levelConfig.mode==='powerups')tip('选择下方道具，按住并拖动手指来攻击僵尸。',10);}
+      if(countdown>=ready+set+plant){screen='playing';host.dataset.screen=screen;$('#battle-announcement').hidden=true;if(levelConfig.mode==='match')tip('翻开骆驼牌，找到两张相同图案即可消除。',10);if(levelConfig.mode==='conveyor')tip('点击传送带上的植物，再点击地块种植。',8);if(levelConfig.mode==='powerups')tip('选择下方道具，按住并拖动手指来攻击僵尸。',10);}
       return;
     }
-    if(screen==='ending'){scene.sync(game,dt);if(!scene.hasDeathAnimations)finish();return;}
+    if(screen==='ending'){scene.sync(game,dt);if(!scene.hasDeathAnimations){if(game.phase==='won'&&levelConfig.outro&&!progress.isComplete(levelConfig.id)){outro=true;narrativeLines=scene.art.campaign.narratives[levelConfig.outro];narrativeIndex=0;screen='npc-enter';host.dataset.screen=screen;$('#hud').hidden=true;scene.enterNarrative();}else finish();}return;}
     if(screen!=='playing')return;
     accumulator+=Math.min(dt,.1)*speed;let advanced=0;
     while(accumulator>=1/60&&game.phase==='playing'){game.tick(1/60);accumulator-=1/60;advanced+=1/60;}
     scene.sync(game,advanced);updateHud();
     for(const event of game.events) {
+      if(event.type==='flip')sound('camelTouch/flipSound');
+      if(event.type==='match')sound('camelTouch/matchSound');
       if(event.type==='plant')sound('plantOnFloor');
       if(event.type==='shot')sound('shoot');
       if(event.type==='sun')sound('collect');
@@ -285,7 +296,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(game.phase==='won') {
       const first=!progress.isComplete(levelConfig.id);
       const reward=levelConfig.firstReward;
-      const rewardImage=first?(reward.plant?cards.get(reward.plant)!:scene.art.image(scene.app,'reward',levelConfig.day===4?'powerups':levelConfig.day===6?'Pinata':reward.image,levelConfig.day===6?'Upgrades':undefined)):'';
+      const rewardImage=first?(reward.plant?cards.get(reward.plant)!:levelConfig.day===7?assetUrl(scene.art.catalog.ui['note-egypt'].image):scene.art.image(scene.app,'reward',levelConfig.day===4?'powerups':[6,11].includes(levelConfig.day)?'Pinata':reward.image,[6,11].includes(levelConfig.day)?'Upgrades':levelConfig.day===10?'CoinBag':undefined)):'';
       const sprouts=game.sprouts+game.pickups.filter(p=>p.kind==='sprout').length;
       panel('关卡完成',`${first?`<img class="map-reward" src="${rewardImage}" alt="${levelConfig.firstReward.label}"><p>获得${levelConfig.firstReward.label}</p>`:`<p>${title}</p>`}${sprouts>0?`<p>植物幼苗 × ${sprouts}</p>`:''}<button id="result-map" class="battle-button">继续</button>`);
       $('#result-map').onclick=()=>{progress.finish(levelConfig.world,levelConfig.id,sprouts);menu();};
@@ -309,7 +320,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(event.code==='Space'&&(screen==='playing'||screen==='pause')){event.preventDefault();screen==='playing'?pause():resume();}
     if(event.key==='Escape'){if(screen==='pause')resume();else if(screen==='playing'){selected=null;if(game.power?.remaining===0)game.power=null;scene.highlightCell(-1,-1,0);}}
     if(screen!=='playing')return;
-    if(levelConfig.mode==='seedbank'&&'123456'.includes(event.key)&&event.key.length===1){const i=Number(event.key)-1;if(!$<HTMLButtonElement>(`[data-slot="${i}"]`).disabled)selected=deck[i];}
+    if((levelConfig.mode==='seedbank'||levelConfig.mode==='preset')&&'123456'.includes(event.key)&&event.key.length===1){const i=Number(event.key)-1;if(!$<HTMLButtonElement>(`[data-slot="${i}"]`).disabled)selected=deck[i];}
     updateHud();
   },{signal:listeners.signal});
   document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();},{signal:listeners.signal});

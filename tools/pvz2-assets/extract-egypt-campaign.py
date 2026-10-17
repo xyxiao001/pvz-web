@@ -1,4 +1,4 @@
-"""Export Egypt days 2–6 from the pinned build; no assets from PVZ1 are used."""
+"""Export Egypt days 2–11 from the pinned build; no assets from PVZ1 are used."""
 import hashlib
 import importlib.util
 import io
@@ -31,7 +31,10 @@ def props(path,names):
 
 actors={name:rig(path) for name,path in {
  'cabbagepult':'plants/CabbagePultPLANT','bloomerang':'plants/BloomerangPLANT',
- 'iceburg':'plants/IcebergLettucePLANT','camel':'zombies/EgyptCamelZOMBIE'}.items()}
+ 'iceburg':'plants/IcebergLettucePLANT','camel':'zombies/EgyptCamelZOMBIE',
+ 'gravebuster':'plants/GraveBusterPLANT','twinsunflower':'plants/SunflowerTwinPLANT','iceweed':'plants/IceweedPLANT',
+ 'gargantuar':'zombies/EgyptGargantuarZOMBIE','imp':'zombies/EgyptImpZOMBIE','explorer':'zombies/EgyptExplorerZOMBIE','tombraiser':'zombies/EgyptTombRaiserZOMBIE','camelTouch':'zombies/EgyptCamelTouchZOMBIE'}.items()}
+actors['camelTouch']['armature']='CamelZombie'
 particles=e.read('resouce_prefabs/ParticlesRP').objects[1]['_components'][0]
 drops=e.read('resouce_prefabs/DroppingsRP').objects[1]['_components'][0]
 rigs={name:rig(path) for name,path in {
@@ -39,7 +42,7 @@ rigs={name:rig(path) for name,path in {
  'grave':'tombstones/EgyptTOMB','cabbage':'projectiles/Cabbage0PRJ','boomerang':'projectiles/Boomerang0PRJ',
  'food':drops['plantFood']['asset'],'sprout':drops['sprout']['asset'],
  'sandstorm':particles['SandStorm']['asset'],'dirtSpawn':particles['dirtSpawn']['asset'],
- 'iceTrap':particles['zombieIceTrap']['asset']}.items()}
+ 'iceTrap':particles['zombieIceTrap']['asset'],'iceSaw':'projectiles/IceweedSawPRJ'}.items()}
 rigs['sprout']['armature']='Sprout'
 power=e.read('25641b6a-95d5-418f-b213-e0829656f5dc')
 powercomp=next(x for x in walk(power.objects) if 'pupjson' in x)
@@ -59,12 +62,12 @@ texture_id=at.data[1][at.rec[5][0]]
 pixels=Image.open(io.BytesIO(c.native(texture_id,'png')))
 pixels.crop((rect['x'],rect['y'],rect['x']+rect['width'],rect['y']+rect['height'])).save(e.OUT/'night.webp',quality=95,method=6)
 # Preserve the source level objects, including row assignments and wave action classes.
-for day in range(2,7):c.write_json(e.OUT/f'egypt{day}.source.json',e.read(f'levels/egypt{day}').objects[0]['json'])
-properties={'plants':props('json/Objects/PlantProps',['cabbagepult','bloomerang','iceburg']),
- 'zombies':props('json/Objects/ZombieProps',['mummy_armor2','camel_onehump']),
+for day in range(2,12):c.write_json(e.OUT/f'egypt{day}.source.json',e.read(f'levels/egypt{day}').objects[0]['json'])
+properties={'plants':props('json/Objects/PlantProps',['cabbagepult','bloomerang','iceburg','gravebuster','twinsunflower','iceweed']),
+ 'zombies':props('json/Objects/ZombieProps',['mummy_armor2','camel_onehump','camel_twohump','camel_manyhump','camel_onehump_touch','camel_twohump_touch','camel_threehump_touch','egypt_gargantuar','egypt_imp','explorer','tomb_raiser']),
  'armors':props('json/Objects/ArmorProps',['egypt_armor2']),
  'grave':props('json/Objects/TombstoneProps',['gravestone_egypt'])['gravestone_egypt'],
- 'projectiles':props('json/Objects/ProjectileProps',['cabbage','cabbage_pf','boomerang','powerup_snow'])}
+ 'projectiles':props('json/Objects/ProjectileProps',['cabbage','cabbage_pf','boomerang','powerup_snow','tombraiser_bone','iceweed_saw'])}
 properties['powerups']={o['objdata']['TypeName']:o['objdata'] for o in e.read(powercomp['pupjson']['asset']).objects[0]['json']['objects'][:5]}
 c.write_json(e.OUT/'properties.json',properties)
 npc=e.read('b697cdfd-e783-4f80-abbe-ac197db6cf97')
@@ -75,7 +78,7 @@ def sound(name,value):
     for ref in refs:
         clip=e.read(ref['asset']);ext=clip.objects[0]['_native'];target=e.OUT/'audio'/(ref['asset']+ext)
         target.parent.mkdir(exist_ok=True);target.write_bytes(c.native(ref['asset'],ext.lstrip('.')));sounds[name].append(str(target.relative_to(c.OUT)))
-for name in ['EGYPT_CHALLENGE_CONVEYOR_INTRO','POWERUPS_TUTORIAL_INITIAL','POWERUPS_TUTORIAL_REPEAT']:
+for name in ['EGYPT_CHALLENGE_CONVEYOR_INTRO','POWERUPS_TUTORIAL_INITIAL','POWERUPS_TUTORIAL_REPEAT','EGYPT_INTRO_GARGANTUAR','EGYPT_OUTRO_GARGANTUAR','EGYPT_CHALLENGE_PRESET_A']:
     flow=next(o['objdata']['Flow'] for o in e.read('json/Objects/NarrativeList').objects[0]['json']['objects'] if name in o.get('aliases',[]))
     for step in flow:
         if 'Lines' in step:
@@ -95,7 +98,20 @@ sound('power/flame',powercomp['flameLPSound'])
 soundprops=e.read('resouce_prefabs/SoundsRP').objects[1]['_components'][0]
 for key in ['powerUpSnowStart','powerUpCherryStart','powerUpWizardStart','powerUpFlameStart','powerUpEnd']:
     sound(key,soundprops[key])
-music='music/inGame/egypt/MG_Egypt';uuid=c.config['uuids'][c.path_index[music]]
+for name,path,keys in [
+ ('camelTouch','zombies/EgyptCamelTouchZOMBIE',['flipSound','matchSound']),
+ ('gargantuar','zombies/EgyptGargantuarZOMBIE',['stepSounds','deathPoleSounds','deathFallSounds','swingSounds','smashSounds','afterSmashSaySounds','ImpThrowSaySounds','ImpThrowSounds','throwSounds']),
+ ('tombraiser','zombies/EgyptTombRaiserZOMBIE',['pukeSound','throwSound']),
+ ('gravebuster','plants/GraveBusterPLANT',['chompSound'])]:
+    data=e.read(path)
+    co=next(x for x in walk(data.objects) if keys[0] in x)
+    for key in keys:
+        if co.get(key):sound(name+'/'+key,co[key])
+    if name=='gargantuar':rigs['pharaohBreak']=rig(co['pharaohBreakParticle']['asset'])
+# The tomb bone uses its own projectile prefab and native trail/hit rig.
+rigs['tombBone']=rig('projectiles/TombBonePRJ')
+ui['note-egypt']=e.sprite(c.decode_uuid(c.config['uuids'][c.path_index['note/egypt/spriteFrame']]))
+music='music/inGame/egypt/MG_Egypt' ;uuid=c.config['uuids'][c.path_index[music]]
 (e.OUT/'minigame.mp3').write_bytes(c.native(uuid,'mp3'))
 c.download('docs/assets/main/index.js')
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'ui':ui,'sounds':sounds,'narratives':narratives})

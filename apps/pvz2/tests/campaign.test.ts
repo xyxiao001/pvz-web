@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {Game,type Zombie} from '../src/game/model';
 import {readLevel,cellX,rowY,type Properties,type SourceLevel,type AnimationTiming} from '../src/game/level';
-import {animationTimeline,type Skeleton} from '../src/rendering/presentation';
+import {animationTimeline,specialAnimationTiming,type Skeleton} from '../src/rendering/presentation';
 import type {CampaignCatalog} from '../src/rendering/battle-art';
 import {ProgressStore,completionEvents} from '../src/shell/progression';
 import {islandStates} from '../src/shell/navigation';
@@ -17,6 +17,7 @@ const timeline=(actor:string,animation:string)=>animationTimeline(read<Skeleton>
 const timing:AnimationTiming={shoot:.5,shootDuration:26/30,produce:23/30,produceDuration:40/30,mineGrow:.6,mineExplode:14/30,mineDeath:.5,raStart:25/30,raEnd:25/30,
  campaign:{cabbage:timeline('cabbagepult','Lob').events.Lob,cabbageDuration:timeline('cabbagepult','Lob').duration,cabbageFood:timeline('cabbagepult','Food').events.lobFood,cabbageFoodEnd:timeline('cabbagepult','Food').events.foodEnd,
  boomerang:timeline('bloomerang','Shoot').events.Shoot,boomerangDuration:timeline('bloomerang','Shoot').duration,boomerangCatch:timeline('bloomerang','Catch').duration,ice:timeline('iceburg','Death').events.explode,iceDuration:timeline('iceburg','Death').duration,iceFood:timeline('iceburg','Food').events.foodExplode/.8,iceFoodEnd:timeline('iceburg','Food').events.foodEnd/.8}};
+timing.special=specialAnimationTiming(new Map(Object.entries(catalog.actors).map(([name,rig])=>[name,read<Skeleton>(`campaign/rigs/${rig.rig}/skeleton.json`)])));
 const level=(day:number)=>readLevel(read<SourceLevel>(`campaign/egypt${day}.source.json`));
 const create=(day:number)=>new Game(level(day),props,timing,z=>({x:z.x-25,y:rowY(z.row)-95}),1234);
 const tick=(g:Game,n:number)=>{for(let i=0;i<Math.round(n*60);i++)g.tick(1/60);};
@@ -179,4 +180,131 @@ test('campaign combat and particle animation names resolve in the exported nativ
  ];
  for(const [name,armature,animations] of rigs){const spec=catalog.rigs[name],skeleton=read<Skeleton>(`campaign/rigs/${spec.rig}/skeleton.json`);for(const animation of animations)assert.ok(skeleton.armature.find(a=>a.name===(armature??spec.armature))!.animation.some(a=>a.name===animation),`${name}/${animation}`);}
  for(const [name,animations] of Object.entries({cabbagepult:['Idle','Lob','Food','Death'],bloomerang:['Idle','Shoot','Catch','Food','Death'],iceburg:['Idle','Death','Food'],camel:['Walk','Eat','Death']}))for(const animation of animations)assert.ok(timeline(name,animation).duration>0,`${name}/${animation}`);
+});
+
+test('Egypt 7–11 preserve authored modes, initial plants, random graves and preset cards',()=>{
+ assert.deepEqual([7,8,9,10,11].map(d=>level(d).waves.length),[9,18,10,16,16]);
+ assert.equal(level(7).match!.types,3);assert.equal(level(7).suppressFlag,true);assert.equal(level(7).mowers,false);
+ assert.deepEqual(level(7).actions[0][0].zombies[0],{kind:'camel_onehump_touch',row:3,column:6});
+ assert.ok(level(8).conveyor!.InitialPlantList.some(p=>p.PlantType==='iceburg'));
+ assert.equal(level(9).initialPlants.length,4);const nine=create(9);assert.equal(nine.plants.length,4);assert.equal(nine.plants.filter(p=>p.kind==='iceweed').length,2);
+ const eleven=create(11);assert.equal(eleven.graves.length,4);assert.equal(new Set(eleven.graves.map(g=>`${g.row}/${g.column}`)).size,4);assert.ok(eleven.graves.every(g=>g.column>=6&&g.column<=8));
+ assert.deepEqual(level(11).preset,['sunflower','twinsunflower','wallnut','potatomine','peashooter','bloomerang']);
+});
+
+test('camel pairs flip back after a mismatch, match in two stages, pause, and complete all nine waves',()=>{
+ const g=create(7);tick(g,6);assert.equal(g.zombies.length,6);assert.equal(g.suns.length,0);assert.equal(g.plant('peashooter',0,0),false);
+ const first=g.zombies[0],different=g.zombies.find(z=>g.camelCards.get(z.id)!.face!==g.camelCards.get(first.id)!.face)!;
+ assert.ok(g.flipCamel(first.id));assert.ok(g.flipCamel(different.id));tick(g,3.1);assert.equal(g.camelCards.get(first.id)!.state,'back');
+ const memory=new Map<number,number>();
+ for(let frame=0;frame<60*450&&g.phase==='playing';frame++){
+  if(frame%8===0){
+   const face=g.zombies.filter(z=>g.camelCards.get(z.id)!.state==='face');for(const z of face)memory.set(z.id,g.camelCards.get(z.id)!.face);
+   const back=g.zombies.filter(z=>g.camelCards.get(z.id)!.state==='back'&&g.time-z.entryAt>1.35);
+   if(face.length===1){const match=back.find(z=>memory.get(z.id)===memory.get(face[0].id));if(match)g.flipCamel(match.id);else {const unseen=back.find(z=>!memory.has(z.id));if(unseen)g.flipCamel(unseen.id);else if(back.length)g.flipCamel(back[0].id);};}
+   else if(!face.length){let next=back.find(z=>memory.has(z.id)&&back.some(other=>other!==z&&memory.get(other.id)===memory.get(z.id)));next??=back.find(z=>!memory.has(z.id))??back[0];if(next)g.flipCamel(next.id);}
+  }
+  g.tick(1/60);g.events=[];
+ }
+ assert.equal(g.phase,'won',`time ${g.time}, wave ${g.wave}, remaining ${g.zombies.length}`);assert.equal(g.wave,9);
+});
+
+test('Gargantuar throws one imp below half health, smashes plants on the authored frame and can be frozen',()=>{
+ const l=level(8);l.actions=[[{...l.actions[0][0],zombies:[{kind:'egypt_gargantuar',row:2}],food:0}]];l.waves=[['egypt_gargantuar']];l.flagInterval=100;
+ const g=new Game(l,props,timing,z=>({x:z.x,y:rowY(z.row)}),42);tick(g,15.6);
+ const garg=g.zombies[0];garg.x=cellX(4);garg.hp=1799;tick(g,timing.special!.gargThrow+.1);assert.equal(g.zombies.filter(z=>z.kind==='egypt_imp').length,1);assert.equal(g.specialZombies.get(garg.id)!.imp,false);
+ tick(g,1.6);assert.equal(g.zombies.filter(z=>z.kind==='egypt_imp').length,1);const packet=g.conveyor[0];g.conveyor=[{...packet,kind:'wallnut'}];g.plant('wallnut',2,3,packet.id);garg.x=cellX(3)+30;
+ tick(g,.1);assert.equal(g.specialZombies.get(garg.id)!.action,'smash');const wall=g.plants[0];tick(g,timing.special!.gargSmash-.2);assert.ok(g.plants.includes(wall));tick(g,.3);assert.ok(!g.plants.includes(wall));
+});
+
+test('Explorer burns tall plants, ignores iceweed and permanently loses its torch when frozen',()=>{
+ const l=level(9);l.actions=[[{...l.actions[0][0],zombies:[{kind:'explorer',row:2}]}]];l.waves=[['explorer']];l.flagInterval=100;
+ const g=new Game(l,props,timing,z=>({x:z.x,y:rowY(z.row)}),42);tick(g,15.6);g.sun=500;g.plant('wallnut',2,2);const z=g.zombies[0];z.x=cellX(2)+20;tick(g,.1);assert.ok(!g.plants.some(p=>p.row===2&&p.column===2));
+ g.plant('iceburg',2,2);tick(g,1);assert.equal(g.specialZombies.get(z.id)!.torch,false);assert.ok(z.frozenUntil>g.time);
+});
+
+test('Tomb Raiser throws two bones per group, creates graves and Grave Buster consumes only its target',()=>{
+ const l=level(10);l.actions=[[{...l.actions[0][0],zombies:[{kind:'tomb_raiser',row:2}]}]];l.waves=[['tomb_raiser']];l.flagInterval=100;
+ const g=new Game(l,props,timing,z=>({x:z.x,y:rowY(z.row)}),42);tick(g,15.6);const z=g.zombies[0];z.x=cellX(6);const count=g.graves.length;
+ tick(g,13);assert.equal(g.graves.length,count+2);
+ const grave=g.graves[0];assert.equal(g.plant('gravebuster',0,0),false);assert.equal(g.plant('gravebuster',grave.row,grave.column),true);const plant=g.plants.at(-1)!;
+ tick(g,timing.special!.graveBust+timing.special!.graveFinish+.05);assert.ok(!g.graves.includes(grave));assert.ok(g.plants.includes(plant));tick(g,.6);assert.ok(!g.plants.includes(plant));
+});
+
+test('native repeated bust events use their first frame, and twin sunflower produces its authored sun value',()=>{
+ assert.equal(timing.special!.graveBust,21/30);
+ const g=create(11);g.sun=500;g.plant('twinsunflower',2,0);tick(g,11.5);assert.equal(g.suns.filter(s=>s.from==='plant').length,2);assert.ok(g.suns.filter(s=>s.from==='plant').every(s=>s.value===50));
+ g.food=1;const before=g.suns.length;g.plantFood(2,0);assert.equal(g.suns.length,before);tick(g,.8);assert.equal(g.suns.length-before,6);assert.equal(g.suns.slice(-6).reduce((n,s)=>n+s.value,0),300);
+});
+
+test('Egypt 7 intermediary note node opens day 8, day 9 grants native Grave Buster ID 12, rewards persist once',()=>{
+ const data=new Map<string,string>(),store={getItem:(k:string)=>data.get(k)??null,setItem:(k:string,v:string)=>{data.set(k,v);},removeItem:(k:string)=>{data.delete(k);}};
+ const progress=new ProgressStore(store),map=read<WorldMap>('shell/maps/egypt.json');
+ for(let day=1;day<=11;day++){
+  const id=`egypt${day}`;progress.finish('egypt',id);
+  const events=completionEvents(map,id,progress.completed(map),progress.rewardNodes('egypt'));
+  if(day===7)assert.ok(events.some(e=>e.action==='open'&&map.islands.find(n=>n.node===e.node)!.levels.includes('egypt8')));
+  for(const e of events)if(e.action==='reward')progress.award('egypt',map.islands.find(n=>n.node===e.node)!);
+  progress.finishPresentation();progress.finish('egypt',id);assert.equal(progress.pending(),null);
+ }
+ assert.ok(progress.ownedPlants().has(12));assert.ok(!progress.ownedPlants().has(25));
+ assert.deepEqual(progress.campaignRewards().map(r=>r.level),['egypt4','egypt6','egypt7','egypt8','egypt10','egypt11']);
+});
+
+for(const day of [8,9,10,11])test(`Egypt ${day} can finish with legal planting, collection and available powerups`,()=>{
+ const g=create(day);
+ for(let frame=0;frame<60*700&&g.phase==='playing';frame++){
+  for(const s of [...g.suns])g.collect(s.id);for(const p of [...g.pickups])g.collectPickup(p.id);
+  if(frame%15===0){
+   const occupied=(r:number,c:number)=>g.plants.some(p=>p.row===r&&p.column===c);
+   const threats=[...g.zombies].sort((a,b)=>a.x-b.x);
+   if(day===5){
+    if(!g.power&&threats.length)g.selectPower('zap');
+    if(g.power)g.powerPointer(threats[0]?.x??cellX(4),threats[0]?rowY(threats[0].row)-50:rowY(2),true);
+   }else if(day===8){
+    for(const card of [...g.conveyor]){
+     if(card.kind==='iceburg'){const target=threats.find(z=>z.x<cellX(8)&&z.frozenUntil<=g.time);if(target)g.plant(card.kind,target.row,Math.floor((target.x-190)/82),card.id);continue;}
+     const counts=Array.from({length:5},(_,r)=>g.plants.filter(p=>p.row===r&&['bloomerang','cabbagepult'].includes(p.kind)).length);
+     const rows=[0,1,2,3,4].sort((a,b)=>counts[a]-counts[b]||Number(threats.some(z=>z.row===b))-Number(threats.some(z=>z.row===a)));
+     for(const row of rows){const cols=card.kind==='wallnut'?[4,5,3,2,1,0]:card.kind==='potatomine'?[5,4,3,6,2,1,0]:[0,1,2,3,4];if(cols.some(c=>g.plant(card.kind,row,c,card.id)))break;}
+    }
+   }else{
+    for(const z of threats)if(!g.plants.some(p=>p.row===z.row&&['peashooter','cabbagepult','bloomerang'].includes(p.kind)))g.plant(day===11?'peashooter':'cabbagepult',z.row,2);
+    for(let row=0;row<5;row++)if(!occupied(row,0))g.plant('sunflower',row,0);
+    for(let row=0;row<5;row++)if(!occupied(row,1))g.plant('sunflower',row,1);
+    for(const c of [2,3,4])for(let row=0;row<5;row++)if(!occupied(row,c))g.plant(day===2?'peashooter':day===11?'bloomerang':'cabbagepult',row,c);
+    for(const z of threats)if(z.x<700){g.plant('wallnut',z.row,5);if(day===6)g.plant('iceburg',z.row,Math.floor((z.x-190)/82));}
+   }
+   const target=threats.find(z=>z.x<1000);
+   if(target){const p=g.plants.find(p=>p.row===target.row&&['peashooter','cabbagepult','bloomerang'].includes(p.kind));if(p)g.plantFood(p.row,p.column);}
+  }
+  g.tick(1/60);g.events.length=0;
+ }
+ assert.equal(g.phase,'won',`day ${day}, time ${g.time}, wave ${g.wave}, kills ${g.kills}, sun ${g.sun}`);
+ assert.equal(g.wave,g.level.waves.length);
+});
+
+
+test('matching timers stop while paused, and resumed matching removes both cards together',()=>{
+ const g=create(7);tick(g,6);const a=g.zombies[0],b=g.zombies.find(z=>z.id!==a.id&&g.camelCards.get(z.id)!.face===g.camelCards.get(a.id)!.face)!;
+ g.flipCamel(a.id);g.flipCamel(b.id);g.phase='paused';const time=g.time;tick(g,2);assert.equal(g.time,time);assert.equal(g.camelCards.get(a.id)!.state,'face');
+ g.phase='playing';tick(g,.55);assert.equal(g.camelCards.get(a.id)!.state,'match');assert.ok(g.zombies.includes(a));tick(g,.5);assert.ok(!g.zombies.includes(a));assert.ok(!g.zombies.includes(b));
+});
+
+test('a Gargantuar coffin release waits for its native frame and keeps the final wave alive',()=>{
+ const l=level(8);l.actions=[[{...l.actions[0][0],zombies:[{kind:'egypt_gargantuar',row:2}],food:0}]];l.waves=[['egypt_gargantuar']];l.flagInterval=100;
+ let releases=0;
+ for(let seed=1;seed<=12;seed++){
+  const g=new Game(l,props,timing,z=>({x:z.x,y:rowY(z.row)}),seed);tick(g,15.6);const garg=g.zombies[0];garg.x=cellX(5);garg.hp=0;tick(g,.05);
+  if(g.phase==='playing'){
+   tick(g,timing.special!.gargPharaoh-.1);assert.equal(g.zombies.length,0);assert.equal(g.phase,'playing');tick(g,.15);
+   assert.equal(g.zombies.length,1);assert.equal(g.zombies[0].reversed,true);assert.ok(g.pharaohs.has(garg.id));releases++;
+  }
+ }
+ assert.ok(releases>0&&releases<12);
+});
+
+test('normal sunflower food follows the pinned three Produce events, rather than an immediate six-sun burst',()=>{
+ const g=create(11);g.sun=500;g.plant('sunflower',2,0);g.food=1;g.plantFood(2,0);assert.equal(g.suns.length,0);tick(g,.8);
+ assert.equal(g.suns.length,props.plants.sunflower.PlantfoodTime);assert.equal(g.suns.reduce((n,s)=>n+s.value,0),150);
 });

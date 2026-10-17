@@ -1,13 +1,13 @@
 import 'pixi.js/prepare';
 import { BattleArt } from './battle-art';
-import { animationTimeline, COMBAT_VIEW, type Skeleton } from './presentation';
+import { animationTimeline, specialAnimationTiming, COMBAT_VIEW, type Skeleton } from './presentation';
 import { Application, Assets, Container, Graphics, Sprite, Texture, type Ticker } from 'pixi.js';
 import { EventObject, PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
 import { assetUrl, json, loadInBatches } from '../assets/load';
-import { BOARD, cellX, rowY, type AnimationTiming, type PlantKind, type ZombieKind } from '../game/level';
-import type { DeathCause, Game, Plant, Zombie, ZombieDeath } from '../game/model';
+import { BOARD, cellX, rowY, PLANT_KINDS, type AnimationTiming, type PlantKind, type ZombieKind } from '../game/level';
+import { isCamel, isMatchCamel, type DeathCause, Game, Plant, Zombie, ZombieDeath } from '../game/model';
 
-type RigName = PlantKind | 'mummy' | 'ra' | 'camel';
+type RigName = PlantKind | 'mummy' | 'ra' | 'camel' | 'camelTouch' | 'gargantuar' | 'imp' | 'explorer' | 'tombraiser';
 const RIGS: Record<RigName, { armature: string; idle: string; scale: number }> = {
   peashooter: { armature: 'Peashooter', idle: 'Idle', scale: .56 },
   sunflower: { armature: 'Sunflower', idle: 'Idle', scale: .55 },
@@ -16,11 +16,20 @@ const RIGS: Record<RigName, { armature: string; idle: string; scale: number }> =
   cabbagepult:{armature:'Cabbage-Pult',idle:'Idle',scale:.55},
   bloomerang:{armature:'Bloomerang',idle:'Idle',scale:.55},
   iceburg:{armature:'IcebergLettuce',idle:'Idle',scale:.55},
+  gravebuster:{armature:'GraveBuster',idle:'Idle',scale:.55},
+  twinsunflower:{armature:'TwinSunflower',idle:'Idle',scale:.55},
+  iceweed:{armature:'Iceweed',idle:'Idle',scale:.55},
+  gargantuar:{armature:'EgyptGargantuar',idle:'Walk',scale:.51},
+  imp:{armature:'EgyptImp',idle:'Walk',scale:.51},
+  explorer:{armature:'EgyptExplorerZombie',idle:'Walk',scale:.51},
+  tombraiser:{armature:'TombRaiserZombie',idle:'Walk',scale:.51},
+  camelTouch:{armature:'CamelZombie',idle:'Walk',scale:.51},
   camel:{armature:'CamelZombie',idle:'Walk',scale:.51},
   mummy: { armature: 'EgyptBasicZombie', idle: 'Walk', scale: .51 },
   ra: { armature: 'RaZombie', idle: 'Walk', scale: .51 },
 };
-interface Actor { root: Container; rig: PixiArmatureDisplay; kind: RigName; animation: string; actionAt: number; armor?: PixiArmatureDisplay; armLost: boolean; mask?:Graphics;camelFrame?:number; death?: {cause:DeathCause|'plant';elapsed:number;fadeAt:number;fallAt:number} }
+const zombieRig=(kind:ZombieKind):RigName=>isMatchCamel(kind)?'camelTouch':isCamel(kind)?'camel':kind==='egypt_gargantuar'?'gargantuar':kind==='egypt_imp'?'imp':kind==='explorer'?'explorer':kind==='tomb_raiser'?'tombraiser':kind==='ra'?'ra':'mummy';
+interface Actor { root: Container; rig: PixiArmatureDisplay; kind: RigName; animation: string; actionAt: number; armor?: PixiArmatureDisplay; armLost: boolean; mask?:Graphics;camelFrame?:number;plank?:PixiArmatureDisplay;plankState?:string;plankAt?:number; death?: {cause:DeathCause|'plant';elapsed:number;fadeAt:number;fallAt:number} }
 interface Fragment {rig:PixiArmatureDisplay;x:number;y:number;ground:number;vx:number;vy:number;spin:number;age:number;landed:number}
 
 export class Scene {
@@ -63,13 +72,13 @@ export class Scene {
     this.app.canvas.setAttribute('aria-label', '神秘埃及战场，五行九列。选择植物后点击地块种植。');
     this.app.stage.eventMode = 'none';
     this.app.stage.addChild(this.world,this.conveyorLayer);
-    const lawn = new Sprite(await Assets.load<Texture>(assetUrl(day===4||day===5?'campaign/night.webp':'egypt/lawn.webp')));
+    const lawn = new Sprite(await Assets.load<Texture>(assetUrl([4,5,7,8].includes(day)?'campaign/night.webp':'egypt/lawn.webp')));
     lawn.width=1974;lawn.height=768;
     lawn.position.set(-340, -40); this.world.addChild(lawn, this.highlight, this.actorLayer);
     this.actorLayer.sortableChildren = true;
-    const actorNames:RigName[]=[...new Set<RigName>(['peashooter','sunflower','wallnut','potatomine','mummy','ra',...plantActors,...(day===6?['camel' as const]:[])])];
+    const actorNames:RigName[]=[...new Set<RigName>(['peashooter','sunflower','wallnut','potatomine','mummy','ra',...plantActors,...([6,8,9,10,11].includes(day)?['camel' as const]:[]),...(day===7?['camelTouch' as const]:[]),...(day===8?['gargantuar' as const,'imp' as const]:[]),...(day===9?['explorer' as const]:[]),...(day===10?['tombraiser' as const]:[])])];
     const artCount=await this.art.init(this.app,(done,total)=>progress(done+1,total+actorNames.length+1),day,plantActors);
-    if(day===4){for(const lane of [0,1]){
+    if(day===4||day===8){for(const lane of [0,1]){
       const rig=this.art.build('conveyor','Idle'),bounds=rig.getLocalBounds();
       const sx=BOARD.width*.43/bounds.width,sy=BOARD.height*.09/bounds.height;
       rig.scale.set(sx,sy);rig.position.set(BOARD.width*.08-bounds.x*sx,BOARD.height*(.01+lane*.09)-bounds.y*sy);this.conveyorLayer.addChild(rig);
@@ -97,6 +106,10 @@ export class Scene {
       for(const name of ['cabbagepult','bloomerang','iceburg'] as const)if(!skeletons.has(name))skeletons.set(name,await json<Skeleton>(`campaign/rigs/${this.art.campaign.actors[name].rig}/skeleton.json`));
       const cabbage=animationTimeline(skeletons.get('cabbagepult')!,'Cabbage-Pult','Lob'),boom=animationTimeline(skeletons.get('bloomerang')!,'Bloomerang','Shoot'),ice=animationTimeline(skeletons.get('iceburg')!,'IcebergLettuce','Death');
       this.timing.campaign={cabbage:cabbage.events.Lob,cabbageDuration:cabbage.duration,cabbageFood:animationTimeline(skeletons.get('cabbagepult')!,'Cabbage-Pult','Food').events.lobFood,cabbageFoodEnd:animationTimeline(skeletons.get('cabbagepult')!,'Cabbage-Pult','Food').events.foodEnd,boomerang:boom.events.Shoot,boomerangDuration:boom.duration,boomerangCatch:animationTimeline(skeletons.get('bloomerang')!,'Bloomerang','Catch').duration,ice:ice.events.explode,iceDuration:ice.duration,iceFood:animationTimeline(skeletons.get('iceburg')!,'IcebergLettuce','Food').events.foodExplode/.8,iceFoodEnd:animationTimeline(skeletons.get('iceburg')!,'IcebergLettuce','Food').events.foodEnd/.8};
+    }
+    if(day>=7){
+      for(const name of ['gargantuar','tombraiser','gravebuster','twinsunflower','iceweed'] as const)if(!skeletons.has(name))skeletons.set(name,await json<Skeleton>(`campaign/rigs/${this.art.campaign.actors[name].rig}/skeleton.json`));
+      this.timing.special=specialAnimationTiming(skeletons);
     }
     this.observer = new ResizeObserver(() => {
       this.scale = host.clientWidth / BOARD.width;
@@ -142,8 +155,10 @@ export class Scene {
     const rig = this.rig(name, flag ? 'EgyptFlagZombie' : RIGS[name].armature); rig.scale.set(RIGS[name].scale);
     root.addChild(shade, rig); this.actorLayer.addChild(root);
     const actor: Actor = { root, rig, kind:name, animation: '', actionAt: -1, armLost:false,camelFrame:name==='camel'?0:undefined };
-    const events:Partial<Record<RigName,Record<string,string>>>={cabbagepult:{LobSound:'lobSound'},bloomerang:{ShootSound:'shootSound',catch:'catchSound'},iceburg:{explode:'deadSound',foodExplode:'foodBlastSound'}};
+    const events:Partial<Record<RigName,Record<string,string>>>={cabbagepult:{LobSound:'lobSound'},bloomerang:{ShootSound:'shootSound',catch:'catchSound'},iceburg:{explode:'deadSound',foodExplode:'foodBlastSound'},tombraiser:{puke:'pukeSound',throw:'throwSound'},gargantuar:{step:'stepSounds',swing:'swingSounds',smash:'smashSounds',afterSmash:'afterSmashSaySounds',impThrow:'ImpThrowSounds',deathPole:'deathPoleSounds',deathFall:'deathFallSounds'}};
     if(events[name])rig.addDBEventListener(EventObject.FRAME_EVENT,event=>{const key=events[name]![event.name];if(key)this.onSound(name+'/'+key);},this);
+    if(name==='camelTouch'){actor.plank=this.rig(name,'_plank');actor.plank.scale.set(.51,.51*.989);actor.plank.position.set(-.42*.51,-141.306*.51);actor.plank.animation.play('IdleBack',0);root.addChild(actor.plank);}
+    if(name==='gravebuster')this.onSound('gravebuster/chompSound');
     this.actors.set(id, actor); return actor;
   }
 
@@ -153,6 +168,8 @@ export class Scene {
   }
 
   private plantAnimation(plant: Plant, game: Game) {
+    if(plant.kind==='gravebuster')return plant.age<game.timing.special!.graveBust?'Spawn':'Busting';
+    if(plant.kind==='iceweed'&&plant.action==='shoot')return 'Attack';
     if(plant.action==='catch')return 'Catch';
     if (plant.action === 'food') return 'Food';
     if (plant.action === 'shoot') return plant.kind==='cabbagepult'?'Lob':'Shoot';
@@ -173,16 +190,17 @@ export class Scene {
       actor.root.position.set(cellX(p.column), rowY(p.row)); actor.root.zIndex = rowY(p.row);
       actor.rig.animation.timeScale=p.kind==='iceburg'&&p.action==='food'?.8:1;
       const animation = this.plantAnimation(p, game);
-      this.animate(actor, animation, p.action === 'idle' ? 0 : p.actionAt, ['shoot','produce','grow','explode','catch'].includes(p.action)||p.action==='food'&&['cabbagepult','iceburg'].includes(p.kind)||animation==='Spawn_Baby'?1:0);
+      this.animate(actor, animation, p.action === 'idle' ? 0 : p.actionAt, p.action==='food'&&(p.kind==='sunflower'||p.kind==='twinsunflower')?game.props.plants[p.kind].PlantfoodTime: ['shoot','produce','grow','explode','catch'].includes(p.action)||p.action==='food'&&['cabbagepult','iceburg'].includes(p.kind)||animation==='Spawn_Baby'?1:0);
     }
     for (const z of game.zombies) {
       alive.add(z.id);
       let actor=this.actors.get(z.id);
-      if(actor?.kind==='camel'&&z.kind!=='camel_onehump'){
+      if(actor?.kind==='camel'&&!isCamel(z.kind)){
         this.actors.delete(z.id);this.actors.set(-100000-z.id,actor);this.animate(actor,'Death',0,1);
         actor.death={cause:'plant',elapsed:0,fadeAt:animationTimeline(this.skeletons.get('camel')!,'CamelZombie','Death').duration,fallAt:Infinity};actor=undefined;
       }
-      actor=actor??this.addActor(z.id,z.kind==='camel_onehump'?'camel':z.kind==='ra'?'ra':'mummy',z.kind==='mummy_flag');
+      actor=actor??this.addActor(z.id,zombieRig(z.kind),z.kind==='mummy_flag');
+      actor.root.scale.x=z.reversed?-1:1;
       actor.root.position.set(z.x, rowY(z.row)); actor.root.zIndex = rowY(z.row) + 1;
       actor.rig.animation.timeScale=game.time<z.frozenUntil?0:game.time<z.chilledUntil?.5:1;
       actor.rig.tint=game.time<z.frozenUntil||game.time<z.chilledUntil?0x9ce8ff:z.food?0xb0ff83:0xffffff;
@@ -192,12 +210,20 @@ export class Scene {
         actor.rig.y=entering?120*Math.pow(1-Math.min(1,(game.time-z.entryAt)),2):0;
         if(!entering&&actor.mask){actor.root.mask=null;actor.mask.destroy();actor.mask=undefined;}
       }
-      if(z.leap){const t=Math.min(1,(game.time-z.leap.at)/.5);actor.root.y=z.leap.fromY+(rowY(z.leap.toRow)-z.leap.fromY)*t-90*Math.sin(t*Math.PI);}
-      if(z.kind==='camel_onehump')actor.camelFrame=z.camelPart*3+(z.armor<125?2:z.armor<250?1:0);
+      if(z.leap){const t=Math.min(1,(game.time-z.leap.at)/(z.leap.duration??.5));actor.root.y=z.leap.fromY+(rowY(z.leap.toRow)-z.leap.fromY)*t-90*Math.sin(t*Math.PI);}
+      if(isCamel(z.kind)&&!isMatchCamel(z.kind))actor.camelFrame=z.camelPart*3+(z.armor<125?2:z.armor<250?1:0);
       const absorbAnimation={idle:'Walk',start:'AbsorbStart',loop:'Absorbing',end:'AbsorbEnd'}[z.absorbState];
-      this.animate(actor,entering?'Idle':z.kind==='ra'&&z.absorbState!=='idle'?absorbAnimation:z.eating?'Eat':'Walk',0,z.absorbState==='start'||z.absorbState==='end'?1:0);
-      if(z.kind!=='camel_onehump'&&!actor.armLost&&z.hp<=game.props.zombies[z.kind].Toughness*this.art.catalog.presentation.armDropHealthFraction){actor.armLost=true;this.dropFragment(actor,'arm');this.onSound('zombieLimbPop');}
-      if (z.kind!=='camel_onehump'&&z.armor > 0 && !actor.armor) {
+      const special=game.specialZombies.get(z.id);
+      const specialAnimation=special?.action==='smash'?'Smash':special?.action==='throw'||special?.action==='bone'?'Throw':null;
+      if(special?.action==='throw'&&actor.animation!=='Throw')this.onSound('gargantuar/ImpThrowSaySounds');
+      this.animate(actor,z.leap&&z.kind==='egypt_imp'?'Fly':z.kind==='egypt_imp'&&z.landUntil!==undefined&&game.time<z.landUntil?'Land':specialAnimation??(entering?'Idle':z.kind==='ra'&&z.absorbState!=='idle'?absorbAnimation:z.eating?'Eat':'Walk'),specialAnimation?special!.at:0,special?.action==='bone'?2:specialAnimation?1:z.absorbState==='start'||z.absorbState==='end'?1:0);
+
+      if(actor.plank){const card=game.camelCards.get(z.id)!;
+        if(actor.plankState!==card.state||actor.plankAt!==card.at){actor.plank.animation.play(card.state==='back'?'FlipBack':card.state==='face'?'FlipFace':'Match',1);actor.plankState=card.state;actor.plankAt=card.at;}
+        actor.plank.armature.getSlot('icon')!.displayIndex=card.face;actor.plank.armature.getSlot('type')!.displayIndex=z.camelPart;
+      }
+      if(['mummy','ra','explorer','tombraiser','imp'].includes(actor.kind)&&!actor.armLost&&z.hp<=game.props.zombies[z.kind].Toughness*this.art.catalog.presentation.armDropHealthFraction){actor.armLost=true;this.dropFragment(actor,'arm');this.onSound('zombieLimbPop');}
+      if (actor.kind==='mummy'&&z.armor > 0 && !actor.armor) {
         actor.armor = this.rig('mummy', z.kind==='mummy_armor2'?'Bucket':'Cone'); actor.armor.scale.set(.51); actor.root.addChild(actor.armor);
       }
       if (actor.armor) {
@@ -209,14 +235,24 @@ export class Scene {
       }
     }
     for(const death of game.deaths)if(!this.seenDeaths.has(death.zombie.id)){this.seenDeaths.add(death.zombie.id);this.killZombie(death);}
-    for (const [id, actor] of this.actors) if (!alive.has(id)&&!actor.death&&actor.kind!=='mummy'&&actor.kind!=='ra'&&actor.kind!=='camel') {
-      if(actor.animation==='Charging'||actor.kind==='iceburg'&&actor.animation==='Death'||game.effects.some(effect=>effect.kind==='remove'&&effect.x===actor.root.x&&effect.y===actor.root.y)){this.removeActor(id,actor);continue;}
+    for (const [id, actor] of this.actors) if (!alive.has(id)&&!actor.death&&PLANT_KINDS.includes(actor.kind as PlantKind)) {
+      if(actor.kind==='gravebuster'||actor.animation==='Charging'||actor.kind==='iceburg'&&actor.animation==='Death'||game.effects.some(effect=>effect.kind==='remove'&&effect.x===actor.root.x&&effect.y===actor.root.y)){this.removeActor(id,actor);continue;}
       const animation=actor.kind==='wallnut'?actor.animation.replace('Idle','Death'):actor.kind==='potatomine'?'Death_Baby':'Death';
       const timeline=animationTimeline(this.skeletons.get(actor.kind)!,RIGS[actor.kind].armature,animation);
       this.animate(actor,animation,0,1);actor.death={cause:'plant',elapsed:0,fadeAt:timeline.duration,fallAt:Infinity};
     }
     this.clock.advanceTime(dt); this.art.clock.advanceTime(dt); PixiFactory.advanceTime(0);
     this.updateDeaths(dt);
+    for(const [id,actor] of this.actors){
+      const state=game.specialZombies.get(id);
+      for(const slot of actor.rig.armature.getSlots()){
+        if(actor.kind==='gargantuar'&&state&&!state.imp&&slot.name.includes('_IMP'))slot.displayIndex=-1;
+        if(actor.kind==='gargantuar'&&game.pharaohs.has(id)&&slot.name.includes('PHARAOH'))slot.displayIndex=-1;
+        if(actor.kind==='iceweed'){const spikes=game.iceweedSpikes.get(id)??1;if(slot.name.endsWith('_S1'))slot.displayIndex=spikes>=2?1:0;if(slot.name.endsWith('_S2'))slot.displayIndex=spikes>=3?1:0;}
+        if(actor.kind==='explorer'&&state&&!state.torch&&slot.name.startsWith('FIRE'))slot.displayIndex=-1;
+      }
+      if(actor.kind==='mummy'&&actor.root.scale.x<0&&!game.zombies.some(z=>z.id===id)&&!actor.death)this.removeActor(id,actor);
+    }
     for (const actor of this.actors.values()) if (actor.armor?.visible) {
       const bone = actor.rig.armature.getBone('armorSOCKET')!;
       bone.updateGlobalTransform();
@@ -237,11 +273,11 @@ export class Scene {
   }
 
   private removeActor(id:number,actor:Actor) {
-    actor.rig.removeFromParent();actor.rig.dispose();actor.armor?.removeFromParent();actor.armor?.dispose();actor.root.destroy({children:true});this.actors.delete(id);
+    actor.plank?.removeFromParent();actor.plank?.dispose();actor.rig.removeFromParent();actor.rig.dispose();actor.armor?.removeFromParent();actor.armor?.dispose();actor.root.destroy({children:true});this.actors.delete(id);
   }
   private dropFragment(actor:Actor,part:'head'|'arm'|'Cone'|'Bucket') {
     const rig=this.rig(actor.kind,part);rig.scale.set(RIGS[actor.kind].scale);
-    rig.animation.play((part==='Cone'||part==='Bucket')?actor.armor!.animation.lastAnimationName!:part==='arm'?'newAnimation':'Idle',0);
+    rig.animation.play((part==='Cone'||part==='Bucket')?actor.armor!.animation.lastAnimationName!:part==='arm'&&actor.kind!=='imp'?'newAnimation':'Idle',0);
     const bone=actor.rig.armature.getBone(part==='head'?'head':part==='arm'?'arm_here':'armorSOCKET')!;
     bone.updateGlobalTransform();
     const x=actor.root.x+actor.rig.x+bone.global.x*actor.rig.scale.x,y=actor.root.y+actor.rig.y+bone.global.y*actor.rig.scale.y;
@@ -250,15 +286,16 @@ export class Scene {
   }
   private killZombie(death:ZombieDeath) {
     const z=death.zombie;
-    const actor=this.actors.get(z.id)??this.addActor(z.id,z.kind==='camel_onehump'?'camel':z.kind==='ra'?'ra':'mummy',z.kind==='mummy_flag');
+    const actor=this.actors.get(z.id)??this.addActor(z.id,zombieRig(z.kind),z.kind==='mummy_flag');
     actor.root.position.set(z.x,rowY(z.row));actor.root.zIndex=rowY(z.row)+1;actor.rig.animation.timeScale=1;actor.rig.tint=0xffffff;
     if(actor.mask){actor.root.mask=null;actor.mask.destroy();actor.mask=undefined;actor.rig.y=0;}
-    if(actor.kind!=='camel')this.dropFragment(actor,'head');this.onSound('zombieLimbPop');
+    if(!['camel','camelTouch'].includes(actor.kind))this.dropFragment(actor,'head');this.onSound('zombieLimbPop');
     if(actor.armor?.visible){this.dropFragment(actor,z.kind==='mummy_armor2'?'Bucket':'Cone');actor.armor.visible=false;}
+    if(death.cause==='match'&&actor.plank){actor.plank.removeFromParent();actor.plank.dispose();actor.plank=undefined;}
     if(death.cause==='potato'){this.removeActor(z.id,actor);return;}
     const timeline=animationTimeline(this.skeletons.get(actor.kind)!,actor.rig.armature.name,'Death');
     this.animate(actor,'Death',0,1);
-    actor.death={cause:death.cause,elapsed:0,fadeAt:timeline.events.die,fallAt:actor.kind==='camel'?Infinity:timeline.events.fall};
+    actor.death={cause:death.cause,elapsed:0,fadeAt:timeline.events.die,fallAt:actor.kind==='gargantuar'?timeline.events.deathFall:timeline.events.fall};
   }
   private updateDeaths(dt:number) {
     for(const [id,actor] of this.actors) {
@@ -325,11 +362,12 @@ export class Scene {
     }
     for(const g of game.graves){
       const rig=object(`grave-${g.id}`,'grave','Idle',cellX(g.column),rowY(g.row),.5);
-      rig.armature.getSlot('MAIN')!.displayIndex=g.stage;
+      rig.armature.getSlot('MAIN')!.displayIndex=g.stage;rig.zIndex=rowY(g.row)-1;
+      rig.visible=!game.plants.some(p=>p.kind==='gravebuster'&&p.row===g.row&&p.column===g.column&&p.age>=game.timing.special!.graveBust);
     }
     for(const p of game.pickups)object(`pickup-${p.id}`,p.kind,'Idle',p.x,p.y+Math.sin(p.age*3)*4,p.kind==='food'?.7:.8).zIndex=1000;
     for(const m of game.missiles){
-      const rig=object(`missile-${m.id}`,m.kind==='snow'?'powerSnow':m.kind,'Idle',m.x,m.y,m.powered?.65:.5,m.kind==='snow'?undefined:m.kind==='cabbage'?(m.powered?'Projectile2':'Projectile1'):(m.powered?'Projectile1':'Projectile0'));
+      const rig=object(`missile-${m.id}`,m.kind==='snow'?'powerSnow':m.kind==='bone'?'tombBone':m.kind==='saw'?'iceSaw':m.kind,'Idle',m.x,m.y,m.powered?.65:.5,['snow','bone','saw'].includes(m.kind)?undefined:m.kind==='cabbage'?(m.powered?'Projectile2':'Projectile1'):(m.powered?'Projectile1':'Projectile0'));
       rig.zIndex=1000;rig.rotation=m.kind==='boomerang'?m.age*20:m.age*3;
     }
     for(const z of game.zombies){
@@ -358,7 +396,7 @@ export class Scene {
       }
       const special:Partial<Record<typeof effect.kind,{name:string;animation:string;armature?:string}>>={
         cherry:{name:'cherryExplosion',animation:'Play'},snowHit:{name:'snowHit',animation:'Play'},
-        ground:{name:'dirtSpawn',animation:'Play'},freeze:{name:'iceTrap',animation:'Die'},
+        pharaoh:{name:'pharaohBreak',animation:'Play'},graveSpawn:{name:'dirtSpawn',animation:'Play'},ground:{name:'dirtSpawn',animation:'Play'},freeze:{name:'iceTrap',animation:'Die'},
         toss:{name:'tossPar',animation:'Play'},graveHit:{name:'grave',animation:`Play${effect.stage}`,armature:'Particle'},
         cabbageHit:{name:'cabbage',animation:'Pop',armature:'Particle1'},boomerangHit:{name:'boomerang',animation:'Hit',armature:'Particle0'},
       };
@@ -403,11 +441,12 @@ export class Scene {
     }else for(const rig of this.npcs.values()) if(rig.animation.isCompleted)rig.animation.play('Idle',0);
     return false;
   }
-  preview(kinds:ZombieKind[]=['mummy','ra','mummy_armor1'],graves:{row:number;column:number}[]=[]) {
+  preview(kinds:ZombieKind[]=['mummy','ra','mummy_armor1'],graves:{row:number;column:number}[]=[],plants:Plant[]=[]) {
     this.reset();
-    for(const [index,g] of graves.entries()){const rig=this.art.build('grave','Idle');rig.position.set(cellX(g.column),rowY(g.row));rig.scale.set(.5);rig.zIndex=rowY(g.row);this.actorLayer.addChild(rig);this.objects.set(`preview-grave-${index}`,rig);}
+    for(const [index,g] of graves.entries()){const rig=this.art.build('grave','Idle');rig.position.set(cellX(g.column),rowY(g.row));rig.scale.set(.5);rig.zIndex=rowY(g.row)-1;this.actorLayer.addChild(rig);this.objects.set(`preview-grave-${index}`,rig);}
+    for(const p of plants){const actor=this.addActor(p.id,p.kind);actor.root.position.set(cellX(p.column),rowY(p.row));actor.root.zIndex=rowY(p.row);this.animate(actor,RIGS[p.kind].idle);}
     for (const [index,kind] of [...new Set(kinds)].slice(0,6).entries()) {
-      const actor = this.addActor(-index-1,kind==='camel_onehump'?'camel':kind==='ra'?'ra':'mummy',kind==='mummy_flag');
+      const actor = this.addActor(-index-1,zombieRig(kind),kind==='mummy_flag');
       actor.root.position.set(1280 + index % 2 * 70,260 + index * 65);
       if(kind==='mummy_armor1'||kind==='mummy_armor2'){actor.armor=this.rig('mummy',kind==='mummy_armor2'?'Bucket':'Cone');actor.armor.scale.set(.51);actor.armor.animation.play('Broken0',0);actor.root.addChild(actor.armor);}
       this.animate(actor,'Idle');
