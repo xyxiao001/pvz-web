@@ -1,12 +1,13 @@
 import boardGridMaps from '../../public/assets/campaign/board-grid-maps.json';
-export const PLANT_KINDS = ['sunflower', 'peashooter', 'wallnut', 'potatomine', 'cabbagepult', 'bloomerang', 'iceburg', 'gravebuster', 'twinsunflower', 'iceweed', 'bonkchoy','repeater','kernelpult','melonpult','snowdrop','imitater','peapod','cherry_bomb','celerystalker','parsnip','sapfling','snapdragon','coconutcannon','spikeweed','springbean','threepeater','spikerock','escaperoot','xshot','chardguard','dandelion','jalapeno','lightningreed'] as const;
+export const PLANT_KINDS = ['splitpea','chilibean','sunflower', 'peashooter', 'wallnut', 'potatomine', 'cabbagepult', 'bloomerang', 'iceburg', 'gravebuster', 'twinsunflower', 'iceweed', 'bonkchoy','repeater','kernelpult','melonpult','snowdrop','imitater','peapod','cherry_bomb','celerystalker','parsnip','sapfling','snapdragon','coconutcannon','spikeweed','springbean','threepeater','spikerock','escaperoot','xshot','chardguard','dandelion','jalapeno','lightningreed'] as const;
 export type PlantKind = typeof PLANT_KINDS[number];
-export type ZombieKind = 'pelican'|'pirate_armor4'|'pirate_captain'|'pirate_captain_parrot'|'barrelroller'|'pirate_barrel'|'pirate_gargantuar'|'pirate_imp'|'cannon'|'pirate'|'pirate_armor1'|'pirate_armor2'|'pirate_flag'|'swashbuckler'|'seagull' | 'mummy' | 'mummy_armor1' | 'mummy_armor2' | 'mummy_flag' | 'ra' | 'camel_onehump' | 'camel_twohump' | 'camel_manyhump' | 'camel_onehump_touch' | 'camel_twohump_touch' | 'camel_threehump_touch' | 'egypt_gargantuar' | 'egypt_imp' | 'explorer' | 'tomb_raiser' | 'pharaoh' | 'pharaoh_inner' | 'camel_manyhump_touch' | 'mummy_armor4' | 'explorer_veteran' | 'pharaoh_weak' | 'zombossmech_pirate'|'zombossmech_pirate2' | 'zombossmech_egypt' | 'zombossmech_egypt2';
+export type ZombieKind = 'cowboy'|'cowboy_armor1'|'cowboy_armor2'|'cowboy_flag'|'prospector'|'piano'|'poncho'|'poncho_plate'|'poncho_no_plate'|'pelican'|'pirate_armor4'|'pirate_captain'|'pirate_captain_parrot'|'barrelroller'|'pirate_barrel'|'pirate_gargantuar'|'pirate_imp'|'cannon'|'pirate'|'pirate_armor1'|'pirate_armor2'|'pirate_flag'|'swashbuckler'|'seagull' | 'mummy' | 'mummy_armor1' | 'mummy_armor2' | 'mummy_flag' | 'ra' | 'camel_onehump' | 'camel_twohump' | 'camel_manyhump' | 'camel_onehump_touch' | 'camel_twohump_touch' | 'camel_threehump_touch' | 'egypt_gargantuar' | 'egypt_imp' | 'explorer' | 'tomb_raiser' | 'pharaoh' | 'pharaoh_inner' | 'camel_manyhump_touch' | 'mummy_armor4' | 'explorer_veteran' | 'pharaoh_weak' | 'zombossmech_pirate'|'zombossmech_pirate2' | 'zombossmech_egypt' | 'zombossmech_egypt2';
 export const BOARD = { width: 1200, height: 700, left: 190, top: 160, cellWidth: 82, cellHeight: 98, columns: 9, rows: 5 };
 export const cellX = (column: number) => BOARD.left + (column + .5) * BOARD.cellWidth;
 export const rowY = (row: number) => BOARD.top + row * BOARD.cellHeight + 80;
 
 export interface PlantProperties {
+  PlantfoodPeaCountBack:number;ChiliStunDuration:number;
   MaxBounceTime:number;BounceDistance:number;SplashDamage:number;SplashCount:number;Duration:number;
   DamagePrimal:number;MaxSpike:number;KnockbackDistance:number;PlantfoodDuration:number;PlantfoodSideDPS:number;RestTime:number;AttackIntervalAdditional:number;
   PlantfoodChildrenCount:number;RetractionDelay:number;DamagePerHit:number;DamagePerSnip:number;PlantfoodSummonCount:number;
@@ -20,7 +21,7 @@ export interface PlantProperties {
   BustTime:number;AttackInterval:number;ChillDuration:number;DamagePowered:number;PlantfoodDPS:number;PlantfoodDragSPS:number;
   ThrowInterval:number; ThrowIntervalAdditional:number; PierceCount:number; PlantfoodBoomerangCount:number; FreezeDuration:number;
 }
-export interface ZombieProperties { ParrotCooldown:number;ParrotRetryCooldown:number;FlyingSpeed:number; TimeBefore:number;TimeBeforeAdditional:number;ShootInterval:number;ShootIntervalAdditional:number;MaxImpCount:number;MaxImpCountAdditional:number;ExplodeImpCount:number;ExplodeImpCountAdditional:number;ShootColumns:number[];ExplodeColumns:number[]; ChooseToSpawnOnNonDeckRows?:boolean;ChanceToFallIntoSea:number;LandingColumns:number[]; NormalDeathWhenMowed?:boolean;WavePointCost:number;Weight:number;CannotCarryPlantfoodsInWaves?:boolean;ZombossStages:BossStage[];ZombossMechLevel:number;MissileType:string; Toughness: number; WalkSPS: number; EatDPS: number; MaxAbsorbValue: number;TeamMemberCount:number[];SmashDamage:number;FireDPS:number;TimeBetweenGroups:number;TimeBetweenGroupsAdditional:number }
+export interface ZombieProperties { CowboyPianoActionInterval:number;ExplodeCountdown:number;LandingStunnTime:number;ShieldToughness:number;PonchoToughness:number;ChanceToPlate:number; ParrotCooldown:number;ParrotRetryCooldown:number;FlyingSpeed:number; TimeBefore:number;TimeBeforeAdditional:number;ShootInterval:number;ShootIntervalAdditional:number;MaxImpCount:number;MaxImpCountAdditional:number;ExplodeImpCount:number;ExplodeImpCountAdditional:number;ShootColumns:number[];ExplodeColumns:number[]; ChooseToSpawnOnNonDeckRows?:boolean;ChanceToFallIntoSea:number;LandingColumns:number[]; NormalDeathWhenMowed?:boolean;WavePointCost:number;Weight:number;CannotCarryPlantfoodsInWaves?:boolean;ZombossStages:BossStage[];ZombossMechLevel:number;MissileType:string; Toughness: number; WalkSPS: number; EatDPS: number; MaxAbsorbValue: number;TeamMemberCount:number[];SmashDamage:number;FireDPS:number;TimeBetweenGroups:number;TimeBetweenGroupsAdditional:number }
 export interface BossAction {actionName:'walk'|'rush'|'shoot'|'summon';weight:number;repeatMax:number;repeatMin:number;summonProps:{pointMin:number;pointMax:number;zombieList:ZombieKind[]}}
 export interface BossStage {HitPoints:number;AnimRateModifier:number;ChilledDurationFromFrozen:number;MinIdleTime:number;MaxIdleTime:number;StunTime:number;StunDamageScale:number;StunStaggerBackMovement:number;StunStaggerBackTime:number;Actions:BossAction[]}
 export interface PowerProperties { TotalTime:number; DPS:number; TimePerUse:number; FlamethrowerNormalDPS:number; GroundFlameNormalDPS:number; GroundFlameDuration:number }
@@ -28,7 +29,7 @@ export interface Properties {
   plantAnimations:Record<string,Record<string,{duration:number;events:{at:number;name:string}[]}>>;
   plants: Record<PlantKind, PlantProperties>;
   zombies: Record<ZombieKind, ZombieProperties>;
-  armors: { pirate_armor4:{Toughness:number}; pirate_armor1:{Toughness:number};pirate_armor2:{Toughness:number};egypt_armor1: { Toughness: number }; egypt_armor2:{Toughness:number};egypt_armor4:{Toughness:number} };
+  armors: { cowboy_armor1:{Toughness:number};cowboy_armor2:{Toughness:number};pirate_armor4:{Toughness:number}; pirate_armor1:{Toughness:number};pirate_armor2:{Toughness:number};egypt_armor1: { Toughness: number }; egypt_armor2:{Toughness:number};egypt_armor4:{Toughness:number} };
   grave: {Toughness:number};
   projectiles:Record<string,{MaxHitCount:number;Damage:number;DamagePerHit:number;TileLiquid:{Type:string;Duration:number};BoneCount:{Min:number;Max:number};FreezeDuration:number;ChillDuration:number;SplashDamage:{Damage?:number;ChillDuration?:number;FreezeDuration?:number;Range:{w:number;h:number}}[];ButterDuration:number}>;
   powerups:Record<string,PowerProperties>;
@@ -42,6 +43,7 @@ export interface ConveyorPlant {PlantType:PlantKind;Weight:number;MaxDelivered?:
 export interface Conveyor { DropDelayConditions:{Delay:number;MaxPackets:number}[]; InitialPlantList:ConveyorPlant[] }
 export interface CannonLevel {SlowdownMovementRate:number;BaseMovementRate:number;BufferDistance:number;MinScore:number;BaseZombieKillScore:number;RowHasCannon:number[];Lanes:{SplinePoints:{x:number;y:number}[]}[];ComboBrackets:{ZombiesKilled:number;ScoreMultiplier:number}[]}
 export interface Level {
+  rails:{Rails:{Column:number;RowStart:number;RowEnd:number}[];Railcarts:{Column:number;Row:number}[]}|null;corral:boolean;
   maxPlantsLost:number|null;world:string;planks:number[]|null;cannon:CannonLevel|null;
   boss:{kind:'zombossmech_egypt'|'zombossmech_egypt2'|'zombossmech_pirate'|'zombossmech_pirate2';reserved:number;row:number;column:number;deathRow:number;deathColumn:number}|null;
   waves: ZombieKind[][]; actions:SpawnAction[][]; minHealth:number;maxHealth:number;flagInterval:number;
@@ -94,7 +96,9 @@ export function readLevel(source: SourceLevel): Level {
   const world=reference(definition.StageModule as string).replace(/(?:Night)?Stage$/,'').toLowerCase();
   const planks=source.objects.find(o=>o.objclass==='PiratePlankProperties');
   const cannon=source.objects.find(o=>o.objclass==='CannonMinigameProperties');
+  const rails=modules.map(m=>byName.get(reference(m))).find(o=>o?.objclass==='RailcartProperties');
   return {
+    rails:rails?rails.objdata as unknown as NonNullable<Level['rails']>:null,corral:modules.some(m=>byName.get(reference(m))?.objclass==='CowboyMinigameProperties'),
     maxPlantsLost:plantsLost?Number(plantsLost.objdata.MaximumPlantsLost):null,world,planks:cannon?[]:planks?planks.objdata.PlankRows as number[]:null,cannon:cannon?cannon.objdata as unknown as CannonLevel:null,
     boss:boss?{kind:boss.ZombossMechType as 'zombossmech_egypt'|'zombossmech_egypt2'|'zombossmech_pirate'|'zombossmech_pirate2',reserved:Number(boss.ReservedColumnCount),row:(boss.ZombossSpawnGridPosition as {mY:number}).mY,column:(boss.ZombossSpawnGridPosition as {mX:number}).mX,deathRow:Number(boss.ZombossDeathRow),deathColumn:Number(boss.ZombossDeathColumn)}:null,
     killChallenge:killChallenge?{seconds:Number(killChallenge.objdata.Time),count:Number(killChallenge.objdata.ZombiesToKill)}:null,
@@ -113,7 +117,7 @@ export function readLevel(source: SourceLevel): Level {
     waves:actions.map(w=>w.flatMap(a=>a.zombies.map(z=>z.kind))),actions,
     minHealth:manager.MinNextWaveHealthPercentage as number,maxHealth:manager.MaxNextWaveHealthPercentage as number,flagInterval:manager.FlagWaveInterval as number,
     day:definition.LevelNumber as number,graves:grave&&'ForceSpawnData' in grave.objdata?(grave.objdata.ForceSpawnData as {GridX:number;GridY:number}[]).map(g=>({row:g.GridY,column:g.GridX})):[],
-    sunDrops:modules.includes('RTID(DefaultSunDropper@LevelModules)'),mowers:modules.includes(`RTID(${world==='pirate'?'Pirate':'Egypt'}Mowers@LevelModules)`),
+    sunDrops:modules.includes('RTID(DefaultSunDropper@LevelModules)'),mowers:modules.includes(`RTID(${world==='pirate'?'Pirate':world==='west'?'West':'Egypt'}Mowers@LevelModules)`),
     conveyor:conveyor?conveyor.objdata as unknown as Conveyor:null,powerups:source.objects.some(o=>o.objclass==='PowerupTutorialIntroProperties'),
   };
 }
@@ -122,4 +126,4 @@ export interface SpecialTiming {gargPharaoh:number;gargSmash:number;gargSmashEnd
 export interface CampaignTiming { cabbage:number;cabbageDuration:number;cabbageFood:number;cabbageFoodEnd:number;boomerang:number;boomerangDuration:number;boomerangCatch:number;ice:number;iceDuration:number;iceFood:number;iceFoodEnd:number }
 export interface BonkTiming {attack:number;heavy:number;foodStart:number;foodHit:number}
 export interface AnimationTiming { wallnutArmor:number;wallnutFoodEnd:number; bonk?:BonkTiming; shoot:number;shootDuration:number;produce:number;produceDuration:number;mineGrow:number;mineExplode:number;mineDeath:number;raStart:number;raEnd:number;campaign?:CampaignTiming;special?:SpecialTiming }
-export const plantLabels: Record<PlantKind, string> = { xshot:'旋转芜菁',chardguard:'甜菜护卫',dandelion:'蒲公英',jalapeno:'火爆辣椒',lightningreed:'闪电芦苇',escaperoot:'逃脱树根',spikerock:'钢地刺',threepeater:'三线射手',spikeweed:'地刺',springbean:'弹簧豆',snapdragon:'火龙草',coconutcannon:'椰子加农炮',peashooter:'豌豆射手',sunflower:'向日葵',wallnut:'坚果',potatomine:'土豆地雷',cabbagepult:'卷心菜投手',bloomerang:'回旋镖射手',iceburg:'冰冻生菜',gravebuster:'噬碑藤',twinsunflower:'双胞向日葵',iceweed:'冰地刺',bonkchoy:'菜问',repeater:'双发射手',kernelpult:'玉米投手',melonpult:'西瓜投手',snowdrop:'雪莲',imitater:'模仿者',peapod:'豌豆荚',cherry_bomb:'樱桃炸弹',celerystalker:'潜伏芹菜',parsnip:'防风草',sapfling:'树脂投手' };
+export const plantLabels: Record<PlantKind, string> = { splitpea:'裂荚射手',chilibean:'巴豆',xshot:'旋转芜菁',chardguard:'甜菜护卫',dandelion:'蒲公英',jalapeno:'火爆辣椒',lightningreed:'闪电芦苇',escaperoot:'逃脱树根',spikerock:'钢地刺',threepeater:'三线射手',spikeweed:'地刺',springbean:'弹簧豆',snapdragon:'火龙草',coconutcannon:'椰子加农炮',peashooter:'豌豆射手',sunflower:'向日葵',wallnut:'坚果',potatomine:'土豆地雷',cabbagepult:'卷心菜投手',bloomerang:'回旋镖射手',iceburg:'冰冻生菜',gravebuster:'噬碑藤',twinsunflower:'双胞向日葵',iceweed:'冰地刺',bonkchoy:'菜问',repeater:'双发射手',kernelpult:'玉米投手',melonpult:'西瓜投手',snowdrop:'雪莲',imitater:'模仿者',peapod:'豌豆荚',cherry_bomb:'樱桃炸弹',celerystalker:'潜伏芹菜',parsnip:'防风草',sapfling:'树脂投手' };

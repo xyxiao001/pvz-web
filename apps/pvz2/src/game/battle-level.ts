@@ -7,7 +7,7 @@ export interface BattleLevel {
   day: number;
   source: string;
   assets: 'intro'|'campaign';
-  bundle?:string;
+  bundles?:string[];
   presentation:{lawn:string;loading:string;music:string};
   plants: { id: number; kind: PlantKind }[];
   firstReward: { image: string; label: string; plant?:PlantKind; animation?:string; armature?:string };

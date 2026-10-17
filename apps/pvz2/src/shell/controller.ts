@@ -244,7 +244,7 @@ export class WorldShell {
     this.loading(true);
     const art=await this.renderer.worldDetails(world.id);
     this.loading(false);
-    if(world.id==='pirate'){
+    if(world.id==='pirate'||world.id==='cowboy'){
       this.modal(world.name,`<p>${world.description}</p><img class="world-banner" src="${art.background}" alt="${world.name}"><button class="native-button" data-unlock ${this.progress.worldKeys()<1?'disabled':''}>世界钥匙 × 1 · 解锁</button><div class="world-plant-cards">${art.cards.map(image=>`<img src="${image}" alt="本世界植物卡片">`).join('')}</div>`);
       this.$('.native-window').classList.add('world-description');this.$('[data-unlock]').onclick=()=>{if(this.progress.unlockWorld(world.id))void this.openWorld(world);};return;
     }

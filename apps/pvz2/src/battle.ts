@@ -10,7 +10,7 @@ import type { Scene } from './rendering/scene';
 import { cubicInOut, introCamera } from './rendering/presentation';
 
 const DESCRIPTIONS: Record<PlantKind,string> = {
-  xshot:'旋转芜菁向四个斜向射击。',chardguard:'甜菜护卫可以用叶片把僵尸推回去。',dandelion:'蒲公英向附近三行发射爆炸种子。',jalapeno:'火爆辣椒烧毁一整行的僵尸。',lightningreed:'闪电芦苇的电流会在附近僵尸间传导。',escaperoot:'点击逃脱树根，再点击另一株植物即可换位。成熟后遇到僵尸会变成爆炸植物。',spikerock:'钢地刺能刺破三个滚桶，伤害踩在上面的僵尸。',threepeater:'三线射手同时向所在行和相邻两行发射豌豆。',spikeweed:'地刺可以伤害踩在上面的僵尸，并刺破滚桶。',springbean:'弹簧豆可以弹开僵尸，也能把靠近海边的僵尸弹入水中。',snapdragon:'火龙草向前方三行喷火，灼烧靠近的僵尸。',coconutcannon:'点击椰子加农炮发射炮弹，爆炸后需要时间重新装填。',snowdrop:'雪莲抛出冰霜花瓣，使僵尸减速，偶尔将它冻住。',imitater:'选择本关的一种植物，模仿者会在种下后变成它。',peapod:'在同一格重复种植，最多叠加五个豌豆头。',cherry_bomb:'樱桃炸弹炸毁周围九宫格内的僵尸。',celerystalker:'潜伏芹菜藏在地下，攻击走过身后的僵尸。',parsnip:'防风草用钳子攻击前方，被吃掉后冲出去继续攻击。',sapfling:'树脂投手在落点留下树脂，减缓僵尸的移动。',
+  splitpea:'裂荚射手向前发射一颗豌豆，向后连射两颗。',chilibean:'巴豆被吃掉后会毒死僵尸，并使它身后的同路僵尸眩晕。',xshot:'旋转芜菁向四个斜向射击。',chardguard:'甜菜护卫可以用叶片把僵尸推回去。',dandelion:'蒲公英向附近三行发射爆炸种子。',jalapeno:'火爆辣椒烧毁一整行的僵尸。',lightningreed:'闪电芦苇的电流会在附近僵尸间传导。',escaperoot:'点击逃脱树根，再点击另一株植物即可换位。成熟后遇到僵尸会变成爆炸植物。',spikerock:'钢地刺能刺破三个滚桶，伤害踩在上面的僵尸。',threepeater:'三线射手同时向所在行和相邻两行发射豌豆。',spikeweed:'地刺可以伤害踩在上面的僵尸，并刺破滚桶。',springbean:'弹簧豆可以弹开僵尸，也能把靠近海边的僵尸弹入水中。',snapdragon:'火龙草向前方三行喷火，灼烧靠近的僵尸。',coconutcannon:'点击椰子加农炮发射炮弹，爆炸后需要时间重新装填。',snowdrop:'雪莲抛出冰霜花瓣，使僵尸减速，偶尔将它冻住。',imitater:'选择本关的一种植物，模仿者会在种下后变成它。',peapod:'在同一格重复种植，最多叠加五个豌豆头。',cherry_bomb:'樱桃炸弹炸毁周围九宫格内的僵尸。',celerystalker:'潜伏芹菜藏在地下，攻击走过身后的僵尸。',parsnip:'防风草用钳子攻击前方，被吃掉后冲出去继续攻击。',sapfling:'树脂投手在落点留下树脂，减缓僵尸的移动。',
   repeater:'双发射手连续发射两颗豌豆。',kernelpult:'玉米投手抛射玉米粒，偶尔用黄油定住僵尸。',melonpult:'西瓜投手的西瓜能伤害落点周围的僵尸。',
   bonkchoy:'菜问快速拳击前后靠近的僵尸。',
   gravebuster:'噬碑藤吞噬墓碑，为种植腾出空间。',
@@ -44,7 +44,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       <button id="plant-food" aria-label="使用能量豆" hidden><img alt="能量豆"><b>0 / ${bonuses.foodLimit}</b></button>
       <div id="conveyor" hidden aria-label="传送带"></div>
       <div id="powerups" hidden>${(['fire','snow','toss','zap','cherry'] as const).map((kind,i)=>`<button data-power="${kind}" aria-label="${['火焰','雪球','抛掷','闪电','樱桃炸弹'][i]}" title="${['按住并拖动喷火','按住并拖动投掷雪球','划过僵尸将它推离庭院','按住并拖动释放闪电','点击庭院使用樱桃炸弹'][i]}"><img alt="${['火焰','雪球','抛掷','闪电','樱桃炸弹'][i]}"></button>`).join('')}<progress id="power-time" max="1" value="1"></progress></div>
-      <button id="laststand-start" class="battle-button" hidden>开始进攻</button><div id="game-tip" role="status" hidden></div>
+      <button id="corral-view" class="battle-button" hidden>查看僵尸</button><button id="laststand-start" class="battle-button" hidden>开始进攻</button><div id="game-tip" role="status" hidden></div>
       <div class="challenge-objective" hidden></div>
       <div class="level-name">${title}</div>
       <div id="wave-hud"><div id="wave-fill"></div><span id="wave-label"></span></div>
@@ -68,7 +68,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   let deck: PlantKind[] = [];
   let packetId:number|undefined;
   let pointerDown=false;
-  let tipUntil=0;let bossMusicStage=-1;
+  let tipUntil=0;let bossMusicStage=-1;let pianoPlaying=false;let corralStreet=false,corralPan=0,corralPreview=-1;
   let foodTipShown=false;
   let narrativeLines:typeof scene.art.catalog.intro=[];
   let narrativeIndex=0;
@@ -91,6 +91,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     clip.volume=preferences.effects; clip.currentTime=0; if (clip.volume>0) void clip.play();
     return clip;
   };
+  $('#corral-view').onclick=()=>{corralStreet=!corralStreet;corralPreview=-1;};
   const playMusic = () => { music.volume=preferences.music; if(music.volume>0) void music.play(); };
 
   async function enter() {
@@ -106,7 +107,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if (!scene) {
       const [{ Scene },props,level,flag,campaign] = await Promise.all([import('./rendering/scene'),json<Properties>('levels/properties.json'),json<SourceLevel>(levelConfig.source),json<ZombieProperties>('battle/flag.json'),levelConfig.assets==='campaign'?json<Properties>('campaign/properties.json'):Promise.resolve(null)]);
       if(campaign){Object.assign(props.plants,campaign.plants);Object.assign(props.zombies,campaign.zombies);Object.assign(props.armors,campaign.armors);Object.assign(props,{grave:campaign.grave,projectiles:campaign.projectiles,powerups:campaign.powerups,plantAnimations:campaign.plantAnimations});}
-      if(levelConfig.bundle){const extra=await json<Properties>(`${levelConfig.bundle}/properties.json`);for(const key of ['plants','zombies','armors','projectiles','plantAnimations'] as const)Object.assign(props[key],extra[key]);}
+      for(const bundle of levelConfig.bundles??[]){const extra=await json<Properties>(`${bundle}/properties.json`);for(const key of ['plants','zombies','armors','projectiles','plantAnimations'] as const)Object.assign(props[key],extra[key]);}
       properties=props; properties.zombies.mummy_flag=flag; source=level; scene=new Scene();
       const parsed=readLevel(source);
       cardOrder=cardOrder.filter(kind=>!parsed.blacklist.includes(kind));
@@ -115,7 +116,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
         $('#load-status').textContent=`正在准备植物与庭院 ${done} / ${total}`;
         const progress=$<HTMLProgressElement>('#load-progress');progress.max=total;progress.value=done;
       },levelConfig,actorPlants,parsed);
-      scene.onPoint=(x,y)=>{pointerDown=true;interact(x,y);};scene.onHover=hover;scene.onRelease=()=>{pointerDown=false;game?.releaseMower();if(game?.power)game.powerPointer(game.power.x,game.power.y,false);};scene.onTick=tick;
+      scene.onPoint=(x,y)=>{pointerDown=true;interact(x,y);};scene.onHover=hover;scene.onRelease=()=>{pointerDown=false;game?.releaseMower();if(game)game.cowboy.selected=null;if(game?.power)game.powerPointer(game.power.x,game.power.y,false);};scene.onTick=tick;
       scene.onSound=sound;
       scene.onNPCEvent=(character,event)=>{
         const sounds:Record<string,string>={enter:'Enter',exit:'Exit',enter_brake:'Enter_Brake',exit_brake:'Exit_Brake',enter_shake:'Enter_Shake',exit_shake:'Exit_Shake'};
@@ -215,7 +216,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(levelConfig.mode==='seedbank')$('[data-imitate-back]').onclick=()=>{$('#overlay').hidden=true;$('#hud').hidden=false;$('#seed-chooser').hidden=false;};
   }
   function start() {
-    selected=null;packetId=undefined;foodTipShown=false;tipUntil=0;$('#game-tip').hidden=true;pointerDown=false;
+    selected=null;packetId=undefined;foodTipShown=false;corralStreet=false;corralPan=0;corralPreview=-1;tipUntil=0;$('#game-tip').hidden=true;pointerDown=false;
     accumulator=0;countdown=0;speed=1;screen='returning';transitionTime=0;host.dataset.screen=screen;
     $('#seed-chooser').hidden=true;$('#overlay').hidden=true;$('#battle-announcement').hidden=true;$('#hud').hidden=false;
     $('#plant-food').hidden=levelConfig.id==='egypt1'||levelConfig.mode==='powerups'||levelConfig.mode==='match'||levelConfig.mode==='cannon';$('#powerups').hidden=levelConfig.mode!=='powerups';$('#conveyor').hidden=levelConfig.mode!=='conveyor';
@@ -237,12 +238,13 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     $('#shovel').classList.toggle('selected',selected==='shovel');
     $('#wave-label').textContent=game.level.cannon?`${game.pirate.score.toLocaleString()} / ${game.level.cannon.MinScore.toLocaleString()}${game.time<game.pirate.comboUntil&&game.pirate.combo>=3?` · ${game.pirate.combo} 连击`:''}`:game.level.killChallenge?`${game.killChallengeComplete?'挑战完成':`${game.level.killChallenge.seconds} 秒内击杀 ${game.recentKills.length} / ${game.level.killChallenge.count}`}${game.level.targetSun!==null?` · 阳光 ${Math.min(game.sunProduced,game.level.targetSun)} / ${game.level.targetSun}`:''} · ${game.wave} / ${game.level.waves.length}`:game.level.targetSun!==null?`阳光 ${Math.min(game.sunProduced,game.level.targetSun)} / ${game.level.targetSun} · ${game.wave} / ${game.level.waves.length}`:game.level.maxPlantsLost!==null?`损失 ${game.plantsLost} / ${game.level.maxPlantsLost} · ${game.wave} / ${game.level.waves.length}`:game.boss?`僵王 · ${game.boss.stage+1} / 3`:game.wave===0?'':`${game.wave} / ${game.level.waves.length}`;
     $('#wave-fill').style.width=`${(game.boss?game.boss.progress:game.wave/game.level.waves.length)*100}%`;
+    if(game.level.world==='west'&&game.cowboy.pianoPlaying!==pianoPlaying){pianoPlaying=game.cowboy.pianoPlaying;music.src=assetUrl(pianoPlaying?'cowboy/piano.mp3':levelConfig.presentation.music);playMusic();}
     if(game.boss){const stage=game.boss.zombie.hp<=0?3:game.boss.stage;if(bossMusicStage!==stage){bossMusicStage=stage;music.src=assetUrl(stage===3?'campaign/bossVictory.mp3':`campaign/boss${stage}.mp3`);playMusic();}}
   }
   function hover(x: number,y: number) {
     if(screen!=='playing')return;
     if(game.power){game.powerPointer(x,y,pointerDown);return;}
-    if(!selected&&pointerDown)game.mowerPointer(x,y,true);
+    if(!selected&&pointerDown){game.mowerPointer(x,y,true);game.cowboy.move(Math.floor((y-BOARD.top)/BOARD.cellHeight));}
     scene.highlightCell(selected?Math.floor((y-BOARD.top)/BOARD.cellHeight):-1,Math.floor((x-BOARD.left)/BOARD.cellWidth),selected==='shovel'?0xedb56a:0xe7fbb0);
   }
   function interact(x: number,y: number) {
@@ -261,7 +263,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(selected==='shovel'){game.shovel(row,column);sound('shovelDig');}
     else if(selected==='food'){if(game.plantFood(row,column)){selected=null;scene.highlightCell(-1,-1,0);}}
     else if(selected&&game.plant(selected,row,column,packetId)){selected=null;scene.highlightCell(-1,-1,0);}
-    else if(selected===null&&!game.escape.select(row,column))game.pirate.fire(row,column);
+    else if(selected===null&&!game.cowboy.select(row,column)&&!game.escape.select(row,column))game.pirate.fire(row,column);
     updateHud();
   }
   function tick(dt: number) {
@@ -285,7 +287,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(screen==='countdown') {
       const [ready,set,plant]=scene.art.catalog.presentation.readySetPlant;
       countdown+=dt;$('#battle-announcement').textContent=countdown<ready?'准备…':countdown<ready+set?'安放…':'种植！';scene.sync(game,dt);
-      if(countdown>=ready+set+plant){screen='playing';host.dataset.screen=screen;$('#battle-announcement').hidden=true;if(levelConfig.mode==='match')tip('翻开骆驼牌，找到两张相同图案即可消除。',10);if(levelConfig.mode==='conveyor')tip('点击传送带上的植物，再点击地块种植。',8);if(levelConfig.mode==='powerups')tip('选择下方道具，按住并拖动手指来攻击僵尸。',10);}
+      if(countdown>=ready+set+plant){screen='playing';host.dataset.screen=screen;$('#battle-announcement').hidden=true;if(levelConfig.mode==='match')tip('翻开骆驼牌，找到两张相同图案即可消除。',10);if(game.level.corral)tip('每波放置一株豌豆射手，再拖动矿车抵挡进攻。',10);else if(levelConfig.mode==='conveyor')tip('点击传送带上的植物，再点击地块种植。',8);else if(game.level.rails)tip('按住矿车上下拖动，可以带着植物换行。',10);if(levelConfig.mode==='powerups')tip('选择下方道具，按住并拖动手指来攻击僵尸。',10);}
       return;
     }
     if(screen==='ending'){scene.sync(game,dt);if(!scene.hasDeathAnimations){if(game.phase==='won'&&levelConfig.outro&&!progress.isComplete(levelConfig.id)){outro=true;narrativeLines=scene.art.campaign.narratives[levelConfig.outro];narrativeIndex=0;screen='npc-enter';host.dataset.screen=screen;$('#hud').hidden=true;scene.enterNarrative(narrativeCast(0));}else finish();}return;}
@@ -294,8 +296,16 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(selected)game.releaseMower();
     while(accumulator>=1/60&&game.phase==='playing'){game.tick(1/60);accumulator-=1/60;advanced+=1/60;}
     if(game.phase!=='playing')game.releaseMower();
+    if(game.level.corral){
+      $('#corral-view').hidden=!game.corralWaiting;
+      if(corralPreview>=0){corralPreview+=dt;corralStreet=corralPreview<2;if(corralPreview>=4)corralPreview=-1;}
+      if(!game.corralWaiting){corralStreet=false;corralPreview=-1;}
+      corralPan=Math.max(0,Math.min(1,corralPan+(corralStreet?1:-1)*dt/2));scene.frameCorral(cubicInOut(corralPan));
+      $('#corral-view').textContent=corralStreet?'返回庭院':'查看僵尸';
+    }
     scene.sync(game,advanced);updateHud();
     for(const event of game.events) {
+      if(event.type==='wave'&&game.level.corral&&game.wave>1)corralPreview=0;
       if(event.type==='flip')sound('camelTouch/flipSound');
       if(event.type==='match')sound('camelTouch/matchSound');
       if(event.type==='plant')sound('plantOnFloor');
@@ -311,13 +321,13 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
         $('#battle-announcement').textContent=game.wave===game.level.waves.length?'最后一波！':'僵尸来了！';$('#battle-announcement').hidden=false;warningUntil=game.time+3;
       }
     }
-    if(game.time>warningUntil)$('#battle-announcement').hidden=true;
+    if(game.time>warningUntil||game.corralWaiting)$('#battle-announcement').hidden=true;
     game.events.length=0;
     if(game.phase==='won'){screen='ending';host.dataset.screen=screen;}else if(game.phase==='lost')finish();
   }
   function tip(text:string,duration:number){$('#game-tip').textContent=text;$('#game-tip').hidden=false;tipUntil=game.time+duration;}
   function updateConveyor(){
-    const element=$('#conveyor');
+    const element=$('#conveyor');element.hidden=game.level.corral&&!game.corralWaiting;
     for(const button of element.querySelectorAll<HTMLButtonElement>('[data-packet]'))if(!game.conveyor.some(c=>String(c.id)===button.dataset.packet))button.remove();
     for(const packet of game.conveyor){
       let button=element.querySelector<HTMLButtonElement>(`[data-packet="${packet.id}"]`);

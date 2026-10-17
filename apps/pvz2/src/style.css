@@ -65,3 +65,5 @@ button{font:inherit;cursor:pointer;border:0;padding:0;background:transparent;col
 .choose-card.boosted{box-shadow:0 0 8px 3px #a4ff49}.choose-card.boosted:after{content:"爆发";position:absolute;top:4%;right:4%;color:#dfff8c;background:#28562e;font-size:clamp(10px,1.2vw,20px);padding:1px 4px;border-radius:3px}
 
 .battle-app[data-mode=cannon] .sun-counter,.battle-app[data-mode=cannon] .seed-bank,.battle-app[data-mode=cannon] #shovel,.battle-app[data-mode=cannon] #plant-food{display:none}
+
+.battle-app #corral-view{position:absolute;right:2%;bottom:3%;pointer-events:auto;font-size:1.5cqw}

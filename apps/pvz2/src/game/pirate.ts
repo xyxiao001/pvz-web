@@ -3,7 +3,7 @@ import type {Game,Plant,Zombie} from './model';
 
 export const seaCell=(planks:readonly number[]|null,row:number,column:number)=>planks!==null&&column>=5&&!planks.includes(row);
 export const pirateArmor=(kind:ZombieKind)=>kind==='pirate_armor4'?'pirate_armor4':kind==='pirate_armor1'?'pirate_armor1':kind==='pirate_armor2'?'pirate_armor2':null;
-export const zombieY=(z:Zombie)=>z.parrot?.y??z.route?.y??rowY(z.row);
+export const zombieY=(z:Zombie)=>z.parrot?.y??z.route?.y??z.west?.lane?.y??rowY(z.row);
 export const isFlying=(z:Zombie)=>z.kind==='seagull'||z.kind==='pelican'||z.kind==='pirate_captain_parrot';
 export const swinging=(z:Zombie,time:number)=>!!z.swing&&time<z.swing.end;
 
@@ -63,7 +63,7 @@ export class PirateBattle {
       }
       if((p.action==='idle'||p.fired)&&targets.length&&g.time>=p.nextAction){p.fired=false;start('Attack');p.nextAction=g.time+props.AttackInterval;}
       if(p.action==='shoot'){
-        if(!p.fired&&g.time-p.actionAt>=this.eventTime(p.kind,'Attack','attack')){p.fired=true;for(const z of targets){if(z.kind==='pirate_barrel'){z.hp=0;this.consumeSpike(p);}else g.damage(z,props.Damage);}}
+        if(!p.fired&&g.time-p.actionAt>=this.eventTime(p.kind,'Attack','attack')){p.fired=true;for(const z of targets){if(z.kind==='pirate_barrel'||z.kind==='piano'){z.hp=0;this.consumeSpike(p);}else g.damage(z,props.Damage);}}
         if(g.time-p.actionAt>=timelines.Attack.duration){p.action='idle';p.animation='Idle';p.fired=false;}
       }
       return;
