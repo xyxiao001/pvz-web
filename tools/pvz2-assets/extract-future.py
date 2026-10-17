@@ -1,4 +1,4 @@
-"""Export Far Future 1–10, with native power tiles and sun bombs, from the pinned build."""
+"""Export Far Future 1–15, with native power tiles and sun bombs, from the pinned build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -18,9 +18,9 @@ def rig(path):
 def props(path,names):
     objs=e.read('json/Objects/'+path).objects[0]['json']['objects']
     return {n:next(o['objdata'] for o in objs if n in o.get('aliases',[])) for n in names}
-paths={'powerplant_alpha':'plants/TileTurnipAlphaPLANT','powerplant_beta':'plants/TileTurnipBetaPLANT','citron':'plants/CitronPLANT','empea':'plants/EMPeachPLANT','futureGargantuar':'zombies/FutureGargantuarZOMBIE','discoMech':'zombies/FutureMechDiscoZOMBIE','discoJetpack':'zombies/FutureJetpackDiscoZOMBIE','laser_bean':'plants/LaserBeanPLANT','blover':'plants/BloverPLANT','future':'zombies/FutureBasicZOMBIE','futureFlag':'zombies/FutureFlagZOMBIE','futureJetpack':'zombies/FutureJetpackZOMBIE','futureShield':'zombies/FutureProtectorShieldZOMBIE','futureProtector':'zombies/FutureProtectorZOMBIE','futureImp':'zombies/FutureImpZOMBIE','mechCone':'zombies/FutureMechConeZOMBIE'}
+paths={'holonut':'plants/InfiNutPLANT','footballMech':'zombies/FutureMechFootballZOMBIE','powerplant_alpha':'plants/TileTurnipAlphaPLANT','powerplant_beta':'plants/TileTurnipBetaPLANT','citron':'plants/CitronPLANT','empea':'plants/EMPeachPLANT','futureGargantuar':'zombies/FutureGargantuarZOMBIE','discoMech':'zombies/FutureMechDiscoZOMBIE','discoJetpack':'zombies/FutureJetpackDiscoZOMBIE','laser_bean':'plants/LaserBeanPLANT','blover':'plants/BloverPLANT','future':'zombies/FutureBasicZOMBIE','futureFlag':'zombies/FutureFlagZOMBIE','futureJetpack':'zombies/FutureJetpackZOMBIE','futureShield':'zombies/FutureProtectorShieldZOMBIE','futureProtector':'zombies/FutureProtectorZOMBIE','futureImp':'zombies/FutureImpZOMBIE','mechCone':'zombies/FutureMechConeZOMBIE'}
 actors={n:rig(p) for n,p in paths.items()}
-rigs={n:rig(p) for n,p in {'citronShot':'projectiles/Citron0PRJ','citronFood':'projectiles/CitronFoodPRJ','futureLawn':'lawns/FutureLAWN','futureNightLawn':'lawns/FutureNightLAWN','mower':'projectiles/FutureMowerPRJ','futureCone':'armors/FutureConeARMOR','futureBucket':'armors/FutureBucketARMOR','futureShield':'zombies/FutureProtectorShieldZOMBIE','sunbomb':'9e2726a5-09b5-4f87-9977-f88aef61ecc6'}.items()}
+rigs={n:rig(p) for n,p in {'infinutShield':'zombies/FutureInfiNutShieldZOMBIE','citronShot':'projectiles/Citron0PRJ','citronFood':'projectiles/CitronFoodPRJ','futureLawn':'lawns/FutureLAWN','futureNightLawn':'lawns/FutureNightLAWN','mower':'projectiles/FutureMowerPRJ','futureCone':'armors/FutureConeARMOR','futureBucket':'armors/FutureBucketARMOR','futureShield':'zombies/FutureProtectorShieldZOMBIE','sunbomb':'9e2726a5-09b5-4f87-9977-f88aef61ecc6'}.items()}
 particle=next(o for o in walk(e.read('resouce_prefabs/ParticlesRP').objects) if 'empEffect' in o)
 rigs['empEffect']=rig(particle['empEffect']['asset'])
 for group in ['alpha','beta','gamma','delta']:
@@ -31,7 +31,7 @@ for path,fields in [('plants/CitronPLANT',{'citronLightning':'lightningPar'}),('
     co=next(x for x in walk(e.read(path).objects) if next(iter(fields.values())) in x)
     for n,k in fields.items():rigs[n]=rig(co[k]['asset'])
 for name,path in [('citronHit','e48d11c2-3bb6-42cb-a19b-7c236f8502c9'),('citronFoodHit','5877ff03-ad16-4720-b9e6-2761ee8b2c4a')]:rigs[name]=rig(path)
-properties={'plants':props('PlantProps',['laser_bean','blover','citron','empea','powerplant_alpha','powerplant_beta']),'zombies':props('ZombieProps',['future_gargantuar','disco_mech','future_jetpack_disco','future','future_armor1','future_armor2','future_flag','future_jetpack','future_protector','future_imp','mech_cone','future_protector_shield']),'armors':props('ArmorProps',['future_armor1','future_armor2']),'projectiles':props('ProjectileProps',['citron','citron_pf']),'plantAnimations':{}}
+properties={'plants':props('PlantProps',['holonut','laser_bean','blover','citron','empea','powerplant_alpha','powerplant_beta']),'zombies':props('ZombieProps',['football_mech','future_infinut_shield','future_gargantuar','disco_mech','future_jetpack_disco','future','future_armor1','future_armor2','future_flag','future_jetpack','future_protector','future_imp','mech_cone','future_protector_shield']),'armors':props('ArmorProps',['future_armor1','future_armor2']),'projectiles':props('ProjectileProps',['citron','citron_pf']),'plantAnimations':{}}
 for name,description in {**actors,**rigs}.items():
     sk=json.loads((e.OUT/'rigs'/description['rig']/'skeleton.json').read_text());arm=next(a for a in sk['armature'] if a['name']==description['armature']);timelines={}
     for animation in arm['animation']:
@@ -48,7 +48,7 @@ at=0;curve=[]
 for f in frames:
     curve.append({'at':at/laser['frameRate'],'x':101.85+f.get('x',0)});at+=f.get('duration',1)
 c.write_json(e.OUT/'laser-food-curve.json',curve)
-for day in range(1,11):c.write_json(e.OUT/f'future{day}.source.json',e.read(f'levels/future{day}').objects[0]['json'])
+for day in range(1,16):c.write_json(e.OUT/f'future{day}.source.json',e.read(f'levels/future{day}').objects[0]['json'])
 for path,name in [('lawns/FutureLAWN','lawn'),('lawns/FutureNightLAWN','lawn-night')]:
     lawn=e.read(path);co=next(x for x in walk(lawn.objects) if x.get('type')=='dragonBones.ArmatureDisplay')
     at=e.read(co['_dragonAtlasAsset']['asset']);atlas=json.loads(at.objects[0]['_atlasJson']);rect=next(x for x in atlas['SubTexture'] if x['name']==('LawnNight' if name=='lawn-night' else 'Lawn'))
@@ -65,7 +65,7 @@ for name,path in {**paths,'citronShot':'projectiles/Citron0PRJ','citronFood':'pr
         for key,value in obj.items():
             if key.lower().endswith(('sound','sounds','musicclip','musicclipweak')) and value:sound(name+'/'+key,value)
 npc=e.read('b697cdfd-e783-4f80-abbe-ac197db6cf97');narratives={}
-for name in ['FUTURE_CHALLENGE_PRESET_A','FUTURE_INTRO_GARGANTUAR','FUTURE_INTRO_FIRSTLEVEL','FUTURE_CHALLENGE_SUNBOMBS_A','FUTURE_OUTRO_DANGER_ROOM_KEY']:
+for name in ['FUTURE_CHALLENGE_LASTSTAND_A','FUTURE_CHALLENGE_PROTECTPLANTS_A','FUTURE_CHALLENGE_PRESET_A','FUTURE_INTRO_GARGANTUAR','FUTURE_INTRO_FIRSTLEVEL','FUTURE_CHALLENGE_SUNBOMBS_A','FUTURE_OUTRO_DANGER_ROOM_KEY']:
     flow=next(o['objdata']['Flow'] for o in e.read('json/Objects/NarrativeList').objects[0]['json']['objects'] if name in o.get('aliases',[]))
     for step in flow:
         if 'Lines' in step:
@@ -79,4 +79,4 @@ for name,path in [('music','P1_LP_Future'),('minigame','MG_Future')]:
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{'note_future':e.sprite(c.decode_uuid(c.config['uuids'][c.path_index['note/future/spriteFrame']]))}})
 c.write_json(c.ROOT/'apps/pvz2/future-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Far Future 1–10')
+print('Exported Far Future 1–15')

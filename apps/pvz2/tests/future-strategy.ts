@@ -51,3 +51,26 @@ export function playFutureNext(g:Game,frame:number){
   const plant=g.plants.filter(p=>p.row===z.row&&['laser_bean','citron'].includes(p.kind)&&p.action!=='food').sort((a,b)=>Number(g.level.powerTiles.some(t=>t.row===b.row&&t.column===b.column))-Number(g.level.powerTiles.some(t=>t.row===a.row&&t.column===a.column)))[0];if(plant)g.plantFood(plant.row,plant.column);
  }
 }
+
+export function playFutureThird(g:Game,frame:number){
+ if(g.level.day===11){
+  if(g.preparing){for(let r=0;r<5;r++){g.plant('laser_bean',r,0);g.plant('laser_bean',r,1);g.plant('tallnut',r,4);}g.startLastStand();}
+  for(const p of [...g.pickups])g.collectPickup(p.id);
+  if(frame%12)return;
+  const threats=g.zombies.filter(z=>z.hp>0&&z.kind!=='future_protector_shield');
+  if(threats.filter(z=>z.kind==='future_jetpack').length>=2&&g.sun>=50)g.plant('blover',4,8);
+  for(const z of threats)if(g.food>0&&(z.x<cellX(4)||threats.filter(q=>q.row===z.row).length>=4)){const p=g.plants.find(p=>p.kind==='laser_bean'&&p.row===z.row&&p.action!=='food');if(p)g.plantFood(p.row,p.column);}
+  return;
+ }
+ if(g.level.day===14){
+  for(const s of [...g.suns])g.collect(s.id);for(const p of [...g.pickups])g.collectPickup(p.id);if(frame%12)return;
+  const threats=g.zombies.filter(z=>z.hp>0&&z.kind!=='future_protector_shield').sort((a,b)=>a.x-b.x);
+  for(let r=0;r<5;r++)if(!g.plants.some(p=>p.row===r&&p.column===0)&&g.sunSpent+50<=1500)g.plant('sunflower',r,0);
+  for(const r of [...new Set([...threats.map(z=>z.row),0,1,2,3,4])])if(!g.plants.some(p=>p.row===r&&p.kind==='laser_bean')&&g.sunSpent+200<=1500)g.plant('laser_bean',r,r===0?2:r===4?3:1);
+  if(threats.some(z=>z.kind==='future_jetpack'&&z.x<cellX(5))&&g.sunSpent+50<=1500)g.plant('blover',4,8);
+  for(const z of threats)if(g.food>0&&(z.x<cellX(5)||threats.filter(q=>q.row===z.row).length>=3)){const p=g.plants.find(p=>p.kind==='laser_bean'&&p.row===z.row&&p.action!=='food');if(p)g.plantFood(p.row,p.column);}
+  return;
+ }
+ playFutureNext(g,frame);
+ if(g.level.day===15&&frame%12===0)for(const r of [1,2,3])g.plant('tallnut',r,7);
+}
