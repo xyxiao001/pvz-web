@@ -58,7 +58,7 @@ export class ProgressStore {
       this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));
     }
     if(level==='pirate7'||level==='pirate8'){const rewards=this.campaignRewards();rewards.push({level,type:level==='pirate7'?'note':'worldtrophy',id:level==='pirate7'?'note_pirate':'worldkey',count:1});this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));}
-    if(['pirate4','pirate5','pirate16','pirate19'].includes(level)){const rewards=this.campaignRewards();rewards.push({level,type:level==='pirate4'?'worldtrophy':'pinata',id:level==='pirate4'?'dangerroom_pirate':'spine_pirate',count:1});this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));}
+    if(['pirate4','pirate5','pirate16','pirate19','pirate23','pirate25'].includes(level)){const rewards=this.campaignRewards();rewards.push({level,type:level==='pirate4'||level==='pirate25'?'worldtrophy':'pinata',id:level==='pirate25'?'worldtrophy_pirate':level==='pirate4'?'dangerroom_pirate':'spine_pirate',count:1});this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));}
     this.storage.setItem(completionKey(level), '1');
     this.storage.setItem(PENDING_KEY, JSON.stringify({ world, level }));
   }

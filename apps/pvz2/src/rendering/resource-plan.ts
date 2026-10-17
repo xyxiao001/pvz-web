@@ -6,7 +6,8 @@ export function battleActors(level:Level,plants:readonly PlantKind[]){
   if(names.has('pirateCaptain'))names.add('pirateParrot');
   if(names.has('barrelroller'))names.add('pirateBarrel');
   if(['barrelroller','pirateGargantuar','impCannon'].some(n=>names.has(n)))names.add('pirateImp');
-  if(level.boss)for(const name of ['boss','mummy','gargantuar','imp','tombraiser','explorer','torchlight','pharaoh','pharaohInner'])names.add(name);
+  if(level.boss?.kind==='zombossmech_pirate')for(const name of ['boss','pirate','pirateCaptain','pirateParrot','pirateGargantuar','pirateImp','barrelroller','pirateBarrel'])names.add(name);
+  else if(level.boss)for(const name of ['boss','mummy','gargantuar','imp','tombraiser','explorer','torchlight','pharaoh','pharaohInner'])names.add(name);
   if(names.has('gargantuar')){names.add('imp');names.add('pharaohInner');}
   if(names.has('pharaoh')||names.has('pharaohWeak'))names.add('pharaohInner');
   return [...names];
@@ -22,7 +23,8 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
     kernelpult:['corn','butter','butter2'],melonpult:['melon','melon_pf'],cabbagepult:['cabbage'],bloomerang:['boomerang'],
   };
   for(const plant of plants)for(const effect of plantEffects[plant]??[])names.add(effect);
-  if(level.boss)for(const name of ['bossMissile','bossTarget','bossEscape','bossPortal','zombossicon'])names.add(name);
+  if(level.boss?.kind==='zombossmech_pirate')for(const name of ['bossEscape','bossPortal','zombossicon','dirtSpawn'])names.add(name);
+  else if(level.boss)for(const name of ['bossMissile','bossTarget','bossEscape','bossPortal','zombossicon'])names.add(name);
   if(level.flowerLine!==null)names.add('flower');
   if(level.mold.length)names.add('mold');
   if(level.protectedPlants.length)names.add('endangered');

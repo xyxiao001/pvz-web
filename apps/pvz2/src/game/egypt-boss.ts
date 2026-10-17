@@ -27,7 +27,7 @@ export class EgyptBoss {
   private stunLeft=0;
   private rushing=false;
   private backing=false;
-  constructor(private game:Game){
+  constructor(protected game:Game){
     const config=game.level.boss!;
     this.zombie=game.spawnZombie(config.kind,config.row,cellX(config.column));
     this.zombie.hp=this.stages.reduce((hp,s)=>hp+s.HitPoints,0);
@@ -67,9 +67,7 @@ export class EgyptBoss {
       while(choices.length){const kind=choices[Math.floor(this.game.random()*choices.length)];this.summon.push(kind);points-=this.game.props.zombies[kind].WavePointCost;choices=choices.filter(k=>this.game.props.zombies[k].WavePointCost<=points);}
       this.foodSent=false;this.jump(7,this.randomRow(),'summon');
     }else if(action.actionName==='shoot'){
-      const plants=this.game.plants;
-      const cell=this.game.random()>.5&&plants.length?plants[Math.floor(this.game.random()*plants.length)]:{row:Math.floor(this.game.random()*5),column:Math.floor(this.game.random()*6)};
-      this.targets=[{row:cell.row,column:cell.column}];this.play('Shoot');
+      this.aim();this.play('Shoot');
     }else if(action.actionName==='rush'){this.play('Stomp');}
     else {
       const options=[...(this.zombie.row>1?['WalkU']:[]),...(this.zombie.row<4?['WalkD']:[]),...(column>7?['WalkL']:column<7?['WalkR']:[])];
@@ -77,6 +75,12 @@ export class EgyptBoss {
       this.movement={x:this.zombie.x,y:this.y,toX:this.zombie.x+(animation==='WalkL'?-82:animation==='WalkR'?82:0),row,duration:35/30,elapsed:0};this.play(animation);
     }
   }
+  protected aim(){
+    const plants=this.game.plants;
+    const cell=this.game.random()>.5&&plants.length?plants[Math.floor(this.game.random()*plants.length)]:{row:Math.floor(this.game.random()*5),column:Math.floor(this.game.random()*6)};
+    this.targets=[{row:cell.row,column:cell.column}];
+  }
+  protected fire(){for(const target of this.targets)this.missiles.push({...target,id:++this.serial,age:0});this.targets=[];}
   private crush(){
     for(const p of this.game.plants)if(this.covers(p.row)&&Math.abs(cellX(p.column)-this.zombie.x)<100){if(p.action==='food'){if(this.rushing)this.stun();}else p.hp=0;}
     for(const g of this.game.graves)if(this.covers(g.row)&&Math.abs(cellX(g.column)-this.zombie.x)<100)g.hp=0;
@@ -90,7 +94,7 @@ export class EgyptBoss {
       for(const g of this.game.graves)if(g.row===row&&Math.abs(cellX(g.column)-x)<40)g.hp=0;
     }
     if(name==='mouthOpenSound')this.summonAt=this.game.time+.5;
-    if(name==='shoot'){for(const target of this.targets)this.missiles.push({...target,id:++this.serial,age:0});this.targets=[];}
+    if(name==='shoot')this.fire();
   }
   tick(dt:number){
     for(const missile of this.missiles){missile.age+=dt;if(missile.age-dt<1.5&&missile.age>=1.5){

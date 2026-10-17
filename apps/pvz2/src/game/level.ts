@@ -1,7 +1,7 @@
 import boardGridMaps from '../../public/assets/campaign/board-grid-maps.json';
 export const PLANT_KINDS = ['sunflower', 'peashooter', 'wallnut', 'potatomine', 'cabbagepult', 'bloomerang', 'iceburg', 'gravebuster', 'twinsunflower', 'iceweed', 'bonkchoy','repeater','kernelpult','melonpult','snowdrop','imitater','peapod','cherry_bomb','celerystalker','parsnip','sapfling','snapdragon','coconutcannon','spikeweed','springbean','threepeater','spikerock'] as const;
 export type PlantKind = typeof PLANT_KINDS[number];
-export type ZombieKind = 'pirate_captain'|'pirate_captain_parrot'|'barrelroller'|'pirate_barrel'|'pirate_gargantuar'|'pirate_imp'|'cannon'|'pirate'|'pirate_armor1'|'pirate_armor2'|'pirate_flag'|'swashbuckler'|'seagull' | 'mummy' | 'mummy_armor1' | 'mummy_armor2' | 'mummy_flag' | 'ra' | 'camel_onehump' | 'camel_twohump' | 'camel_manyhump' | 'camel_onehump_touch' | 'camel_twohump_touch' | 'camel_threehump_touch' | 'egypt_gargantuar' | 'egypt_imp' | 'explorer' | 'tomb_raiser' | 'pharaoh' | 'pharaoh_inner' | 'camel_manyhump_touch' | 'mummy_armor4' | 'explorer_veteran' | 'pharaoh_weak' | 'zombossmech_egypt' | 'zombossmech_egypt2';
+export type ZombieKind = 'pirate_captain'|'pirate_captain_parrot'|'barrelroller'|'pirate_barrel'|'pirate_gargantuar'|'pirate_imp'|'cannon'|'pirate'|'pirate_armor1'|'pirate_armor2'|'pirate_flag'|'swashbuckler'|'seagull' | 'mummy' | 'mummy_armor1' | 'mummy_armor2' | 'mummy_flag' | 'ra' | 'camel_onehump' | 'camel_twohump' | 'camel_manyhump' | 'camel_onehump_touch' | 'camel_twohump_touch' | 'camel_threehump_touch' | 'egypt_gargantuar' | 'egypt_imp' | 'explorer' | 'tomb_raiser' | 'pharaoh' | 'pharaoh_inner' | 'camel_manyhump_touch' | 'mummy_armor4' | 'explorer_veteran' | 'pharaoh_weak' | 'zombossmech_pirate' | 'zombossmech_egypt' | 'zombossmech_egypt2';
 export const BOARD = { width: 1200, height: 700, left: 190, top: 160, cellWidth: 82, cellHeight: 98, columns: 9, rows: 5 };
 export const cellX = (column: number) => BOARD.left + (column + .5) * BOARD.cellWidth;
 export const rowY = (row: number) => BOARD.top + row * BOARD.cellHeight + 80;
@@ -42,7 +42,7 @@ export interface Conveyor { DropDelayConditions:{Delay:number;MaxPackets:number}
 export interface CannonLevel {SlowdownMovementRate:number;BaseMovementRate:number;BufferDistance:number;MinScore:number;BaseZombieKillScore:number;RowHasCannon:number[];Lanes:{SplinePoints:{x:number;y:number}[]}[];ComboBrackets:{ZombiesKilled:number;ScoreMultiplier:number}[]}
 export interface Level {
   world:string;planks:number[]|null;cannon:CannonLevel|null;
-  boss:{kind:'zombossmech_egypt'|'zombossmech_egypt2';reserved:number;row:number;column:number;deathRow:number;deathColumn:number}|null;
+  boss:{kind:'zombossmech_egypt'|'zombossmech_egypt2'|'zombossmech_pirate';reserved:number;row:number;column:number;deathRow:number;deathColumn:number}|null;
   waves: ZombieKind[][]; actions:SpawnAction[][]; minHealth:number;maxHealth:number;flagInterval:number;
   match:{types:number}|null;suppressFlag:boolean;preset:PlantKind[]|null;initialPlants:{kind:PlantKind;row:number;column:number}[];randomGraves:{count:number;start:number;end:number}|null;
   killChallenge:{seconds:number;count:number}|null;targetSun:number|null;maxPlants:number|null;maxSun:number|null;flowerLine:number|null;blacklist:PlantKind[];lastStand:{sun:number;food:number}|null;
@@ -93,7 +93,7 @@ export function readLevel(source: SourceLevel): Level {
   const cannon=source.objects.find(o=>o.objclass==='CannonMinigameProperties');
   return {
     world,planks:cannon?[]:planks?planks.objdata.PlankRows as number[]:null,cannon:cannon?cannon.objdata as unknown as CannonLevel:null,
-    boss:boss?{kind:boss.ZombossMechType as 'zombossmech_egypt'|'zombossmech_egypt2',reserved:Number(boss.ReservedColumnCount),row:(boss.ZombossSpawnGridPosition as {mY:number}).mY,column:(boss.ZombossSpawnGridPosition as {mX:number}).mX,deathRow:Number(boss.ZombossDeathRow),deathColumn:Number(boss.ZombossDeathColumn)}:null,
+    boss:boss?{kind:boss.ZombossMechType as 'zombossmech_egypt'|'zombossmech_egypt2'|'zombossmech_pirate',reserved:Number(boss.ReservedColumnCount),row:(boss.ZombossSpawnGridPosition as {mY:number}).mY,column:(boss.ZombossSpawnGridPosition as {mX:number}).mX,deathRow:Number(boss.ZombossDeathRow),deathColumn:Number(boss.ZombossDeathColumn)}:null,
     killChallenge:killChallenge?{seconds:Number(killChallenge.objdata.Time),count:Number(killChallenge.objdata.ZombiesToKill)}:null,
     targetSun:sunProduced?Number(sunProduced.objdata.TargetSun):null,maxPlants:limit?Number(limit.objdata.MaximumPlants):null,maxSun:sunLimit?Number(sunLimit.objdata.MaximumSun):null,flowerLine:flowers?Number(flowers.objdata.TargetDistance):null,
     blacklist:seedBank&&'PlantBlackList' in seedBank?seedBank.PlantBlackList as PlantKind[]:[],lastStand:lastStand?{sun:Number(lastStand.objdata.StartingSun),food:Number(lastStand.objdata.StartingPlantfood)}:null,

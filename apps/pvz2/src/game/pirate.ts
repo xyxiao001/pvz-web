@@ -35,7 +35,7 @@ export class PirateBattle {
   }
   private bounce(z:Zombie){
     const g=this.#game;
-    if(z.hp<=0||z.leap||swinging(z,g.time)||['seagull','pirate_captain_parrot','pirate_gargantuar','cannon'].includes(z.kind))return;
+    if(z===g.boss?.zombie||z.hp<=0||z.leap||swinging(z,g.time)||['seagull','pirate_captain_parrot','pirate_gargantuar','cannon'].includes(z.kind))return;
     let row=z.row;const column=Math.floor((z.x-BOARD.left)/BOARD.cellWidth);
     if(column>=4&&!seaCell(g.level.planks,row,8)){
       if(row>0&&seaCell(g.level.planks,row-1,8))row--;
@@ -48,16 +48,16 @@ export class PirateBattle {
   private tickGroundPlant(p:Plant,dt:number){
     const g=this.#game,props=g.props.plants[p.kind],x=cellX(p.column),timelines=g.props.plantAnimations[p.kind];
     const ground=g.zombies.filter(z=>z.hp>0&&!isFlying(z)&&!z.leap&&!swinging(z,g.time));
-    const targets=ground.filter(z=>z.row===p.row&&Math.abs(z.x-x)<BOARD.cellWidth/2);
+    const targets=ground.filter(z=>g.inLane(z,p.row)&&Math.abs(z.x-x)<BOARD.cellWidth/2);
     const start=(animation:string,action:Plant['action']='shoot')=>{p.animation=animation;p.action=action;p.actionAt=g.time;p.eventIndex=0;};
     if(p.kind==='spikeweed'||p.kind==='spikerock'){
       if(p.action==='food'){
         if(g.time-p.actionAt>=props.PlantfoodDuration){p.action='idle';p.animation='Idle';return;}
-        for(const z of ground.filter(z=>z.row===p.row)){
+        for(const z of ground.filter(z=>g.inLane(z,p.row))){
           if(z.kind==='pirate_barrel'){z.hp=0;continue;}
           g.damage(z,(props.PlantfoodSideDPS+(Math.abs(z.x-x)<BOARD.cellWidth/2?props.PlantfoodDPS:0))*dt);
           z.stunnedUntil=g.time+.2;
-          if(!['pirate_gargantuar','cannon'].includes(z.kind)&&Math.abs(z.x-x)>=BOARD.cellWidth/2)z.x+=Math.sign(x-z.x)*Math.min(Math.abs(x-z.x),props.PlantfoodDragSPS*BOARD.cellWidth*dt);
+          if(z!==g.boss?.zombie&&!['pirate_gargantuar','cannon'].includes(z.kind)&&Math.abs(z.x-x)>=BOARD.cellWidth/2)z.x+=Math.sign(x-z.x)*Math.min(Math.abs(x-z.x),props.PlantfoodDragSPS*BOARD.cellWidth*dt);
         }
         return;
       }
@@ -74,7 +74,7 @@ export class PirateBattle {
       if(p.animation!=='Idle_Ready'&&nearby){start('Ready');return;}
       if(p.animation==='Idle_Ready'){
         if(!nearby){start('Recover');return;}
-        const target=targets.find(z=>!['pirate_gargantuar','cannon'].includes(z.kind));
+        const target=targets.find(z=>z!==g.boss?.zombie&&!['pirate_gargantuar','cannon'].includes(z.kind));
         if(target){this.bounce(target);start('Bounce');return;}
       }
       return;
@@ -240,8 +240,8 @@ export class PirateBattle {
       const old=shot.x;shot.x+=(shot.food?6:17)*60*.5*dt;shot.age+=dt;
       if(shot.food){
         if(shot.explodeAt===undefined){
-          for(const z of g.zombies)if(z.hp>0&&!z.leap&&!swinging(z,g.time)&&z.row===shot.row&&Math.abs(z.x-shot.x)<45){
-            if(['pirate_gargantuar','cannon'].includes(z.kind)){shot.explodeAt=g.time;break;}
+          for(const z of g.zombies)if(z.hp>0&&!z.leap&&!swinging(z,g.time)&&g.inLane(z,shot.row)&&Math.abs(z.x-shot.x)<45){
+            if(z===g.boss?.zombie||['pirate_gargantuar','cannon'].includes(z.kind)){shot.explodeAt=g.time;break;}
             z.x+=shot.x-old;z.stunnedUntil=g.time+.1;
           }
           if(shot.x>=BOARD.left+8*BOARD.cellWidth)shot.explodeAt=g.time;
@@ -249,11 +249,11 @@ export class PirateBattle {
         if(shot.explodeAt!==undefined){shot.x=old+(shot.x-old)*Math.pow(1/1.2,(g.time-shot.explodeAt)*60);if(g.time-shot.explodeAt<this.eventTime('coconutFood','Explode','pop'))continue;}
         else continue;
       }
-      const target=g.zombies.filter(z=>z.hp>0&&!swinging(z,g.time)&&z.x>=old-25&&z.x<=shot.x+25&&Math.abs(zombieY(z)-44-shot.y)<45).sort((a,b)=>a.x-b.x)[0];
+      const target=g.zombies.filter(z=>z.hp>0&&!swinging(z,g.time)&&z.x>=old-25&&z.x<=shot.x+25&&(z===g.boss?.zombie?g.inLane(z,shot.row):Math.abs(zombieY(z)-44-shot.y)<45)).sort((a,b)=>a.x-b.x)[0];
       if(!shot.food&&!target)continue;
       const x=shot.food?shot.x:target!.x,y=shot.food?rowY(shot.row):zombieY(target!),projectile=g.props.projectiles[shot.food?'coconut_pf':'coconut'],splash=projectile.SplashDamage[0];const killed:Zombie[]=[];
       const width=g.level.cannon?2.5:splash.Range.w,height=g.level.cannon?2:splash.Range.h;
-      for(const z of g.zombies)if(z.hp>0&&Math.abs(z.x-x)<=width*BOARD.cellWidth/2&&Math.abs(zombieY(z)-y)<=height*BOARD.cellHeight/2){g.damage(z,z===target?projectile.Damage:splash.Damage!,'potato');if(z.hp<=0)killed.push(z);}
+      for(const z of g.zombies)if(z.hp>0&&Math.abs(z.x-x)<=width*BOARD.cellWidth/2&&(z===g.boss?.zombie?Math.min(Math.abs(rowY(z.row)-y),Math.abs(rowY(z.row-1)-y))<=height*BOARD.cellHeight/2:Math.abs(zombieY(z)-y)<=height*BOARD.cellHeight/2)){g.damage(z,z===target?projectile.Damage:splash.Damage!,'potato');if(z.hp<=0)killed.push(z);}
       if(g.level.cannon){const bracket=g.level.cannon.ComboBrackets.filter(b=>killed.length>=b.ZombiesKilled).at(-1);this.score+=killed.length*g.level.cannon.BaseZombieKillScore*(bracket?bracket.ScoreMultiplier:1);this.combo=killed.length;this.comboUntil=g.time+1.8;
         const stun=g.level.cannon.SlowdownMovementRate*g.random()/60;
         for(const z of g.zombies)if(z.hp>0&&z.route&&killed.some(dead=>dead.route&&dead.route.spawnLane===z.route!.spawnLane&&dead.route.spawnWave===z.route!.spawnWave))z.stunnedUntil=Math.max(z.stunnedUntil??0,g.time+stun);

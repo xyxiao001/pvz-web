@@ -396,3 +396,99 @@ test('pirate giant consumes one spikerock spike per native smash instead of inst
  const g=create(17);g['nextWave']=Infinity;g.sun=999;g.plant('spikerock',2,3);const rock=g.plants[0],giant=g.spawnZombie('pirate_gargantuar',2,cellX(3)+60);
  tick(g,1.3);assert.equal(rock.spikes,3);tick(g,.1);assert.equal(rock.spikes,2);assert.equal(rock.hp,900);assert.equal(giant.hp,props.zombies.pirate_gargantuar.Toughness-20);
 });
+
+test('Pirate 21–25 retain source objectives, protected cells, conveyor and boss stages',()=>{
+ assert.deepEqual([21,22,23,24].map(d=>level(d).waves.length),[16,10,10,16]);
+ assert.deepEqual(level(21).killChallenge,{seconds:5,count:5});assert.equal(level(21).targetSun,3250);
+ assert.equal(level(22).lastStand!.sun,2750);assert.deepEqual(level(22).planks,[]);
+ assert.deepEqual(level(23).killChallenge,{seconds:10,count:8});assert.equal(level(23).flowerLine,4.5);
+ assert.deepEqual(level(24).protectedPlants,[{kind:'springbean',row:0,column:4},{kind:'springbean',row:1,column:4},{kind:'springbean',row:4,column:4}]);
+ assert.equal(level(25).boss!.kind,'zombossmech_pirate');assert.equal(level(25).boss!.reserved,2);
+ assert.equal(level(25).conveyor!.InitialPlantList.length,7);
+ assert.deepEqual(create(25).boss!.stages.map(s=>s.HitPoints),[5500,10000,11000]);
+});
+test('Pirate boss shoots six airborne imps on its native event, without Egyptian missiles',()=>{
+ const g=create(25),boss=g.boss!;tick(g,4.4);boss['play']('Shoot');boss['aim']();
+ tick(g,3.6);assert.equal(g.zombies.length,1);tick(g,.05);
+ const imps=g.zombies.filter(z=>z.kind==='pirate_imp');assert.equal(imps.length,6);
+ assert.ok(imps.every(z=>z.leap&&z.leap.toX>=cellX(2)&&z.leap.toX<=cellX(5)&&z.leap.toRow>=0&&z.leap.toRow<=4));
+ assert.equal(boss.targets.length,0);assert.equal(boss.missiles.length,0);
+ tick(g,1.4);assert.ok(imps.every(z=>!z.leap));
+});
+test('Pirate boss clamps each stage and completes its death and escape before winning',()=>{
+ const g=create(25),boss=g.boss!;tick(g,4.4);
+ for(const stage of [1,2]){g.damage(boss.zombie,50000);assert.equal(boss.stage,stage);assert.equal(boss.animation,'StunStart');tick(g,5);}
+ g.spawnZombie('pirate_captain',0,1000);g.damage(boss.zombie,50000);
+ assert.equal(g.phase,'playing');tick(g,3);assert.equal(boss.animation,'DeathStart');assert.equal(g.zombies.length,1);
+ tick(g,15);assert.equal(boss.defeated,true);assert.equal(g.phase,'won');
+});
+test('coconut cannons hit both boss lanes and food explodes without pushing the mech',()=>{
+ for(const offset of [0,1]){
+  const g=create(25),boss=g.boss!;tick(g,4.4);boss['play']('Stunning');boss['stunLeft']=100;
+  const row=boss.zombie.row-offset;g.conveyor.push({id:999,kind:'coconutcannon',lane:0,position:0});assert.equal(g.plant('coconutcannon',row,2,999),true);
+  const hp=boss.zombie.hp,x=boss.zombie.x;assert.equal(g.pirate.fire(row,2),true);tick(g,2);assert.ok(boss.zombie.hp<hp);assert.equal(boss.zombie.x,x);
+  g.food=1;assert.equal(g.plantFood(row,2),true);const before=boss.zombie.hp;tick(g,5);assert.ok(boss.zombie.hp<before);assert.equal(boss.zombie.x,x);
+ }
+});
+test('Pirate 21 requires both rolling kills and sun; Pirate 23 protects the half-cell flower line',()=>{
+ const g=create(21);g.level.waves=[];g.level.actions=[];g.killChallengeComplete=true;g.tick(1/60);assert.equal(g.lossReason,'sunProduced');
+ const flowers=create(23);flowers['nextWave']=Infinity;flowers.spawnZombie('pirate',2,190+4.5*82);flowers.tick(1/60);assert.equal(flowers.lossReason,'flowers');
+});
+for(const day of [21,23,24])test(`Pirate ${day} completes with normal planting and collected food`,()=>{
+ const g=create(day);
+ for(let frame=0;frame<60*1000&&g.phase==='playing';frame++){
+  for(const s of [...g.suns])g.collect(s.id);for(const p of [...g.pickups])g.collectPickup(p.id);
+  if(frame%15===0){
+   const occupied=(r:number,c:number)=>g.plants.some(p=>p.row===r&&p.column===c),threats=g.zombies.filter(z=>z.hp>0&&!z.swing&&!z.parrot).sort((a,b)=>a.x-b.x);
+   for(const z of threats)if(!g.plants.some(p=>p.row===z.row&&p.kind==='kernelpult'))g.plant('kernelpult',z.row,2);
+   for(const col of [0,1])for(let row=0;row<5;row++)if(!occupied(row,col))g.plant('sunflower',row,col);
+   for(const col of [2,3])for(let row=0;row<5;row++)if(!occupied(row,col))g.plant(col===3?'threepeater':'kernelpult',row,col);
+   for(let row=0;row<5;row++)if(!occupied(row,4))g.plant('snapdragon',row,4);
+   const target=threats.find(z=>z.x<(day===23?680:850));if(target){const p=g.plants.find(p=>p.row===target.row&&p.kind==='kernelpult');if(p)g.plantFood(p.row,p.column);}
+  }
+  g.tick(1/60);g.events.length=0;
+ }
+ assert.equal(g.phase,'won',`day ${day}, reason ${g.lossReason}, sun ${g.sunProduced}, time ${g.time}, wave ${g.wave}`);
+});
+test('Pirate 22 completes with its original last-stand budget',()=>{
+ const g=create(22);
+ for(let row=0;row<5;row++){g.plant('snapdragon',row,0);g.plant('bonkchoy',row,1);g.plant('wallnut',row,2);g.plant('spikeweed',row,3);g.plant('springbean',row,4);}
+ assert.equal(g.sun,250);g.startLastStand();
+ for(let frame=0;frame<60*1000&&g.phase==='playing';frame++){
+  for(const p of [...g.pickups])g.collectPickup(p.id);
+  if(frame%15===0){
+   for(let row=0;row<5;row++)if(!g.plants.some(p=>p.row===row&&p.column===2))g.plant('wallnut',row,2);
+   const threat=g.zombies.filter(z=>z.hp>0&&!z.swing&&z.x<430).sort((a,b)=>a.x-b.x)[0];if(threat){const p=g.plants.find(p=>p.kind==='snapdragon'&&Math.abs(p.row-threat.row)<=1&&threat.x>cellX(p.column)&&threat.x<cellX(p.column)+240);if(p)g.plantFood(p.row,p.column);}
+  }
+  g.tick(1/60);g.events.length=0;
+ }
+ assert.equal(g.phase,'won',`reason ${g.lossReason}, time ${g.time}, wave ${g.wave}`);
+});
+test('Pirate 25 completes using delivered conveyor cards and earned food',()=>{
+ const g=create(25);
+ for(let frame=0;frame<60*1600&&g.phase==='playing';frame++){
+  for(const p of [...g.pickups])g.collectPickup(p.id);
+  if(frame%15===0){
+   for(const card of [...g.conveyor]){
+    const cols=card.kind==='cherry_bomb'?[5,4,3]:card.kind==='spikeweed'?[5,4,3,2,1,0]:card.kind==='snapdragon'?[4,3,2]:[0,1,2,3];
+    let planted=false;for(const col of cols){for(let row=0;row<5;row++){if(card.kind==='cherry_bomb'&&!g.zombies.some(z=>z.hp>0&&Math.abs(z.row-row)<=1&&Math.abs(z.x-cellX(col))<140))continue;if(g.plant(card.kind,row,col,card.id)){planted=true;break;}}if(planted)break;}
+   }
+   for(const p of g.plants)if(p.kind==='coconutcannon'&&g.zombies.some(z=>z.hp>0&&g.inLane(z,p.row)))g.pirate.fire(p.row,p.column);
+   const p=g.plants.find(p=>p.kind==='coconutcannon'&&g.boss!.covers(p.row));if(p)g.plantFood(p.row,p.column);
+  }
+  g.tick(1/60);g.events.length=0;
+ }
+ assert.equal(g.phase,'won',`reason ${g.lossReason}, time ${g.time}, hp ${g.boss!.zombie.hp}, stage ${g.boss!.stage}`);
+});
+
+test('spikeweed food damages either boss lane without dragging the mech',()=>{
+ const g=create(25),boss=g.boss!;tick(g,4.4);boss['play']('Stunning');boss['stunLeft']=100;
+ const row=boss.zombie.row-1;g.conveyor.push({id:999,kind:'spikeweed',lane:0,position:0});g.plant('spikeweed',row,3,999);g.food=1;g.plantFood(row,3);
+ const x=boss.zombie.x,hp=boss.zombie.hp;tick(g,2);assert.equal(boss.zombie.x,x);assert.ok(boss.zombie.hp<hp);
+});
+test('Pirate 21–25 reward slots, cherry bomb and the Pirate trophy once',()=>{
+ const data=new Map<string,string>(),storage={getItem:(k:string)=>data.get(k)??null,setItem:(k:string,v:string)=>{data.set(k,v);},removeItem:(k:string)=>{data.delete(k);}},progress=new ProgressStore(storage),map=read<WorldMap>('shell/maps/pirate.json');
+ for(let day=1;day<=25;day++){const id=`pirate${day}`;progress.finish('pirate',id);for(const event of completionEvents(map,id,progress.completed(map),progress.rewardNodes('pirate')))if(event.action==='reward')progress.award('pirate',map.islands.find(n=>n.node===event.node)!);progress.finishPresentation();}
+ assert.ok(progress.ownedPlants().has(45));assert.ok(progress.ownedUpgrades().has(9));
+ assert.equal(progress.campaignRewards().filter(r=>r.id==='worldtrophy_pirate').length,1);progress.finish('pirate','pirate25');assert.equal(new ProgressStore(storage).campaignRewards().filter(r=>r.id==='worldtrophy_pirate').length,1);
+});

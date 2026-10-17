@@ -1,3 +1,7 @@
+import type {PlantKind} from '../game/level';
+
+export const seedCardAnimation=(kind:PlantKind)=>kind==='cherry_bomb'?'cherribomb':kind==='imitater'?'imitator':kind;
+
 // Fit all nine columns and five rows, keeping the street spawn area outside combat view.
 export const COMBAT_VIEW = { x: -48, y: 60, zoom: 1.18 };
 

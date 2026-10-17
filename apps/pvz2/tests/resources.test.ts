@@ -1,10 +1,11 @@
+import {seedCardAnimation} from '../src/rendering/presentation';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { ResourcePool, ResourceScope } from '../src/assets/resource-pool';
 import { battleActors, battleEffects } from '../src/rendering/resource-plan';
 import { BATTLE_LEVELS } from '../src/game/levels';
-import { readLevel, type PlantKind } from '../src/game/level';
+import {PLANT_KINDS, readLevel, type PlantKind } from '../src/game/level';
 const read=(path:string)=>JSON.parse(readFileSync(new URL('../public/assets/'+path,import.meta.url),'utf8'));
 test('map and battle share a texture until the last scene releases it',async()=>{
  const calls:string[]=[];const pool=new ResourcePool(async path=>{calls.push('load '+path);return {};},async path=>{calls.push('unload '+path);});
@@ -34,4 +35,12 @@ test('all registered levels resolve only exported actors and effect rigs, includ
  for(const name of ['imp','pharaohInner','tombraiser'])assert.ok(battleActors(boss,[]).includes(name));
  for(const name of ['dirtSpawn','grave','bossMissile'])assert.ok(battleEffects(boss,[]).includes(name));
  const match=readLevel(read(BATTLE_LEVELS.egypt23.source));assert.ok(battleEffects(match,[]).includes('dirtSpawn'));
+});
+
+
+test('Pirate boss summons preload dirt and every registered plant has a native card animation',()=>{
+ const boss=readLevel(read(BATTLE_LEVELS.pirate25.source));assert.ok(battleEffects(boss,[]).includes('dirtSpawn'));
+ const spec=read('battle/catalog.json').rigs.cards,skeleton=read(`${spec.group}/rigs/${spec.rig}/skeleton.json`);
+ const animations=skeleton.armature.find((a:{name:string})=>a.name==='plants').animation.map((a:{name:string})=>a.name);
+ for(const kind of PLANT_KINDS)assert.ok(animations.includes(seedCardAnimation(kind)),kind);
 });

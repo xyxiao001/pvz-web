@@ -6,7 +6,7 @@ import { PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbo
 import { assetUrl, json, loadInBatches } from '../assets/load';
 import type { Level, PlantKind } from '../game/level';
 import type { SpriteArt } from '../shell/types';
-import type { CameraIntro } from './presentation';
+import {seedCardAnimation,type CameraIntro} from './presentation';
 export interface Rig { rig: string; armature: string; animation: string; group?: string }
 export interface NarrativeStep { Character: 'crazydave'|'winnie'|'zombossicon'; Action: string; Lines?: {zh:string;en:string}; Animation?: string; Voice?: string }
 export interface BattleCatalog { intro: NarrativeStep[]; sounds: Record<string,string[]>; ui: Record<string, SpriteArt>; rigs: Record<string, Rig>; presentation: {camera:CameraIntro;seedChoosingCameraX:number;corpseFadeDuration:number;mowerDeathDuration:number;armDropHealthFraction:number;readySetPlant:number[]} }
@@ -55,7 +55,7 @@ export class BattleArt {
   }
   card(app: Application, kind: PlantKind): string {
     const container = new Container();
-    const layers: PixiArmatureDisplay[] = [this.build('cards',['cabbagepult','bloomerang','iceburg','gravebuster','twinsunflower','bonkchoy','repeater'].includes(kind)?'egypt':['kernelpult','snapdragon','coconutcannon','cherry_bomb','spikeweed','spikerock','springbean','threepeater'].includes(kind)?'pirate':'frontyard','background'),this.build('cards',kind==='imitater'?'imitator':kind,'plants'),this.build('cards','dotPrice','upper_dots')];
+    const layers: PixiArmatureDisplay[] = [this.build('cards',['cabbagepult','bloomerang','iceburg','gravebuster','twinsunflower','bonkchoy','repeater'].includes(kind)?'egypt':['kernelpult','snapdragon','coconutcannon','cherry_bomb','spikeweed','spikerock','springbean','threepeater'].includes(kind)?'pirate':'frontyard','background'),this.build('cards',seedCardAnimation(kind),'plants'),this.build('cards','dotPrice','upper_dots')];
     container.addChild(...layers);
     const image = (app.renderer.extract.canvas({target:container,resolution:2,frame:new Rectangle(-119,-75,238,150)}) as HTMLCanvasElement).toDataURL('image/png');
     layers.forEach(r=>r.dispose()); container.destroy({children:true}); return image;
