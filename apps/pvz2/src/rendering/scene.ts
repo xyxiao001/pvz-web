@@ -1,3 +1,4 @@
+import {futureArmor} from '../game/future';
 import {cowboyArmor} from '../game/cowboy';
 import {pirateArmor,zombieY,seaCell} from '../game/pirate';
 import { textureScope } from '../assets/textures';
@@ -13,8 +14,9 @@ import { assetUrl, json, loadInBatches } from '../assets/load';
 import { BOARD, cellX, rowY, PLANT_KINDS, type AnimationTiming, type PlantKind, type ZombieKind, type Level } from '../game/level';
 import { isCamel, isMatchCamel, type DeathCause, Game, Plant, Zombie, ZombieDeath } from '../game/model';
 
-type RigName = PlantKind | 'blackBull'|'bull'|'cowboyGargantuar'|'cowboyImp'|'chickenFarmer'|'chicken'|'chickenPumpkin'| 'cowboy'|'cowboyFlag'|'prospector'|'poncho'|'piano'| 'pirateCaptain'|'pirateParrot'| 'barrelroller'|'pirateBarrel'|'pirateGargantuar'|'pirateImp'|'impCannon'| 'pirate'|'pirateFlag'|'swashbuckler'|'seagull'|'pelican'| 'boss' | 'torchlight' | 'pharaohWeak' | 'mummy' | 'ra' | 'camel' | 'camelTouch' | 'gargantuar' | 'imp' | 'explorer' | 'tombraiser' | 'pharaoh' | 'pharaohInner';
+type RigName = PlantKind | 'future'|'futureFlag'|'futureJetpack'|'futureProtector'|'futureShield'|'futureImp'|'mechCone'| 'blackBull'|'bull'|'cowboyGargantuar'|'cowboyImp'|'chickenFarmer'|'chicken'|'chickenPumpkin'| 'cowboy'|'cowboyFlag'|'prospector'|'poncho'|'piano'| 'pirateCaptain'|'pirateParrot'| 'barrelroller'|'pirateBarrel'|'pirateGargantuar'|'pirateImp'|'impCannon'| 'pirate'|'pirateFlag'|'swashbuckler'|'seagull'|'pelican'| 'boss' | 'torchlight' | 'pharaohWeak' | 'mummy' | 'ra' | 'camel' | 'camelTouch' | 'gargantuar' | 'imp' | 'explorer' | 'tombraiser' | 'pharaoh' | 'pharaohInner';
 const RIGS: Record<RigName, { armature: string; idle: string; scale: number }> = {
+  laser_bean:{armature:'LaserBean',idle:'Idle',scale:.55},blover:{armature:'Blover',idle:'Idle',scale:.55},future:{armature:'FutureBasic',idle:'Walk',scale:.51},futureFlag:{armature:'FutureFlag',idle:'Walk',scale:.51},futureJetpack:{armature:'JetpackZombie',idle:'Walk',scale:.51},futureProtector:{armature:'Protector',idle:'Walk',scale:.51},futureShield:{armature:'Shield',idle:'Idle',scale:.51},futureImp:{armature:'FutureImp',idle:'Walk',scale:.51},mechCone:{armature:'MechCone',idle:'Walk',scale:.51},
   shadowshroom:{armature:'ShadowShroom',idle:'Idle',scale:.55},stallia:{armature:'Stallia',idle:'Idle',scale:.55},hurrikale:{armature:'Hurrikale',idle:'Idle',scale:.55},sunshroom:{armature:'SunShroom',idle:'Idle_Small',scale:.55},puffshroom:{armature:'PuffShroom',idle:'Idle',scale:.55},banana:{armature:'BananaLauncher',idle:'Idle',scale:.55},electriccurrant:{armature:'ElectricCurrant',idle:'Idle',scale:.55},hypnoshroom:{armature:'HypnoShroom',idle:'Idle',scale:.55},blackBull:{armature:'Bull_Black',idle:'Walk',scale:.51},
   electricpeashooter:{armature:'ElectricPeashooter',idle:'Idle',scale:.55},magnetshroom:{armature:'MagnetShroom',idle:'Idle',scale:.55},magnifyinggrass:{armature:'MagnifyingGrass',idle:'Idle',scale:.55},
   tallnut:{armature:'TallNut',idle:'Idle0',scale:.55},bull:{armature:'Bull',idle:'Walk',scale:.51},wintermelon:{armature:'Melon-pult',idle:'Idle',scale:.55},cowboyGargantuar:{armature:'CowboyGargantuar',idle:'Walk',scale:.51},cowboyImp:{armature:'CowboyImp',idle:'Walk',scale:.51},chickenFarmer:{armature:'ChickenFarmerZombie',idle:'WalkWithChicken',scale:.51},chicken:{armature:'Chicken',idle:'IdleWalk',scale:.51},chickenPumpkin:{armature:'ChickenPumpkin',idle:'IdleWalk',scale:.51},
@@ -101,7 +103,7 @@ export class Scene {
     this.app.canvas.setAttribute('aria-label', `${config.worldName}战场，五行九列。选择植物后点击地块种植。`);
     this.app.stage.eventMode = 'none';
     this.app.stage.addChild(this.world,this.conveyorLayer);
-    if(config.world!=='pirate'&&config.world!=='cowboy'){const lawn=new Sprite(await this.textures.load(assetUrl(config.presentation.lawn)));lawn.width=1974;lawn.height=768;lawn.position.set(-340,-40);this.world.addChild(lawn);}
+    if(config.world!=='pirate'&&config.world!=='cowboy'&&config.world!=='future'){const lawn=new Sprite(await this.textures.load(assetUrl(config.presentation.lawn)));lawn.width=1974;lawn.height=768;lawn.position.set(-340,-40);this.world.addChild(lawn);}
     this.world.addChild(this.highlight,this.actorLayer);
     this.actorLayer.sortableChildren = true;
     const actorNames=battleActors(level,plantActors) as RigName[];
@@ -111,6 +113,7 @@ export class Scene {
       for(let row=0;row<5;row++){lawn.armature.getSlot(`DECKSHADE${row}`)!.displayIndex=level.planks!.includes(row)?0:-1;const deck=this.art.build('pirateLawn',level.planks!.includes(row)?'On':'Off',`Deck${row}`);deck.scale.set(.5);deck.position.set(449.645,344-[15.248,15.248,18.739,18.739,22.227][row]*.5);this.world.addChildAt(deck,row+1);this.lawnRigs.push(deck);}
       if(level.cannon){const guide=this.art.build('pirateLawn','Idle','CannonGuide');guide.scale.set(.5);guide.position.set(449.645,344);this.world.addChildAt(guide,6);this.lawnRigs.push(guide);}
     }
+    if(config.world==='future'){const lawn=this.art.build(config.night?'futureNightLawn':'futureLawn','Idle');lawn.scale.set(.5);lawn.position.set(449.645,344);this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
     if(config.world==='cowboy'){const lawn=this.art.build('cowboyLawn','Idle');lawn.scale.set(.5);lawn.position.set(449.645,344);this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
     this.mowerHoldTexture=await this.textures.load(assetUrl(this.art.catalog.ui.mowerHold.image));
     if(level?.conveyor){for(const lane of [0,1]){
@@ -194,7 +197,7 @@ export class Scene {
     const rig = this.rig(name, flag ? 'EgyptFlagZombie' : RIGS[name].armature); rig.scale.set(RIGS[name].scale);
     root.addChild(shade, rig); this.actorLayer.addChild(root);
     const actor: Actor = { root, rig, kind:name, animation: '', actionAt: -1, armLost:false,camelFrame:name==='camel'?0:undefined };
-    const events:Partial<Record<RigName,Record<string,string>>>={bull:{step:'stepSounds',deathSound:'deathSounds',brakeSound:'brakeSounds',impSteady:'impSteadySounds'},wintermelon:{Lob:'lobSound'},cowboyGargantuar:{step:'stepSounds',swing:'swingSounds',smash:'smashSounds',afterSmash:'afterSmashSaySounds',impThrow:'ImpThrowSounds',deathPole:'deathPoleSounds',deathFall:'deathFallSounds'},escaperoot:{unWrapSound:'unwrapQuickSounds'},spikerock:{attack:'attackSound'},threepeater:{ShootSound:'shootSound'},spikeweed:{attack:'attackSound'},springbean:{foodLeap:'foodLeapSound',foodBounce:'foodBounceSound'},impCannon:{Shoot:'ShootSound',Explode:'ExplodeSound'},pirateGargantuar:{steady:'steadySounds',step:'stepSounds',swing:'swingSounds',smash:'smashSounds',afterSmash:'afterSmashSaySounds',impThrow:'ImpThrowSounds',deathPole:'deathPoleSounds',deathFall:'deathFallSounds'},swashbuckler:{swing:'swingSounds'},snapdragon:{attackSound:'attackSound',flap:'flapSound',foodAttack:'foodSound'},coconutcannon:{Shoot:'shootSound',foodShoot:'shootFoodSound'},boss:{introSmashSound:'introSmashSound',introFallSound:'introFallSound',introSound:'introSound',spawnLandSound:'introLandSound',stepSound:'worldZombossMechStepSounds',moveSound:'worldZombossMechMoveSounds',mouthOpenSound:'worldZombossMechMouthOpenSounds',mouthCloseSound:'worldZombossMechMouthCloseSounds',leapSound:'worldZombossMechLeapStartSounds',landSound:'worldZombossMechLeapEndSounds',deathFallSound:'worldZombossMechDeathFallSounds',shootReadySound:'worldZombossMechShootRiseSounds',shootStart:'worldZombossMechShootSounds',shoot:'worldZombossMechPRJDropSounds',escape_trigger:'worldZombossEscapeTriggerSound'},snowdrop:{LobSound:'lobSound'},sapfling:{LobSound:'lobSound',sneeze:'sneezeSound',brush:'brushSound'},peapod:{ShootMega:'shootMegaSounds'},imitater:{sound:'imitateSound'},celerystalker:{hit:'hitSounds',foodSummon:'foodSounds'},parsnip:{hit:'snipSound',summon:'popSound'},repeater:{ShootSound:'shootSound',shootMega:'shootMegaSound'},kernelpult:{LobSound:'lobSound'},melonpult:{Lob:'lobSound'},bonkchoy:{attackAir:'attackAirSound',attackGoal:'attackGoalSound',attackHeavy:'defeatSound',foodAttack:'attackAirSound'},cabbagepult:{LobSound:'lobSound'},bloomerang:{ShootSound:'shootSound',catch:'catchSound'},iceburg:{explode:'deadSound',foodExplode:'foodBlastSound'},tombraiser:{puke:'pukeSound',throw:'throwSound'},gargantuar:{step:'stepSounds',swing:'swingSounds',smash:'smashSounds',afterSmash:'afterSmashSaySounds',impThrow:'ImpThrowSounds',deathPole:'deathPoleSounds',deathFall:'deathFallSounds'}};
+    const events:Partial<Record<RigName,Record<string,string>>>={futureJetpack:{steady:'steadySound',bounce:'bounceSound'},futureProtector:{cut:'cutSounds',mouthOpen:'mouthOpenSound',mouthClose:'mouthCloseSound',armBack:'armBackSound'},futureImp:{walkStart:'hopSound',chew:'eatSound',deathFall:'deathFallSound',expand:'expandSound',mouthHitDeactivate:'mouthDeactivateSound',mouthHitActivate:'mouthActivateSound'},mechCone:{mouthOpen:'mouthOpenSounds',eatStart:'eatStartSounds',footStep:'footStepsSounds',curveSound:'curveSounds',deathFall:'deathFallSounds'},bull:{step:'stepSounds',deathSound:'deathSounds',brakeSound:'brakeSounds',impSteady:'impSteadySounds'},wintermelon:{Lob:'lobSound'},cowboyGargantuar:{step:'stepSounds',swing:'swingSounds',smash:'smashSounds',afterSmash:'afterSmashSaySounds',impThrow:'ImpThrowSounds',deathPole:'deathPoleSounds',deathFall:'deathFallSounds'},escaperoot:{unWrapSound:'unwrapQuickSounds'},spikerock:{attack:'attackSound'},threepeater:{ShootSound:'shootSound'},spikeweed:{attack:'attackSound'},springbean:{foodLeap:'foodLeapSound',foodBounce:'foodBounceSound'},impCannon:{Shoot:'ShootSound',Explode:'ExplodeSound'},pirateGargantuar:{steady:'steadySounds',step:'stepSounds',swing:'swingSounds',smash:'smashSounds',afterSmash:'afterSmashSaySounds',impThrow:'ImpThrowSounds',deathPole:'deathPoleSounds',deathFall:'deathFallSounds'},swashbuckler:{swing:'swingSounds'},snapdragon:{attackSound:'attackSound',flap:'flapSound',foodAttack:'foodSound'},coconutcannon:{Shoot:'shootSound',foodShoot:'shootFoodSound'},boss:{introSmashSound:'introSmashSound',introFallSound:'introFallSound',introSound:'introSound',spawnLandSound:'introLandSound',stepSound:'worldZombossMechStepSounds',moveSound:'worldZombossMechMoveSounds',mouthOpenSound:'worldZombossMechMouthOpenSounds',mouthCloseSound:'worldZombossMechMouthCloseSounds',leapSound:'worldZombossMechLeapStartSounds',landSound:'worldZombossMechLeapEndSounds',deathFallSound:'worldZombossMechDeathFallSounds',shootReadySound:'worldZombossMechShootRiseSounds',shootStart:'worldZombossMechShootSounds',shoot:'worldZombossMechPRJDropSounds',escape_trigger:'worldZombossEscapeTriggerSound'},snowdrop:{LobSound:'lobSound'},sapfling:{LobSound:'lobSound',sneeze:'sneezeSound',brush:'brushSound'},peapod:{ShootMega:'shootMegaSounds'},imitater:{sound:'imitateSound'},celerystalker:{hit:'hitSounds',foodSummon:'foodSounds'},parsnip:{hit:'snipSound',summon:'popSound'},repeater:{ShootSound:'shootSound',shootMega:'shootMegaSound'},kernelpult:{LobSound:'lobSound'},melonpult:{Lob:'lobSound'},bonkchoy:{attackAir:'attackAirSound',attackGoal:'attackGoalSound',attackHeavy:'defeatSound',foodAttack:'attackAirSound'},cabbagepult:{LobSound:'lobSound'},bloomerang:{ShootSound:'shootSound',catch:'catchSound'},iceburg:{explode:'deadSound',foodExplode:'foodBlastSound'},tombraiser:{puke:'pukeSound',throw:'throwSound'},gargantuar:{step:'stepSounds',swing:'swingSounds',smash:'smashSounds',afterSmash:'afterSmashSaySounds',impThrow:'ImpThrowSounds',deathPole:'deathPoleSounds',deathFall:'deathFallSounds'}};
     if(name==='blackBull')events.blackBull=events.bull;
     if(name==='boss'&&this.art.campaign.actors.boss.group==='cowboy'){
       Object.assign(events.boss!,{rollingSound:'rollingSound',expandSound:'expandSound',introBodyCallSound:'introBodyCallSound',loadMissileSound:'loadMissileSound',mouthCloseImpactSound:'worldZombossMechMouthCloseImpactSounds',summonFallSound:'worldZombossMechMouthOpenBodySounds'});
@@ -296,27 +299,27 @@ export class Scene {
       const specialAnimation=special?.action==='smash'?'Smash':special?.action==='throw'||special?.action==='bone'?'Throw':null;
       if(special?.action==='throw'&&actor.animation!=='Throw')this.onSound('gargantuar/ImpThrowSaySounds');
       const westAnimation=game.corralWaiting?'Idle':z.west?.poisonAt!==undefined&&game.time-z.west.poisonAt>=2?'Idle':z.west?.animation??(z.west?.bullThrown&&z.leap?'FlyHorizontal':null)??(z.kind==='piano'?'Walk':z.west?.dance&&!z.eating?'Dance':null);
-      this.animate(actor,westAnimation??(z.parrot?'Flying':null)??z.pirate?.animation??(z.kind==='barrelroller'&&z.barrel!==undefined?(z.eating?'Eat_Barrel':'Walk_Barrel'):null)??swingAnimation??(z.kind==='pharaoh_inner'&&z.landUntil!==undefined&&game.time<z.landUntil?'Idle':z.leap&&(z.kind==='egypt_imp'||z.kind==='pirate_imp'||z.kind==='west_bullrider')?'Fly':(z.kind==='egypt_imp'||z.kind==='pirate_imp'||z.kind==='west_bullrider')&&z.landUntil!==undefined&&game.time<z.landUntil?'Land':specialAnimation??(entering?'Idle':z.kind==='ra'&&z.absorbState!=='idle'?absorbAnimation:z.eating?'Eat':z.kind==='chicken_farmer'&&z.west?.chickens?'WalkWithChicken':z.kind==='chicken'||z.kind==='chicken_pumpkin'?'IdleWalk':'Walk')),z.west?.animation?z.west.at:z.pirate?z.pirate.at:swingAnimation?z.swing!.at:specialAnimation?special!.at:0,(z.kind==='west_bull'||z.kind==='west_bull_veteran'||z.kind==='west_bullrider')&&z.west?.animation&&z.west.animation!=='Rush'?1:z.pirate&&!['Idle','Walk'].includes(z.pirate.animation)?1:swingAnimation?1:special?.action==='bone'?2:specialAnimation?1:z.absorbState==='start'||z.absorbState==='end'?1:0);
+      this.animate(actor,z.future?.animation??westAnimation??(z.parrot?'Flying':null)??z.pirate?.animation??(z.kind==='barrelroller'&&z.barrel!==undefined?(z.eating?'Eat_Barrel':'Walk_Barrel'):null)??swingAnimation??(z.kind==='pharaoh_inner'&&z.landUntil!==undefined&&game.time<z.landUntil?'Idle':z.leap&&(z.kind==='egypt_imp'||z.kind==='pirate_imp'||z.kind==='west_bullrider')?'Fly':(z.kind==='egypt_imp'||z.kind==='pirate_imp'||z.kind==='west_bullrider')&&z.landUntil!==undefined&&game.time<z.landUntil?'Land':specialAnimation??(entering?'Idle':z.kind==='ra'&&z.absorbState!=='idle'?absorbAnimation:z.eating?'Eat':z.kind==='chicken_farmer'&&z.west?.chickens?'WalkWithChicken':z.kind==='chicken'||z.kind==='chicken_pumpkin'?'IdleWalk':'Walk')),z.future?z.future.at:z.west?.animation?z.west.at:z.pirate?z.pirate.at:swingAnimation?z.swing!.at:specialAnimation?special!.at:0,(z.kind==='west_bull'||z.kind==='west_bull_veteran'||z.kind==='west_bullrider')&&z.west?.animation&&z.west.animation!=='Rush'?1:z.pirate&&!['Idle','Walk'].includes(z.pirate.animation)?1:swingAnimation?1:special?.action==='bone'?2:specialAnimation?1:z.absorbState==='start'||z.absorbState==='end'?1:0);
 
       if(actor.plank){const card=game.camelCards.get(z.id)!;
         if(actor.plankState!==card.state||actor.plankAt!==card.at){actor.plank.animation.play(card.state==='back'?'FlipBack':card.state==='face'?'FlipFace':'Match',1);actor.plankState=card.state;actor.plankAt=card.at;}
         actor.plank.armature.getSlot('icon')!.displayIndex=card.face;actor.plank.armature.getSlot('type')!.displayIndex=z.camelPart;
       }
-      if(['chickenFarmer','cowboyImp','cowboy','cowboyFlag','prospector','poncho','piano','pirateCaptain','pirate','pirateFlag','swashbuckler','mummy','ra','explorer','torchlight','tombraiser','imp','pharaohInner'].includes(actor.kind)&&!actor.armLost&&z.hp<=game.props.zombies[z.kind].Toughness*this.art.catalog.presentation.armDropHealthFraction){actor.armLost=true;this.dropFragment(actor,'arm');this.onSound('zombieLimbPop');}
-      if ((actor.kind==='mummy'||actor.kind==='pirate'||actor.kind==='cowboy')&&z.armor > 0 && !actor.armor) {
+      if(['future','futureFlag','futureJetpack','chickenFarmer','cowboyImp','cowboy','cowboyFlag','prospector','poncho','piano','pirateCaptain','pirate','pirateFlag','swashbuckler','mummy','ra','explorer','torchlight','tombraiser','imp','pharaohInner'].includes(actor.kind)&&!actor.armLost&&z.hp<=game.props.zombies[z.kind].Toughness*this.art.catalog.presentation.armDropHealthFraction){actor.armLost=true;this.dropFragment(actor,'arm');this.onSound('zombieLimbPop');}
+      if ((actor.kind==='mummy'||actor.kind==='pirate'||actor.kind==='cowboy'||actor.kind==='future')&&z.armor > 0 && !actor.armor) {
         actor.armor = this.rig(actor.kind, z.kind.endsWith('_armor4')?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone'); actor.armor.scale.set(.51); actor.root.addChild(actor.armor);
       }
       if (actor.armor) {
         if(actor.armor.visible&&z.armor<=0&&!z.magnetized){this.dropFragment(actor,z.kind.endsWith('_armor4')?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone');this.onSound('zombieLimbPop');}
         actor.armor.visible = z.armor > 0;
-        const max=cowboyArmor(z.kind)?game.props.armors[cowboyArmor(z.kind)!].Toughness:pirateArmor(z.kind)?game.props.armors[pirateArmor(z.kind)!].Toughness:z.kind==='mummy_armor4'?game.props.armors.egypt_armor4.Toughness:z.kind==='mummy_armor2'?game.props.armors.egypt_armor2.Toughness:game.props.armors.egypt_armor1.Toughness;
+        const max=futureArmor(z.kind)?game.props.armors[futureArmor(z.kind)!].Toughness:cowboyArmor(z.kind)?game.props.armors[cowboyArmor(z.kind)!].Toughness:pirateArmor(z.kind)?game.props.armors[pirateArmor(z.kind)!].Toughness:z.kind==='mummy_armor4'?game.props.armors.egypt_armor4.Toughness:z.kind==='mummy_armor2'?game.props.armors.egypt_armor2.Toughness:game.props.armors.egypt_armor1.Toughness;
         const animation = z.armor > max*2/3 ? 'Broken0' : z.armor > max/3 ? 'Broken1' : 'Broken2';
         if (actor.armor.animation.lastAnimationName !== animation) actor.armor.animation.play(animation, 0);
       }
     }
     for(const death of game.deaths)if(!this.seenDeaths.has(death.zombie.id)){this.seenDeaths.add(death.zombie.id);this.killZombie(death);}
     for (const [id, actor] of this.actors) if (!alive.has(id)&&!actor.death&&PLANT_KINDS.includes(actor.kind as PlantKind)) {
-      if(actor.kind==='hurrikale'||actor.kind==='stallia'&&actor.animation==='Death'||actor.kind==='puffshroom'&&actor.animation==='Fade'||actor.kind==='escaperoot'&&(id<0||actor.rootGrown)||actor.captured||actor.kind==='imitater'||actor.kind==='cherry_bomb'||actor.kind==='jalapeno'||actor.kind==='gravebuster'||actor.animation==='Charging'||actor.kind==='iceburg'&&actor.animation==='Death'||game.effects.some(effect=>effect.kind==='remove'&&effect.x===actor.root.x&&effect.y===actor.root.y)){this.removeActor(id,actor);continue;}
+      if(actor.kind==='blover'&&actor.animation==='Death'||actor.kind==='hurrikale'||actor.kind==='stallia'&&actor.animation==='Death'||actor.kind==='puffshroom'&&actor.animation==='Fade'||actor.kind==='escaperoot'&&(id<0||actor.rootGrown)||actor.captured||actor.kind==='imitater'||actor.kind==='cherry_bomb'||actor.kind==='jalapeno'||actor.kind==='gravebuster'||actor.animation==='Charging'||actor.kind==='iceburg'&&actor.animation==='Death'||game.effects.some(effect=>effect.kind==='remove'&&effect.x===actor.root.x&&effect.y===actor.root.y)){this.removeActor(id,actor);continue;}
       const animation=actor.kind==='banana'&&actor.animation==='IdleSad'?'DeathSad':actor.kind==='escaperoot'?'Baby_Death':(actor.kind==='wallnut'||actor.kind==='tallnut')?actor.animation.replace('Idle','Death'):actor.kind==='potatomine'?'Death_Baby':actor.kind==='magnetshroom'&&['Resting','AbsorbEnd'].includes(actor.animation)?'DeathDark':'Death';
       const timeline=animationTimeline(this.skeletons.get(actor.kind)!,RIGS[actor.kind].armature,animation);
       this.animate(actor,animation,0,1);actor.death={cause:'plant',elapsed:0,fadeAt:timeline.duration,fallAt:Infinity};
@@ -324,11 +327,25 @@ export class Scene {
     this.updateFoodLights(game);
     this.clock.advanceTime(dt); this.art.clock.advanceTime(dt); PixiFactory.advanceTime(0);
     this.updateDeaths(dt);
+    for(const z of game.zombies)if(z.future){
+      const actor=this.actors.get(z.id)!,state=z.future;
+      if(z.kind==='future_imp'&&state.animation==='Fall')actor.root.y=rowY(z.row)-600*Math.pow(Math.max(0,1-(game.time-z.entryAt)),2);
+      if(z.kind==='future_protector_shield'){
+        const master=game.zombies.find(m=>m.id===state.master)!;
+        for(const slot of actor.rig.armature.getSlots())if(slot.name.includes('U')||slot.name.includes('D')){if(slot.name.includes('U')&&z.row!==Math.max(0,master.row-1)||slot.name.includes('D')&&z.row!==Math.min(4,master.row+1))slot.displayIndex=-1;}
+      }
+      if(z.kind==='mech_cone'||z.kind==='future_protector'){
+        const stage=Math.min(6,Math.floor(7*(1-z.hp/game.props.zombies[z.kind].Toughness)));
+        for(const slot of actor.rig.armature.getSlots()){const part=/_bp(\d)/.exec(slot.name);if(part)slot.displayIndex=z.kind==='mech_cone'?stage===Number(part[1])?0:-1:stage>Number(part[1])?0:-1;if(z.kind==='future_protector'&&slot.name==='hat')slot.displayIndex=state.shield===undefined?0:1;}
+      }
+    }
+
     for(const [id,actor] of this.actors){
       const state=game.specialZombies.get(id);
       if(actor.kind==='puffshroom'&&!actor.death){const p=game.plants.find(p=>p.id===id)!,life=game.westFinale.states.get(id)!.life;actor.rig.armature.getSlot('head')!.displayIndex=life>40?0:life>20?1:2;actor.root.alpha=p.action!=='food'&&life<10&&life>0&&Math.floor(4*life)%4===1?100/255:1;}
       for(const slot of actor.rig.armature.getSlots()){
-        if((game.western.handles(actor.kind as PlantKind)||game.westFinale.handles(actor.kind as PlantKind))&&slot.name.startsWith('COS'))slot.displayIndex=-1;
+        if(actor.kind==='laser_bean'&&slot.name.endsWith('_FS')&&slot.childArmature&&slot.childArmature.animation.lastAnimationName!=='Floor')slot.childArmature.animation.play('Floor',0);
+        if((game.future.handles(actor.kind as PlantKind)||game.western.handles(actor.kind as PlantKind)||game.westFinale.handles(actor.kind as PlantKind))&&slot.name.startsWith('COS'))slot.displayIndex=-1;
         if(actor.kind==='bull'||actor.kind==='blackBull'){const z=game.zombies.find(z=>z.id===id)??game.deaths.find(d=>d.zombie.id===id)?.zombie;if(z){if(slot.name.includes('_IMP')&&!z.west!.imp)slot.displayIndex=-1;if(slot.name.includes('_bp1'))slot.displayIndex=z.hp<=game.props.zombies[z.kind].Toughness*2/3&&z.hp>game.props.zombies[z.kind].Toughness/3?0:-1;if(slot.name.includes('_bp2'))slot.displayIndex=z.hp<=game.props.zombies[z.kind].Toughness/3?0:-1;}}
         if(actor.kind==='cowboyGargantuar'&&[...game.zombies,...game.westFinale.allies].find(z=>z.id===id)?.west?.imp===false&&slot.name.includes('_IMP'))slot.displayIndex=-1;
         if(actor.kind==='chickenFarmer'&&slot.name.includes('_CHICK')&&[...game.zombies,...game.westFinale.allies].find(z=>z.id===id)?.west?.chickens===false)slot.displayIndex=-1;
@@ -388,9 +405,9 @@ export class Scene {
     actor.plank?.removeFromParent();actor.plank?.dispose();actor.rig.removeFromParent();actor.rig.dispose();actor.armor?.removeFromParent();actor.armor?.dispose();actor.root.destroy({children:true});this.actors.delete(id);
   }
   private dropFragment(actor:Actor,part:'head'|'arm'|'Cone'|'Bucket'|'Bricks') {
-    const rig=this.rig(actor.kind,part==='Bricks'?'BricksDrop':part);rig.scale.set(RIGS[actor.kind].scale);
+    const rig=this.rig(actor.kind==='futureJetpack'?'future':actor.kind,part==='Bricks'?'BricksDrop':part);rig.scale.set(RIGS[actor.kind].scale);
     rig.animation.play((part==='Cone'||part==='Bucket'||part==='Bricks')?actor.armor!.animation.lastAnimationName!:part==='arm'&&!['imp','cowboyImp'].includes(actor.kind)?'newAnimation':'Idle',0);
-    const bone=actor.rig.armature.getBone(part==='head'?'head':part==='arm'?'arm_here':'armorSOCKET')!;
+    const bone=actor.rig.armature.getBone(part==='head'?'head':part==='arm'?(actor.kind==='futureJetpack'?'armRoot_here':'arm_here'):'armorSOCKET')!;
     bone.updateGlobalTransform();
     const x=actor.root.x+actor.rig.x+bone.global.x*actor.rig.scale.x,y=actor.root.y+actor.rig.y+bone.global.y*actor.rig.scale.y;
     rig.position.set(x,y);rig.zIndex=actor.root.zIndex+1;this.actorLayer.addChild(rig);
@@ -409,6 +426,7 @@ export class Scene {
     const actor=this.actors.get(z.id)??this.addActor(z.id,zombieRig(z.kind),z.kind==='mummy_flag');
     actor.root.position.set(z.x,zombieY(z)-(z.parrot?.height??0));actor.root.zIndex=zombieY(z)+1;actor.rig.animation.timeScale=1;actor.rig.tint=0xffffff;if(actor.kind==='cowboy'||actor.kind==='cowboyFlag')actor.rig.armature.getSlot('hat_HEAD')!.displayIndex=-1;
     if(actor.mask){actor.root.mask=null;actor.mask.destroy();actor.mask=undefined;actor.rig.y=0;}
+    if(death.cause==='blow'){if(z.kind==='future_imp'&&z.future!.animation==='Fall')actor.root.y=rowY(z.row)-600*Math.max(0,1-(death.at-z.entryAt))**2;actor.death={cause:'blow',elapsed:0,fadeAt:Infinity,fallAt:Infinity};return;}
     if(death.cause==='water'){this.removeActor(z.id,actor);return;}
     if(z.kind==='chicken'||z.kind==='chicken_pumpkin'){this.chickenFeathers(actor,-z.id,'PlayFloor');this.removeActor(z.id,actor);return;}
     if(z.kind==='cannon'&&z.pirate?.animation==='Explode'){this.removeActor(z.id,actor);return;}
@@ -418,14 +436,14 @@ export class Scene {
       if(z.butteredUntil!==undefined||death.cause==='potato')this.onSound(actor.kind+'/seagullButteredSounds');
       if(death.cause==='potato'){const feathers=this.rig(actor.kind,'ParticleSeagull');feathers.scale.set(.51);feathers.position.copyFrom(actor.root.position);feathers.animation.play('Play',1);feathers.zIndex=actor.root.zIndex;this.actorLayer.addChild(feathers);this.particles.set(-z.id,feathers);}
     }
-    if(!['blackBull','bull','pirateParrot','pirateBarrel','impCannon','seagull','pelican','camel','camelTouch','pharaoh','pharaohWeak'].includes(actor.kind))this.dropFragment(actor,'head');if(actor.kind!=='bull'&&actor.kind!=='blackBull')this.onSound(actor.kind==='pirateParrot'?'pirateParrot/deathSound':'zombieLimbPop');
+    if(!['futureProtector','futureShield','futureImp','mechCone','blackBull','bull','pirateParrot','pirateBarrel','impCannon','seagull','pelican','camel','camelTouch','pharaoh','pharaohWeak'].includes(actor.kind))this.dropFragment(actor,'head');if(actor.kind!=='bull'&&actor.kind!=='blackBull')this.onSound(actor.kind==='pirateParrot'?'pirateParrot/deathSound':'zombieLimbPop');
     if(actor.armor?.visible){this.dropFragment(actor,z.kind.endsWith('_armor4')?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone');actor.armor.visible=false;}
     if(death.cause==='match'&&actor.plank){actor.plank.removeFromParent();actor.plank.dispose();actor.plank=undefined;}
     if(death.cause==='potato'&&actor.kind!=='bull'&&actor.kind!=='blackBull'){this.removeActor(z.id,actor);return;}
     const animation=actor.kind==='pirateParrot'?'Die':'Death',timeline=animationTimeline(this.skeletons.get(actor.kind)!,actor.rig.armature.name,animation);
     const shock=(actor.kind==='bull'||actor.kind==='blackBull')&&death.cause==='electric';
     this.animate(actor,shock?'Shock':animation,z.swing?.at??0,1);if(shock)this.onSound('zombieShock');
-    actor.death={cause:death.cause,elapsed:0,fadeAt:timeline.events.die+(shock?animationTimeline(this.skeletons.get(actor.kind)!,RIGS[actor.kind].armature,'Shock').events.playDeath:0),fallAt:actor.kind==='bull'||actor.kind==='blackBull'||actor.kind==='pirateParrot'?Infinity:(actor.kind==='gargantuar'||actor.kind==='pirateGargantuar'||actor.kind==='cowboyGargantuar')?timeline.events.deathFall:timeline.events.fall};
+    actor.death={cause:death.cause,elapsed:0,fadeAt:timeline.events.die+(shock?animationTimeline(this.skeletons.get(actor.kind)!,RIGS[actor.kind].armature,'Shock').events.playDeath:0),fallAt:['futureProtector','futureShield','futureImp','mechCone'].includes(actor.kind)?Infinity:actor.kind==='bull'||actor.kind==='blackBull'||actor.kind==='pirateParrot'?Infinity:(actor.kind==='gargantuar'||actor.kind==='pirateGargantuar'||actor.kind==='cowboyGargantuar')?timeline.events.deathFall:timeline.events.fall};
   }
   private updateDeaths(dt:number) {
     for(const [id,actor] of this.actors) {
@@ -433,6 +451,7 @@ export class Scene {
       if(death){
         if(death.cause==='toss'){actor.root.x+=dt*500;actor.root.y-=dt*350;actor.root.rotation+=dt*4;}
         const before=death.elapsed;death.elapsed+=dt;
+        if(death.cause==='blow'){actor.root.x+=1020*(Math.min(1,death.elapsed)**2-Math.min(1,before)**2);if(death.elapsed>=1)this.removeActor(id,actor);continue;}
         if(death.cause==='mower') {
           const t=Math.min(1,death.elapsed/this.art.catalog.presentation.mowerDeathDuration);
           actor.root.scale.y=1-.99*t*t;actor.rig.rotation=Math.PI/2*(1-(1-t)*(1-t));
@@ -448,7 +467,7 @@ export class Scene {
       if(actor.kind==='camel'&&!death)actor.rig.armature.getSlot('PLANK')!.displayIndex=actor.camelFrame!;
       // The original BodyGrouper controls these slots independently of animation poses.
       for(const slot of actor.rig.armature.getSlots()) {
-        if(death&&death.cause!=='plant'&&(slot.name.endsWith('_HEAD')||(actor.kind==='seagull'||actor.kind==='pelican')&&death.elapsed>=.4&&slot.name.endsWith('_head')))slot.displayIndex=-1;
+        if(death&&death.cause!=='plant'&&!['futureProtector','futureShield','futureImp','mechCone'].includes(actor.kind)&&(slot.name.endsWith('_HEAD')||(actor.kind==='seagull'||actor.kind==='pelican')&&death.elapsed>=.4&&slot.name.endsWith('_head')))slot.displayIndex=-1;
         if(actor.armLost&&slot.name.endsWith('_HAND'))slot.displayIndex=-1;
         if(actor.armLost&&slot.name.endsWith('_ARM'))slot.displayIndex=0;
       }
@@ -503,6 +522,16 @@ export class Scene {
       rig.position.set(x,y); rig.scale.set(scale); rig.zIndex = name === 'sun' ? 1000 : y;
       return rig;
     };
+    for(const t of game.level.powerTiles){const rig=object(`power-tile-${t.row}-${t.column}`,'tile_'+t.group,game.plants.some(p=>p.row===t.row&&p.column===t.column)?'Idle_Lit':'Idle_Unlit',cellX(t.column),rowY(t.row)-31,.44);rig.zIndex=-100;}
+    for(const sound of game.future.sounds.splice(0))this.onSound(sound);
+    for(const v of game.future.visuals){const rig=object(`future-fx-${v.id}`,v.name,v.animation,v.x,v.y,.55);rig.animation.lastAnimationState!.playTimes=1;}
+    for(const link of game.future.links)if(game.time>=link.at){
+      const dx=link.to.column-link.from.column,dy=link.to.row-link.from.row,travel=(game.time-link.at)*16;
+      for(let step=0;step<=Math.min(travel,Math.abs(dx)+Math.abs(dy))*4;step++){
+        const d=step/4,x=cellX(link.from.column)+Math.sign(dx)*Math.min(d,Math.abs(dx))*BOARD.cellWidth,y=rowY(link.from.row)+Math.sign(dy)*Math.max(0,d-Math.abs(dx))*BOARD.cellHeight;
+        const rig=object(`power-dot-${link.id}-${step}`,'tile_'+link.group+'Dot','Play',x,y,.5);rig.animation.lastAnimationState!.playTimes=1;
+      }
+    }
     for(const rail of game.level.rails?.Rails??[])for(let row=rail.RowStart;row<=rail.RowEnd;row++){
       const rig=object(`rail-${rail.Column}-${row}`,'rail',(row===rail.RowStart?'Up':row===rail.RowEnd?'Down':'Mid')+'Cowboy',cellX(rail.Column),rowY(row),.5);rig.zIndex=-100;
     }
@@ -535,9 +564,10 @@ export class Scene {
     }
     for (const sun of game.suns) {
       const key=`sun-${sun.id}`,previous=this.objects.get(key)?.animation.lastAnimationName;
-      const animation=sun.absorber===null?(previous==='Red'||previous==='N-R'?'R-N':previous==='R-N'&&!this.objects.get(key)!.animation.isCompleted?'R-N':'Normal'):(previous==='Normal'?'N-R':previous==='N-R'&&!this.objects.get(key)!.animation.isCompleted?'N-R':'Red');
-      const rig=object(key,'sun',animation,sun.x,sun.y,.5);rig.alpha=Math.max(0,1-Math.max(0,sun.groundAge-7)/.5);
-      if(animation==='N-R'||animation==='R-N')rig.animation.lastAnimationState!.playTimes=1;
+      const animation=sun.bomb?'Purple':sun.defusedAt!==undefined&&game.time-sun.defusedAt<1?'P-N':sun.absorber===null?(previous==='Red'||previous==='N-R'?'R-N':previous==='R-N'&&!this.objects.get(key)!.animation.isCompleted?'R-N':'Normal'):(previous==='Normal'?'N-R':previous==='N-R'&&!this.objects.get(key)!.animation.isCompleted?'N-R':'Red');
+      const rig=object(key,game.level.sunBomb?'sunbomb':'sun',animation,sun.x,sun.y,.5);rig.alpha=Math.max(0,1-Math.max(0,sun.groundAge-7)/.5);
+      if(sun.bomb)object(`sunbomb-ray-${sun.id}`,'sunbombRay',sun.age<2/3?'Start':'Idle',sun.x,sun.y,.5);
+      if(animation==='P-N'||animation==='N-R'||animation==='R-N')rig.animation.lastAnimationState!.playTimes=1;
     }
     for(const g of game.graves){
       const rig=object(`grave-${g.id}`,'grave','Idle',cellX(g.column),rowY(g.row),.5);

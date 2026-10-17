@@ -9,10 +9,10 @@ const read = <T>(path: string): T => JSON.parse(readFileSync(new URL(path, root)
 const catalog = read<Catalog>('shell/catalog.json');
 const maps = catalog.worlds.filter(w => w.enterable).map(w => read<WorldMap>(`shell/maps/${w.id}.json`));
 
-test('13 native maps retain connected source level graphs and Egypt 1–35 and Pirate 1–35 plus Cowboy 1–30 have battle routes', () => {
+test('13 native maps retain connected source level graphs and Egypt 1–35 and Pirate 1–35 plus Cowboy 1–35 and Future 1–5 have battle routes', () => {
   assert.equal(maps.length,13);
   assert.equal(catalog.worlds.length,15);
-  assert.deepEqual(Object.keys(LEVEL_ROUTES), [...Array.from({length:35},(_,i)=>`egypt${i+1}`),...Array.from({length:35},(_,i)=>`pirate${i+1}`),...Array.from({length:35},(_,i)=>`cowboy${i+1}`)]);
+  assert.deepEqual(Object.keys(LEVEL_ROUTES), [...Array.from({length:35},(_,i)=>`egypt${i+1}`),...Array.from({length:35},(_,i)=>`pirate${i+1}`),...Array.from({length:35},(_,i)=>`cowboy${i+1}`),...Array.from({length:5},(_,i)=>`future${i+1}`)]);
   for (const map of maps) {
     const nodes = new Set(map.islands.map(n => n.node));
     assert.equal(nodes.size,map.islands.length);
@@ -28,9 +28,10 @@ test('completion opens the next source node, browsing other worlds does not unlo
   const second=egypt.islands.find(n=>n.levels.includes('egypt2'))!;
   const before=islandStates(egypt,new Set());
   assert.equal(before.get(first.node),'open');assert.equal(before.get(second.node),'locked');
+  const future=maps.find(m=>m.id==='future')!;assert.equal(islandStates(future,new Set()).get(future.islands.find(n=>n.levels.includes('future1'))!.node),'open');
   const after=islandStates(egypt,new Set(['egypt1']));
   assert.equal(after.get(first.node),'finished');assert.equal(after.get(second.node),'open');
-  for(const map of maps.filter(m=>!['egypt','pirate'].includes(m.id))) assert.ok([...islandStates(map,new Set(['egypt1'])).values()].every(s=>s==='locked'));
+  for(const map of maps.filter(m=>!['egypt','pirate','future'].includes(m.id))) assert.ok([...islandStates(map,new Set(['egypt1'])).values()].every(s=>s==='locked'));
 });
 
 test('map scroll limits use native island bounds and worlds have independent camera positions', () => {

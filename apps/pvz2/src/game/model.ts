@@ -1,3 +1,4 @@
+import {FutureBattle,futureArmor,type FutureZombie} from './future';
 import {WesternFinale} from './western-finale';
 import {WesternPlants} from './western-plants';
 import {CowboyBattle,cowboyArmor,type CowboyZombie} from './cowboy';
@@ -18,8 +19,8 @@ export interface Plant {
   transformed?:boolean;leaves?:number;rootGrown?:boolean;spikes?:number;boosted?:boolean; endangered?:boolean; facing?:number;heavy?:boolean;
   actionAt: number; fired: boolean; burst: number; nextBurst: number;
 }
-export interface Zombie { poison?:{until:number;dps:number};perfumeUntil?:number; magnetized?:boolean; west?:CowboyZombie; captain?:{parrot:boolean;health:number;next:number};parrot?:{captain:number;target:number|null;y:number;height:number;capture:number;fleeing:boolean;escaped:boolean;carrying?:Plant}; stunnedUntil?:number; pirate?:{animation:string;at:number;elapsed:number;next:number;count:number;fired:boolean;imp:boolean};barrel?:number;pusher?:number;detachedAt?:number; swing?:{at:number;judge:number;end:number;failure:boolean};route?:{spawnLane:number;spawnWave:number;points:{x:number;y:number}[];index:number;y:number;angle:number}; sappedUntil?:number; butteredUntil?:number;reversed?:boolean;landUntil?:number; id: number; kind: ZombieKind; row: number; x: number; hp: number; armor: number; eating: boolean; absorbed: number; absorbUntil: number; absorbState:'idle'|'start'|'loop'|'end'; absorbAt:number;deathCause:DeathCause; frozenUntil:number;chilledUntil:number;food:boolean;entry:SpawnAction['mode'];entryAt:number;entryX:number;camelPart:number;team:number;leap:{fromX:number;fromY:number;toX:number;toRow:number;at:number;duration?:number}|null }
-export type DeathCause = 'electric' | 'water' | 'normal' | 'potato' | 'mower' | 'toss' | 'match';
+export interface Zombie { future?:FutureZombie; poison?:{until:number;dps:number};perfumeUntil?:number; magnetized?:boolean; west?:CowboyZombie; captain?:{parrot:boolean;health:number;next:number};parrot?:{captain:number;target:number|null;y:number;height:number;capture:number;fleeing:boolean;escaped:boolean;carrying?:Plant}; stunnedUntil?:number; pirate?:{animation:string;at:number;elapsed:number;next:number;count:number;fired:boolean;imp:boolean};barrel?:number;pusher?:number;detachedAt?:number; swing?:{at:number;judge:number;end:number;failure:boolean};route?:{spawnLane:number;spawnWave:number;points:{x:number;y:number}[];index:number;y:number;angle:number}; sappedUntil?:number; butteredUntil?:number;reversed?:boolean;landUntil?:number; id: number; kind: ZombieKind; row: number; x: number; hp: number; armor: number; eating: boolean; absorbed: number; absorbUntil: number; absorbState:'idle'|'start'|'loop'|'end'; absorbAt:number;deathCause:DeathCause; frozenUntil:number;chilledUntil:number;food:boolean;entry:SpawnAction['mode'];entryAt:number;entryX:number;camelPart:number;team:number;leap:{fromX:number;fromY:number;toX:number;toRow:number;at:number;duration?:number}|null }
+export type DeathCause = 'electric' | 'water' | 'normal' | 'potato' | 'mower' | 'toss' | 'blow' | 'match';
 export const isCamel=(kind:ZombieKind)=>kind.startsWith('camel_');
 export const isMatchCamel=(kind:ZombieKind)=>kind.endsWith('_touch');
 export interface SpecialZombie {action:'walk'|'smash'|'throw'|'bone';at:number;elapsed:number;fired:boolean;next:number;imp:boolean;torch:boolean}
@@ -31,7 +32,7 @@ export type PowerKind='fire'|'snow'|'toss'|'zap'|'cherry';
 export const POWER_TYPES:Record<PowerKind,string>={fire:'powerupflamethrower',snow:'powerupsnowball',toss:'powerupflickzombie',zap:'powerupwizardfinger',cherry:'powerupcherrybomb'};
 export interface ZombieDeath { zombie: Zombie; cause: DeathCause; at: number }
 export interface Pea { vector?:{vx:number;vy:number;ay:number;stopY?:number}; mega?:boolean; speed?:number; id: number; row: number; x: number; y: number; damage: number; powered: boolean }
-export interface Sun { id: number; x: number; y: number; targetY: number; value: number; age: number; from: 'sky' | 'plant' | 'ra';vx:number;vy:number;groundAge:number;absorber:number|null;absorbAge:number }
+export interface Sun { bomb?:boolean;defusedAt?:number; id: number; x: number; y: number; targetY: number; value: number; age: number; from: 'sky' | 'plant' | 'ra';vx:number;vy:number;groundAge:number;absorber:number|null;absorbAge:number }
 export interface Mower { row: number; x: number; active: boolean; spent: boolean; starting: number; hold: number }
 export interface Effect { id: number; x: number; y: number; kind: 'plant' | 'remove' | 'hit' | 'explode' | 'food' | 'collect' | 'freeze' | 'ground' | 'toss' | 'cabbageHit' | 'boomerangHit' | 'graveHit' | 'cherry' | 'snowHit' | 'graveSpawn' | 'pharaoh' | 'projectileHit' | 'grape'; projectile?:string; age: number; stage?:number }
 export type GameEvent = { type: 'shot' | 'plant' | 'sun' | 'explode' | 'win' | 'lose' | 'food' | 'wave' | 'storm' | 'raid' | 'sprout' | 'flip' | 'match' | 'mower' };
@@ -40,6 +41,7 @@ export class Game {
   readonly cowboy:CowboyBattle;
   corralWaiting=false;
   readonly western=new WesternPlants(this);
+  readonly future=new FutureBattle(this);
   readonly westFinale=new WesternFinale(this);
   readonly finale=new PirateFinalePlants(this);
   plantsLost=0;
@@ -120,6 +122,7 @@ export class Game {
     for(const plant of level.protectedPlants){this.addPlant(plant.kind,plant.row,plant.column);this.plants.at(-1)!.endangered=true;}
     if(level.match)this.nextWave=4+RULES.normalWaveEntrance;
     this.sproutDropped=!tutorial;
+    if(level.sunDropper)this.nextSun=level.sunDropper.InitialSunDropDelay;
     if(!level.sunDrops)this.nextSun=Infinity;
     if(!level.mowers)this.mowers.forEach(m=>m.spent=true);
     if(level.world==='egypt'&&level.day===2&&tutorial)this.addPlant('peashooter',2,2);
@@ -166,6 +169,7 @@ export class Game {
       action: 'idle', actionAt: this.time, fired: false, burst: 0, nextBurst: 0 });
     const plant=this.plants.at(-1)!;
     if(this.western.handles(kind))plant.animation='Idle';
+    if(this.future.handles(kind))this.future.init(plant);
     if(this.westFinale.handles(kind))this.westFinale.init(plant);
     if(kind==='chardguard')plant.leaves=p.MaxBounceTime;
     if(kind==='jalapeno')plant.animation='Attack';
@@ -208,6 +212,7 @@ export class Game {
     if (this.phase !== 'playing') return;
     const sun = this.suns.find(s => s.id === id);
     if (!sun) return;
+    if(sun.bomb){this.future.collectBomb(sun);this.suns=this.suns.filter(s=>s.id!==id);return;}
     this.sun += sun.value; this.effect('collect', sun.x, sun.y);
     this.suns = this.suns.filter(s => s.id !== id); this.events.push({ type: 'sun' });
   }
@@ -221,10 +226,11 @@ export class Game {
     if(plant&&this.westFinale.handles(plant.kind)&&!this.westFinale.foodable(plant))return false;
     if(plant?.kind==='tallnut'&&plant.armor>0)return false;
     if(plant?.kind==='escaperoot'&&(!plant.rootGrown||plant.action!=='idle'||plant.animation!=='Idle'))return false;
-    if (!plant || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['gravebuster','imitater','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
-    if(!boost)this.food--; plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
+    if (!plant || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['blover','gravebuster','imitater','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
+    if(!boost){this.food--;this.future.link(plant);} plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
     if(plant.kind==='splitpea'||plant.kind==='chilibean')this.cowboy.food(plant);
+    if(this.future.handles(plant.kind))this.future.food(plant);
     if(this.westFinale.handles(plant.kind))this.westFinale.food(plant);
     if(this.western.handles(plant.kind))this.western.food(plant);
     if(this.finale.handles(plant.kind))this.finale.food(plant);
@@ -280,7 +286,7 @@ export class Game {
 
   dropSun(x: number, y: number, value: number, from: Sun['from']) {
     if(from==='plant')this.sunProduced+=value;
-    this.suns.push({ id: ++this.id, x, y, targetY: from === 'sky' ? rowY(2)-50+this.random()*200 : y+65, value, age: 0, from,
+    this.suns.push({ ...(from==='sky'&&this.level.sunBomb?{bomb:true}:{}),id: ++this.id, x, y, targetY: from === 'sky' ? rowY(2)-50+this.random()*200 : y+65, value, age: 0, from,
       vx:from==='sky'?0:(6*this.random()-3)*30,vy:from==='sky'?90:-300,groundAge:0,absorber:null,absorbAge:0 });
   }
 
@@ -297,6 +303,7 @@ export class Game {
   }
 
   damage(zombie: Zombie, amount: number, cause: DeathCause = 'normal') {
+    if(zombie.kind==='future_protector_shield'){this.future.damageShield(zombie,amount);return;}
     if(swinging(zombie,this.time))return;
     if(this.boss?.zombie===zombie){this.boss.hit(amount);return;}
     // Pharaoh's coffin protects its inner zombie: breaking it does not carry excess damage through.
@@ -373,14 +380,14 @@ export class Game {
           const counts=Array.from({length:5},(_,r)=>this.zombies.filter(z=>z.row===r).length+this.pending.filter(z=>z.row===r).length);
           const rows=counts.flatMap((n,r)=>n===Math.min(...counts)?[r]:[]);row=rows[Math.floor(this.random()*rows.length)];
         }
-        const column=action.columnStart+Math.floor(this.random()*(action.columnEnd-action.columnStart+(action.mode==='ground'?1:0)));
+        const column=action.columnStart+Math.floor(this.random()*(action.columnEnd-action.columnStart+(action.mode==='ground'||action.mode==='spider'?1:0)));
         this.pending.push({kind:z.kind,row,x:z.column!==undefined?cellX(z.column):(action.mode==='walk'||action.mode==='raid')?(this.level.corral?1070-2*BOARD.cellWidth:1070)+(z.behind?BOARD.cellWidth:0)+(this.level.world==='pirate'?this.pending.filter(p=>p.row===row).length*2*BOARD.cellWidth:0):cellX(column),mode:z.column!==undefined?'ground':action.mode,
-          at:this.time+((action.mode==='storm'||action.mode==='raid')?Math.ceil((i+1)/action.groupSize)*action.interval:action.mode==='ground'?this.random():0),food:foodIndices.has(i)});
+          at:this.time+(action.mode==='spider'?Math.floor(i/action.groupSize)*action.interval:(action.mode==='storm'||action.mode==='raid')?Math.ceil((i+1)/action.groupSize)*action.interval:action.mode==='ground'?this.random():0),food:foodIndices.has(i)});
       });
       if(action.mode==='raid')this.events.push({type:'raid'});
       if(action.mode==='storm')this.events.push({type:'storm'});
     }
-    if(!this.level.suppressFlag&&(this.wave+1)%this.level.flagInterval===0)this.pending.unshift({kind:this.level.world==='pirate'?'pirate_flag':this.level.world==='west'?'cowboy_flag':'mummy_flag',row:this.level.planks===null?Math.floor(this.random()*5):this.level.planks[Math.floor(this.random()*this.level.planks.length)],x:1070,mode:'walk',at:this.time,food:false});
+    if(!this.level.suppressFlag&&(this.wave+1)%this.level.flagInterval===0)this.pending.unshift({kind:this.level.world==='pirate'?'pirate_flag':this.level.world==='west'?'cowboy_flag':this.level.world==='future'?'future_flag':'mummy_flag',row:this.level.planks===null?Math.floor(this.random()*5):this.level.planks[Math.floor(this.random()*this.level.planks.length)],x:1070,mode:'walk',at:this.time,food:false});
     this.wave++;this.nextWave=Infinity;this.waveIds.clear();
     this.waveDeadline=this.time+RULES.waveDelay+this.random()*RULES.waveDelayRange;
     this.waveDamageDeadline=this.time+RULES.waveDamageDelay+this.random()*RULES.waveDamageRange;
@@ -406,9 +413,9 @@ export class Game {
   spawnZombie(kind:ZombieKind,row:number,x:number,entry:SpawnAction['mode']='walk') {
     const camel=isCamel(kind),match=isMatchCamel(kind);
     const z:Zombie={id:++this.id,kind,row,x,hp:camel?this.props.zombies.mummy.Toughness:(kind==='pharaoh'||kind==='pharaoh_weak')?this.props.zombies.pharaoh_inner.Toughness:this.props.zombies[kind].Toughness,
-      armor:cowboyArmor(kind)?this.props.armors[cowboyArmor(kind)!].Toughness:pirateArmor(kind)?this.props.armors[pirateArmor(kind)!].Toughness:(kind==='pharaoh'||kind==='pharaoh_weak')?this.props.zombies[kind].Toughness:camel&&!match?this.props.zombies[kind].Toughness:kind==='mummy_armor1'?this.props.armors.egypt_armor1.Toughness:kind==='mummy_armor2'?this.props.armors.egypt_armor2.Toughness:kind==='mummy_armor4'?this.props.armors.egypt_armor4.Toughness:0,
+      armor:futureArmor(kind)?this.props.armors[futureArmor(kind)!].Toughness:cowboyArmor(kind)?this.props.armors[cowboyArmor(kind)!].Toughness:pirateArmor(kind)?this.props.armors[pirateArmor(kind)!].Toughness:(kind==='pharaoh'||kind==='pharaoh_weak')?this.props.zombies[kind].Toughness:camel&&!match?this.props.zombies[kind].Toughness:kind==='mummy_armor1'?this.props.armors.egypt_armor1.Toughness:kind==='mummy_armor2'?this.props.armors.egypt_armor2.Toughness:kind==='mummy_armor4'?this.props.armors.egypt_armor4.Toughness:0,
       eating:false,absorbed:0,absorbUntil:0,absorbState:'idle',absorbAt:0,deathCause:'normal',frozenUntil:0,chilledUntil:0,food:false,entry,entryAt:this.time,entryX:x,camelPart:0,team:0,leap:null};
-    this.zombies.push(z);this.cowboy.spawn(z);if(this.level.world==='pirate')this.pirate.spawn(z);
+    this.zombies.push(z);this.future.spawn(z);this.cowboy.spawn(z);if(this.level.world==='pirate')this.pirate.spawn(z);
     if(match)this.camelCards.set(z.id,{face:Math.floor(this.random()*this.level.match!.types),state:'back',at:this.time,removeAt:Infinity});
     if(['egypt_gargantuar','explorer','explorer_veteran','tomb_raiser'].includes(kind))this.specialZombies.set(z.id,{action:'walk',at:this.time,elapsed:0,fired:false,next:kind==='tomb_raiser'?this.props.zombies.tomb_raiser.TimeBetweenGroups+this.random()*this.props.zombies.tomb_raiser.TimeBetweenGroupsAdditional:0,imp:true,torch:kind==='explorer'||kind==='explorer_veteran'});
     if(entry==='ground')this.effect('ground',x,rowY(row));
@@ -802,7 +809,7 @@ export class Game {
     for(const pending of this.pendingPharaohs.filter(p=>p.at<=this.time)){const z=this.spawnZombie('mummy',pending.row,pending.x);z.reversed=true;this.pharaohs.add(pending.id);this.effect('pharaoh',z.x,rowY(z.row));}
     this.pendingPharaohs=this.pendingPharaohs.filter(p=>p.at>this.time);
     for (const kind of PLANT_KINDS) this.cooldowns[kind] = Math.max(0, this.cooldowns[kind] - dt);
-    if (this.time >= this.nextSun) { this.dropSun(cellX(4)-150+this.random()*300, -90, 50, 'sky'); this.nextSun = this.time + Math.min(RULES.sunMax, RULES.sunBase + this.droppedSuns * RULES.sunIncrease + this.random() * RULES.sunRange); this.droppedSuns++; }
+    if (this.time >= this.nextSun) { this.dropSun(cellX(4)-150+this.random()*300, -90, 50, 'sky'); const drop=this.level.sunDropper;this.nextSun = this.time + (drop?Math.min(drop.SunCountdownMax,drop.SunCountdownBase+this.droppedSuns*drop.SunCountdownIncreasePerSun+this.random()*drop.SunCountdownRange):Math.min(RULES.sunMax, RULES.sunBase + this.droppedSuns * RULES.sunIncrease + this.random() * RULES.sunRange)); this.droppedSuns++; }
     if (this.wave < this.level.waves.length && this.time >= this.nextWave) this.startWave();
     for(const spawn of this.pending.filter(s=>s.at<=this.time)){
       const counts=isCamel(spawn.kind)?this.props.zombies[spawn.kind].TeamMemberCount:[1];
@@ -838,10 +845,11 @@ export class Game {
       }
       if(z.west?.animation==='LandVerticle'&&this.time>=z.landUntil!)delete z.west.animation;
     }
-    this.tickConveyor(dt);this.tickPower(dt);this.tickMatching();this.escape.tick(dt);this.finale.tick(dt);this.western.tick(dt);this.westFinale.tick(dt);
+    this.tickConveyor(dt);this.tickPower(dt);this.tickMatching();this.escape.tick(dt);this.finale.tick(dt);this.western.tick(dt);this.westFinale.tick(dt);this.future.tick(dt);
     for (const p of this.plants) {
       if(p.leap){if(this.time-p.leap.at<(p.kind==='chilibean'?.8:.5))continue;delete p.leap;}
       if(p.kind==='splitpea'||p.kind==='chilibean'){this.cowboy.tickPlant(p);continue;}
+      if(this.future.handles(p.kind)){this.future.tickPlant(p,dt);continue;}
       if(this.westFinale.handles(p.kind)){this.westFinale.tickPlant(p,dt);continue;}
       if(this.western.handles(p.kind)){this.western.tickPlant(p,dt);continue;}
       if(this.finale.handles(p.kind)){this.finale.tickPlant(p,dt);continue;}
@@ -941,9 +949,9 @@ export class Game {
     for (const z of this.zombies) {
       if(z===this.boss?.zombie||z.hp<=0||z.leap||z.landUntil!==undefined&&this.time<z.landUntil||this.time<z.frozenUntil||z.stunnedUntil!==undefined&&this.time<z.stunnedUntil||z.butteredUntil!==undefined&&this.time<z.butteredUntil||(z.entry!=='walk'&&this.time-z.entryAt<(z.entry==='ground'?1.35:1)))continue;
       const statusDt=dt*(this.time<(z.perfumeUntil??0)?.5:1);
-      if(this.cowboy.tickZombie(z,statusDt)||this.pirate.tickZombie(z,dt)||this.tickSpecialZombie(z,dt))continue;
+      if(this.future.tickZombie(z,statusDt)||this.cowboy.tickZombie(z,statusDt)||this.pirate.tickZombie(z,dt)||this.tickSpecialZombie(z,dt))continue;
       if(this.westFinale.blockEnemy(z,statusDt))continue;
-      const target = this.plants.filter(p => p.hp > 0 && !(p.kind==='chilibean'&&p.leap) && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='hurrikale'&&p.kind!=='stallia'&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='cherry_bomb'&&p.kind!=='jalapeno'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column)[0];
+      const target = this.plants.filter(p => p.hp > 0 && !(p.kind==='chilibean'&&p.leap) && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='blover'&&p.kind!=='hurrikale'&&p.kind!=='stallia'&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='cherry_bomb'&&p.kind!=='jalapeno'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column)[0];
       z.eating = !!target;
       if(target&&(z.kind==='explorer'||z.kind==='explorer_veteran')&&this.specialZombies.get(z.id)!.torch){target.hp=0;target.armor=0;}
       else if (target) { const amount = (z.kind==='egypt_imp'?100:this.props.zombies[z.kind].EatDPS) * statusDt*(this.time<z.chilledUntil?.5:1), armor = Math.min(target.armor, amount); target.armor -= armor; target.hp -= amount - armor;if(target.hp<=0){this.cowboy.eaten(target,z);this.westFinale.eaten(target,z);}if(target.hp<=0&&target.kind==='parsnip')this.launchParsnip(target,false); }
@@ -973,8 +981,8 @@ export class Game {
     if(this.level.killChallenge&&!this.killChallengeComplete)this.recentKills=this.recentKills.filter(at=>this.time-at<this.level.killChallenge!.seconds);
     for (const z of this.zombies) if (z!==this.boss?.zombie&&z.hp <= 0) {
       if(this.level.world==='pirate')this.pirate.die(z);
-      this.cowboy.die(z);
-      this.kills++;
+      this.cowboy.die(z);this.future.die(z);
+      if(z.kind!=='future_protector_shield')this.kills++;
       if(this.level.killChallenge&&!this.killChallengeComplete){this.recentKills.push(this.time);if(this.recentKills.length>=this.level.killChallenge.count)this.killChallengeComplete=true;}
       if(z.kind==='egypt_gargantuar'&&z.deathCause!=='potato'&&z.x>=BOARD.left&&z.x<cellX(9)&&this.random()<.75)this.pendingPharaohs.push({id:z.id,row:z.row,x:z.x,at:this.time+this.timing.special!.gargPharaoh});
       if(z.food)this.pickups.push({id:++this.id,kind:'food',x:z.x,y:rowY(z.row)-45,age:0});
@@ -998,7 +1006,7 @@ export class Game {
         if(sun.absorbAge>=2.4||sun.absorbAge%.8<.5){const {x,y}=this.raTarget(ra),dx=x-sun.x,dy=y-sun.y,distance=Math.hypot(dx,dy),move=4*BOARD.cellWidth*dt;
           if(distance<=move){ra.absorbed+=sun.value;absorbed.add(sun.id);}else{sun.x+=dx/distance*move;sun.y+=dy/distance*move;}}
       }else if(sun.y<sun.targetY){sun.x+=sun.vx*dt;sun.y=Math.min(sun.targetY,sun.y+sun.vy*dt);if(sun.from!=='sky')sun.vy+=990*dt;}
-      else sun.groundAge+=dt;
+      else {if(sun.bomb)this.future.defuse(sun);sun.groundAge+=dt;}
     }
     this.suns = this.suns.filter(s => !absorbed.has(s.id)&&s.groundAge<7.5);
     for(const p of this.pickups)p.age+=dt;
