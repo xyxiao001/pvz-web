@@ -10,7 +10,7 @@ import type { Scene } from './rendering/scene';
 import { cubicInOut, introCamera } from './rendering/presentation';
 
 const DESCRIPTIONS: Record<PlantKind,string> = {
-  spikeweed:'地刺可以伤害踩在上面的僵尸，并刺破滚桶。',springbean:'弹簧豆可以弹开僵尸，也能把靠近海边的僵尸弹入水中。',snapdragon:'火龙草向前方三行喷火，灼烧靠近的僵尸。',coconutcannon:'点击椰子加农炮发射炮弹，爆炸后需要时间重新装填。',snowdrop:'雪莲抛出冰霜花瓣，使僵尸减速，偶尔将它冻住。',imitater:'选择本关的一种植物，模仿者会在种下后变成它。',peapod:'在同一格重复种植，最多叠加五个豌豆头。',cherry_bomb:'樱桃炸弹炸毁周围九宫格内的僵尸。',celerystalker:'潜伏芹菜藏在地下，攻击走过身后的僵尸。',parsnip:'防风草用钳子攻击前方，被吃掉后冲出去继续攻击。',sapfling:'树脂投手在落点留下树脂，减缓僵尸的移动。',
+  threepeater:'三线射手同时向所在行和相邻两行发射豌豆。',spikeweed:'地刺可以伤害踩在上面的僵尸，并刺破滚桶。',springbean:'弹簧豆可以弹开僵尸，也能把靠近海边的僵尸弹入水中。',snapdragon:'火龙草向前方三行喷火，灼烧靠近的僵尸。',coconutcannon:'点击椰子加农炮发射炮弹，爆炸后需要时间重新装填。',snowdrop:'雪莲抛出冰霜花瓣，使僵尸减速，偶尔将它冻住。',imitater:'选择本关的一种植物，模仿者会在种下后变成它。',peapod:'在同一格重复种植，最多叠加五个豌豆头。',cherry_bomb:'樱桃炸弹炸毁周围九宫格内的僵尸。',celerystalker:'潜伏芹菜藏在地下，攻击走过身后的僵尸。',parsnip:'防风草用钳子攻击前方，被吃掉后冲出去继续攻击。',sapfling:'树脂投手在落点留下树脂，减缓僵尸的移动。',
   repeater:'双发射手连续发射两颗豌豆。',kernelpult:'玉米投手抛射玉米粒，偶尔用黄油定住僵尸。',melonpult:'西瓜投手的西瓜能伤害落点周围的僵尸。',
   bonkchoy:'菜问快速拳击前后靠近的僵尸。',
   gravebuster:'噬碑藤吞噬墓碑，为种植腾出空间。',
@@ -167,7 +167,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     for(const kind of cardOrder){const card=$(`[data-choose="${kind}"]`),boosted=game.boosts.has(kind);card.classList.toggle('boosted',boosted);card.setAttribute('aria-label',`选择${plantLabels[kind]}${boosted?'（爆发）':''}`);}
     game.foodLimit=bonuses.foodLimit;game.shovelRefund=bonuses.shovelRefund;game.manualMowers=bonuses.manualMowers;
     if(!game.level.lastStand)game.sun+=bonuses.startingSun;
-    const objective=[game.level.mold.length?'霉菌覆盖的地块不能种植':'',game.level.mustProtect?`保护好 ${game.level.mustProtect} 株植物`:'',game.level.maxPlants!==null?`同时种植不超过 ${game.level.maxPlants} 株植物`:'',game.level.flowerLine!==null?'不要让僵尸踩到花坛':'',game.level.cannon?`点击椰子加农炮，获得 ${game.level.cannon.MinScore} 分`:'',game.level.maxSun!==null?`消耗阳光不超过 ${game.level.maxSun}`:'',game.level.lastStand?`用 ${game.level.lastStand.sun} 阳光布置防线，再开始进攻`:''].filter(Boolean).join(' · ');
+    const objective=[game.level.mold.length?'霉菌覆盖的地块不能种植':'',game.level.mustProtect?`保护好 ${game.level.mustProtect} 株植物`:'',game.level.targetSun!==null?`生产 ${game.level.targetSun} 阳光`:'',game.level.maxPlants!==null?`同时种植不超过 ${game.level.maxPlants} 株植物`:'',game.level.flowerLine!==null?'不要让僵尸踩到花坛':'',game.level.cannon?`点击椰子加农炮，获得 ${game.level.cannon.MinScore} 分`:'',game.level.maxSun!==null?`消耗阳光不超过 ${game.level.maxSun}`:'',game.level.lastStand?`用 ${game.level.lastStand.sun} 阳光布置防线，再开始进攻`:''].filter(Boolean).join(' · ');
     for(const element of host.querySelectorAll<HTMLElement>('.challenge-objective')){element.textContent=objective;element.hidden=!objective;}
   }
   function survey() {
@@ -231,7 +231,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(game.time>tipUntil)$('#game-tip').hidden=true;
     if(levelConfig.id==='egypt2'&&!foodTipShown&&game.pickups.some(p=>p.kind==='food')){foodTipShown=true;tip('点击发光的能量豆收集，再点击左下角能量豆，对植物使用。',12);}
     $('#shovel').classList.toggle('selected',selected==='shovel');
-    $('#wave-label').textContent=game.level.cannon?`${game.pirate.score.toLocaleString()} / ${game.level.cannon.MinScore.toLocaleString()}${game.time<game.pirate.comboUntil&&game.pirate.combo>=3?` · ${game.pirate.combo} 连击`:''}`:game.boss?`僵王 · ${game.boss.stage+1} / 3`:game.wave===0?'':`${game.wave} / ${game.level.waves.length}`;
+    $('#wave-label').textContent=game.level.cannon?`${game.pirate.score.toLocaleString()} / ${game.level.cannon.MinScore.toLocaleString()}${game.time<game.pirate.comboUntil&&game.pirate.combo>=3?` · ${game.pirate.combo} 连击`:''}`:game.level.targetSun!==null?`阳光 ${Math.min(game.sunProduced,game.level.targetSun)} / ${game.level.targetSun} · ${game.wave} / ${game.level.waves.length}`:game.boss?`僵王 · ${game.boss.stage+1} / 3`:game.wave===0?'':`${game.wave} / ${game.level.waves.length}`;
     $('#wave-fill').style.width=`${(game.boss?game.boss.progress:game.wave/game.level.waves.length)*100}%`;
     if(game.boss){const stage=game.boss.zombie.hp<=0?3:game.boss.stage;if(bossMusicStage!==stage){bossMusicStage=stage;music.src=assetUrl(stage===3?'campaign/bossVictory.mp3':`campaign/boss${stage}.mp3`);playMusic();}}
   }
@@ -255,6 +255,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(selected==='shovel'){game.shovel(row,column);sound('shovelDig');}
     else if(selected==='food'){if(game.plantFood(row,column)){selected=null;scene.highlightCell(-1,-1,0);}}
     else if(selected&&game.plant(selected,row,column,packetId)){selected=null;scene.highlightCell(-1,-1,0);}
+    else if(selected===null)game.pirate.fire(row,column);
     updateHud();
   }
   function tick(dt: number) {
@@ -340,7 +341,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       panel('关卡完成',`${first?`<img class="map-reward" src="${rewardImage}" alt="${levelConfig.firstReward.label}"><p>获得${levelConfig.firstReward.label}</p>`:`<p>${title}</p>`}${sprouts>0?`<p>植物幼苗 × ${sprouts}</p>`:''}<button id="result-map" class="battle-button">继续</button>`);
       $('#result-map').onclick=()=>{progress.finish(levelConfig.world,levelConfig.id,sprouts);menu();};
     } else {
-      panel(game.lossReason==='score'?'未达到目标分数':game.lossReason==='flowers'?'僵尸踩到了花坛！':game.lossReason==='plants'?'植物数量超过了关卡限制！':game.lossReason==='sun'?'消耗的阳光超过了关卡限制！':game.lossReason==='protected'?'需要保护的植物被吃掉了！':'僵尸吃掉了你的脑子！','<button id="again" class="battle-button">重新开始</button><button id="result-map" class="battle-button">返回地图</button>');
+      panel(game.lossReason==='sunProduced'?'未完成阳光生产目标':game.lossReason==='score'?'未达到目标分数':game.lossReason==='flowers'?'僵尸踩到了花坛！':game.lossReason==='plants'?'植物数量超过了关卡限制！':game.lossReason==='sun'?'消耗的阳光超过了关卡限制！':game.lossReason==='protected'?'需要保护的植物被吃掉了！':'僵尸吃掉了你的脑子！','<button id="again" class="battle-button">重新开始</button><button id="result-map" class="battle-button">返回地图</button>');
       $('#again').onclick=chooseSeeds;$('#result-map').onclick=menu;
     }
   }
