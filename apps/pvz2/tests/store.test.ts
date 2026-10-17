@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { LocalStore, type StoreCatalog } from '../src/shell/store';
 import { ProgressStore } from '../src/shell/progression';
+import type { PlantKind } from '../src/game/level';
 import { availablePlants, BATTLE_LEVELS } from '../src/game/levels';
 const catalog: StoreCatalog = JSON.parse(readFileSync(new URL('../public/assets/shell/store.json', import.meta.url), 'utf8'));
 function storage() { const data = new Map<string,string>(); return { getItem: (key:string) => data.get(key) ?? null, setItem: (key:string,value:string) => { data.set(key,value); }, removeItem: (key:string) => { data.delete(key); } }; }
@@ -25,19 +26,35 @@ test('one-time upgrades apply alongside earned upgrades and cannot be charged tw
   assert.equal(store.read().gem,99909);
   assert.deepEqual(new ProgressStore(data).battleBonuses(),{seedSlots:7,foodLimit:5,startingSun:50,shovelRefund:0,manualMowers:0});
 });
-test('native plant unlock prerequisites and purchased plants feed normal seed selection',()=>{
+test('migrated shop plants are purchasable on a new profile and persist into both worlds',()=>{
   const data=storage(), progress=new ProgressStore(data), store=progress.shop();
-  assert.equal(store.buy(item('iceweed'),level=>progress.isComplete(level)),false);
-  data.setItem('pvz2-web:egypt9-complete','1');
-  assert.equal(store.buy(item('iceweed'),level=>progress.isComplete(level)),true);
-  assert.equal(store.buy(item('iceweed'),()=>true),false);
-  assert.equal(store.buy(item('snowdrop'),level=>progress.isComplete(level)),false);
-  data.setItem('pvz2-web:egypt28-complete','1');
-  assert.equal(store.buy(item('snowdrop'),level=>progress.isComplete(level)),true);
-  assert.equal(store.read().gem,99939);
-  assert.ok(availablePlants(BATTLE_LEVELS.egypt2,new ProgressStore(data).ownedPlants()).includes('iceweed'));
-  assert.ok(availablePlants(BATTLE_LEVELS.egypt30,progress.ownedPlants()).includes('snowdrop'));
-  assert.equal(availablePlants(BATTLE_LEVELS.egypt1,progress.ownedPlants()).includes('iceweed'),false);
+  const plants=catalog.items.filter(item=>item.category==='Plants');
+  assert.deepEqual(plants.map(item=>[item.name,item.currency,item.price]),[['imitater','gem',1000],['iceweed','gem',20],['snowdrop','gem',40]]);
+  for(const plant of plants){
+    assert.equal(plant.unlockLevel,undefined);
+    assert.equal(store.buy(plant,level=>progress.isComplete(level)),true);
+    const balance=store.read().gem;
+    assert.equal(store.buy(plant,()=>true),false);
+    assert.equal(store.read().gem,balance);
+  }
+  assert.equal(store.read().gem,98939);
+  const reloaded=new ProgressStore(data);
+  for(const plant of plants){
+    assert.ok(reloaded.shop().owned(plant));
+    for(const id of ['egypt2','egypt30','pirate1','pirate19']){
+      assert.ok(availablePlants(BATTLE_LEVELS[id],reloaded.ownedPlants()).includes(plant.name as PlantKind));
+      assert.equal(availablePlants(BATTLE_LEVELS[id],new ProgressStore(storage()).ownedPlants()).includes(plant.name as PlantKind),false);
+    }
+    assert.equal(availablePlants(BATTLE_LEVELS.egypt1,reloaded.ownedPlants()).includes(plant.name as PlantKind),false);
+  }
+});
+
+test('plant purchases with insufficient gems do not deduct or unlock',()=>{
+  const data=storage(),store=new LocalStore(data);
+  store.spend('gem',99000);
+  assert.equal(store.buy(item('imitater'),()=>true),false);
+  assert.equal(store.read().gem,999);
+  assert.equal(store.owned(item('imitater')),false);
 });
 
 test('store art and native prices retain pinned provenance', () => {

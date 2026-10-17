@@ -19,11 +19,14 @@ items = []
 for category in ['Plants','Upgrade','Coin','Gem']:
     for index, item in enumerate(source[category]):
         kind = item['CommodityType']; name = item.get('CommodityName','')
-        if kind == 'plant' and name not in ['iceweed','snowdrop']: continue
+        if kind == 'plant' and name not in ['iceweed','snowdrop','imitater']: continue
         result = {'id': f'{category}-{index}', 'category': category, 'type': kind, 'name': name,
                   'currency': item['CurrencyType'], 'price': item['CurrencyRequired'], 'count': item.get('CommodityCount',1)}
-        if 'UnlockLevel' in item: result['unlockLevel'] = item['UnlockLevel']
+        if 'UnlockLevel' in item and kind != 'plant': result['unlockLevel'] = item['UnlockLevel']
         if kind == 'plant':
+            # Local shop: migrated plants are available immediately. Replace the
+            # imitater's paid tickets with gems, retaining the source amount.
+            if name == 'imitater': result['currency'] = 'gem'
             feature = next(p for p in plants if p['CODENAME']==name)
             result.update(label=feature['NAME']['zh'], plant=feature['ID'])
         elif kind == 'upgrade':

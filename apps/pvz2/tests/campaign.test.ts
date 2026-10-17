@@ -643,3 +643,25 @@ test('garden-boosted imitater applies its boost to the transformed plant',()=>{
  const transformed=g.plants.find(p=>p.kind==='peashooter'&&p.row===1)!;
  assert.ok(transformed);assert.ok(g.events.some(e=>e.type==='food'));assert.equal(g.food,0);assert.deepEqual([...g.usedBoosts],['imitater']);
 });
+
+
+test('purchased imitater uses its chosen plant cost and an independent matching cooldown',()=>{
+ const g=create(2);g.graves=[];g.imitateKind='wallnut';g.sun=49;
+ assert.equal(g.seedCost('imitater'),props.plants.wallnut.SunCost);
+ assert.equal(g.seedCooldown('imitater'),props.plants.wallnut.Cooldown);
+ assert.equal(g.plant('imitater',0,0),false);
+ g.sun=100;assert.equal(g.plant('imitater',0,0),true);
+ assert.equal(g.sun,50);assert.equal(g.sunSpent,50);
+ assert.equal(g.cooldowns.imitater,props.plants.wallnut.Cooldown);
+ assert.equal(g.cooldowns.wallnut,0);
+ assert.equal(g.plant('imitater',0,1),false);
+ tick(g,4);assert.ok(g.plants.some(p=>p.kind==='wallnut'&&p.row===0&&p.column===0));
+ assert.equal(g.plant('wallnut',0,1),true);
+});
+
+test('imitating gravebuster uses the target plant tombstone placement rule',()=>{
+ const g=create(2);g.graves=[{id:9000,row:0,column:5,hp:200,stage:0}];g.imitateKind='gravebuster';
+ assert.equal(g.plant('imitater',0,0),false);
+ assert.equal(g.plant('imitater',0,5),true);
+ tick(g,8);assert.equal(g.graves.length,0);
+});

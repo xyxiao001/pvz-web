@@ -136,7 +136,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       }
     }
     cardOrder = availablePlants(levelConfig,progress.ownedPlants()).filter(kind=>!readLevel(source).blacklist.includes(kind));
-    $('.chooser-cards').innerHTML = cardOrder.map(kind=>`<button data-choose="${kind}" class="seed choose-card${progress.gardenBoosts()[kind]>0?' boosted':''}" aria-label="选择${plantLabels[kind]}${progress.gardenBoosts()[kind]>0?'（爆发）':''}" aria-pressed="false"><img alt="${plantLabels[kind]}" src="${cards.get(kind)!}"><span class="seed-price">${properties.plants[kind].SunCost}</span></button>`).join('');
+    $('.chooser-cards').innerHTML = cardOrder.map(kind=>`<button data-choose="${kind}" class="seed choose-card${progress.gardenBoosts()[kind]>0?' boosted':''}" aria-label="选择${plantLabels[kind]}${progress.gardenBoosts()[kind]>0?'（爆发）':''}" aria-pressed="false"><img alt="${plantLabels[kind]}" src="${cards.get(kind)!}"><span class="seed-price">${kind==='imitater'?'':properties.plants[kind].SunCost}</span></button>`).join('');
     for(const kind of cardOrder)$(`[data-choose="${kind}"]`).onclick=()=>{
       describe(kind);const index=deck.indexOf(kind);if(index===-1&&deck.length<seedSlots){deck.push(kind);sound('cardChosen');}else if(index!==-1){deck.splice(index,1);sound('cardCancel');}updateDeck();
     };
@@ -183,13 +183,13 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   function updateDeck() {
     for (let i=0;i<seedSlots;i++) {
       const button=$<HTMLButtonElement>(`[data-slot="${i}"]`),kind=deck[i];
-      button.disabled=screen==='choosing'?!kind:!kind||game.sun<properties.plants[kind].SunCost||!game.preparing&&game.cooldowns[kind]>0;
+      button.disabled=screen==='choosing'?!kind:!kind||game.sun<game.seedCost(kind)||!game.preparing&&game.cooldowns[kind]>0;
       button.classList.toggle('empty',!kind);button.classList.toggle('selected',selected===kind);
       button.setAttribute('aria-label',kind?`${screen==='choosing'?'移除':'选择'}${plantLabels[kind]}`:'空卡槽');
       const image=button.querySelector<HTMLImageElement>('img')!;image.hidden=!kind;if(kind)image.src=cards.get(kind)!;
-      button.querySelector<HTMLElement>('.seed-price')!.textContent=kind?String(properties.plants[kind].SunCost):'';
+      button.querySelector<HTMLElement>('.seed-price')!.textContent=kind?kind==='imitater'&&game.imitateKind===null?'':String(game.seedCost(kind)):'';
       const cooldown=button.querySelector<HTMLElement>('.seed-cooldown')!;
-      cooldown.style.height=kind&&screen!=='choosing'?`${game.cooldowns[kind]/properties.plants[kind].Cooldown*100}%`:'0';
+      cooldown.style.height=kind&&screen!=='choosing'?`${game.cooldowns[kind]/game.seedCooldown(kind)*100}%`:'0';
     }
     for(const kind of cardOrder) $(`[data-choose="${kind}"]`).setAttribute('aria-pressed',String(deck.includes(kind)));
     $<HTMLButtonElement>('#start').disabled=deck.length===0;
@@ -199,17 +199,20 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     scene.preview(game.level.waves.flat(),game.graves,game.plants,game.level);scene.setCamera(scene.art.catalog.presentation.seedChoosingCameraX);scene.start();openChooser();
   }
   function openChooser() {
-    if(levelConfig.mode!=='seedbank'){deck=readLevel(source).preset??[];
-      if(deck.includes('imitater')){
-        screen='choosing';$('#hud').hidden=true;
-        panel('模仿哪种植物？',`<div class="pause-actions">${deck.filter(k=>k!=='imitater').map(k=>`<button class="battle-button" data-imitate="${k}">${plantLabels[k]}</button>`).join('')}</div>`);
-        for(const button of host.querySelectorAll<HTMLButtonElement>('[data-imitate]'))button.onclick=()=>{game.imitateKind=button.dataset.imitate as PlantKind;start();};
-      }else start();return;}
+    if(levelConfig.mode!=='seedbank'){deck=readLevel(source).preset??[];prepareStart();return;}
     screen='choosing';deck=[];selected=null;speed=1;
     $('#overlay').hidden=true;$('#hud').hidden=false;$('#seed-chooser').hidden=false;$('#battle-announcement').hidden=true;
     host.dataset.screen=screen;$('#sun-count').textContent=String(game.sun);
     describe(cardOrder[0]);updateDeck();
     sound('cardChosen');playMusic();
+  }
+  function prepareStart() {
+    if(!deck.includes('imitater')){start();return;}
+    screen='choosing';$('#hud').hidden=true;$('#seed-chooser').hidden=true;
+    const choices=levelConfig.mode==='seedbank'?cardOrder:deck;
+    panel('模仿哪种植物？',`<div class="pause-actions">${choices.filter(k=>k!=='imitater').map(k=>`<button class="battle-button" data-imitate="${k}">${plantLabels[k]}</button>`).join('')}${levelConfig.mode==='seedbank'?'<button class="battle-button" data-imitate-back>返回选卡</button>':''}</div>`);
+    for(const button of host.querySelectorAll<HTMLButtonElement>('[data-imitate]'))button.onclick=()=>{game.imitateKind=button.dataset.imitate as PlantKind;start();};
+    if(levelConfig.mode==='seedbank')$('[data-imitate-back]').onclick=()=>{$('#overlay').hidden=true;$('#hud').hidden=false;$('#seed-chooser').hidden=false;};
   }
   function start() {
     selected=null;packetId=undefined;foodTipShown=false;tipUntil=0;$('#game-tip').hidden=true;pointerDown=false;
@@ -349,7 +352,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   for(const button of host.querySelectorAll<HTMLButtonElement>('[data-power]'))button.onclick=()=>{if(screen==='playing'&&game.selectPower(button.dataset.power as PowerKind)){selected=null;const soundName:Partial<Record<PowerKind,string>>={fire:'powerUpFlameStart',snow:'powerUpSnowStart',zap:'powerUpWizardStart',cherry:'powerUpCherryStart'};const name=soundName[button.dataset.power as PowerKind];if(name)sound(name);tip(button.title,5);updateHud();}};
   $('#narrative').onclick=nextNarrative;
   $('#laststand-start').onclick=()=>{game.startLastStand();screen='countdown';host.dataset.screen=screen;countdown=0;$('#laststand-start').hidden=true;$('#battle-announcement').hidden=false;$('#battle-announcement').textContent='准备…';sound('readySetPlant');};
-  $('#pause').onclick=pause;$('#start').onclick=start;$('#ready-back').onclick=menu;
+  $('#pause').onclick=pause;$('#start').onclick=prepareStart;$('#ready-back').onclick=menu;
   $('#speed').onclick=()=>{if(screen==='playing'){speed=speed===1?2:1;$('#speed').setAttribute('aria-pressed',String(speed===2));}};
   $('#shovel').onclick=()=>{if(screen==='playing'){selected=selected==='shovel'?null:'shovel';updateHud();}};
   for(let i=0;i<seedSlots;i++)$(`[data-slot="${i}"]`).onclick=()=>{
