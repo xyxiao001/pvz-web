@@ -57,6 +57,7 @@ export class ProgressStore {
       if(level==='egypt5')rewards.push({level,type:'sprout',id:'sprout',count:sprouts});
       this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));
     }
+    if(level==='pirate7'||level==='pirate8'){const rewards=this.campaignRewards();rewards.push({level,type:level==='pirate7'?'note':'worldtrophy',id:level==='pirate7'?'note_pirate':'worldkey',count:1});this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));}
     if(level==='pirate4'||level==='pirate5'){const rewards=this.campaignRewards();rewards.push({level,type:level==='pirate4'?'worldtrophy':'pinata',id:level==='pirate4'?'dangerroom_pirate':'spine_pirate',count:1});this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));}
     this.storage.setItem(completionKey(level), '1');
     this.storage.setItem(PENDING_KEY, JSON.stringify({ world, level }));

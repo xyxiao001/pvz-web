@@ -7,7 +7,7 @@ export const zombieY=(z:Zombie)=>z.route?.y??rowY(z.row);
 export const swinging=(z:Zombie,time:number)=>!!z.swing&&time<z.swing.end;
 
 export interface CannonShot {id:number;x:number;y:number;row:number;age:number}
-export interface PirateEffect {id:number;kind:'snapFire'|'snapFood'|'snapBall'|'coconutHit';x:number;y:number;at:number;damage?:number;hits?:number[];burning?:boolean}
+export interface PirateEffect {id:number;kind:'seaSplash'|'snapFire'|'snapFood'|'snapBall'|'coconutHit';x:number;y:number;at:number;damage?:number;hits?:number[];burning?:boolean}
 export class PirateBattle {
   shots:CannonShot[]=[];
   effects:PirateEffect[]=[];
@@ -18,8 +18,125 @@ export class PirateBattle {
   #game:Game;
   constructor(game:Game){this.#game=game;}
   private eventTime(name:string,animation:string,event:string){return this.#game.props.plantAnimations[name][animation].events.find(e=>e.name===event)!.at;}
+  private throwImp(z:Zombie,row:number,column:number,duration=1){
+    const g=this.#game,imp=g.spawnZombie('pirate_imp',z.row,z.x);
+    imp.leap={fromX:z.x,fromY:rowY(z.row)-100,toX:cellX(column),toRow:row,at:g.time,duration};
+    return imp;
+  }
+  die(z:Zombie){
+    const g=this.#game;
+    if(z.deathCause==='water')this.effects.push({id:++this.serial,kind:'seaSplash',x:Math.max(cellX(5),Math.min(cellX(8)-BOARD.cellWidth*.25,z.x)),y:rowY(z.row)+20,at:g.time});
+    if(z.kind==='pirate_barrel'){
+      const parent=g.zombies.find(p=>p.id===z.pusher);if(parent)delete parent.barrel;
+      for(const row of [z.row===0?0:z.row-1,z.row===4?4:z.row+1])this.throwImp(z,row,Math.floor((z.x-BOARD.left)/BOARD.cellWidth)-1,.5);
+    }
+    if(z.barrel!==undefined){const barrel=g.zombies.find(b=>b.id===z.barrel);if(barrel){delete barrel.pusher;barrel.detachedAt=g.time;}}
+  }
+  private bounce(z:Zombie){
+    const g=this.#game;
+    if(z.hp<=0||z.leap||swinging(z,g.time)||['seagull','pirate_gargantuar','cannon'].includes(z.kind))return;
+    let row=z.row;const column=Math.floor((z.x-BOARD.left)/BOARD.cellWidth);
+    if(column>=4&&!seaCell(g.level.planks,row,8)){
+      if(row>0&&seaCell(g.level.planks,row-1,8))row--;
+      else if(row<4&&seaCell(g.level.planks,row+1,8))row++;
+    }
+    if(z.kind==='pirate_barrel'&&z.pusher!==undefined){const parent=g.zombies.find(p=>p.id===z.pusher);if(parent)delete parent.barrel;delete z.pusher;z.detachedAt=g.time;}
+    z.leap={fromX:z.x,fromY:rowY(z.row),toX:z.x+g.props.plants.springbean.KnockbackDistance*BOARD.cellWidth,toRow:row,at:g.time};
+  }
+  private tickGroundPlant(p:Plant,dt:number){
+    const g=this.#game,props=g.props.plants[p.kind],x=cellX(p.column),timelines=g.props.plantAnimations[p.kind];
+    const ground=g.zombies.filter(z=>z.hp>0&&z.kind!=='seagull'&&!z.leap&&!swinging(z,g.time));
+    const targets=ground.filter(z=>z.row===p.row&&Math.abs(z.x-x)<BOARD.cellWidth/2);
+    const start=(animation:string,action:Plant['action']='shoot')=>{p.animation=animation;p.action=action;p.actionAt=g.time;p.eventIndex=0;};
+    if(p.kind==='spikeweed'){
+      if(p.action==='food'){
+        if(g.time-p.actionAt>=props.PlantfoodDuration){p.action='idle';p.animation='Idle';return;}
+        for(const z of ground.filter(z=>z.row===p.row)){
+          if(z.kind==='pirate_barrel'){z.hp=0;continue;}
+          g.damage(z,(props.PlantfoodSideDPS+(Math.abs(z.x-x)<BOARD.cellWidth/2?props.PlantfoodDPS:0))*dt);
+          z.stunnedUntil=g.time+.2;
+          if(!['pirate_gargantuar','cannon'].includes(z.kind)&&Math.abs(z.x-x)>=BOARD.cellWidth/2)z.x+=Math.sign(x-z.x)*Math.min(Math.abs(x-z.x),props.PlantfoodDragSPS*BOARD.cellWidth*dt);
+        }
+        return;
+      }
+      if((p.action==='idle'||p.fired)&&targets.length&&g.time>=p.nextAction){p.fired=false;start('Attack');p.nextAction=g.time+props.AttackInterval;}
+      if(p.action==='shoot'){
+        if(!p.fired&&g.time-p.actionAt>=this.eventTime('spikeweed','Attack','attack')){p.fired=true;for(const z of targets){if(z.kind==='pirate_barrel'){z.hp=0;p.hp=0;}else g.damage(z,props.Damage);}}
+        if(g.time-p.actionAt>=timelines.Attack.duration){p.action='idle';p.animation='Idle';p.fired=false;}
+      }
+      return;
+    }
+    if(p.action==='idle'){
+      if(p.animation==='Sleep'){if(g.time>=p.nextAction)start('Recover');return;}
+      const nearby=ground.some(z=>z.row===p.row&&Math.abs(z.x-x)<1.5*BOARD.cellWidth);
+      if(p.animation!=='Idle_Ready'&&nearby){start('Ready');return;}
+      if(p.animation==='Idle_Ready'){
+        if(!nearby){start('Recover');return;}
+        const target=targets.find(z=>!['pirate_gargantuar','cannon'].includes(z.kind));
+        if(target){this.bounce(target);start('Bounce');return;}
+      }
+      return;
+    }
+    const animation=p.animation!,timeline=timelines[animation],elapsed=g.time-p.actionAt;
+    while(p.eventIndex!<timeline.events.length&&elapsed>=timeline.events[p.eventIndex!].at){
+      const event=timeline.events[p.eventIndex!++].name;
+      if(event==='foodBounce')for(const z of ground)this.bounce(z);
+      if(event==='sleep'){p.action='idle';p.animation='Sleep';p.nextAction=g.time+props.RestTime;return;}
+    }
+    if(elapsed>=timeline.duration){p.action='idle';p.animation=animation==='Ready'?'Idle_Ready':'Idle';}
+  }
+  private tickNewZombie(z:Zombie,dt:number):boolean{
+    const g=this.#game,step=dt*(g.time<z.chilledUntil?.5:1);
+    if(z.kind==='pirate_barrel'){
+      const p=g.zombies.find(p=>p.id===z.pusher&&p.hp>0);
+      if(p){z.x=p.x-62;z.row=p.row;
+        for(const plant of g.plants)if(plant.hp>0&&plant.row===z.row&&Math.abs(cellX(plant.column)-z.x)<45){
+          if(plant.kind==='spikeweed'||plant.kind==='iceweed'){z.hp=0;if(plant.action!=='food')plant.hp=0;}
+          else if(!(plant.kind==='springbean'&&['Ready','Idle_Ready'].includes(plant.animation!))){plant.hp=0;plant.armor=0;p.stunnedUntil=g.time+.5;}
+        }
+      }else {if(g.time-z.detachedAt!>=10)z.hp=0;z.x-=.01*BOARD.cellWidth*step;}
+      return true;
+    }
+    const state=z.pirate;if(!state)return false;
+    const name=z.kind==='cannon'?'impCannon':'pirateGargantuar',timelines=g.props.plantAnimations[name];
+    const start=(animation:string)=>{state.animation=animation;state.at=g.time;state.elapsed=0;state.fired=false;};
+    if(z.kind==='cannon'){
+      if(g.time-z.entryAt<4){z.x=z.entryX+(cellX(9)-z.entryX)*Math.pow((g.time-z.entryAt)/4,2);return true;}
+      if(state.animation==='Idle'){
+        state.next-=step;
+        if(state.next<=0){if(state.count<g.props.zombies.cannon.MaxImpCount){start('Shoot');state.count++;}else start('Explode');}
+        return true;
+      }
+      const timeline=timelines[state.animation];state.elapsed+=step;
+      const event=state.animation==='Shoot'?'Shoot':'Explode';
+      if(!state.fired&&state.elapsed>=this.eventTime(name,state.animation,event)){
+        state.fired=true;const props=g.props.zombies.cannon;
+        if(event==='Shoot')this.throwImp(z,z.row,props.ShootColumns[Math.floor(g.random()*props.ShootColumns.length)]);
+        else for(let i=0;i<props.ExplodeImpCount;i++)this.throwImp(z,Math.floor(g.random()*5),props.ExplodeColumns[Math.floor(g.random()*props.ExplodeColumns.length)],(100+150*g.random())/150);
+      }
+      if(state.elapsed>=timeline.duration){if(state.animation==='Explode'){z.hp=0;}else {start('Idle');state.next=g.props.zombies.cannon.ShootInterval+g.random()*g.props.zombies.cannon.ShootIntervalAdditional;}}
+      return true;
+    }
+    const target=g.plants.filter(p=>p.hp>0&&p.row===z.row&&Math.abs(cellX(p.column)-z.x)<75&&!(p.kind==='springbean'&&['Ready','Idle_Ready'].includes(p.animation!))).sort((a,b)=>b.column-a.column)[0];
+    if(state.animation==='Walk'){
+      if(state.imp&&z.hp<g.props.zombies[z.kind].Toughness/2&&z.x>cellX(2))start('Throw');
+      else if(target)start('Smash');else return false;
+    }
+    state.elapsed+=step;
+    const event=state.animation==='Smash'?'smash':'impThrow';
+    if(!state.fired&&state.elapsed>=this.eventTime(name,state.animation,event)){
+      state.fired=true;
+      if(event==='smash'&&target){if(target.kind==='spikeweed')g.damage(z,g.props.plants.spikeweed.Damage);if(target.action!=='food'||target.kind!=='spikeweed'){target.hp=0;target.armor=0;}}
+      if(event==='impThrow'){state.imp=false;this.throwImp(z,Math.floor(g.random()*5),2,1.5);this.throwImp(z,Math.floor(g.random()*5),4,1.5);}
+    }
+    if(state.elapsed>=timelines[state.animation].duration)start('Walk');
+    return true;
+  }
   spawn(z:Zombie){
     const g=this.#game;
+    if(z.kind==='pirate_barrel')z.detachedAt=g.time;
+    if(z.kind==='barrelroller'){const barrel=g.spawnZombie('pirate_barrel',z.row,z.x-62);z.barrel=barrel.id;barrel.pusher=z.id;}
+    if(z.kind==='cannon'||z.kind==='pirate_gargantuar')z.pirate={animation:z.kind==='cannon'?'Idle':'Walk',at:g.time,elapsed:0,next:z.kind==='cannon'?g.props.zombies.cannon.TimeBefore+g.random()*g.props.zombies.cannon.TimeBeforeAdditional:0,count:0,fired:false,imp:true};
     if(z.kind==='swashbuckler'){
       const props=g.props.zombies.swashbuckler,back=this.eventTime('swashbuckler','SwingBack','swingJudge');
       const failure=seaCell(g.level.planks,z.row,8)&&g.random()<props.ChanceToFallIntoSea;
@@ -33,6 +150,7 @@ export class PirateBattle {
   }
   tickZombie(z:Zombie,dt:number){
     const g=this.#game;
+    if(this.tickNewZombie(z,dt))return true;
     if(z.swing){if(g.time<z.swing.end)return true;if(z.swing.failure){z.hp=0;return true;}delete z.swing;}
     if(z.route){
       const route=z.route,props=g.level.cannon!,point=route.points[route.index];
@@ -49,7 +167,8 @@ export class PirateBattle {
     if(!p||p.action!=='idle'||g.time<p.nextAction)return false;
     p.action='shoot';p.animation='Shoot';p.actionAt=g.time;p.eventIndex=0;return true;
   }
-  tickPlant(p:Plant){
+  tickPlant(p:Plant,dt:number){
+    if(p.kind==='spikeweed'||p.kind==='springbean'){this.tickGroundPlant(p,dt);return;}
     const g=this.#game,props=g.props.plants[p.kind],timelines=g.props.plantAnimations[p.kind],x=cellX(p.column);
     if(p.action==='idle'){
       if(p.kind==='coconutcannon'){

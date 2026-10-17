@@ -1,13 +1,13 @@
 import boardGridMaps from '../../public/assets/campaign/board-grid-maps.json';
-export const PLANT_KINDS = ['sunflower', 'peashooter', 'wallnut', 'potatomine', 'cabbagepult', 'bloomerang', 'iceburg', 'gravebuster', 'twinsunflower', 'iceweed', 'bonkchoy','repeater','kernelpult','melonpult','snowdrop','imitater','peapod','cherry_bomb','celerystalker','parsnip','sapfling','snapdragon','coconutcannon'] as const;
+export const PLANT_KINDS = ['sunflower', 'peashooter', 'wallnut', 'potatomine', 'cabbagepult', 'bloomerang', 'iceburg', 'gravebuster', 'twinsunflower', 'iceweed', 'bonkchoy','repeater','kernelpult','melonpult','snowdrop','imitater','peapod','cherry_bomb','celerystalker','parsnip','sapfling','snapdragon','coconutcannon','spikeweed','springbean'] as const;
 export type PlantKind = typeof PLANT_KINDS[number];
-export type ZombieKind = 'pirate'|'pirate_armor1'|'pirate_armor2'|'pirate_flag'|'swashbuckler'|'seagull' | 'mummy' | 'mummy_armor1' | 'mummy_armor2' | 'mummy_flag' | 'ra' | 'camel_onehump' | 'camel_twohump' | 'camel_manyhump' | 'camel_onehump_touch' | 'camel_twohump_touch' | 'camel_threehump_touch' | 'egypt_gargantuar' | 'egypt_imp' | 'explorer' | 'tomb_raiser' | 'pharaoh' | 'pharaoh_inner' | 'camel_manyhump_touch' | 'mummy_armor4' | 'explorer_veteran' | 'pharaoh_weak' | 'zombossmech_egypt' | 'zombossmech_egypt2';
+export type ZombieKind = 'barrelroller'|'pirate_barrel'|'pirate_gargantuar'|'pirate_imp'|'cannon'|'pirate'|'pirate_armor1'|'pirate_armor2'|'pirate_flag'|'swashbuckler'|'seagull' | 'mummy' | 'mummy_armor1' | 'mummy_armor2' | 'mummy_flag' | 'ra' | 'camel_onehump' | 'camel_twohump' | 'camel_manyhump' | 'camel_onehump_touch' | 'camel_twohump_touch' | 'camel_threehump_touch' | 'egypt_gargantuar' | 'egypt_imp' | 'explorer' | 'tomb_raiser' | 'pharaoh' | 'pharaoh_inner' | 'camel_manyhump_touch' | 'mummy_armor4' | 'explorer_veteran' | 'pharaoh_weak' | 'zombossmech_egypt' | 'zombossmech_egypt2';
 export const BOARD = { width: 1200, height: 700, left: 190, top: 160, cellWidth: 82, cellHeight: 98, columns: 9, rows: 5 };
 export const cellX = (column: number) => BOARD.left + (column + .5) * BOARD.cellWidth;
 export const rowY = (row: number) => BOARD.top + row * BOARD.cellHeight + 80;
 
 export interface PlantProperties {
-  RestTime:number;AttackIntervalAdditional:number;
+  KnockbackDistance:number;PlantfoodDuration:number;PlantfoodSideDPS:number;RestTime:number;AttackIntervalAdditional:number;
   PlantfoodChildrenCount:number;RetractionDelay:number;DamagePerHit:number;DamagePerSnip:number;PlantfoodSummonCount:number;
   CabbageType:string;CabbageTypePlantfood:string;ButterType:string;ChanceToButter:number;
   SunCost: number; Cooldown: number; CooldownFrom: number; Toughness: number;
@@ -19,7 +19,7 @@ export interface PlantProperties {
   BustTime:number;AttackInterval:number;ChillDuration:number;DamagePowered:number;PlantfoodDPS:number;PlantfoodDragSPS:number;
   ThrowInterval:number; ThrowIntervalAdditional:number; PierceCount:number; PlantfoodBoomerangCount:number; FreezeDuration:number;
 }
-export interface ZombieProperties { ChooseToSpawnOnNonDeckRows?:boolean;ChanceToFallIntoSea:number;LandingColumns:number[]; NormalDeathWhenMowed?:boolean;WavePointCost:number;Weight:number;CannotCarryPlantfoodsInWaves?:boolean;ZombossStages:BossStage[];MissileType:string; Toughness: number; WalkSPS: number; EatDPS: number; MaxAbsorbValue: number;TeamMemberCount:number[];SmashDamage:number;FireDPS:number;TimeBetweenGroups:number;TimeBetweenGroupsAdditional:number }
+export interface ZombieProperties { TimeBefore:number;TimeBeforeAdditional:number;ShootInterval:number;ShootIntervalAdditional:number;MaxImpCount:number;MaxImpCountAdditional:number;ExplodeImpCount:number;ExplodeImpCountAdditional:number;ShootColumns:number[];ExplodeColumns:number[]; ChooseToSpawnOnNonDeckRows?:boolean;ChanceToFallIntoSea:number;LandingColumns:number[]; NormalDeathWhenMowed?:boolean;WavePointCost:number;Weight:number;CannotCarryPlantfoodsInWaves?:boolean;ZombossStages:BossStage[];MissileType:string; Toughness: number; WalkSPS: number; EatDPS: number; MaxAbsorbValue: number;TeamMemberCount:number[];SmashDamage:number;FireDPS:number;TimeBetweenGroups:number;TimeBetweenGroupsAdditional:number }
 export interface BossAction {actionName:'walk'|'rush'|'shoot'|'summon';weight:number;repeatMax:number;repeatMin:number;summonProps:{pointMin:number;pointMax:number;zombieList:ZombieKind[]}}
 export interface BossStage {HitPoints:number;AnimRateModifier:number;ChilledDurationFromFrozen:number;MinIdleTime:number;MaxIdleTime:number;StunTime:number;StunDamageScale:number;StunStaggerBackMovement:number;StunStaggerBackTime:number;Actions:BossAction[]}
 export interface PowerProperties { TotalTime:number; DPS:number; TimePerUse:number; FlamethrowerNormalDPS:number; GroundFlameNormalDPS:number; GroundFlameDuration:number }
@@ -34,7 +34,7 @@ export interface Properties {
 }
 export interface SourceLevel { objects: { objclass: string; aliases?: string[]; objdata: Record<string, unknown> }[] }
 export interface SpawnAction {
-  mode:'walk'|'storm'|'ground'|'graves'|'graveZombies'|'conveyor';add?:ConveyorPlant[];remove?:PlantKind[];graveCount?:number;positions?:{row:number;column:number}[];wait?:number; zombies:{kind:ZombieKind;row:number|null;column?:number}[]; food:number;
+  mode:'raid'|'walk'|'storm'|'ground'|'graves'|'graveZombies'|'conveyor';add?:ConveyorPlant[];remove?:PlantKind[];graveCount?:number;positions?:{row:number;column:number}[];wait?:number; zombies:{kind:ZombieKind;row:number|null;behind?:boolean;column?:number}[]; food:number;
   columnStart:number;columnEnd:number;groupSize:number;interval:number;
 }
 export interface ConveyorPlant {PlantType:PlantKind;Weight:number;MinCount?:number;MinWeightFactor?:number;MaxCount?:number;MaxWeightFactor?:number;MaxCountCooldownSeconds?:number}
@@ -60,13 +60,14 @@ export function readLevel(source: SourceLevel): Level {
   const byName = new Map(source.objects.flatMap(o => (o.aliases ?? []).map(name => [name, o] as const)));
   const actions=(manager.Waves as string[][]).map(wave=>wave.filter(name=>!reference(name).startsWith('//')).map(name=>{
     const action=byName.get(reference(name))!,d=action.objdata;
+    if(action.objclass==='RaidingPartyZombieSpawnerProps')return {mode:'raid' as const,zombies:Array.from({length:Number(d.SwashbucklerCount)},()=>({kind:'swashbuckler' as const,row:null})),food:0,columnStart:0,columnEnd:8,groupSize:Number(d.GroupSize),interval:Number(d.TimeBetweenGroups)};
     if(action.objclass==='ModifyConveyorWaveActionProps')return {mode:'conveyor' as const,zombies:[],food:0,columnStart:0,columnEnd:8,groupSize:1,interval:0,add:(d.Add as (ConveyorPlant&{Type:string})[]).map(p=>({...p,PlantType:reference(p.Type) as PlantKind})),remove:(d.Remove as {Type:string}[]).map(p=>reference(p.Type) as PlantKind)};
     if(action.objclass==='SpawnGravestonesWaveActionProps')return {mode:'graves' as const,zombies:[],food:0,columnStart:0,columnEnd:8,groupSize:1,interval:0,graveCount:(d.GravestonePool as {Count:number}[]).reduce((n,g)=>n+g.Count,0),positions:(d.SpawnPositionsPool as {mX:number;mY:number}[]).map(p=>({column:p.mX,row:p.mY}))};
     if(action.objclass==='SpawnZombiesFromGridItemSpawnerProps')return {mode:'graveZombies' as const,zombies:(d.Zombies as {Type:string}[]).map(z=>({kind:reference(z.Type) as ZombieKind,row:null})),food:Number(d.AdditionalPlantfood),columnStart:0,columnEnd:8,groupSize:1,interval:0,wait:Number(d.ZombieSpawnWaitTime)};
     const mode:SpawnAction['mode']=action.objclass==='StormZombieSpawnerProps'?'storm':action.objclass==='SpawnZombiesFromGroundSpawnerProps'?'ground':'walk';
     const defaults=mode==='storm'?{ColumnStart:4,ColumnEnd:8,GroupSize:2,TimeBetweenGroups:2}:{ColumnStart:0,ColumnEnd:8,GroupSize:1,TimeBetweenGroups:0};
     const data={...defaults,AdditionalPlantfood:0,...d};
-    return {mode,zombies:(d.Zombies as {Type:string;Row?:string;Column?:string}[]).map(z=>({kind:reference(z.Type) as ZombieKind,row:z.Row===undefined?null:Number(z.Row)-1,...(z.Column===undefined?{}:{column:Number(z.Column)-1})})),
+    return {mode,zombies:(d.Zombies as {Type:string;Row?:string;Column?:string}[]).map(z=>({kind:reference(z.Type) as ZombieKind,row:z.Row===undefined||z.Row==='prev'?null:Number(z.Row)-1,...(z.Row==='prev'?{behind:true}:{}),...(z.Column===undefined?{}:{column:Number(z.Column)-1})})),
       food:'DynamicPlantfood' in d?(d.DynamicPlantfood as number[])[3]:Number(data.AdditionalPlantfood),
       columnStart:Number(data.ColumnStart),columnEnd:Number(data.ColumnEnd),groupSize:Number(data.GroupSize),interval:Number(data.TimeBetweenGroups)};
   }));
@@ -76,7 +77,8 @@ export function readLevel(source: SourceLevel): Level {
   const initial=source.objects.find(o=>o.objclass==='InitialPlantProperties');
   const protection=source.objects.find(o=>o.objclass==='ProtectThePlantChallengeProperties');
   const challenge=modules.flatMap(m=>byName.get(reference(m))?.objclass==='StarChallengeModuleProperties'?[byName.get(reference(m))!]:[])[0];
-  const activeChallenges=challenge?(challenge.objdata.Challenges as string[][])[0].map(name=>byName.get(reference(name))!):[];
+  // Pirate 8 references the shared SaveMowers objective but has no mower module.
+  const activeChallenges=challenge?(challenge.objdata.Challenges as string[][])[0].flatMap(name=>name==='RTID(SaveMowers@LevelModules)'?[]:[byName.get(reference(name))!]):[];
   const mold=activeChallenges.find(o=>o.objclass==='MoldColonyChallengeProps');
   const limit=activeChallenges.find(o=>o.objclass==='StarChallengeSimultaneousPlantsProps');
   const sunLimit=activeChallenges.find(o=>o.objclass==='StarChallengeSunUsedProps');
@@ -114,4 +116,4 @@ export interface SpecialTiming {gargPharaoh:number;gargSmash:number;gargSmashEnd
 export interface CampaignTiming { cabbage:number;cabbageDuration:number;cabbageFood:number;cabbageFoodEnd:number;boomerang:number;boomerangDuration:number;boomerangCatch:number;ice:number;iceDuration:number;iceFood:number;iceFoodEnd:number }
 export interface BonkTiming {attack:number;heavy:number;foodStart:number;foodHit:number}
 export interface AnimationTiming { wallnutArmor:number;wallnutFoodEnd:number; bonk?:BonkTiming; shoot:number;shootDuration:number;produce:number;produceDuration:number;mineGrow:number;mineExplode:number;mineDeath:number;raStart:number;raEnd:number;campaign?:CampaignTiming;special?:SpecialTiming }
-export const plantLabels: Record<PlantKind, string> = { snapdragon:'火龙草',coconutcannon:'椰子加农炮',peashooter:'豌豆射手',sunflower:'向日葵',wallnut:'坚果',potatomine:'土豆地雷',cabbagepult:'卷心菜投手',bloomerang:'回旋镖射手',iceburg:'冰冻生菜',gravebuster:'噬碑藤',twinsunflower:'双胞向日葵',iceweed:'冰地刺',bonkchoy:'菜问',repeater:'双发射手',kernelpult:'玉米投手',melonpult:'西瓜投手',snowdrop:'雪莲',imitater:'模仿者',peapod:'豌豆荚',cherry_bomb:'樱桃炸弹',celerystalker:'潜伏芹菜',parsnip:'防风草',sapfling:'树脂投手' };
+export const plantLabels: Record<PlantKind, string> = { spikeweed:'地刺',springbean:'弹簧豆',snapdragon:'火龙草',coconutcannon:'椰子加农炮',peashooter:'豌豆射手',sunflower:'向日葵',wallnut:'坚果',potatomine:'土豆地雷',cabbagepult:'卷心菜投手',bloomerang:'回旋镖射手',iceburg:'冰冻生菜',gravebuster:'噬碑藤',twinsunflower:'双胞向日葵',iceweed:'冰地刺',bonkchoy:'菜问',repeater:'双发射手',kernelpult:'玉米投手',melonpult:'西瓜投手',snowdrop:'雪莲',imitater:'模仿者',peapod:'豌豆荚',cherry_bomb:'樱桃炸弹',celerystalker:'潜伏芹菜',parsnip:'防风草',sapfling:'树脂投手' };

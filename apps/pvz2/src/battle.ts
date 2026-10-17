@@ -10,7 +10,7 @@ import type { Scene } from './rendering/scene';
 import { cubicInOut, introCamera } from './rendering/presentation';
 
 const DESCRIPTIONS: Record<PlantKind,string> = {
-  snapdragon:'火龙草向前方三行喷火，灼烧靠近的僵尸。',coconutcannon:'点击椰子加农炮发射炮弹，爆炸后需要时间重新装填。',snowdrop:'雪莲抛出冰霜花瓣，使僵尸减速，偶尔将它冻住。',imitater:'选择本关的一种植物，模仿者会在种下后变成它。',peapod:'在同一格重复种植，最多叠加五个豌豆头。',cherry_bomb:'樱桃炸弹炸毁周围九宫格内的僵尸。',celerystalker:'潜伏芹菜藏在地下，攻击走过身后的僵尸。',parsnip:'防风草用钳子攻击前方，被吃掉后冲出去继续攻击。',sapfling:'树脂投手在落点留下树脂，减缓僵尸的移动。',
+  spikeweed:'地刺可以伤害踩在上面的僵尸，并刺破滚桶。',springbean:'弹簧豆可以弹开僵尸，也能把靠近海边的僵尸弹入水中。',snapdragon:'火龙草向前方三行喷火，灼烧靠近的僵尸。',coconutcannon:'点击椰子加农炮发射炮弹，爆炸后需要时间重新装填。',snowdrop:'雪莲抛出冰霜花瓣，使僵尸减速，偶尔将它冻住。',imitater:'选择本关的一种植物，模仿者会在种下后变成它。',peapod:'在同一格重复种植，最多叠加五个豌豆头。',cherry_bomb:'樱桃炸弹炸毁周围九宫格内的僵尸。',celerystalker:'潜伏芹菜藏在地下，攻击走过身后的僵尸。',parsnip:'防风草用钳子攻击前方，被吃掉后冲出去继续攻击。',sapfling:'树脂投手在落点留下树脂，减缓僵尸的移动。',
   repeater:'双发射手连续发射两颗豌豆。',kernelpult:'玉米投手抛射玉米粒，偶尔用黄油定住僵尸。',melonpult:'西瓜投手的西瓜能伤害落点周围的僵尸。',
   bonkchoy:'菜问快速拳击前后靠近的僵尸。',
   gravebuster:'噬碑藤吞噬墓碑，为种植腾出空间。',
@@ -297,6 +297,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       if(event.type==='sun')sound('collect');
       if(event.type==='explode')sound('spudow');
       if(event.type==='sprout')tip('获得植物幼苗！通关时一起领取。',7);
+      if(event.type==='raid'){sound('awooga');tip('海盗突袭！',5);}
       if(event.type==='storm'){sound('awooga');tip('沙尘暴来袭！',5);}
       if(event.type==='wave'&&(game.wave===1||game.wave===game.level.waves.length)){
         sound(game.wave===game.level.waves.length?'finalWave':'awooga');
@@ -334,7 +335,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(game.phase==='won') {
       const first=!progress.isComplete(levelConfig.id)&&!!(levelConfig.firstReward.image||levelConfig.firstReward.plant);
       const reward=levelConfig.firstReward;
-      const rewardImage=first?(reward.plant?cards.get(reward.plant)!:reward.animation?scene.art.image(scene.app,'reward',reward.animation,reward.armature):levelConfig.day===7?assetUrl(scene.art.catalog.ui['note-egypt'].image):scene.art.image(scene.app,'reward',levelConfig.day===4?'powerups':[6,11,15,22,27,30,34].includes(levelConfig.day)?'Pinata':(levelConfig.day===25?'egypt':[23,31].includes(levelConfig.day)?'dangerroom_egypt':reward.image),[6,11,15,22,27,30,34].includes(levelConfig.day)?'Upgrades':[17,21].includes(levelConfig.day)?'Upgrades':[10,14,16,18,20].includes(levelConfig.day)?'CoinBag':undefined)):'';
+      const rewardImage=first?(reward.plant?cards.get(reward.plant)!:reward.animation?scene.art.image(scene.app,'reward',reward.animation,reward.armature):levelConfig.day===7?assetUrl(scene.art.catalog.ui[`note-${levelConfig.world}`].image):scene.art.image(scene.app,'reward',levelConfig.day===4?'powerups':[6,11,15,22,27,30,34].includes(levelConfig.day)?'Pinata':(levelConfig.day===25?'egypt':[23,31].includes(levelConfig.day)?'dangerroom_egypt':reward.image),[6,11,15,22,27,30,34].includes(levelConfig.day)?'Upgrades':[17,21].includes(levelConfig.day)?'Upgrades':[10,14,16,18,20].includes(levelConfig.day)?'CoinBag':undefined)):'';
       const sprouts=game.sprouts+game.pickups.filter(p=>p.kind==='sprout').length;
       panel('关卡完成',`${first?`<img class="map-reward" src="${rewardImage}" alt="${levelConfig.firstReward.label}"><p>获得${levelConfig.firstReward.label}</p>`:`<p>${title}</p>`}${sprouts>0?`<p>植物幼苗 × ${sprouts}</p>`:''}<button id="result-map" class="battle-button">继续</button>`);
       $('#result-map').onclick=()=>{progress.finish(levelConfig.world,levelConfig.id,sprouts);menu();};

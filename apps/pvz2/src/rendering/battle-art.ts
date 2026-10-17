@@ -55,7 +55,7 @@ export class BattleArt {
   }
   card(app: Application, kind: PlantKind): string {
     const container = new Container();
-    const layers: PixiArmatureDisplay[] = [this.build('cards',['cabbagepult','bloomerang','iceburg','gravebuster','twinsunflower','bonkchoy','repeater'].includes(kind)?'egypt':['kernelpult','snapdragon','coconutcannon','cherry_bomb'].includes(kind)?'pirate':'frontyard','background'),this.build('cards',kind,'plants'),this.build('cards','dotPrice','upper_dots')];
+    const layers: PixiArmatureDisplay[] = [this.build('cards',['cabbagepult','bloomerang','iceburg','gravebuster','twinsunflower','bonkchoy','repeater'].includes(kind)?'egypt':['kernelpult','snapdragon','coconutcannon','cherry_bomb','spikeweed','springbean'].includes(kind)?'pirate':'frontyard','background'),this.build('cards',kind,'plants'),this.build('cards','dotPrice','upper_dots')];
     container.addChild(...layers);
     const image = (app.renderer.extract.canvas({target:container,resolution:2,frame:new Rectangle(-119,-75,238,150)}) as HTMLCanvasElement).toDataURL('image/png');
     layers.forEach(r=>r.dispose()); container.destroy({children:true}); return image;
