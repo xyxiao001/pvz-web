@@ -50,6 +50,7 @@ export class Game {
   foodLimit=3;
   shovelRefund=0;
   wallnutFirstAid=false;
+  plantfoodRefresh=false;
   manualMowers=0;
   private heldMower: number | null = null;
   sunProduced=0;
@@ -134,7 +135,7 @@ export class Game {
     const p = this.props.plants[kind];
     const placementKind=kind==='imitater'?this.imitateKind:kind;
     const existing=this.plants.find(p=>p.row===row&&p.column===column);
-    const repairing=this.wallnutFirstAid&&kind==='wallnut'&&existing?.kind==='wallnut'&&existing.hp<=p.Toughness*.75||kind==='spikerock'&&existing?.kind==='spikerock'&&existing.spikes!<p.MaxSpike||kind==='chardguard'&&existing?.kind==='chardguard'&&existing.leaves!<p.MaxBounceTime;
+    const repairing=this.wallnutFirstAid&&(kind==='wallnut'||kind==='tallnut')&&existing?.kind===kind&&existing.hp<=p.Toughness*(kind==='tallnut'?2/3:.75)||kind==='spikerock'&&existing?.kind==='spikerock'&&existing.spikes!<p.MaxSpike||kind==='chardguard'&&existing?.kind==='chardguard'&&existing.leaves!<p.MaxBounceTime;
     const stacking=kind==='peapod'&&existing?.kind==='peapod'&&existing.heads!<5;
     if(seaCell(this.level.planks,row,column)||!this.cowboy.canPlant(row,column))return false;
     if(kind==='imitater'&&this.imitateKind===null)return false;
@@ -146,7 +147,7 @@ export class Game {
       || (placementKind==='gravebuster'?!this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0):this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0)) || existing&&!stacking&&!repairing) return false;
     if(packet){if(this.level.corral)this.corralWaiting=false;this.conveyor.splice(this.conveyor.indexOf(packet),1);if(!this.level.corral)this.nextCard=Math.min(this.nextCard,this.time+this.conveyorDelay());}
     else {const cost=this.seedCost(kind);this.sun -= cost; this.sunSpent+=cost;this.cooldowns[kind] = this.preparing?0:this.seedCooldown(kind);}
-    if(repairing){if(kind==='wallnut')existing.hp=p.Toughness;else if(kind==='chardguard'){existing.leaves=p.MaxBounceTime;existing.hp=p.Toughness;}else existing.spikes=p.MaxSpike;}else if(stacking){existing.heads!++;existing.hp=p.Toughness;}else this.addPlant(kind, row, column);
+    if(repairing){if(kind==='wallnut'||kind==='tallnut')existing.hp=p.Toughness;else if(kind==='chardguard'){existing.leaves=p.MaxBounceTime;existing.hp=p.Toughness;}else existing.spikes=p.MaxSpike;}else if(stacking){existing.heads!++;existing.hp=p.Toughness;}else this.addPlant(kind, row, column);
     if(this.boosts.has(kind)&&!this.preparing){this.usedBoosts.add(kind);if(kind==='imitater')this.plants.at(-1)!.boosted=true;else this.plantFood(row,column,true);}
     this.checkChallenges();
     this.events.push({ type: 'plant' });
@@ -204,8 +205,13 @@ export class Game {
     this.suns = this.suns.filter(s => s.id !== id); this.events.push({ type: 'sun' });
   }
 
+  refreshSeed(kind:PlantKind):boolean {
+    if(!this.plantfoodRefresh||this.phase!=='playing'||this.preparing||this.food===0||this.cooldowns[kind]<=0)return false;
+    this.food--;this.cooldowns[kind]=0;return true;
+  }
   plantFood(row: number, column: number, boost=false): boolean {
     const plant = this.plants.find(p => p.row === row && p.column === column && p.hp>0);
+    if(plant?.kind==='tallnut'&&plant.armor>0)return false;
     if(plant?.kind==='escaperoot'&&(!plant.rootGrown||plant.action!=='idle'||plant.animation!=='Idle'))return false;
     if (!plant || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['gravebuster','imitater','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
     if(!boost)this.food--; plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
@@ -224,6 +230,7 @@ export class Game {
     if(plant.kind==='sunflower'||plant.kind==='twinsunflower'){plant.burst=this.props.plants[plant.kind].PlantfoodTime;plant.nextBurst=this.time+4/30;}
     if(plant.kind==='bonkchoy'){plant.burst=this.props.plants.bonkchoy.PlantfoodHitCount;plant.nextBurst=this.time+this.timing.bonk!.foodStart;plant.facing=1;}
     if(plant.kind==='iceweed')this.iceweedSpikes.set(plant.id,3);
+    if(plant.kind==='tallnut'){plant.hp=this.props.plants.tallnut.Toughness;plant.armor=this.props.plants.tallnut.ArmorToughness;plant.action='idle';this.cowboy.sounds.push('tallnut/foodSound');}
     if (plant.kind === 'wallnut') { plant.hp = this.props.plants.wallnut.Toughness; }
     if (plant.kind === 'potatomine') {
       plant.age = this.props.plants.potatomine.ChargeTime;
@@ -802,7 +809,24 @@ export class Game {
     this.cowboy.tick(dt);
     for(const z of this.zombies){
       if(z.entry==='storm'&&this.time-z.entryAt<=1)z.x=z.entryX+(1070-z.entryX)*(1-(this.time-z.entryAt));
-      if(z.leap){const t=Math.min(1,(this.time-z.leap.at)/(z.leap.duration??.5));z.x=z.leap.fromX+(z.leap.toX-z.leap.fromX)*t;if(t===1){z.row=z.leap.toRow;this.cowboy.landed(z);if(z.kind==='egypt_imp'||z.kind==='pirate_imp'||z.kind==='west_bullrider')z.landUntil=this.time+14/30;if(this.level.world==='pirate'&&seaCell(this.level.planks,z.row,Math.floor((z.x-BOARD.left)/BOARD.cellWidth))&&!isFlying(z)){z.hp=0;z.deathCause='water';}z.leap=null;}}
+      if(z.leap){
+        const flight=z.leap,t=Math.min(1,(this.time-flight.at)/(flight.duration??.5));
+        z.x=flight.fromX+(flight.toX-flight.fromX)*t;
+        const height=(rowY(flight.toRow)-flight.fromY)*(1-t)+90*Math.sin(t*Math.PI);
+        // Native tallNutListen uses the ground hit rectangle, excluding leap height.
+        const blocker=z.west?.bullThrown&&!z.west.blockedByTallnut&&this.plants.find(p=>p.kind==='tallnut'&&p.hp>0&&p.row===flight.toRow&&Math.abs(z.x-cellX(p.column))<48*.55/2+20);
+        if(blocker){
+          z.west!.blockedByTallnut=true;z.west!.animation='Blocked';z.west!.at=this.time;
+          z.leap={fromX:z.x,fromY:rowY(flight.toRow)-height,toX:z.x,toRow:flight.toRow,at:this.time,duration:this.props.plantAnimations.cowboyImp.Blocked.duration};
+          this.cowboy.sounds.push('cowboyImp/landSounds');
+        }else if(t===1){
+          z.row=flight.toRow;this.cowboy.landed(z);
+          if(z.kind==='egypt_imp'||z.kind==='pirate_imp'||z.kind==='west_bullrider')z.landUntil=this.time+(z.west?.bullThrown?this.props.plantAnimations.cowboyImp.LandVerticle.events.find(e=>e.name==='switchingFalse')!.at:14/30);
+          if(z.west?.bullThrown){z.west.animation='LandVerticle';z.west.at=this.time;this.cowboy.sounds.push('cowboyImp/landSounds');}
+          if(this.level.world==='pirate'&&seaCell(this.level.planks,z.row,Math.floor((z.x-BOARD.left)/BOARD.cellWidth))&&!isFlying(z)){z.hp=0;z.deathCause='water';}z.leap=null;
+        }
+      }
+      if(z.west?.animation==='LandVerticle'&&this.time>=z.landUntil!)delete z.west.animation;
     }
     this.tickConveyor(dt);this.tickPower(dt);this.tickMatching();this.escape.tick(dt);this.finale.tick(dt);
     for (const p of this.plants) {

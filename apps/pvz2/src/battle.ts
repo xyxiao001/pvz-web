@@ -18,6 +18,7 @@ const DESCRIPTIONS: Record<PlantKind,string> = {
   iceweed:'冰地刺伤害并减速踩在上面的僵尸。',
   peashooter:'豌豆射手向前发射豌豆，攻击所在行的僵尸。',
   sunflower:'向日葵为你生产额外的阳光。',
+  tallnut:'高坚果拥有坚硬的外壳，还能拦住飞来的牛仔小鬼。',
   wallnut:'坚果用坚硬的外壳保护身后的植物。',
   cabbagepult:'卷心菜投手能够越过墓碑，将卷心菜投向僵尸。',
   bloomerang:'回旋镖射手的回旋镖可以穿过三个目标，并在返回时再次造成伤害。',
@@ -166,7 +167,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     game=new Game(readLevel(source),properties,scene.timing,zombie=>scene.absorptionTarget(zombie),Date.now()>>>0,!progress.isComplete(levelConfig.id));
     game.boosts=new Set(Object.entries(progress.gardenBoosts()).filter(([,count])=>count>0).map(([kind])=>kind as PlantKind));
     for(const kind of cardOrder){const card=$(`[data-choose="${kind}"]`),boosted=game.boosts.has(kind);card.classList.toggle('boosted',boosted);card.setAttribute('aria-label',`选择${plantLabels[kind]}${boosted?'（爆发）':''}`);}
-    game.wallnutFirstAid=bonuses.wallnutFirstAid;game.foodLimit=bonuses.foodLimit;game.shovelRefund=bonuses.shovelRefund;game.manualMowers=bonuses.manualMowers;
+    game.plantfoodRefresh=bonuses.plantfoodRefresh;game.wallnutFirstAid=bonuses.wallnutFirstAid;game.foodLimit=bonuses.foodLimit;game.shovelRefund=bonuses.shovelRefund;game.manualMowers=bonuses.manualMowers;
     if(!game.level.lastStand)game.sun+=bonuses.startingSun;
     const objective=[game.level.maxPlantsLost!==null?`最多损失 ${game.level.maxPlantsLost} 株植物`:'',game.level.killChallenge?`在 ${game.level.killChallenge.seconds} 秒内消灭 ${game.level.killChallenge.count} 只僵尸`:'',game.level.mold.length?'霉菌覆盖的地块不能种植':'',game.level.mustProtect?`保护好 ${game.level.mustProtect} 株植物`:'',game.level.targetSun!==null?`生产 ${game.level.targetSun} 阳光`:'',game.level.maxPlants!==null?`同时种植不超过 ${game.level.maxPlants} 株植物`:'',game.level.flowerLine!==null?'不要让僵尸踩到花坛':'',game.level.cannon?`点击椰子加农炮，获得 ${game.level.cannon.MinScore} 分`:'',game.level.maxSun!==null?`消耗阳光不超过 ${game.level.maxSun}`:'',game.level.lastStand?`用 ${game.level.lastStand.sun} 阳光布置防线，再开始进攻`:''].filter(Boolean).join(' · ');
     for(const element of host.querySelectorAll<HTMLElement>('.challenge-objective')){element.textContent=objective;element.hidden=!objective;}
@@ -184,7 +185,9 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   function updateDeck() {
     for (let i=0;i<seedSlots;i++) {
       const button=$<HTMLButtonElement>(`[data-slot="${i}"]`),kind=deck[i];
-      button.disabled=screen==='choosing'?!kind:!kind||game.sun<game.seedCost(kind)||!game.preparing&&game.cooldowns[kind]>0;
+      const refresh=!!kind&&selected==='food'&&game.plantfoodRefresh&&!game.preparing&&game.food>0&&game.cooldowns[kind]>0;
+      button.disabled=screen==='choosing'?!kind:!kind||!refresh&&(game.sun<game.seedCost(kind)||!game.preparing&&game.cooldowns[kind]>0);
+      button.classList.toggle('food-refresh',refresh);
       button.classList.toggle('empty',!kind);button.classList.toggle('selected',selected===kind);
       button.setAttribute('aria-label',kind?`${screen==='choosing'?'移除':'选择'}${plantLabels[kind]}`:'空卡槽');
       const image=button.querySelector<HTMLImageElement>('img')!;image.hidden=!kind;if(kind)image.src=cards.get(kind)!;
@@ -236,7 +239,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(game.time>tipUntil)$('#game-tip').hidden=true;
     if(levelConfig.id==='egypt2'&&!foodTipShown&&game.pickups.some(p=>p.kind==='food')){foodTipShown=true;tip('点击发光的能量豆收集，再点击左下角能量豆，对植物使用。',12);}
     $('#shovel').classList.toggle('selected',selected==='shovel');
-    $('#wave-label').textContent=game.level.cannon?`${game.pirate.score.toLocaleString()} / ${game.level.cannon.MinScore.toLocaleString()}${game.time<game.pirate.comboUntil&&game.pirate.combo>=3?` · ${game.pirate.combo} 连击`:''}`:game.level.killChallenge?`${game.killChallengeComplete?'挑战完成':`${game.level.killChallenge.seconds} 秒内击杀 ${game.recentKills.length} / ${game.level.killChallenge.count}`}${game.level.targetSun!==null?` · 阳光 ${Math.min(game.sunProduced,game.level.targetSun)} / ${game.level.targetSun}`:''} · ${game.wave} / ${game.level.waves.length}`:game.level.targetSun!==null?`阳光 ${Math.min(game.sunProduced,game.level.targetSun)} / ${game.level.targetSun} · ${game.wave} / ${game.level.waves.length}`:game.level.maxPlantsLost!==null?`损失 ${game.plantsLost} / ${game.level.maxPlantsLost} · ${game.wave} / ${game.level.waves.length}`:game.boss?`僵王 · ${game.boss.stage+1} / 3`:game.wave===0?'':`${game.wave} / ${game.level.waves.length}`;
+    $('#wave-label').textContent=game.level.cannon?`${game.pirate.score.toLocaleString()} / ${game.level.cannon.MinScore.toLocaleString()}${game.time<game.pirate.comboUntil&&game.pirate.combo>=3?` · ${game.pirate.combo} 连击`:''}`:game.level.killChallenge?`${game.killChallengeComplete?'挑战完成':`${game.level.killChallenge.seconds} 秒内击杀 ${game.recentKills.length} / ${game.level.killChallenge.count}`}${game.level.targetSun!==null?` · 阳光 ${Math.min(game.sunProduced,game.level.targetSun)} / ${game.level.targetSun}`:''} · ${game.wave} / ${game.level.waves.length}`:game.level.targetSun!==null?`阳光 ${Math.min(game.sunProduced,game.level.targetSun)} / ${game.level.targetSun} · ${game.wave} / ${game.level.waves.length}`:game.level.maxPlantsLost!==null?`损失 ${game.plantsLost} / ${game.level.maxPlantsLost}${game.level.maxSun!==null?` · 阳光 ${game.sunSpent} / ${game.level.maxSun}`:''} · ${game.wave} / ${game.level.waves.length}`:game.boss?`僵王 · ${game.boss.stage+1} / 3`:game.wave===0?'':`${game.wave} / ${game.level.waves.length}`;
     $('#wave-fill').style.width=`${(game.boss?game.boss.progress:game.wave/game.level.waves.length)*100}%`;
     if(game.level.world==='west'&&game.cowboy.pianoPlaying!==pianoPlaying){pianoPlaying=game.cowboy.pianoPlaying;music.src=assetUrl(pianoPlaying?'cowboy/piano.mp3':levelConfig.presentation.music);playMusic();}
     if(game.boss){const stage=game.boss.zombie.hp<=0?3:game.boss.stage;if(bossMusicStage!==stage){bossMusicStage=stage;music.src=assetUrl(stage===3?'campaign/bossVictory.mp3':`campaign/boss${stage}.mp3`);playMusic();}}
@@ -370,7 +373,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   $('#shovel').onclick=()=>{if(screen==='playing'){selected=selected==='shovel'?null:'shovel';updateHud();}};
   for(let i=0;i<seedSlots;i++)$(`[data-slot="${i}"]`).onclick=()=>{
     if(screen==='choosing'){deck.splice(i,1);sound('cardCancel');updateDeck();}
-    else if(screen==='playing'){selected=selected===deck[i]?null:deck[i];updateHud();}
+    else if(screen==='playing'){if(selected==='food'&&game.plantfoodRefresh){if(game.refreshSeed(deck[i]))selected=null;}else selected=selected===deck[i]?null:deck[i];updateHud();}
   };
   window.addEventListener('keydown',event=>{
     if(host.hidden||event.repeat)return;

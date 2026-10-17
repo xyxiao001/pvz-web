@@ -67,3 +67,5 @@ button{font:inherit;cursor:pointer;border:0;padding:0;background:transparent;col
 .battle-app[data-mode=cannon] .sun-counter,.battle-app[data-mode=cannon] .seed-bank,.battle-app[data-mode=cannon] #shovel,.battle-app[data-mode=cannon] #plant-food{display:none}
 
 .battle-app #corral-view{position:absolute;right:2%;bottom:3%;pointer-events:auto;font-size:1.5cqw}
+
+.seed.food-refresh { outline: 3px solid #8c9dff; outline-offset: -3px; }

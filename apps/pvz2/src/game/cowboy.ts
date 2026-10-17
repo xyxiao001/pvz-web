@@ -2,6 +2,7 @@ import {BOARD,cellX,rowY,type ZombieKind} from './level';
 import type {Game,Plant,Zombie} from './model';
 export const cowboyArmor=(kind:ZombieKind)=>kind==='cowboy_armor1'?'cowboy_armor1':kind==='cowboy_armor2'?'cowboy_armor2':null;
 export interface CowboyZombie {
+ bullThrown?:boolean;blockedByTallnut?:boolean;
  bull?:{delay:number;blocked:boolean;retreating:boolean;cheer:number};chickens?:boolean;imp?:boolean;fired?:boolean;animation?:string;at:number;elapsed:number;fuse?:number;ignited?:boolean;dirty?:boolean;
  poncho?:number;plate?:number;dance?:boolean;danceBeat?:number;lane?:{from:number;to:number;at:number;y?:number};
  chiliUntil?:number;tailAt?:number;poisonAt?:number;poisonDuration?:number;farted?:boolean;hat?:boolean;
@@ -36,7 +37,7 @@ export class CowboyBattle {
   if(z.kind==='west_bull')z.west={at:g.time,elapsed:0,imp:true,fired:false,bull:{delay:props.BullRunAgainDelay,blocked:false,retreating:false,cheer:3}};
   if(z.kind==='chicken_farmer')z.west={at:g.time,elapsed:0,chickens:true};
   if(z.kind==='cowboy_gargantuar')z.west={at:g.time,elapsed:0,imp:true,animation:'Walk',fired:false};
-  if(z.kind==='piano')z.west={at:g.time,elapsed:0};
+  if(z.kind==='piano'||z.kind==='west_bullrider')z.west={at:g.time,elapsed:0};
   if(z.kind==='prospector')z.west={at:g.time,elapsed:0,fuse:props.ExplodeCountdown,ignited:true,dirty:false};
   if(z.kind.startsWith('poncho'))z.west={at:g.time,elapsed:0,poncho:props.PonchoToughness,plate:g.random()<props.ChanceToPlate?props.ShieldToughness:0};
   if(['cowboy','cowboy_armor1','cowboy_armor2','cowboy_flag'].includes(z.kind))z.west={at:g.time,elapsed:0,dance:false,danceBeat:0,hat:z.armor===0};
@@ -138,7 +139,7 @@ export class CowboyBattle {
   for(const event of timeline.events)if(before<event.at&&s.elapsed>=event.at){
    if(event.name==='rushEnd'){bull.retreating=false;this.sounds.push('bull/bullBrakeSounds');if(s.imp)this.sounds.push('bull/impBrakeSounds');}
    if(event.name==='throw'&&s.imp){
-    s.imp=false;const x=z.x+9.46*.51*direction,imp=g.spawnZombie('west_bullrider',z.row,x);imp.reversed=z.reversed;
+    s.imp=false;const x=z.x+9.46*.51*direction,imp=g.spawnZombie('west_bullrider',z.row,x);imp.reversed=z.reversed;imp.west!.bullThrown=true;
     imp.leap={fromX:x,fromY:rowY(z.row)-154.208*.51,toX:Math.max(cellX(0),Math.min(cellX(8),x-direction*props.ImpThrowDistance*BOARD.cellWidth)),toRow:z.row,at:g.time,duration:.7};
     this.sounds.push('bull/bullThrowSounds','bull/impThrowSounds');
    }
