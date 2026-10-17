@@ -63,7 +63,7 @@ export class PirateFinalePlants {
     const chain:Zombie[]=[first];
     for(let i=0;i<props.SplashCount;i++){const last=chain.at(-1)!,next=g.zombies.filter(z=>z.hp>0&&!chain.includes(z)&&Math.abs(z.row-last.row)<=1&&Math.abs(z.x-last.x)<BOARD.cellWidth*1.5).sort((a,b)=>a.x-b.x)[0];if(!next)break;chain.push(next);}
     let x=cellX(p.column),y=rowY(p.row)-50;
-    for(const [i,z] of chain.entries()){g.damage(z,i?props.SplashDamage:props.Damage);this.visual('reedLink','Play1',x,y,z.x,rowY(z.row)-50);this.visual('reedHit','Play',z.x,rowY(z.row)-50);x=z.x;y=rowY(z.row)-50;}
+    for(const [i,z] of chain.entries()){g.damage(z,i?props.SplashDamage:props.Damage,z.kind==='west_bull'?'electric':'normal');this.visual('reedLink','Play1',x,y,z.x,rowY(z.row)-50);this.visual('reedHit','Play',z.x,rowY(z.row)-50);x=z.x;y=rowY(z.row)-50;}
     this.sounds.push('lightningreed/attackSound');return true;
   }
   tickPlant(p:Plant,dt:number){
@@ -123,7 +123,7 @@ export class PirateFinalePlants {
       const age=g.time-c.at;c.striking=false;if(age<.5)continue;
       if(age>=.5+g.props.plants.lightningreed.PlantfoodDuration){if(!c.fading){c.fading=true;this.sounds.push('reedCloud/fadeSound');}continue;}
       let target=g.zombies.find(z=>z.id===c.target&&z.hp>0);if(!target){const targets=g.zombies.filter(z=>z.hp>0);target=targets[Math.floor(g.random()*targets.length)];c.target=target?.id??null;}
-      if(target){const dx=target.x-c.x,dy=rowY(target.row)-c.y,length=Math.hypot(dx,dy),step=Math.min(length,550*dt);if(length){c.x+=dx/length*step;c.y+=dy/length*step;}if(length-step<=30){if(length>30)this.sounds.push('reedCloud/thunderSound');c.striking=true;g.damage(target,g.props.plants.lightningreed.PlantfoodDPS*dt);}}
+      if(target){const dx=target.x-c.x,dy=rowY(target.row)-c.y,length=Math.hypot(dx,dy),step=Math.min(length,550*dt);if(length){c.x+=dx/length*step;c.y+=dy/length*step;}if(length-step<=30){if(length>30)this.sounds.push('reedCloud/thunderSound');c.striking=true;g.damage(target,g.props.plants.lightningreed.PlantfoodDPS*dt,target.kind==='west_bull'?'electric':'normal');}}
     }
     this.clouds=this.clouds.filter(c=>g.time-c.at<.5+g.props.plants.lightningreed.PlantfoodDuration+g.props.plantAnimations.reedCloud.Fade.duration);
     for(const f of this.fires)for(const z of g.zombies)if(g.time-f.at<g.props.plants.jalapeno.Duration&&z.hp>0&&g.inLane(z,f.row)&&!f.hit.includes(z.id)&&g.time-f.at>=Math.abs((z.x-cellX(f.column))/BOARD.cellWidth)/18){g.damage(z,g.props.plants.jalapeno.Damage,'potato');f.hit.push(z.id);}

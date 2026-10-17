@@ -7,7 +7,7 @@ import {BATTLE_LEVELS} from '../src/game/levels';
 import {Scene} from '../src/rendering/scene';
 import {Game} from '../src/game/model';
 import {readLevel,rowY,cellX,BOARD,type Properties,type SourceLevel} from '../src/game/level';
-import {playCowboy,playCowboyNext} from './cowboy-strategy';
+import {playCowboy,playCowboyNext,playCowboyThird} from './cowboy-strategy';
 import {json,assetUrl} from '../src/assets/load';
 const font=new FontFace('PvZMap',`url('${assetUrl('shell/map-font.woff2')}')`);document.fonts.add(await font.load());
 const data=new Map<string,string>(),storage={getItem:(k:string)=>data.get(k)??null,setItem:(k:string,v:string)=>{data.set(k,v);},removeItem:(k:string)=>{data.delete(k);}},progress=new ProgressStore(storage);
@@ -19,14 +19,14 @@ const shell=new WorldShell(worldHost,async id=>{battle=createBattle(battleHost,a
 async function clean(){if(battle){await battle.dispose();battle=undefined;}if(scene){await scene.dispose();scene=undefined;}sceneHost.hidden=true;worldHost.hidden=true;battleHost.hidden=true;}
 function button(label:string,action:()=>Promise<void>|void){const b=document.createElement('button');b.textContent=label;b.onclick=async()=>{try{await action();}catch(e){status.textContent=String(e);throw e;}};controls.append(b);}
 button('世界地图',async()=>{await clean();worldHost.hidden=false;await shell.init();});
-for(let day=1;day<=10;day++)button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`cowboy${day}`],progress);await battle.enter();});
-for(let day=1;day<=10;day++)button(`场景${day}`,async()=>{
+for(let day=1;day<=15;day++)button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`cowboy${day}`],progress);await battle.enter();});
+for(let day=1;day<=15;day++)button(`场景${day}`,async()=>{
  await clean();sceneHost.hidden=false;scene=new Scene();const config=BATTLE_LEVELS[`cowboy${day}`],level=readLevel(await json<SourceLevel>(config.source));
  const groups=await Promise.all(['levels','campaign','pirate','cowboy'].map(name=>json<Properties>(name+'/properties.json'))),flag=await json<Properties['zombies']['mummy_flag']>('battle/flag.json');
  const props=groups.reduce((a,b)=>({...a,...b,plants:{...a.plants,...b.plants},zombies:{...a.zombies,...b.zombies},armors:{...a.armors,...b.armors},projectiles:{...a.projectiles,...b.projectiles},plantAnimations:{...a.plantAnimations,...b.plantAnimations}}));props.zombies.mummy_flag=flag;
  await scene.init(sceneHost,()=>{},config,config.plants.map(p=>p.kind),level);
  game=new Game(level,props,scene.timing,z=>({x:z.x,y:rowY(z.row)}),1234,false);scene.frameCombat();
- if(day>5){game.sun=9999;game['nextWave']=Infinity;game.preparing=false;if(day===10){game.plant('lightningreed',2,2);game.spawnZombie('chicken_farmer',2,cellX(7));}if(day===8){game.spawnZombie('cowboy_gargantuar',2,cellX(7));}if(day===9){game.plant('wintermelon',2,3);game.spawnZombie('cowboy_armor2',2,cellX(7));}}
+ if(day>5){game.sun=9999;game['nextWave']=Infinity;game.preparing=false;if(day===13){game.plant('wallnut',2,4);game.spawnZombie('west_bull',2,cellX(7));}if(day===10){game.plant('lightningreed',2,2);game.spawnZombie('chicken_farmer',2,cellX(7));}if(day===8){game.spawnZombie('cowboy_gargantuar',2,cellX(7));}if(day===9){game.plant('wintermelon',2,3);game.spawnZombie('cowboy_armor2',2,cellX(7));}}
  else if(day!==4){game.sun=9999;game['nextWave']=Infinity;const cart=game.cowboy.carts[0];game.plant('peashooter',cart.row,cart.column);game.plant('splitpea',2,4);game.plant('chilibean',3,4);game.spawnZombie('cowboy',3,cellX(4));game.spawnZombie('cowboy_armor1',1,cellX(8));if(day===2||day===5)game.spawnZombie('prospector',2,cellX(7));if(day===3)game.spawnZombie('piano',0,cellX(6));if(day===5)game.spawnZombie('poncho_plate',4,cellX(6));}
  else game.tick(1/60);
  scene.onPoint=(x,y)=>game!.cowboy.select(Math.floor((y-BOARD.top)/BOARD.cellHeight),Math.floor((x-BOARD.left)/BOARD.cellWidth));scene.onHover=(_x,y)=>{game!.cowboy.move(Math.floor((y-BOARD.top)/BOARD.cellHeight));scene!.sync(game!,0);scene!.render();};scene.onRelease=()=>{game!.cowboy.selected=null;};
@@ -41,10 +41,14 @@ button('种下本波卡片',()=>{const g=game!,p=g.conveyor[0];if(p){const c=g.c
 
 let replayFrame=0;
 button('本关合法通关回放',()=>{
- const current=game!;game=new Game(current.level,current.props,scene!.timing,z=>scene!.absorptionTarget(z),1234,false);if(game.level.corral)game.boosts=new Set(['peashooter']);replayFrame=0;scene!.reset();scene!.frameCombat();scene!.sync(game,0);scene!.render();status.textContent=game.level.corral?'第4关回放：一份成熟豌豆射手花园强化':'本关回放：正常阳光、卡片与冷却';
+ const current=game!;game=new Game(current.level,current.props,scene!.timing,z=>scene!.absorptionTarget(z),1234,false);if(game.level.day===4)game.boosts=new Set(['peashooter']);if(game.level.day===12)game.boosts=new Set(['lightningreed']);replayFrame=0;scene!.reset();scene!.frameCombat();scene!.sync(game,0);scene!.render();status.textContent=game.level.day===12?'第12关回放：一份成熟闪电芦苇花园强化':game.level.corral?'第4关回放：一份成熟豌豆射手花园强化':'本关回放：正常阳光、卡片与冷却';
 });
-button('回放推进20秒',()=>{for(let i=0;i<1200&&game!.phase==='playing';i++,replayFrame++){(game!.level.day>5?playCowboyNext:playCowboy)(game!,replayFrame);game!.tick(1/60);scene!.sync(game!,1/60);game!.events.length=0;}scene!.render();status.textContent=`回放 ${game!.level.day} / ${game!.time.toFixed(1)}s / ${game!.phase} / ${game!.wave}波`;});
+button('回放推进20秒',()=>{for(let i=0;i<1200&&game!.phase==='playing';i++,replayFrame++){(game!.level.day>10?playCowboyThird:game!.level.day>5?playCowboyNext:playCowboy)(game!,replayFrame);game!.tick(1/60);scene!.sync(game!,1/60);game!.events.length=0;}scene!.render();status.textContent=`回放 ${game!.level.day} / ${game!.time.toFixed(1)}s / ${game!.phase} / ${game!.wave}波`;});
 
 button('巨人抛掷',()=>{const z=game!.zombies.find(z=>z.kind==='cowboy_gargantuar')!;game!.damage(z,1900);});
 button('释放鸡群',()=>{const z=game!.zombies.find(z=>z.kind==='chicken_farmer')!;game!.damage(z,40);});
 button('冰西瓜大招',()=>{game!.food=1;game!.plantFood(2,3);});
+
+button('斗牛破损',()=>{const z=game!.zombies.find(z=>z.kind==='west_bull')!;game!.damage(z,900);scene!.sync(game!,0);scene!.render();});
+
+button('斗牛触电退场',()=>{const z=game!.zombies.find(z=>z.kind==='west_bull')!;game!.damage(z,1500,'electric');game!.tick(1/60);scene!.sync(game!,1/60);scene!.render();});

@@ -16,7 +16,7 @@ export interface Plant {
   actionAt: number; fired: boolean; burst: number; nextBurst: number;
 }
 export interface Zombie { west?:CowboyZombie; captain?:{parrot:boolean;health:number;next:number};parrot?:{captain:number;target:number|null;y:number;height:number;capture:number;fleeing:boolean;escaped:boolean;carrying?:Plant}; stunnedUntil?:number; pirate?:{animation:string;at:number;elapsed:number;next:number;count:number;fired:boolean;imp:boolean};barrel?:number;pusher?:number;detachedAt?:number; swing?:{at:number;judge:number;end:number;failure:boolean};route?:{spawnLane:number;spawnWave:number;points:{x:number;y:number}[];index:number;y:number;angle:number}; sappedUntil?:number; butteredUntil?:number;reversed?:boolean;landUntil?:number; id: number; kind: ZombieKind; row: number; x: number; hp: number; armor: number; eating: boolean; absorbed: number; absorbUntil: number; absorbState:'idle'|'start'|'loop'|'end'; absorbAt:number;deathCause:DeathCause; frozenUntil:number;chilledUntil:number;food:boolean;entry:SpawnAction['mode'];entryAt:number;entryX:number;camelPart:number;team:number;leap:{fromX:number;fromY:number;toX:number;toRow:number;at:number;duration?:number}|null }
-export type DeathCause = 'water' | 'normal' | 'potato' | 'mower' | 'toss' | 'match';
+export type DeathCause = 'electric' | 'water' | 'normal' | 'potato' | 'mower' | 'toss' | 'match';
 export const isCamel=(kind:ZombieKind)=>kind.startsWith('camel_');
 export const isMatchCamel=(kind:ZombieKind)=>kind.endsWith('_touch');
 export interface SpecialZombie {action:'walk'|'smash'|'throw'|'bone';at:number;elapsed:number;fired:boolean;next:number;imp:boolean;torch:boolean}
@@ -49,6 +49,7 @@ export class Game {
   preparing=false;
   foodLimit=3;
   shovelRefund=0;
+  wallnutFirstAid=false;
   manualMowers=0;
   private heldMower: number | null = null;
   sunProduced=0;
@@ -133,7 +134,7 @@ export class Game {
     const p = this.props.plants[kind];
     const placementKind=kind==='imitater'?this.imitateKind:kind;
     const existing=this.plants.find(p=>p.row===row&&p.column===column);
-    const repairing=kind==='spikerock'&&existing?.kind==='spikerock'&&existing.spikes!<p.MaxSpike||kind==='chardguard'&&existing?.kind==='chardguard'&&existing.leaves!<p.MaxBounceTime;
+    const repairing=this.wallnutFirstAid&&kind==='wallnut'&&existing?.kind==='wallnut'&&existing.hp<=p.Toughness*.75||kind==='spikerock'&&existing?.kind==='spikerock'&&existing.spikes!<p.MaxSpike||kind==='chardguard'&&existing?.kind==='chardguard'&&existing.leaves!<p.MaxBounceTime;
     const stacking=kind==='peapod'&&existing?.kind==='peapod'&&existing.heads!<5;
     if(seaCell(this.level.planks,row,column)||!this.cowboy.canPlant(row,column))return false;
     if(kind==='imitater'&&this.imitateKind===null)return false;
@@ -145,7 +146,7 @@ export class Game {
       || (placementKind==='gravebuster'?!this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0):this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0)) || existing&&!stacking&&!repairing) return false;
     if(packet){if(this.level.corral)this.corralWaiting=false;this.conveyor.splice(this.conveyor.indexOf(packet),1);if(!this.level.corral)this.nextCard=Math.min(this.nextCard,this.time+this.conveyorDelay());}
     else {const cost=this.seedCost(kind);this.sun -= cost; this.sunSpent+=cost;this.cooldowns[kind] = this.preparing?0:this.seedCooldown(kind);}
-    if(repairing){if(kind==='chardguard'){existing.leaves=p.MaxBounceTime;existing.hp=p.Toughness;}else existing.spikes=p.MaxSpike;}else if(stacking){existing.heads!++;existing.hp=p.Toughness;}else this.addPlant(kind, row, column);
+    if(repairing){if(kind==='wallnut')existing.hp=p.Toughness;else if(kind==='chardguard'){existing.leaves=p.MaxBounceTime;existing.hp=p.Toughness;}else existing.spikes=p.MaxSpike;}else if(stacking){existing.heads!++;existing.hp=p.Toughness;}else this.addPlant(kind, row, column);
     if(this.boosts.has(kind)&&!this.preparing){this.usedBoosts.add(kind);if(kind==='imitater')this.plants.at(-1)!.boosted=true;else this.plantFood(row,column,true);}
     this.checkChallenges();
     this.events.push({ type: 'plant' });
@@ -368,7 +369,7 @@ export class Game {
     this.waveDamageDeadline=this.time+RULES.waveDamageDelay+this.random()*RULES.waveDamageRange;
     this.threshold=this.level.minHealth+this.random()*(this.level.maxHealth-this.level.minHealth);
     this.waveHealth=this.pending.reduce((n,z)=>n+(isCamel(z.kind)?this.props.zombies[z.kind].TeamMemberCount[0]*this.props.zombies.mummy.Toughness:this.props.zombies[z.kind].Toughness),0);
-    if(this.level.corral){this.corralWaiting=true;this.conveyor.push({id:++this.id,kind:'peashooter',lane:0,position:0});this.threshold=0;this.waveDeadline=Infinity;this.waveDamageDeadline=this.time;}
+    if(this.level.corral){this.corralWaiting=true;this.conveyor.push({id:++this.id,kind:this.conveyorPlants[0].PlantType,lane:0,position:0});this.threshold=0;this.waveDeadline=Infinity;this.waveDamageDeadline=this.time;}
     this.events.push({ type: 'wave' });
   }
 
@@ -909,7 +910,7 @@ export class Game {
       if(target&&(z.kind==='explorer'||z.kind==='explorer_veteran')&&this.specialZombies.get(z.id)!.torch){target.hp=0;target.armor=0;}
       else if (target) { const amount = (z.kind==='egypt_imp'?100:this.props.zombies[z.kind].EatDPS) * dt*(this.time<z.chilledUntil?.5:1), armor = Math.min(target.armor, amount); target.armor -= armor; target.hp -= amount - armor;if(target.hp<=0)this.cowboy.eaten(target,z);if(target.hp<=0&&target.kind==='parsnip')this.launchParsnip(target,false); }
       else if(blockedCamels.has(z.team))continue;
-      else if (this.time >= z.absorbUntil) z.x -= (z.reversed?-1:1)* (this.time<z.chilledUntil?.5:1)*(this.time<(z.sappedUntil??0)?.5:1)*(z.kind==='piano'&&z.x>=cellX(9)?4:1)*this.props.zombies[z.kind].WalkSPS * BOARD.cellWidth * dt;
+      else if (this.time >= z.absorbUntil) z.x -= (z.reversed?-1:1)* (this.time<z.chilledUntil?.5:1)*(this.time<(z.sappedUntil??0)?.5:1)*(z.kind==='piano'&&z.x>=cellX(9)?4:1)*(z.west?.animation==='Rush'?this.props.zombies.west_bull.RushSPS:this.props.zombies[z.kind].WalkSPS) * BOARD.cellWidth * dt;
       if (z.kind === 'ra' && z.x<BOARD.left+BOARD.columns*BOARD.cellWidth) {
         let reserved=z.absorbed+this.suns.filter(s=>s.absorber===z.id).reduce((sum,s)=>sum+s.value,0);
         for(const sun of this.suns)if(sun.absorber===null&&sun.y>=BOARD.top&&sun.x>=BOARD.left&&sun.x<=BOARD.left+BOARD.columns*BOARD.cellWidth&&reserved+sun.value<=this.props.zombies.ra.MaxAbsorbValue){sun.absorber=z.id;sun.absorbAge=0;reserved+=sun.value;}

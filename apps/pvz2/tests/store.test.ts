@@ -24,7 +24,7 @@ test('one-time upgrades apply alongside earned upgrades and cannot be charged tw
   for(const name of ['upgrade_8_slots','upgrade_pf_slots_lvl2','upgrade_starting_sun_lvl2'])assert.equal(store.buy(item(name),()=>true),true);
   assert.equal(store.buy(item('upgrade_8_slots'),()=>true),false);
   assert.equal(store.read().gem,99909);
-  assert.deepEqual(new ProgressStore(data).battleBonuses(),{seedSlots:7,foodLimit:5,startingSun:50,shovelRefund:0,manualMowers:0});
+  assert.deepEqual(new ProgressStore(data).battleBonuses(),{seedSlots:7,foodLimit:5,startingSun:50,shovelRefund:0,manualMowers:0,wallnutFirstAid:false});
 });
 test('migrated shop plants are purchasable on a new profile and persist into both worlds',()=>{
   const data=storage(), progress=new ProgressStore(data), store=progress.shop();

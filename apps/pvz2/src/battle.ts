@@ -166,7 +166,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     game=new Game(readLevel(source),properties,scene.timing,zombie=>scene.absorptionTarget(zombie),Date.now()>>>0,!progress.isComplete(levelConfig.id));
     game.boosts=new Set(Object.entries(progress.gardenBoosts()).filter(([,count])=>count>0).map(([kind])=>kind as PlantKind));
     for(const kind of cardOrder){const card=$(`[data-choose="${kind}"]`),boosted=game.boosts.has(kind);card.classList.toggle('boosted',boosted);card.setAttribute('aria-label',`选择${plantLabels[kind]}${boosted?'（爆发）':''}`);}
-    game.foodLimit=bonuses.foodLimit;game.shovelRefund=bonuses.shovelRefund;game.manualMowers=bonuses.manualMowers;
+    game.wallnutFirstAid=bonuses.wallnutFirstAid;game.foodLimit=bonuses.foodLimit;game.shovelRefund=bonuses.shovelRefund;game.manualMowers=bonuses.manualMowers;
     if(!game.level.lastStand)game.sun+=bonuses.startingSun;
     const objective=[game.level.maxPlantsLost!==null?`最多损失 ${game.level.maxPlantsLost} 株植物`:'',game.level.killChallenge?`在 ${game.level.killChallenge.seconds} 秒内消灭 ${game.level.killChallenge.count} 只僵尸`:'',game.level.mold.length?'霉菌覆盖的地块不能种植':'',game.level.mustProtect?`保护好 ${game.level.mustProtect} 株植物`:'',game.level.targetSun!==null?`生产 ${game.level.targetSun} 阳光`:'',game.level.maxPlants!==null?`同时种植不超过 ${game.level.maxPlants} 株植物`:'',game.level.flowerLine!==null?'不要让僵尸踩到花坛':'',game.level.cannon?`点击椰子加农炮，获得 ${game.level.cannon.MinScore} 分`:'',game.level.maxSun!==null?`消耗阳光不超过 ${game.level.maxSun}`:'',game.level.lastStand?`用 ${game.level.lastStand.sun} 阳光布置防线，再开始进攻`:''].filter(Boolean).join(' · ');
     for(const element of host.querySelectorAll<HTMLElement>('.challenge-objective')){element.textContent=objective;element.hidden=!objective;}
@@ -287,7 +287,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(screen==='countdown') {
       const [ready,set,plant]=scene.art.catalog.presentation.readySetPlant;
       countdown+=dt;$('#battle-announcement').textContent=countdown<ready?'准备…':countdown<ready+set?'安放…':'种植！';scene.sync(game,dt);
-      if(countdown>=ready+set+plant){screen='playing';host.dataset.screen=screen;$('#battle-announcement').hidden=true;if(levelConfig.mode==='match')tip('翻开骆驼牌，找到两张相同图案即可消除。',10);if(game.level.corral)tip('每波放置一株豌豆射手，再拖动矿车抵挡进攻。',10);else if(levelConfig.mode==='conveyor')tip('点击传送带上的植物，再点击地块种植。',8);else if(game.level.rails)tip('按住矿车上下拖动，可以带着植物换行。',10);if(levelConfig.mode==='powerups')tip('选择下方道具，按住并拖动手指来攻击僵尸。',10);}
+      if(countdown>=ready+set+plant){screen='playing';host.dataset.screen=screen;$('#battle-announcement').hidden=true;if(levelConfig.mode==='match')tip('翻开骆驼牌，找到两张相同图案即可消除。',10);if(game.level.corral)tip('每波种下发放的植物，再拖动矿车抵挡进攻。',10);else if(levelConfig.mode==='conveyor')tip('点击传送带上的植物，再点击地块种植。',8);else if(game.level.rails)tip('按住矿车上下拖动，可以带着植物换行。',10);if(levelConfig.mode==='powerups')tip('选择下方道具，按住并拖动手指来攻击僵尸。',10);}
       return;
     }
     if(screen==='ending'){scene.sync(game,dt);if(!scene.hasDeathAnimations){if(game.phase==='won'&&levelConfig.outro&&!progress.isComplete(levelConfig.id)){outro=true;narrativeLines=scene.art.campaign.narratives[levelConfig.outro];narrativeIndex=0;screen='npc-enter';host.dataset.screen=screen;$('#hud').hidden=true;scene.enterNarrative(narrativeCast(0));}else finish();}return;}

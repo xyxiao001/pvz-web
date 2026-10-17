@@ -72,3 +72,49 @@ export function playCowboyNext(g:Game,frame:number){
  }
  if(g.food>0){const target=threats.find(z=>z.kind==='cowboy_gargantuar'||z.x<cellX(5));if(target){const p=g.plants.find(p=>p.row===target.row&&['peapod','splitpea','repeater','snapdragon','lightningreed'].includes(p.kind));if(p)g.plantFood(p.row,p.column);}}
 }
+
+export function playCowboyThird(g:Game,frame:number){
+ for(const s of [...g.suns])g.collect(s.id);
+ for(const p of [...g.pickups])g.collectPickup(p.id);
+ const threats=g.zombies.filter(z=>z.hp>0&&!z.leap).sort((a,b)=>a.x-b.x);
+ if(g.level.day===11){
+  const cart=g.cowboy.carts[0],target=threats[0];
+  if(target){g.cowboy.select(cart.row,cart.column);g.cowboy.move(target.row);}
+  if(g.sunSpent<500)g.plant('peapod',cart.row,cart.column);
+  if(target&&g.food>0&&(target.x<cellX(5)||threats.filter(z=>z.row===cart.row).length>=3))g.plantFood(cart.row,cart.column);
+  return;
+ }
+ if(g.level.corral){
+  for(const c of g.cowboy.carts){
+   const plant=g.plants.find(p=>p.row===c.row&&p.column===c.column);
+   const z=threats.filter(z=>z.row>=c.start&&z.row<=c.end&&z.x>cellX(c.column)+40).sort((a,b)=>a.x-b.x+(a.row===2?-10000:0)-(b.row===2?-10000:0))[0];
+   if(plant?.kind==='lightningreed'){
+    g.cowboy.select(c.row,c.column);g.cowboy.move(c.start===0?1:3);
+   }else if(z){g.cowboy.select(c.row,c.column);g.cowboy.move(z.row);}
+   if(threats.some(z=>z.row===c.row&&Math.abs(z.x-cellX(c.column))<75)){
+    for(let row=c.start;row<=c.end;row++)if(!threats.some(z=>z.row===row&&Math.abs(z.x-cellX(c.column))<75)){g.cowboy.select(c.row,c.column);g.cowboy.move(row);break;}
+   }
+  }
+  const packet=g.conveyor[0];
+  if(packet){
+   const preferred=g.cowboy.carts.filter(c=>packet.kind==='lightningreed'?c.column===0:c.column!==0);
+   const ordered=[...preferred].sort((a,b)=>(b.end-b.start)-(a.end-a.start));
+   const empty=ordered.find(c=>!g.plants.some(p=>p.row===c.row&&p.column===c.column)),c=empty??ordered[0];
+   if(!empty)g.shovel(c.row,c.column);
+   g.plant(packet.kind,c.row,c.column,packet.id);
+  }
+  return;
+ }
+ if(frame%12)return;
+ const occupied=(r:number,c:number)=>g.plants.some(p=>p.row===r&&p.column===c);
+ for(const z of threats){
+  if(!g.plants.some(p=>p.row===z.row&&p.kind==='lightningreed'))for(const c of [3,2,1,0])if(g.plant('lightningreed',z.row,c))break;
+  if(z.x<cellX(6))g.plant('wallnut',z.row,6);
+  if(z.kind==='prospector'&&z.west!.ignited)g.plant('iceburg',z.row,Math.max(0,Math.min(8,Math.floor((z.x-170)/82))));
+  if(z.kind==='piano')g.plant('spikeweed',z.row,Math.max(0,Math.min(8,Math.floor((z.x-170)/82))));
+ }
+ for(let row=0;row<5;row++)for(const c of [0,1,2])if(!g.plants.some(p=>p.kind==='sunflower'&&p.row===row)&&g.plant('sunflower',row,c))break;
+ for(let row=0;row<5;row++)if(!occupied(row,4))g.plant('melonpult',row,4);
+ for(let row=0;row<5;row++)if(!occupied(row,5))g.plant('repeater',row,5);
+ if(g.food>0&&threats.some(z=>z.kind==='west_bull'||z.x<cellX(5))){const p=g.plants.find(p=>p.kind==='lightningreed'&&p.action!=='food');if(p)g.plantFood(p.row,p.column);}
+}

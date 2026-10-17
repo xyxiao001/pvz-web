@@ -2,7 +2,7 @@ import {BOARD,cellX,rowY,type ZombieKind} from './level';
 import type {Game,Plant,Zombie} from './model';
 export const cowboyArmor=(kind:ZombieKind)=>kind==='cowboy_armor1'?'cowboy_armor1':kind==='cowboy_armor2'?'cowboy_armor2':null;
 export interface CowboyZombie {
- chickens?:boolean;imp?:boolean;fired?:boolean;animation?:string;at:number;elapsed:number;fuse?:number;ignited?:boolean;dirty?:boolean;
+ bull?:{delay:number;blocked:boolean;retreating:boolean;cheer:number};chickens?:boolean;imp?:boolean;fired?:boolean;animation?:string;at:number;elapsed:number;fuse?:number;ignited?:boolean;dirty?:boolean;
  poncho?:number;plate?:number;dance?:boolean;danceBeat?:number;lane?:{from:number;to:number;at:number;y?:number};
  chiliUntil?:number;tailAt?:number;poisonAt?:number;poisonDuration?:number;farted?:boolean;hat?:boolean;
 }
@@ -33,6 +33,7 @@ export class CowboyBattle {
  }
  spawn(z:Zombie){
   const g=this.#game,props=g.props.zombies[z.kind];
+  if(z.kind==='west_bull')z.west={at:g.time,elapsed:0,imp:true,fired:false,bull:{delay:props.BullRunAgainDelay,blocked:false,retreating:false,cheer:3}};
   if(z.kind==='chicken_farmer')z.west={at:g.time,elapsed:0,chickens:true};
   if(z.kind==='cowboy_gargantuar')z.west={at:g.time,elapsed:0,imp:true,animation:'Walk',fired:false};
   if(z.kind==='piano')z.west={at:g.time,elapsed:0};
@@ -54,10 +55,10 @@ export class CowboyBattle {
   }
  }
  private effect(kind:CowboyBattle['effects'][number]['kind'],x:number,y:number){this.effects.push({id:++this.serial,kind,x,y,at:this.#game.time});}
- die(z:Zombie){if(z.west?.hat){z.west.hat=false;this.effect('cowboyHat',z.x,rowY(z.row)-90);}}
+ die(z:Zombie){if(z.kind==='west_bull'&&z.deathCause==='electric')z.west!.imp=false;if(z.west?.hat){z.west.hat=false;this.effect('cowboyHat',z.x,rowY(z.row)-90);}}
  cold(z:Zombie){if(z.kind==='prospector')z.west!.ignited=false;}
  landed(z:Zombie){if(z.kind==='prospector'&&z.west!.animation==='Flying'){z.reversed=!z.reversed;z.west!.animation='FlyEnd';z.west!.at=this.#game.time;z.landUntil=this.#game.time+this.#game.props.zombies.prospector.LandingStunnTime;this.sounds.push('prospector/landSound');}}
- eaten(p:Plant,z:Zombie){if(p.kind==='chilibean'&&z.kind!=='piano'){z.west??={at:0,elapsed:0};z.west.poisonAt=this.#game.time;z.west.poisonDuration=this.#game.props.plants.chilibean.ChiliStunDuration;}}
+ eaten(p:Plant,z:Zombie){if(p.kind==='chilibean'&&z.kind!=='piano'&&z.kind!=='west_bull'){z.west??={at:0,elapsed:0};z.west.poisonAt=this.#game.time;z.west.poisonDuration=this.#game.props.plants.chilibean.ChiliStunDuration;}}
  tick(dt:number){
   const g=this.#game;
   for(const thrower of this.chickenThrowers){
@@ -86,6 +87,7 @@ export class CowboyBattle {
  }
  tickZombie(z:Zombie,dt:number){
   const g=this.#game,s=z.west;
+  if(z.kind==='west_bull')return this.tickBull(z,dt);
   if(z.kind==='cowboy_gargantuar')return this.tickGargantuar(z,dt);
   if(s?.poisonAt!==undefined&&g.time-s.poisonAt>=2)return true;
   if(z.kind==='piano'&&z.hp<=g.props.zombies.piano.Toughness/2){if(!s!.animation){s!.animation='Walk_Break';s!.at=g.time;}else if(s!.animation==='Walk_Break'&&g.time-s!.at>=g.props.plantAnimations.piano.Walk_Break.duration)s!.animation='Walk_Broken';}
@@ -106,6 +108,44 @@ export class CowboyBattle {
    if(dancing&&beat!==s.danceBeat&&!s.lane){const choices=[z.row-1,z.row+1].filter(r=>r>=0&&r<=4);s.lane={from:z.row,to:choices[Math.floor(g.random()*choices.length)],at:g.time};}s.danceBeat=beat;
   }
   return false;
+ }
+ private tickBull(z:Zombie,dt:number){
+  const g=this.#game,s=z.west!,bull=s.bull!,props=g.props.zombies.west_bull,timelines=g.props.plantAnimations.bull;
+  const step=dt*(g.time<z.chilledUntil?.5:1),direction=z.reversed?-1:1;
+  const start=(animation:string)=>{s.animation=animation;s.at=g.time;s.elapsed=0;};
+  const blocked=()=>g.plants.some(p=>p.hp>0&&!p.leap&&!p.hidden&&p.row===z.row&&!(p.kind==='escaperoot'&&p.rootGrown)&&!['iceburg','iceweed','spikeweed','spikerock','imitater','cherry_bomb','jalapeno'].includes(p.kind)&&!(p.kind==='springbean'&&['Ready','Idle_Ready'].includes(p.animation!))&&p.action!=='explode'&&Math.abs(z.x-cellX(p.column))<60);
+  if(!s.animation){
+   if(!z.eating&&z.x<cellX(9)&&bull.delay>0){bull.delay-=step;if(bull.delay<=0){start('RushStart');this.sounds.push('bull/angrySounds','bull/impSteadySounds');}}
+   if(!s.animation)return false;
+  }
+  const timeline=timelines[s.animation],before=s.elapsed;
+  s.elapsed+=step;
+  if(s.animation==='RushStart'){
+   if(s.elapsed>=timeline.events.find(e=>e.name==='rushStart')!.at){
+    bull.blocked ||= blocked();
+    if(!bull.blocked)z.x-=direction*props.RushSPS*BOARD.cellWidth*step;
+   }
+   if(s.elapsed>=timeline.duration){if(bull.blocked){start('RushEnd');bull.retreating=true;}else start('Rush');}
+   return true;
+  }
+  if(s.animation==='Rush'){
+   bull.blocked ||= blocked();
+   if(bull.blocked){if(s.elapsed>=timeline.duration){start('RushEnd');bull.retreating=true;}return true;}
+   bull.cheer-=step;if(bull.cheer<=0&&s.imp){this.sounds.push('bull/impCheerSounds');bull.cheer=3;}
+   s.elapsed%=timeline.duration;return false;
+  }
+  // Normal bulls brake and throw once; only the later black-bull variant rams plants.
+  for(const event of timeline.events)if(before<event.at&&s.elapsed>=event.at){
+   if(event.name==='rushEnd'){bull.retreating=false;this.sounds.push('bull/bullBrakeSounds');if(s.imp)this.sounds.push('bull/impBrakeSounds');}
+   if(event.name==='throw'&&s.imp){
+    s.imp=false;const x=z.x+9.46*.51*direction,imp=g.spawnZombie('west_bullrider',z.row,x);imp.reversed=z.reversed;
+    imp.leap={fromX:x,fromY:rowY(z.row)-154.208*.51,toX:Math.max(cellX(0),Math.min(cellX(8),x-direction*props.ImpThrowDistance*BOARD.cellWidth)),toRow:z.row,at:g.time,duration:.7};
+    this.sounds.push('bull/bullThrowSounds','bull/impThrowSounds');
+   }
+  }
+  if(bull.retreating)z.x+=direction*1.25*BOARD.cellWidth*step;
+  if(s.elapsed>=timeline.duration){delete s.animation;bull.blocked=false;}
+  return true;
  }
  private tickGargantuar(z:Zombie,dt:number){
   const g=this.#game,s=z.west!,timelines=g.props.plantAnimations.cowboyGargantuar;
