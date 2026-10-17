@@ -84,7 +84,7 @@ export class EgyptBoss {
   private crush(){
     for(const p of this.game.plants)if(this.covers(p.row)&&Math.abs(cellX(p.column)-this.zombie.x)<100){if(p.action==='food'){if(this.rushing)this.stun();}else p.hp=0;}
     for(const g of this.game.graves)if(this.covers(g.row)&&Math.abs(cellX(g.column)-this.zombie.x)<100)g.hp=0;
-    for(const z of this.game.zombies)if(z!==this.zombie&&this.covers(z.row)&&Math.abs(z.x-this.zombie.x)<90){z.hp=0;z.deathCause='potato';}
+    for(const z of [...this.game.zombies,...this.game.westFinale.allies])if(z!==this.zombie&&this.covers(z.row)&&Math.abs(z.x-this.zombie.x)<90){z.hp=0;z.deathCause='potato';}
   }
   private event(name:string){
     if(name==='leap')this.play('Leaping');
@@ -141,7 +141,7 @@ export class EgyptBoss {
       else if(animation==='StunStart')this.play('Stunning');
       else if(animation==='LeapEnd'&&this.afterJump==='summon')this.play('SummonStart');
       else if(animation==='LeapEnd'&&this.afterJump==='death'){
-        for(const z of this.game.zombies)if(z!==this.zombie){z.hp=0;z.deathCause='potato';}this.play('DeathStart');
+        for(const z of [...this.game.zombies,...this.game.westFinale.allies])if(z!==this.zombie){z.hp=0;z.deathCause='potato';}this.play('DeathStart');
       }else if(animation==='DeathStart')this.play('DeathIdle');
       else if(animation==='DeathIdle'){this.play('Escape');}
       else if(animation==='Escape'){this.defeated=true;}

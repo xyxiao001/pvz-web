@@ -1,3 +1,4 @@
+import targeting2 from '../../public/assets/cowboy/boss-targeting2.json';
 import targeting from '../../public/assets/cowboy/boss-targeting.json';
 import {EgyptBoss} from './egypt-boss';
 
@@ -7,7 +8,7 @@ export class CowboyBoss extends EgyptBoss {
     for(let i=items.length-1;i>0;i--){const j=Math.floor(this.game.random()*(i+1));[items[i],items[j]]=[items[j],items[i]];}return items;
   }
   protected override aim(){
-    const settings=targeting.stages[this.stage];
+    const settings=(this.game.props.zombies[this.zombie.kind].ZombossMechLevel===1?targeting2:targeting).stages[this.stage];
     const railAttack=this.game.random()<=settings.shootRailWeight/(settings.shootRailWeight+settings.shootPlantWeight);
     const cells=this.shuffle(Array.from({length:45},(_,i)=>({row:i%5,column:Math.floor(i/5)})));
     this.targets=[];

@@ -10,7 +10,7 @@ import type {WorldMap} from '../src/shell/types';
 
 test('Wild West 1–30 use pinned native waves, rails and manual corral packets',()=>{
  const manifest=JSON.parse(readFileSync(new URL('../cowboy-provenance.json',import.meta.url),'utf8'));
- for(let day=1;day<=30;day++){
+ for(let day=1;day<=35;day++){
   const name=`cowboy/cowboy${day}.source.json`,bytes=readFileSync(new URL('../public/assets/'+name,import.meta.url));
   assert.equal(createHash('sha256').update(bytes).digest('hex'),manifest.outputs[name].sha256);
   assert.equal(level(day).world,'west');assert.ok(level(day).rails!.Railcarts.length>0);

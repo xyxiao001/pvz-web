@@ -1,3 +1,4 @@
+import {playCowboySeventh,setupCowboySeventh} from './cowboy-seventh-strategy';
 import {playCowboySixth} from './cowboy-sixth-strategy';
 import {playCowboyFifth} from './cowboy-fifth-strategy';
 import {playCowboyFourth} from './cowboy-fourth-strategy';
@@ -22,8 +23,8 @@ const shell=new WorldShell(worldHost,async id=>{battle=createBattle(battleHost,a
 async function clean(){if(battle){await battle.dispose();battle=undefined;}if(scene){await scene.dispose();scene=undefined;}sceneHost.hidden=true;worldHost.hidden=true;battleHost.hidden=true;}
 function button(label:string,action:()=>Promise<void>|void){const b=document.createElement('button');b.textContent=label;b.onclick=async()=>{try{await action();}catch(e){status.textContent=String(e);throw e;}};controls.append(b);}
 button('世界地图',async()=>{await clean();worldHost.hidden=false;await shell.init();});
-for(let day=1;day<=30;day++)button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`cowboy${day}`],progress);await battle.enter();});
-for(let day=1;day<=30;day++)button(`场景${day}`,async()=>{
+for(let day=1;day<=35;day++)button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`cowboy${day}`],progress);await battle.enter();});
+for(let day=1;day<=35;day++)button(`场景${day}`,async()=>{
  await clean();sceneHost.hidden=false;scene=new Scene();const config=BATTLE_LEVELS[`cowboy${day}`],level=readLevel(await json<SourceLevel>(config.source));
  const groups=await Promise.all(['levels','campaign','pirate','cowboy'].map(name=>json<Properties>(name+'/properties.json'))),flag=await json<Properties['zombies']['mummy_flag']>('battle/flag.json');
  const props=groups.reduce((a,b)=>({...a,...b,plants:{...a.plants,...b.plants},zombies:{...a.zombies,...b.zombies},armors:{...a.armors,...b.armors},projectiles:{...a.projectiles,...b.projectiles},plantAnimations:{...a.plantAnimations,...b.plantAnimations}}));props.zombies.mummy_flag=flag;
@@ -44,9 +45,9 @@ button('种下本波卡片',()=>{const g=game!,p=g.conveyor[0];if(p){const c=g.c
 
 let replayFrame=0;
 button('本关合法通关回放',()=>{
- const current=game!;game=new Game(current.level,current.props,scene!.timing,z=>scene!.absorptionTarget(z),1234,false);if(game.level.day===4)game.boosts=new Set(['peashooter']);if(game.level.day===12)game.boosts=new Set(['lightningreed']);if(game.level.day===26)game.boosts=new Set(['lightningreed']);if(game.level.day===27)game.boosts=new Set(['tallnut']);if(game.level.day===30)game.boosts=new Set(['lightningreed','sunflower']);replayFrame=0;scene!.reset();scene!.frameCombat();scene!.sync(game,0);scene!.render();status.textContent=game.boosts.size&&game.level.day>=26?`本关回放：${[...game.boosts].join('、')} 已成熟花园强化`:game.level.day===12?'第12关回放：一份成熟闪电芦苇花园强化':game.level.day===4?'本关回放：一份成熟豌豆射手花园强化':'本关回放：正常阳光、卡片与冷却';
+ const current=game!;game=new Game(current.level,current.props,scene!.timing,z=>scene!.absorptionTarget(z),1234,false);if(game.level.day===4)game.boosts=new Set(['peashooter']);if(game.level.day===12)game.boosts=new Set(['lightningreed']);if(game.level.day===26)game.boosts=new Set(['lightningreed']);if(game.level.day===27)game.boosts=new Set(['tallnut']);if(game.level.day===30)game.boosts=new Set(['lightningreed','sunflower']);if(game.level.day>=31)setupCowboySeventh(game);replayFrame=0;scene!.reset();scene!.frameCombat();scene!.sync(game,0);scene!.render();status.textContent=game.boosts.size&&game.level.day>=26?`本关回放：${[...game.boosts].join('、')} 已成熟花园强化`:game.level.day===12?'第12关回放：一份成熟闪电芦苇花园强化':game.level.day===4?'本关回放：一份成熟豌豆射手花园强化':'本关回放：正常阳光、卡片与冷却';
 });
-button('回放推进20秒',()=>{for(let i=0;i<1200&&game!.phase==='playing';i++,replayFrame++){(game!.level.day>25?playCowboySixth:game!.level.day>20?playCowboyFifth:game!.level.day>15?playCowboyFourth:game!.level.day>10?playCowboyThird:game!.level.day>5?playCowboyNext:playCowboy)(game!,replayFrame);game!.tick(1/60);scene!.sync(game!,1/60);game!.events.length=0;}scene!.render();status.textContent=`回放 ${game!.level.day} / ${game!.time.toFixed(1)}s / ${game!.phase} / ${game!.wave}波`;});
+button('回放推进20秒',()=>{for(let i=0;i<1200&&game!.phase==='playing';i++,replayFrame++){(game!.level.day>30?playCowboySeventh:game!.level.day>25?playCowboySixth:game!.level.day>20?playCowboyFifth:game!.level.day>15?playCowboyFourth:game!.level.day>10?playCowboyThird:game!.level.day>5?playCowboyNext:playCowboy)(game!,replayFrame);game!.tick(1/60);scene!.sync(game!,1/60);game!.events.length=0;}scene!.render();status.textContent=`回放 ${game!.level.day} / ${game!.time.toFixed(1)}s / ${game!.phase} / ${game!.wave}波`;});
 
 button('巨人抛掷',()=>{const z=game!.zombies.find(z=>z.kind==='cowboy_gargantuar')!;game!.damage(z,1900);});
 button('释放鸡群',()=>{const z=game!.zombies.find(z=>z.kind==='chicken_farmer')!;game!.damage(z,40);});
@@ -73,3 +74,9 @@ button('磁力菇大招',()=>{game!.food=1;game!.plantFood(2,3);scene!.sync(game
 button('电能豌豆大招',()=>{game!.food=1;game!.plantFood(1,1);scene!.sync(game!,0);scene!.render();});
 button('棱镜草大招',()=>{game!.addPlant('sunflower',1,0);game!.addPlant('twinsunflower',3,0);game!.spawnZombie('cowboy_armor4',2,cellX(8));game!.food=1;game!.plantFood(2,5);scene!.sync(game!,0);scene!.render();});
 button('棱镜草手动射击',()=>{game!.western.fire(2,5);scene!.sync(game!,0);scene!.render();status.textContent=`阳光 ${game!.sun}`;});
+
+button('第31关毒影与吹退',()=>{const g=game!;g.addPlant('shadowshroom',0,0);g.addPlant('stallia',2,4);g.addPlant('hurrikale',3,8);g.spawnZombie('cowboy_armor4',2,cellX(4));g.spawnZombie('poncho_plate',3,cellX(5));g.food=1;g.plantFood(0,0);scene!.sync(g,0);scene!.render();});
+button('第34关蘑菇与香蕉炮',()=>{const g=game!;g.addPlant('sunshroom',2,5);g.addPlant('puffshroom',3,5);g.addPlant('banana',2,0);g.spawnZombie('cowboy_armor4',2,cellX(7));g.westFinale.select(2,0);scene!.sync(g,0);scene!.render();});
+button('香蕉炮指定落点',()=>{game!.westFinale.fire(2,7);scene!.sync(game!,0);scene!.render();});
+button('阳光菇小喷菇大招',()=>{game!.food=2;game!.plantFood(2,5);game!.plantFood(3,5);});
+button('第35关电网与魅惑',()=>{const g=game!;g.addPlant('electriccurrant',0,0);g.addPlant('electriccurrant',4,0);g.addPlant('hypnoshroom',2,4);g.food=2;g.plantFood(0,0);g.plantFood(2,4);g.spawnZombie('cowboy_armor2',2,cellX(4)+80);scene!.sync(g,0);scene!.render();});
