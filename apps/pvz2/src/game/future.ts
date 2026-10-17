@@ -1,6 +1,6 @@
 import {BOARD,cellX,rowY,type PlantKind} from './level';
 import type {Game,Plant,Zombie,Sun} from './model';
-import {isFlying} from './pirate';
+import {isFlying,swinging} from './pirate';
 import laserCurve from '../../public/assets/future/laser-food-curve.json';
 export const futureArmor=(kind:string)=>kind==='future_armor1'?'future_armor1':kind==='future_armor2'?'future_armor2':null;
 export interface FutureZombie {animation:string;at:number;elapsed:number;event:number;high:boolean;shield?:number;master?:number;recover:number;pause:number;hop:boolean;empUntil?:number;next?:number;imp?:boolean;summoned?:number[];beam?:{from:{x:number;y:number};to:{x:number;y:number};x:number;y:number}}
@@ -46,21 +46,23 @@ export class FutureBattle {
   private discoPlayed=false;
   private discoMusicAt=-Infinity;
   shots:{id:number;x:number;y:number;row:number;food:boolean;hits:Set<number>}[]=[];
+  stars:{id:number;x:number;y:number;vx:number;vy:number;food:boolean;dead:boolean}[]=[];
+  private starFood=new Map<number,{at:number;count:number}>();
   private lasers=new Map<number,{hits:Set<number>;lastX:number;nextDirt:number}>();
   private blows=new Map<number,number>();
   private bombs:{x:number;y:number;at:number;hit:boolean}[]=[];
   constructor(g:Game){this.#game=g;}
-  handles(kind:PlantKind){return ['holonut','laser_bean','blover','citron','empea','powerplant_alpha','powerplant_beta'].includes(kind);}
+  handles(kind:PlantKind){return ['starfruit','holonut','laser_bean','blover','citron','empea','powerplant_alpha','powerplant_beta'].includes(kind);}
   private play(p:Plant,animation:string,action:Plant['action']='idle'){p.animation=animation;p.action=action;p.actionAt=this.#game.time;p.eventIndex=0;}
-  init(p:Plant){if(p.kind==='holonut'){this.holonuts.set(p.id,{health:p.hp,faded:false,recover:Infinity,shield:0,shieldAt:0,column:p.column});this.play(p,'Appear','grow');this.sounds.push('holonut/appearSounds');return;}if(p.kind==='powerplant_alpha'||p.kind==='powerplant_beta'){this.play(p,'Dig','explode');this.sounds.push(p.kind+'/digSounds');return;}if(p.kind==='citron'){this.charge(p);return;}if(p.kind==='empea'){this.play(p,'Attack','explode');return;}this.play(p,p.kind==='blover'?'BlowStart':'Idle',p.kind==='blover'?'shoot':'idle');if(p.kind==='blover')this.sounds.push('blover/windSound');}
-  food(p:Plant){if(p.kind==='holonut'){this.recoverNut(p);this.play(p,'Food','food');return;}if(p.kind==='citron'){this.play(p,'Food','food');this.visual('citronLightning','Play',cellX(p.column),rowY(p.row));this.sounds.push('citron/foodSounds');return;}this.play(p,'FoodStart','food');this.lasers.set(p.id,{hits:new Set(),lastX:cellX(p.column),nextDirt:cellX(p.column)});this.sounds.push('laser_bean/foodSound');}
+  init(p:Plant){if(p.kind==='starfruit'){p.nextAction=0;this.play(p,'Idle');return;}if(p.kind==='holonut'){this.holonuts.set(p.id,{health:p.hp,faded:false,recover:Infinity,shield:0,shieldAt:0,column:p.column});this.play(p,'Appear','grow');this.sounds.push('holonut/appearSounds');return;}if(p.kind==='powerplant_alpha'||p.kind==='powerplant_beta'){this.play(p,'Dig','explode');this.sounds.push(p.kind+'/digSounds');return;}if(p.kind==='citron'){this.charge(p);return;}if(p.kind==='empea'){this.play(p,'Attack','explode');return;}this.play(p,p.kind==='blover'?'BlowStart':'Idle',p.kind==='blover'?'shoot':'idle');if(p.kind==='blover')this.sounds.push('blover/windSound');}
+  food(p:Plant){if(p.kind==='starfruit'){this.play(p,'FoodStart','food');return;}if(p.kind==='holonut'){this.recoverNut(p);this.play(p,'Food','food');return;}if(p.kind==='citron'){this.play(p,'Food','food');this.visual('citronLightning','Play',cellX(p.column),rowY(p.row));this.sounds.push('citron/foodSounds');return;}this.play(p,'FoodStart','food');this.lasers.set(p.id,{hits:new Set(),lastX:cellX(p.column),nextDirt:cellX(p.column)});this.sounds.push('laser_bean/foodSound');}
   link(p:Plant){
     const g=this.#game,t=g.level.powerTiles.find(t=>t.row===p.row&&t.column===p.column);if(!t)return;
     for(const q of g.level.powerTiles)if(q!==t&&q.group===t.group)this.links.push({id:++this.serial,from:t,to:q,group:t.group,at:g.time+t.delay,arrive:g.time+t.delay+(Math.abs(q.column-t.column)+Math.abs(q.row-t.row))/16,sent:false});
   }
   visual(name:string,animation:string,x:number,y:number){const g=this.#game;this.visuals.push({id:++this.serial,name,animation,x,y,at:g.time,duration:g.props.plantAnimations[name][animation].duration});}
   tickPlant(p:Plant,dt:number){
-    const g=this.#game,props=g.props.plants[p.kind];p.age+=dt;if(p.kind==='holonut'){this.tickNut(p);return;}
+    const g=this.#game,props=g.props.plants[p.kind];p.age+=dt;if(p.kind==='starfruit'){this.tickStar(p);return;}if(p.kind==='holonut'){this.tickNut(p);return;}
     if(p.kind==='citron'||p.kind==='empea'||p.kind==='powerplant_alpha'||p.kind==='powerplant_beta'){this.tickNewPlant(p);return;}
     if(p.kind==='laser_bean'&&p.action==='idle'&&g.time>=p.nextAction&&g.zombies.some(z=>z.hp>0&&g.inLane(z,p.row)&&z.x>cellX(p.column)-20)){
       this.play(p,'Shoot','shoot');p.nextAction=g.time+props.ShootInterval+g.random()*props.ShootIntervalAdditional;this.sounds.push('laser_bean/shootSound');this.visual('laserBeam','Play',cellX(p.column),rowY(p.row)-50);
@@ -86,6 +88,48 @@ export class FutureBattle {
       while(state.nextDirt<x&&state.nextDirt<cellX(9)){this.visual('laserDirt','Play',state.nextDirt,rowY(p.row));state.nextDirt+=BOARD.cellWidth;}state.lastX=x;return;
     }
     if(elapsed>=timeline.duration&&animation!=='Blowing')this.play(p,'Idle');
+  }
+  private starTargets(){const g=this.#game;return [...g.zombies.filter(z=>z.hp>0&&!z.leap&&!swinging(z,g.time)).map(z=>({x:z.x,y:rowY(z.row)-33,z})),...g.graves.filter(t=>t.hp>0).map(t=>({x:cellX(t.column),y:rowY(t.row)-33,t}))];}
+  private starDetect(p:Plant){
+    const x=cellX(p.column),y=rowY(p.row)-33,slope=BOARD.cellHeight/(1.732*BOARD.cellWidth);
+    // Native detectors cover the rear lane, the vertical line and two forward diagonals.
+    return this.starTargets().some(t=>{const dx=t.x-x,dy=t.y-y;return dx<=0&&Math.abs(dy)<BOARD.cellHeight/2||Math.abs(dx)<40||dx>=0&&Math.abs(Math.abs(dy)-dx*slope)<45;});
+  }
+  private shootStars(p:Plant,food:boolean){
+    const g=this.#game;
+    for(const [dx,dy] of [[-1,0],[0,1],[0,-1],[1.732*BOARD.cellWidth,BOARD.cellHeight],[1.732*BOARD.cellWidth,-BOARD.cellHeight]]){
+      const speed=(11+(food?g.random()*3-1.5:0))*BOARD.cellWidth,length=Math.hypot(dx,dy);
+      this.stars.push({id:++this.serial,x:cellX(p.column)-10.556*.55,y:rowY(p.row)-59.512*.55+(food?(g.random()*30-15)*.55:0),vx:dx/length*speed,vy:dy/length*speed,food,dead:false});
+    }
+  }
+  private tickStar(p:Plant){
+    const g=this.#game,props=g.props.plants.starfruit;
+    if(p.action==='idle'&&g.time>=p.nextAction&&this.starDetect(p)){this.play(p,'Shoot','shoot');p.nextAction=g.time+props.ShootInterval+g.random()*props.ShootIntervalAdditional;}
+    if(p.action==='idle')return;
+    const timeline=g.props.plantAnimations.starfruit[p.animation!],elapsed=g.time-p.actionAt;
+    while(p.eventIndex!<timeline.events.length&&elapsed>=timeline.events[p.eventIndex!].at){
+      const event=timeline.events[p.eventIndex!++].name;
+      if(event==='Shoot'){this.shootStars(p,false);this.sounds.push('starfruit/shootSound');}
+      if(event==='foodStart'){this.play(p,'Fooding','food');this.starFood.set(p.id,{at:g.time,count:0});this.sounds.push('starfruit/foodSound');return;}
+    }
+    if(p.animation==='Fooding'){
+      const s=this.starFood.get(p.id)!,count=props.PlantfoodPeaCount-Math.floor(props.PlantfoodPeaCount*(1-Math.min(1,(g.time-s.at)/2)));
+      while(s.count<count){this.shootStars(p,true);s.count++;}
+      if(g.time-s.at>=2){this.starFood.delete(p.id);p.nextAction=0;this.play(p,'FoodEnd','food');}return;
+    }
+    if(elapsed>=timeline.duration)this.play(p,'Idle');
+  }
+  private tickStars(dt:number){
+    const g=this.#game;
+    for(const s of this.stars){
+      const fromX=s.x,fromY=s.y;s.x+=s.vx*dt;s.y+=s.vy*dt;
+      // Sweep the native small projectile through the current board hitboxes.
+      const dx=s.x-fromX,dy=s.y-fromY;
+      const hit=this.starTargets().map(t=>{const at=Math.max(0,Math.min(1,((t.x-fromX)*dx+(t.y-fromY)*dy)/(dx*dx+dy*dy)));return {t,at,x:fromX+dx*at,y:fromY+dy*at};}).filter(h=>Math.abs(h.t.x-h.x)<28&&Math.abs(h.t.y-h.y)<38).sort((a,b)=>a.at-b.at)[0];
+      if(hit){const damage=g.props.projectiles[s.food?'star_pf':'star'].Damage;if('z' in hit.t)g.damage(hit.t.z,damage);else hit.t.t.hp-=damage;this.visual(s.food?'starFoodHit':'starHit','Play',hit.x,hit.y);this.sounds.push((s.food?'starFood':'starShot')+'/PopSound');s.dead=true;}
+    }
+    this.stars=this.stars.filter(s=>!s.dead&&s.x>BOARD.left-100&&s.x<1250&&s.y>0&&s.y<800);
+    for(const id of this.starFood.keys())if(!g.plants.some(p=>p.id===id&&p.hp>0))this.starFood.delete(id);
   }
   spawn(z:Zombie){
     if(!['football_mech','future_gargantuar','disco_mech','future_jetpack_disco','future_protector','future_protector_shield','future_imp','future_jetpack','mech_cone'].includes(z.kind))return;
@@ -245,7 +289,7 @@ export class FutureBattle {
   defuse(sun:Sun){sun.bomb=false;sun.defusedAt=this.#game.time;this.endRay(sun);this.sounds.push('sunbomb/defuseSound');}
   tick(dt:number){
     const g=this.#game;
-    this.tickShots(dt);
+    this.tickShots(dt);this.tickStars(dt);
     for(const link of this.links){
       if(g.time>=link.at&&!link.sent){link.sent=true;this.visual('tile_'+link.group+'Flash','Play',cellX(link.from.column),rowY(link.from.row));}
       if(g.time>=link.arrive){this.visual('tile_'+link.group+'Flash','Play',cellX(link.to.column),rowY(link.to.row));g.plantFood(link.to.row,link.to.column,true);}

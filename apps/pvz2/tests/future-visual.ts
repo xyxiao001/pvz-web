@@ -7,7 +7,7 @@ import {BATTLE_LEVELS} from '../src/game/levels';
 import {Scene} from '../src/rendering/scene';
 import {Game} from '../src/game/model';
 import {readLevel,rowY,cellX,type Properties,type SourceLevel} from '../src/game/level';
-import {playFuture,playFutureNext,playFutureThird} from './future-strategy';
+import {playFuture,playFutureNext,playFutureThird,playFutureFourth} from './future-strategy';
 import {json,assetUrl} from '../src/assets/load';
 const font=new FontFace('PvZMap',`url('${assetUrl('shell/map-font.woff2')}')`);document.fonts.add(await font.load());
 const data=new Map<string,string>(),storage={getItem:(k:string)=>data.get(k)??null,setItem:(k:string,v:string)=>{data.set(k,v);},removeItem:(k:string)=>{data.delete(k);}},progress=new ProgressStore(storage);
@@ -20,15 +20,15 @@ async function clean(){if(battle){await battle.dispose();battle=undefined;}if(sc
 function button(label:string,action:()=>Promise<void>|void){const b=document.createElement('button');b.textContent=label;b.onclick=async()=>{try{await action();}catch(e){status.textContent=String(e);throw e;}};controls.append(b);}
 function draw(){scene!.sync(game!,0);scene!.render();status.textContent=`第${game!.level.day}关 / ${game!.time.toFixed(1)}s / ${game!.phase} / ${game!.wave}波 / ${game!.zombies.length}僵尸`;}
 button('世界地图',async()=>{await clean();worldHost.hidden=false;await shell.init();});
-for(let day=1;day<=15;day++)button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`future${day}`],progress);await battle.enter();});
-for(let day=1;day<=15;day++)button(`场景${day}`,async()=>{
+for(let day=1;day<=20;day++)button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`future${day}`],progress);await battle.enter();});
+for(let day=1;day<=20;day++)button(`场景${day}`,async()=>{
  await clean();sceneHost.hidden=false;scene=new Scene();const config=BATTLE_LEVELS[`future${day}`],level=readLevel(await json<SourceLevel>(config.source));
  const groups=await Promise.all(['levels','campaign','pirate','cowboy','future'].map(name=>json<Properties>(name+'/properties.json'))),flag=await json<Properties['zombies']['mummy_flag']>('battle/flag.json');
  const props=groups.reduce((a,b)=>({...a,...b,plants:{...a.plants,...b.plants},zombies:{...a.zombies,...b.zombies},armors:{...a.armors,...b.armors},projectiles:{...a.projectiles,...b.projectiles},plantAnimations:{...a.plantAnimations,...b.plantAnimations}}));props.zombies.mummy_flag=flag;
- await scene.init(sceneHost,()=>{},config,[...config.plants.map(p=>p.kind),...level.actions.flat().flatMap(a=>a.add?.map(p=>p.PlantType)??[])],level);game=new Game(level,props,scene.timing,z=>({x:z.x,y:rowY(z.row)}),1234,false);scene.frameCombat();frame=0;draw();
+ await scene.init(sceneHost,()=>{},config,[...config.plants.map(p=>p.kind),...level.protectedPlants.map(p=>p.kind),...level.initialPlants.map(p=>p.kind),...(level.conveyor?.InitialPlantList.map(p=>p.PlantType)??[]),...level.actions.flat().flatMap(a=>a.add?.map(p=>p.PlantType)??[])],level);game=new Game(level,props,scene.timing,z=>({x:z.x,y:rowY(z.row)}),1234,false);scene.frameCombat();frame=0;draw();
 });
 for(const seconds of [.1,1,5])button(`推进${seconds}秒`,()=>{for(let i=0;i<seconds*60;i++){game!.tick(1/60);scene!.sync(game!,1/60);}draw();});
-button('回放推进20秒',()=>{for(let i=0;i<1200&&game!.phase==='playing';i++,frame++){(game!.level.day>=11?playFutureThird:game!.level.day>=6?playFutureNext:playFuture)(game!,frame);game!.tick(1/60);scene!.sync(game!,1/60);game!.events.length=0;}draw();});
+button('回放推进20秒',()=>{for(let i=0;i<1200&&game!.phase==='playing';i++,frame++){(game!.level.day>=16?playFutureFourth:game!.level.day>=11?playFutureThird:game!.level.day>=6?playFutureNext:playFuture)(game!,frame);game!.tick(1/60);scene!.sync(game!,1/60);game!.events.length=0;}draw();});
 button('瓷砖激光护盾检查',()=>{const g=game!;g['nextWave']=Infinity;for(const row of [0,2,4])g.addPlant('laser_bean',row,1);g.spawnZombie('future_protector',2,cellX(7));g.spawnZombie('future_armor2',0,cellX(6));g.food=1;draw();});
 button('瓷砖联动大招',()=>{game!.plantFood(0,1);draw();});
 button('空降三叶草检查',()=>{const g=game!;g.spawnZombie('future_imp',2,cellX(6),'spider');g.spawnZombie('future_jetpack',3,cellX(6));g.addPlant('blover',4,1);draw();});
@@ -41,9 +41,12 @@ button('机械技能检查',()=>{const g=game!;g['nextWave']=Infinity;g.spawnZom
 button('电磁桃检查',()=>{game!.addPlant('empea',1,6);draw();});
 button('柚子大招检查',()=>{game!.food=1;game!.plantFood(2,1);draw();});
 
-button('完整回放',async()=>{for(let chunk=0;chunk<500&&game!.phase==='playing';chunk++){for(let i=0;i<120&&game!.phase==='playing';i++,frame++){(game!.level.day>=11?playFutureThird:game!.level.day>=6?playFutureNext:playFuture)(game!,frame);game!.tick(1/60);scene!.sync(game!,1/60);game!.events.length=0;}draw();await new Promise<void>(resolve=>requestAnimationFrame(()=>resolve()));}draw();});
+button('完整回放',async()=>{for(let chunk=0;chunk<500&&game!.phase==='playing';chunk++){for(let i=0;i<120&&game!.phase==='playing';i++,frame++){(game!.level.day>=16?playFutureFourth:game!.level.day>=11?playFutureThird:game!.level.day>=6?playFutureNext:playFuture)(game!,frame);game!.tick(1/60);scene!.sync(game!,1/60);game!.events.length=0;}draw();await new Promise<void>(resolve=>requestAnimationFrame(()=>resolve()));}draw();});
 
 button('推移与全息护盾检查',()=>{const g=game!;g['nextWave']=Infinity;g.addPlant('holonut',2,3);g.addPlant('wallnut',0,4);g.addPlant('laser_bean',0,3);g.spawnZombie('football_mech',0,cellX(4)+20);g.spawnZombie('future_jetpack',4,cellX(4)+20);draw();});
 button('全息大招',()=>{game!.food=1;game!.plantFood(2,3);draw();});
 button('全息投影耗尽',()=>{const g=game!,p=g.plants.find(p=>p.kind==='holonut')!;p.hp=0;g.tick(1/60);draw();});
 button('移除护盾源',()=>{game!.shovel(2,3);game!.tick(1/60);draw();});
+
+button('杨桃五向攻击检查',()=>{const g=game!;g['nextWave']=Infinity;for(const p of [...g.plants])p.endangered=false;g.plants=[];g.level.mustProtect=0;g.addPlant('starfruit',2,4);for(const [r,c] of [[2,2],[0,4],[4,4],[1,6],[3,6]]){const z=g.spawnZombie('future_armor2',r,cellX(c));z.frozenUntil=100;}draw();});
+button('杨桃大招检查',()=>{game!.food=1;game!.plantFood(2,4);draw();});

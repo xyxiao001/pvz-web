@@ -74,3 +74,45 @@ export function playFutureThird(g:Game,frame:number){
  playFutureNext(g,frame);
  if(g.level.day===15&&frame%12===0)for(const r of [1,2,3])g.plant('tallnut',r,7);
 }
+
+export function playFutureFourth(g:Game,frame:number){
+ for(const s of [...g.suns])if(!s.bomb)g.collect(s.id);
+ for(const p of [...g.pickups])g.collectPickup(p.id);
+ if(frame%12)return;
+ const threats=g.zombies.filter(z=>z.hp>0&&z.kind!=='future_protector_shield').sort((a,b)=>a.x-b.x);
+ const occupied=(r:number,c:number)=>g.plants.some(p=>p.hp>0&&p.row===r&&p.column===c);
+ const rows=[...new Set([...threats.map(z=>z.row),0,1,2,3,4])];
+ if(g.level.day===16){
+  for(const packet of [...g.conveyor]){
+   if(packet.kind==='powerplant_alpha'){for(let r=0;r<5;r++)if(g.plants.some(p=>p.kind==='citron'&&p.row===r&&p.column===1)&&g.plant(packet.kind,r,1,packet.id))break;continue;}
+   if(packet.kind==='blover'){if(threats.some(z=>z.kind==='future_jetpack'))g.plant('blover',4,8,packet.id);continue;}
+   if(packet.kind==='empea'){const z=threats.find(z=>['football_mech','mech_cone','future_protector'].includes(z.kind));if(z)g.plant('empea',z.row,Math.min(8,Math.max(0,Math.floor((z.x-190)/82)-1)),packet.id);continue;}
+   const cols=packet.kind==='citron'?[1,0,2]:packet.kind==='holonut'?[4,3]:packet.kind==='bonkchoy'?[3,5,2]:[6,7,8];
+   let placed=false;for(const c of cols){for(const r of rows)if(!occupied(r,c)&&g.plant(packet.kind,r,c,packet.id)){placed=true;break;}if(placed)break;}
+  }
+ }else if(g.level.day===17){
+  for(const z of threats)if(!g.plants.some(p=>p.kind==='magnifyinggrass'&&p.row===z.row))g.plant('magnifyinggrass',z.row,1);
+  for(let r=0;r<5;r++)if(!occupied(r,0))g.plant('sunflower',r,0);
+  for(const c of [2,3])for(let r=0;r<5;r++)if(!occupied(r,c))g.plant('twinsunflower',r,c);
+  for(const z of threats){
+   const p=g.plants.find(p=>p.kind==='magnifyinggrass'&&p.row===z.row);
+   if(p&&z.x<cellX(8)&&!g.western.shots.some(s=>s.kind==='magnifying_grass'&&Math.abs(s.y-(240+98*z.row-45))<40))g.western.fire(p.row,p.column);
+   if(z.x<cellX(6))g.plant('holonut',z.row,4);
+   if(z.kind==='mech_cone'&&(z.future?.empUntil??0)<=g.time)g.plant('empea',z.row,6);
+  }
+ }else if(g.level.day===18){
+  for(const z of threats)if(!g.plants.some(p=>p.kind==='laser_bean'&&p.row===z.row))g.plant('laser_bean',z.row,1);
+  for(const c of [0,3])for(let r=0;r<5;r++)if(!occupied(r,c))g.plant('twinsunflower',r,c);
+  for(const c of [1,2])for(let r=0;r<5;r++)if(!occupied(r,c))g.plant('laser_bean',r,c);
+  for(const z of threats)if(z.x<cellX(6))g.plant('tallnut',z.row,4);
+  if(g.food>0&&g.sunProduced<6000){const p=g.plants.find(p=>p.kind==='twinsunflower'&&[1,3].includes(p.row)&&p.column===0&&p.action!=='food');if(p)g.plantFood(p.row,p.column);}
+ }else if(g.level.day===19){
+  for(const r of rows)if(!g.plants.some(p=>p.kind==='laser_bean'&&p.row===r))g.plant('laser_bean',r,1);
+  for(const c of [1,0])for(let r=0;r<5;r++)if(!occupied(r,c))g.plant('laser_bean',r,c);
+  for(const z of threats)if(z.x<cellX(5))g.plant('tallnut',z.row,4);
+ }else {playFutureNext(g,frame);for(let r=0;r<5;r++)g.plant('tallnut',r,7);}
+ if([18,19,20].includes(g.level.day)&&threats.some(z=>['future_jetpack','future_jetpack_disco'].includes(z.kind)||z.kind==='future_imp'&&z.future?.animation==='Fall'))g.plant('blover',4,8);
+ for(const z of threats)if(g.food>0&&(z.x<cellX(5)||threats.filter(t=>t.row===z.row).length>=3||z.kind==='future_gargantuar')){
+  const p=g.plants.filter(p=>['laser_bean','citron','magnifyinggrass'].includes(p.kind)&&p.row===z.row&&p.action!=='food').sort((a,b)=>Number(g.level.powerTiles.some(t=>t.row===b.row&&t.column===b.column))-Number(g.level.powerTiles.some(t=>t.row===a.row&&t.column===a.column)))[0];if(p)g.plantFood(p.row,p.column);
+ }
+}
