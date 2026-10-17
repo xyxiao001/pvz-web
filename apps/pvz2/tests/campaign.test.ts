@@ -494,3 +494,144 @@ test('Egypt 17–24 map chain grants food slots, starting sun, Repeater and Twin
  assert.ok(progress.ownedPlants().has(8));assert.ok(progress.ownedPlants().has(25));
  assert.ok(progress.rewards().some(r=>r.kind==='upgrade'&&r.id===2));assert.ok(progress.rewards().some(r=>r.kind==='upgrade'&&r.id===0));
 });
+
+test('Egypt 25–35 retain authored modes, boss stages and challenge constraints',()=>{
+ assert.deepEqual(Array.from({length:11},(_,i)=>level(i+25).waves.length),[0,12,15,15,16,12,8,15,9,8,0]);
+ assert.deepEqual([25,29,35].map(d=>!!level(d).conveyor),[true,true,true]);
+ assert.equal(level(27).flowerLine,5);assert.equal(level(32).mustProtect,2);assert.equal(level(32).maxPlants,15);assert.equal(level(34).maxSun,1800);
+ assert.deepEqual(level(33).lastStand,{sun:2250,food:2});assert.ok(level(28).preset!.includes('imitater'));assert.ok(level(34).preset!.includes('cherry_bomb'));
+ for(const day of [25,35]){const g=create(day);assert.equal(g.boss!.zombie.hp,day===25?18500:39000);tick(g,2);assert.equal(g.phase,'playing');assert.equal(g.wave,0);assert.ok(g.conveyor.length);}
+});
+
+for(const day of [25,35])test(`Egypt ${day} boss takes three stages, converts freeze to chill and completes its escape`,()=>{
+ const g=create(day),b=g.boss!;tick(g,2.1);b.animation='Idle';b.height=0;
+ g.damage(b.zombie,1e6);assert.equal(b.stage,1);assert.equal(b.zombie.hp,b.stages.slice(1).reduce((n,s)=>n+s.HitPoints,0));assert.equal(b.animation,'StunStart');
+ b.freeze();assert.equal(b.zombie.frozenUntil,0);assert.ok(b.zombie.chilledUntil>g.time);
+ g.damage(b.zombie,1e6);assert.equal(b.stage,2);assert.equal(b.zombie.hp,b.stages[2].HitPoints);
+ g.damage(b.zombie,1e6);assert.equal(b.zombie.hp,0);assert.equal(g.phase,'playing');tick(g,20);assert.equal(g.phase,'won');assert.equal(b.defeated,true);
+});
+
+test('boss summon and missile actions run on native events without an empty-wave win',()=>{
+ for(const name of ['summon','shoot','rush'] as const){
+  const g=new Game(level(25),structuredClone(props),timing,z=>({x:z.x,y:rowY(z.row)}),1234),b=g.boss!;
+  // A dedicated properties copy keeps the other deterministic scenarios untouched.
+  g.props.zombies.zombossmech_egypt={...g.props.zombies.zombossmech_egypt,ZombossStages:b.stages.map(s=>({...s,Actions:s.Actions.filter(a=>a.actionName===name)}))};
+  b.zombie.x=cellX(7);g.conveyor.push({id:99999,kind:'wallnut',lane:0,position:0});g.plant('wallnut',b.zombie.row,0,99999);
+  let summoned=false,missile=false,rush=false;
+  for(let i=0;i<1800&&g.phase==='playing';i++){g.tick(1/60);summoned ||= g.zombies.length>1;missile ||= b.missiles.length>0;rush ||= b.animation==='Stomp';}
+  assert.ok(name==='summon'?summoned:name==='shoot'?missile:rush,name);
+ }
+});
+
+test('flower line checks foot contact, not zombies emerging behind the flowers',()=>{
+ const g=create(27);g.graves=[];const behind=zombie(2,cellX(3));g.zombies.push(behind);tick(g,.2);assert.equal(g.phase,'playing');
+ const crossing=zombie(2,190+5*82+5);g.zombies.push(crossing);tick(g,.1);assert.equal(g.phase,'lost');assert.equal(g.lossReason,'flowers');
+});
+
+test('grave waves displace plants and delayed grave spawns use surviving tombstones only',()=>{
+ const l=level(27),a=l.actions.flat().find(a=>a.mode==='graves'&&a.graveCount!>0)!;
+ l.actions=[[a]];l.waves=[[]];l.graves=[];l.flagInterval=100;
+ const g=new Game(l,props,timing,z=>({x:z.x,y:rowY(z.row)}),1234);g.sun=5000;
+ for(const c of a.positions!){g.cooldowns.wallnut=0;g.plant('wallnut',c.row,c.column);}tick(g,15.6);
+ assert.equal(g.graves.length,a.graveCount);assert.equal(g.plants.length,a.positions!.length);assert.ok(g.plants.every(p=>!g.graves.some(t=>t.row===p.row&&t.column===p.column)));
+ const ll=level(28);ll.actions=[[ll.actions.flat().find(a=>a.mode==='graveZombies')!]];ll.waves=[['explorer']];ll.graves=[{row:2,column:7}];ll.flagInterval=100;
+ const gg=new Game(ll,props,timing,z=>({x:z.x,y:rowY(z.row)}));tick(gg,15.6);assert.equal(gg.zombies.length,0);tick(gg,1);assert.equal(gg.zombies.length,1);assert.equal(gg.zombies[0].entry,'ground');assert.equal(gg.zombies[0].row,2);
+});
+
+test('finale plants preserve stacking, transformation, burst completion and blast timing',()=>{
+ const g=create(28);g.graves=[];g.sun=10000;
+ for(let i=0;i<5;i++){g.cooldowns.peapod=0;assert.equal(g.plant('peapod',0,0),true);}g.cooldowns.peapod=0;assert.equal(g.plant('peapod',0,0),false);assert.equal(g.plants[0].heads,5);
+ g.imitateKind='snowdrop';g.plant('imitater',1,0);tick(g,4);assert.ok(g.plants.some(p=>p.kind==='snowdrop'&&p.row===1));assert.ok(!g.plants.some(p=>p.kind==='imitater'));
+ g.food=3;g.plantFood(0,0);tick(g,8);assert.equal(g.plants.find(p=>p.kind==='peapod')!.action,'idle');
+ g.plant('cherry_bomb',2,4);const z=zombie(2,cellX(5));z.hp=2000;g.zombies.push(z);tick(g,.5);assert.equal(z.hp,2000);tick(g,.3);assert.equal(z.hp,200);assert.ok(!g.plants.some(p=>p.kind==='cherry_bomb'));
+});
+
+test('celery hides, attacks behind itself and plant food summons three children',()=>{
+ const g=create(28);g.graves=[];g.sun=1000;g.plant('celerystalker',2,4);const p=g.plants[0],z=zombie(2,cellX(3));z.hp=10000;g.zombies.push(z);
+ tick(g,3);assert.ok(z.hp<10000);g.food=1;assert.equal(g.plantFood(2,4),true);tick(g,1);assert.equal(g.plants.filter(p=>p.kind==='celerystalker').length,4);assert.notEqual(p.action,'food');
+});
+
+test('parsnip food and sap expire without retaining powered animations',()=>{
+ const g=create(28);g.graves=[];g.sun=1000;g.plant('parsnip',1,0);g.plant('sapfling',2,0);g.food=2;g.plantFood(1,0);g.plantFood(2,0);tick(g,10);
+ assert.ok(g.plants.every(p=>p.action!=='food'));assert.equal(g.missiles.filter(m=>m.kind==='parsnip').length,0);assert.ok(g.sap.length>0);g.plants=[];tick(g,31);assert.equal(g.sap.length,0);
+});
+
+for(const day of [25,29])test(`Egypt ${day} completes through legal cards and source objectives`,()=>{
+ const g=create(day);g.foodLimit=4;if(!g.level.lastStand)g.sun+=25;g.imitateKind='snowdrop';
+ for(let frame=0;frame<60*1800&&g.phase==='playing';frame++){
+  for(const s of [...g.suns])g.collect(s.id);for(const p of [...g.pickups])g.collectPickup(p.id);
+  if(frame%15===0){
+   const threats=g.zombies.filter(z=>z.hp>0).sort((a,b)=>a.x-b.x);
+   if(g.level.conveyor){
+    for(const card of [...g.conveyor]){
+     const rows=[0,1,2,3,4].sort((a,b)=>g.plants.filter(p=>p.row===a&&!['wallnut','sapfling','iceburg','gravebuster'].includes(p.kind)).length-g.plants.filter(p=>p.row===b&&!['wallnut','sapfling','iceburg','gravebuster'].includes(p.kind)).length);
+     if(card.kind==='gravebuster'){for(const t of g.graves)if(g.plant(card.kind,t.row,t.column,card.id))break;}
+     else if(card.kind==='iceburg'){for(const z of threats)if(z.frozenUntil<=g.time&&g.plant(card.kind,z.row,Math.floor((z.x-190)/82),card.id))break;}
+     else if(card.kind==='peapod'){const pods=g.plants.filter(p=>p.kind==='peapod').sort((a,b)=>a.heads!-b.heads!);if(pods.length>=5&&pods.some(p=>g.plant('peapod',p.row,p.column,card.id)))continue;for(const row of rows)if([0,1,2,3,4].some(c=>g.plant(card.kind,row,c,card.id)))break;}
+     else {for(const row of rows){const cols=['wallnut','celerystalker','parsnip'].includes(card.kind)?[4,3,2,1,0]:[0,1,2,3,4,5,6];if(cols.some(c=>g.plant(card.kind,row,c,card.id)))break;}}
+    }
+   }
+   const danger=threats.find(z=>z!==g.boss?.zombie&&z.x<cellX(6))??g.boss?.zombie;
+   if(danger){const p=g.plants.find(p=>g.inLane(danger,p.row)&&['repeater','peashooter','bloomerang','cabbagepult','peapod','melonpult','parsnip'].includes(p.kind));if(p)g.plantFood(p.row,p.column);}
+  }
+  g.tick(1/60);g.events.length=0;
+ }
+ assert.equal(g.phase,'won',`day ${day} time ${g.time} wave ${g.wave} reason ${g.lossReason} boss ${g.boss?.zombie.hp} sun ${g.sun} spent ${g.sunSpent}`);
+});
+
+for(const day of [26,27,28,30,31,32,33,34])test(`Egypt ${day} authored wave lifecycle reaches victory after combat removes every group`,()=>{
+ const g=create(day);if(g.preparing)g.startLastStand();const kinds=new Set<string>();let frame=0;
+ // Exercise source spawn scheduling and win detection independently of a bot's strategy.
+ for(;frame<60*1600&&g.phase==='playing';frame++){
+  g.tick(1/60);
+  for(const z of g.zombies){kinds.add(z.kind);if(g.time-z.entryAt>1.5)g.damage(z,100000,'potato');}
+  g.events.length=0;
+ }
+ assert.equal(g.phase,'won',`day ${day}, wave ${g.wave}, time ${g.time}`);assert.equal(g.wave,g.level.waves.length);assert.ok(kinds.size>0);
+ assert.ok(g.plants.filter(p=>p.endangered).every(p=>p.hp>0));
+});
+
+test('day 29 conveyor changes preserve delivered cards but change subsequent draws',()=>{
+ const l=level(29),g=create(29);tick(g,15.6);assert.ok(g.conveyorPlants.some(p=>p.PlantType==='kernelpult'));
+ const changes=l.actions.flat().filter(a=>a.mode==='conveyor');assert.deepEqual(changes.map(a=>a.remove),[[],['melonpult'],['peapod']]);
+ for(let i=0;i<60*300&&g.wave<6;i++){g.tick(1/60);for(const z of g.zombies)g.damage(z,1e6,'potato');}
+ assert.ok(!g.conveyorPlants.some(p=>p.PlantType==='melonpult'||p.PlantType==='peapod'));assert.ok(g.conveyorPlants.some(p=>p.PlantType==='repeater'));
+});
+
+test('Egypt 25–35 completion opens the mainline and records each finale reward once',()=>{
+ const data=new Map<string,string>(),progress=new ProgressStore({getItem:k=>data.get(k)??null,setItem:(k,v)=>{data.set(k,v);},removeItem:k=>{data.delete(k);}}),map=read<WorldMap>('shell/maps/egypt.json');
+ for(let day=1;day<=35;day++){
+  const id=`egypt${day}`;progress.finish('egypt',id);
+  const events=completionEvents(map,id,progress.completed(map),progress.rewardNodes('egypt'));
+  for(const e of events)if(e.action==='reward')progress.award('egypt',map.islands.find(n=>n.node===e.node)!);
+  if(day>=25&&day<35)assert.ok(events.some(e=>e.action==='open'&&map.islands.find(n=>n.node===e.node)!.levels.includes(`egypt${day+1}`)),String(day));
+  progress.finishPresentation();const rewards=structuredClone(progress.campaignRewards());progress.finish('egypt',id);assert.deepEqual(progress.campaignRewards(),rewards);assert.equal(progress.pending(),null);
+ }
+ assert.equal(progress.completed(map).size,35);assert.ok(progress.campaignRewards().some(r=>r.level==='egypt25'));assert.ok(progress.campaignRewards().some(r=>r.level==='egypt31'));
+});
+
+test('weak pharaoh passes coffin overkill to the occupant, regular pharaoh protects it',()=>{
+ const g=create(34),weak=g.spawnZombie('pharaoh_weak',1,cellX(7)),regular=g.spawnZombie('pharaoh',2,cellX(7));
+ g.damage(weak,1800,'potato');g.damage(regular,1800,'potato');assert.equal(weak.kind,'pharaoh_inner');assert.ok(weak.hp<=0);assert.ok(regular.hp>0);assert.equal(weak.deathCause,'potato');
+});
+
+test('boss upper occupied lane receives peas and 400 damage interrupts a rush',()=>{
+ const p=structuredClone(props);p.zombies.zombossmech_egypt.ZombossStages.forEach(s=>{s.Actions=s.Actions.filter(a=>a.actionName==='rush');});
+ const g=new Game(level(25),p,timing,z=>({x:z.x,y:rowY(z.row)}),1234),b=g.boss!;b.zombie.x=cellX(7);
+ g.conveyor.push({id:99991,kind:'wallnut',lane:0,position:0});g.plant('wallnut',b.zombie.row,0,99991);tick(g,2.1);
+ const hp=b.zombie.hp;g.peas.push({id:99992,row:b.zombie.row-1,x:b.zombie.x-35,y:rowY(b.zombie.row-1)-48,damage:20,powered:false});tick(g,.1);assert.equal(b.zombie.hp,hp-20);
+ for(let i=0;i<600&&b.animation!=='WalkL';i++)g.tick(1/60);assert.equal(b.animation,'WalkL');
+ g.damage(b.zombie,399);assert.equal(b.animation,'WalkL');g.damage(b.zombie,1);assert.equal(b.animation,'StunStart');
+});
+
+test('finale native rigs, rewards and NPC voices resolve without substitutions',()=>{
+ for(const name of ['snowdrop','imitater','peapod','cherry_bomb','celerystalker','parsnip','sapfling','boss','torchlight','pharaohWeak']){
+  const spec=catalog.actors[name],skeleton=read<Skeleton>(`campaign/rigs/${spec.rig}/skeleton.json`);assert.ok(skeleton.armature.some(a=>a.name===spec.armature),name);
+ }
+ for(const [key,animations] of [['bossTarget',['Start','Idle','Die']],['bossMissile',['Idle']],['bossEscape',['Play']],['bossPortal',['Idle']],['flower',['Idle','Nervous','Die','Grow']],['zombossicon',['Enter','Idle','Exit']],['sapTile',['Spawn','Idle','Fade']]] as [string,string[]][]){
+  const r=catalog.rigs[key],s=read<Skeleton>(`campaign/rigs/${r.rig}/skeleton.json`);for(const animation of animations)assert.ok(animationTimeline(s,r.armature,animation).duration>=0,`${key}/${animation}`);
+ }
+ assert.notDeepEqual(catalog.sounds['zombossicon/Say_Long'],catalog.sounds['winnie/Say_Long']);
+ const battle=read<{rigs:Record<string,{rig:string;armature:string}>}>('battle/catalog.json'),reward=battle.rigs.reward,s=read<Skeleton>(`battle/rigs/${reward.rig}/skeleton.json`);
+ for(const animation of ['egypt','dangerroom_egypt'])assert.ok(animationTimeline(s,reward.armature,animation).duration>=0);
+});

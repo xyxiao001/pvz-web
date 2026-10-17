@@ -59,3 +59,5 @@ button{font:inherit;cursor:pointer;border:0;padding:0;background:transparent;col
 }
 
 .battle-app #laststand-start { position:absolute; bottom:3%;left:42%;z-index:5;pointer-events:auto; }
+
+#narrative[data-character=zombossicon] .speech{left:20%;top:54%;width:60%;height:auto;min-height:18%;background:#122a25e8;color:#fff;border:2px solid #719e80;border-radius:1cqw}#narrative[data-character=zombossicon] .speech::before{display:none}#narrative[data-character=zombossicon] .speech small{color:#bbdbb7}

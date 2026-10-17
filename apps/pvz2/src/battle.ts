@@ -9,6 +9,7 @@ import type { Scene } from './rendering/scene';
 import { cubicInOut, introCamera } from './rendering/presentation';
 
 const DESCRIPTIONS: Record<PlantKind,string> = {
+  snowdrop:'雪莲抛出冰霜花瓣，使僵尸减速，偶尔将它冻住。',imitater:'选择本关的一种植物，模仿者会在种下后变成它。',peapod:'在同一格重复种植，最多叠加五个豌豆头。',cherry_bomb:'樱桃炸弹炸毁周围九宫格内的僵尸。',celerystalker:'潜伏芹菜藏在地下，攻击走过身后的僵尸。',parsnip:'防风草用钳子攻击前方，被吃掉后冲出去继续攻击。',sapfling:'树脂投手在落点留下树脂，减缓僵尸的移动。',
   repeater:'双发射手连续发射两颗豌豆。',kernelpult:'玉米投手抛射玉米粒，偶尔用黄油定住僵尸。',melonpult:'西瓜投手的西瓜能伤害落点周围的僵尸。',
   bonkchoy:'菜问快速拳击前后靠近的僵尸。',
   gravebuster:'噬碑藤吞噬墓碑，为种植腾出空间。',
@@ -64,7 +65,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   let deck: PlantKind[] = [];
   let packetId:number|undefined;
   let pointerDown=false;
-  let tipUntil=0;
+  let tipUntil=0;let bossMusicStage=-1;
   let foodTipShown=false;
   let narrativeLines:typeof scene.art.catalog.intro=[];
   let narrativeIndex=0;
@@ -105,7 +106,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       properties=props; properties.zombies.mummy_flag=flag; source=level; scene=new Scene();
       const parsed=readLevel(source);
       cardOrder=cardOrder.filter(kind=>!parsed.blacklist.includes(kind));
-      const actorPlants=[...new Set([...(parsed.preset??(parsed.conveyor?parsed.conveyor.InitialPlantList.map(p=>p.PlantType):parsed.match||parsed.powerups?[]:cardOrder)),...parsed.initialPlants.map(p=>p.kind),...parsed.protectedPlants.map(p=>p.kind)])];
+      const actorPlants=[...new Set([...(parsed.preset??(parsed.conveyor?parsed.conveyor.InitialPlantList.map(p=>p.PlantType):parsed.match||parsed.powerups?[]:cardOrder)),...parsed.actions.flat().flatMap(a=>a.add?.map(p=>p.PlantType)??[]),...parsed.initialPlants.map(p=>p.kind),...parsed.protectedPlants.map(p=>p.kind)])];
       await scene.init($('#canvas-host'),(done,total)=>{
         $('#load-status').textContent=`正在准备植物与庭院 ${done} / ${total}`;
         const progress=$<HTMLProgressElement>('#load-progress');progress.max=total;progress.value=done;
@@ -137,7 +138,12 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     };
     $('#overlay').hidden=true;
     narrativeLines=levelConfig.narrative===null?[]:levelConfig.day===1?scene.art.catalog.intro:scene.art.campaign.narratives[levelConfig.day===5&&progress.isComplete(levelConfig.id)?'POWERUPS_TUTORIAL_REPEAT':levelConfig.narrative];
-    if(!narrativeLines.length||progress.isComplete(levelConfig.id)&&levelConfig.day!==5)survey();else {narrativeIndex=0;screen='npc-enter';host.dataset.screen=screen;scene.enterNarrative();}
+    if(!narrativeLines.length||progress.isComplete(levelConfig.id)&&levelConfig.day!==5)survey();else {narrativeIndex=0;screen='npc-enter';host.dataset.screen=screen;scene.enterNarrative(narrativeCast(0));}
+  }
+  function narrativeCast(index:number){
+    const cast=new Set<string>();let line=0;
+    for(const step of narrativeLines){if(step.Action==='NPC_ENTER')cast.add(step.Character);if(step.Action==='NPC_EXIT')cast.delete(step.Character);if(step.Lines&&line++===index)break;}
+    return [...cast];
   }
   function nextNarrative() {
     voice?.pause();voice=null;
@@ -146,13 +152,14 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(!step){$('#narrative').hidden=true;screen='npc-exit';host.dataset.screen=screen;scene.exitNarrative();return;}
     screen='narrative';host.dataset.screen=screen;$('#overlay').hidden=true;$('#hud').hidden=true;
     $('#narrative').hidden=false;$('#narrative').dataset.character=step.Character;
-    $('#speech-line').textContent=step.Lines!.zh;scene.narrative(step.Character,step.Animation!);voice=sound(step.Voice!);
+    $('#speech-line').textContent=step.Lines!.zh;scene.setNarrativeCast(narrativeCast(narrativeIndex-1));scene.narrative(step.Character,step.Animation!);voice=sound(step.Voice!);
   }
   function prepareGame(){
+    bossMusicStage=-1;
     game=new Game(readLevel(source),properties,scene.timing,zombie=>scene.absorptionTarget(zombie),Date.now()>>>0,!progress.isComplete(levelConfig.id));
     game.foodLimit=progress.rewards().some(r=>r.kind==='upgrade'&&r.id===2)?4:3;
     if(!game.level.lastStand&&progress.rewards().some(r=>r.kind==='upgrade'&&r.id===0))game.sun+=25;
-    const objective=[game.level.mold.length?'霉菌覆盖的地块不能种植':'',game.level.mustProtect?`保护好 ${game.level.mustProtect} 株植物`:'',game.level.maxPlants!==null?`同时种植不超过 ${game.level.maxPlants} 株植物`:'',game.level.lastStand?`用 ${game.level.lastStand.sun} 阳光布置防线，再开始进攻`:''].filter(Boolean).join(' · ');
+    const objective=[game.level.mold.length?'霉菌覆盖的地块不能种植':'',game.level.mustProtect?`保护好 ${game.level.mustProtect} 株植物`:'',game.level.maxPlants!==null?`同时种植不超过 ${game.level.maxPlants} 株植物`:'',game.level.flowerLine!==null?'不要让僵尸踩到花坛':'',game.level.maxSun!==null?`消耗阳光不超过 ${game.level.maxSun}`:'',game.level.lastStand?`用 ${game.level.lastStand.sun} 阳光布置防线，再开始进攻`:''].filter(Boolean).join(' · ');
     for(const element of host.querySelectorAll<HTMLElement>('.challenge-objective')){element.textContent=objective;element.hidden=!objective;}
   }
   function survey() {
@@ -184,7 +191,12 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     scene.preview(game.level.waves.flat(),game.graves,game.plants,game.level);scene.setCamera(scene.art.catalog.presentation.seedChoosingCameraX);scene.start();openChooser();
   }
   function openChooser() {
-    if(levelConfig.mode!=='seedbank'){deck=readLevel(source).preset??[];start();return;}
+    if(levelConfig.mode!=='seedbank'){deck=readLevel(source).preset??[];
+      if(deck.includes('imitater')){
+        screen='choosing';$('#hud').hidden=true;
+        panel('模仿哪种植物？',`<div class="pause-actions">${deck.filter(k=>k!=='imitater').map(k=>`<button class="battle-button" data-imitate="${k}">${plantLabels[k]}</button>`).join('')}</div>`);
+        for(const button of host.querySelectorAll<HTMLButtonElement>('[data-imitate]'))button.onclick=()=>{game.imitateKind=button.dataset.imitate as PlantKind;start();};
+      }else start();return;}
     screen='choosing';deck=[];selected=null;speed=1;
     $('#overlay').hidden=true;$('#hud').hidden=false;$('#seed-chooser').hidden=false;$('#battle-announcement').hidden=true;
     host.dataset.screen=screen;$('#sun-count').textContent=String(game.sun);
@@ -211,8 +223,9 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(game.time>tipUntil)$('#game-tip').hidden=true;
     if(levelConfig.day===2&&!foodTipShown&&game.pickups.some(p=>p.kind==='food')){foodTipShown=true;tip('点击发光的能量豆收集，再点击左下角能量豆，对植物使用。',12);}
     $('#shovel').classList.toggle('selected',selected==='shovel');
-    $('#wave-label').textContent=game.wave===0?'':`${game.wave} / ${game.level.waves.length}`;
-    $('#wave-fill').style.width=`${game.wave/game.level.waves.length*100}%`;
+    $('#wave-label').textContent=game.boss?`僵王 · ${game.boss.stage+1} / 3`:game.wave===0?'':`${game.wave} / ${game.level.waves.length}`;
+    $('#wave-fill').style.width=`${(game.boss?game.boss.progress:game.wave/game.level.waves.length)*100}%`;
+    if(game.boss){const stage=game.boss.zombie.hp<=0?3:game.boss.stage;if(bossMusicStage!==stage){bossMusicStage=stage;music.src=assetUrl(stage===3?'campaign/bossVictory.mp3':`campaign/boss${stage}.mp3`);playMusic();}}
   }
   function hover(x: number,y: number) {
     if(screen!=='playing')return;
@@ -257,7 +270,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       if(countdown>=ready+set+plant){screen='playing';host.dataset.screen=screen;$('#battle-announcement').hidden=true;if(levelConfig.mode==='match')tip('翻开骆驼牌，找到两张相同图案即可消除。',10);if(levelConfig.mode==='conveyor')tip('点击传送带上的植物，再点击地块种植。',8);if(levelConfig.mode==='powerups')tip('选择下方道具，按住并拖动手指来攻击僵尸。',10);}
       return;
     }
-    if(screen==='ending'){scene.sync(game,dt);if(!scene.hasDeathAnimations){if(game.phase==='won'&&levelConfig.outro&&!progress.isComplete(levelConfig.id)){outro=true;narrativeLines=scene.art.campaign.narratives[levelConfig.outro];narrativeIndex=0;screen='npc-enter';host.dataset.screen=screen;$('#hud').hidden=true;scene.enterNarrative();}else finish();}return;}
+    if(screen==='ending'){scene.sync(game,dt);if(!scene.hasDeathAnimations){if(game.phase==='won'&&levelConfig.outro&&!progress.isComplete(levelConfig.id)){outro=true;narrativeLines=scene.art.campaign.narratives[levelConfig.outro];narrativeIndex=0;screen='npc-enter';host.dataset.screen=screen;$('#hud').hidden=true;scene.enterNarrative(narrativeCast(0));}else finish();}return;}
     if(screen!=='playing')return;
     accumulator+=Math.min(dt,.1)*speed;let advanced=0;
     while(accumulator>=1/60&&game.phase==='playing'){game.tick(1/60);accumulator-=1/60;advanced+=1/60;}
@@ -305,14 +318,14 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   function finish() {
     screen='result';scene.stop();scene.render();music.pause();$('#battle-announcement').hidden=true;
     if(game.phase==='won') {
-      const first=!progress.isComplete(levelConfig.id);
+      const first=!progress.isComplete(levelConfig.id)&&!!(levelConfig.firstReward.image||levelConfig.firstReward.plant);
       const reward=levelConfig.firstReward;
-      const rewardImage=first?(reward.plant?cards.get(reward.plant)!:levelConfig.day===7?assetUrl(scene.art.catalog.ui['note-egypt'].image):scene.art.image(scene.app,'reward',levelConfig.day===4?'powerups':[6,11,15,22].includes(levelConfig.day)?'Pinata':reward.image,[6,11,15,22].includes(levelConfig.day)?'Upgrades':[17,21].includes(levelConfig.day)?'Upgrades':[10,14,16,18,20].includes(levelConfig.day)?'CoinBag':undefined)):'';
+      const rewardImage=first?(reward.plant?cards.get(reward.plant)!:levelConfig.day===7?assetUrl(scene.art.catalog.ui['note-egypt'].image):scene.art.image(scene.app,'reward',levelConfig.day===4?'powerups':[6,11,15,22,27,30,34].includes(levelConfig.day)?'Pinata':(levelConfig.day===25?'egypt':[23,31].includes(levelConfig.day)?'dangerroom_egypt':reward.image),[6,11,15,22,27,30,34].includes(levelConfig.day)?'Upgrades':[17,21].includes(levelConfig.day)?'Upgrades':[10,14,16,18,20].includes(levelConfig.day)?'CoinBag':undefined)):'';
       const sprouts=game.sprouts+game.pickups.filter(p=>p.kind==='sprout').length;
       panel('关卡完成',`${first?`<img class="map-reward" src="${rewardImage}" alt="${levelConfig.firstReward.label}"><p>获得${levelConfig.firstReward.label}</p>`:`<p>${title}</p>`}${sprouts>0?`<p>植物幼苗 × ${sprouts}</p>`:''}<button id="result-map" class="battle-button">继续</button>`);
       $('#result-map').onclick=()=>{progress.finish(levelConfig.world,levelConfig.id,sprouts);menu();};
     } else {
-      panel(game.lossReason==='plants'?'植物数量超过了关卡限制！':game.lossReason==='sun'?'消耗的阳光超过了关卡限制！':game.lossReason==='protected'?'需要保护的植物被吃掉了！':'僵尸吃掉了你的脑子！','<button id="again" class="battle-button">重新开始</button><button id="result-map" class="battle-button">返回地图</button>');
+      panel(game.lossReason==='flowers'?'僵尸踩到了花坛！':game.lossReason==='plants'?'植物数量超过了关卡限制！':game.lossReason==='sun'?'消耗的阳光超过了关卡限制！':game.lossReason==='protected'?'需要保护的植物被吃掉了！':'僵尸吃掉了你的脑子！','<button id="again" class="battle-button">重新开始</button><button id="result-map" class="battle-button">返回地图</button>');
       $('#again').onclick=chooseSeeds;$('#result-map').onclick=menu;
     }
   }

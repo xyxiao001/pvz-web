@@ -1,12 +1,13 @@
 import boardGridMaps from '../../public/assets/campaign/board-grid-maps.json';
-export const PLANT_KINDS = ['sunflower', 'peashooter', 'wallnut', 'potatomine', 'cabbagepult', 'bloomerang', 'iceburg', 'gravebuster', 'twinsunflower', 'iceweed', 'bonkchoy','repeater','kernelpult','melonpult'] as const;
+export const PLANT_KINDS = ['sunflower', 'peashooter', 'wallnut', 'potatomine', 'cabbagepult', 'bloomerang', 'iceburg', 'gravebuster', 'twinsunflower', 'iceweed', 'bonkchoy','repeater','kernelpult','melonpult','snowdrop','imitater','peapod','cherry_bomb','celerystalker','parsnip','sapfling'] as const;
 export type PlantKind = typeof PLANT_KINDS[number];
-export type ZombieKind = 'mummy' | 'mummy_armor1' | 'mummy_armor2' | 'mummy_flag' | 'ra' | 'camel_onehump' | 'camel_twohump' | 'camel_manyhump' | 'camel_onehump_touch' | 'camel_twohump_touch' | 'camel_threehump_touch' | 'egypt_gargantuar' | 'egypt_imp' | 'explorer' | 'tomb_raiser' | 'pharaoh' | 'pharaoh_inner' | 'camel_manyhump_touch';
+export type ZombieKind = 'mummy' | 'mummy_armor1' | 'mummy_armor2' | 'mummy_flag' | 'ra' | 'camel_onehump' | 'camel_twohump' | 'camel_manyhump' | 'camel_onehump_touch' | 'camel_twohump_touch' | 'camel_threehump_touch' | 'egypt_gargantuar' | 'egypt_imp' | 'explorer' | 'tomb_raiser' | 'pharaoh' | 'pharaoh_inner' | 'camel_manyhump_touch' | 'mummy_armor4' | 'explorer_veteran' | 'pharaoh_weak' | 'zombossmech_egypt' | 'zombossmech_egypt2';
 export const BOARD = { width: 1200, height: 700, left: 190, top: 160, cellWidth: 82, cellHeight: 98, columns: 9, rows: 5 };
 export const cellX = (column: number) => BOARD.left + (column + .5) * BOARD.cellWidth;
 export const rowY = (row: number) => BOARD.top + row * BOARD.cellHeight + 80;
 
 export interface PlantProperties {
+  PlantfoodChildrenCount:number;RetractionDelay:number;DamagePerHit:number;DamagePerSnip:number;PlantfoodSummonCount:number;
   CabbageType:string;CabbageTypePlantfood:string;ButterType:string;ChanceToButter:number;
   SunCost: number; Cooldown: number; CooldownFrom: number; Toughness: number;
   ShootInterval: number; ShootIntervalAdditional: number; PlantfoodPeaCount: number;
@@ -17,24 +18,28 @@ export interface PlantProperties {
   BustTime:number;AttackInterval:number;ChillDuration:number;DamagePowered:number;PlantfoodDPS:number;PlantfoodDragSPS:number;
   ThrowInterval:number; ThrowIntervalAdditional:number; PierceCount:number; PlantfoodBoomerangCount:number; FreezeDuration:number;
 }
-export interface ZombieProperties { NormalDeathWhenMowed?:boolean; Toughness: number; WalkSPS: number; EatDPS: number; MaxAbsorbValue: number;TeamMemberCount:number[];SmashDamage:number;FireDPS:number;TimeBetweenGroups:number;TimeBetweenGroupsAdditional:number }
+export interface ZombieProperties { NormalDeathWhenMowed?:boolean;WavePointCost:number;Weight:number;CannotCarryPlantfoodsInWaves?:boolean;ZombossStages:BossStage[];MissileType:string; Toughness: number; WalkSPS: number; EatDPS: number; MaxAbsorbValue: number;TeamMemberCount:number[];SmashDamage:number;FireDPS:number;TimeBetweenGroups:number;TimeBetweenGroupsAdditional:number }
+export interface BossAction {actionName:'walk'|'rush'|'shoot'|'summon';weight:number;repeatMax:number;repeatMin:number;summonProps:{pointMin:number;pointMax:number;zombieList:ZombieKind[]}}
+export interface BossStage {HitPoints:number;AnimRateModifier:number;ChilledDurationFromFrozen:number;MinIdleTime:number;MaxIdleTime:number;StunTime:number;StunDamageScale:number;StunStaggerBackMovement:number;StunStaggerBackTime:number;Actions:BossAction[]}
 export interface PowerProperties { TotalTime:number; DPS:number; TimePerUse:number; FlamethrowerNormalDPS:number; GroundFlameNormalDPS:number; GroundFlameDuration:number }
 export interface Properties {
   plantAnimations:Record<string,Record<string,{duration:number;events:{at:number;name:string}[]}>>;
   plants: Record<PlantKind, PlantProperties>;
   zombies: Record<ZombieKind, ZombieProperties>;
-  armors: { egypt_armor1: { Toughness: number }; egypt_armor2:{Toughness:number} };
+  armors: { egypt_armor1: { Toughness: number }; egypt_armor2:{Toughness:number};egypt_armor4:{Toughness:number} };
   grave: {Toughness:number};
-  projectiles:Record<string,{Damage:number;FreezeDuration:number;ChillDuration:number;SplashDamage:{Damage:number;Range:{w:number;h:number}}[];ButterDuration:number}>;
+  projectiles:Record<string,{Damage:number;DamagePerHit:number;TileLiquid:{Type:string;Duration:number};BoneCount:{Min:number;Max:number};FreezeDuration:number;ChillDuration:number;SplashDamage:{Damage?:number;ChillDuration?:number;FreezeDuration?:number;Range:{w:number;h:number}}[];ButterDuration:number}>;
   powerups:Record<string,PowerProperties>;
 }
 export interface SourceLevel { objects: { objclass: string; aliases?: string[]; objdata: Record<string, unknown> }[] }
 export interface SpawnAction {
-  mode:'walk'|'storm'|'ground'; zombies:{kind:ZombieKind;row:number|null;column?:number}[]; food:number;
+  mode:'walk'|'storm'|'ground'|'graves'|'graveZombies'|'conveyor';add?:ConveyorPlant[];remove?:PlantKind[];graveCount?:number;positions?:{row:number;column:number}[];wait?:number; zombies:{kind:ZombieKind;row:number|null;column?:number}[]; food:number;
   columnStart:number;columnEnd:number;groupSize:number;interval:number;
 }
-export interface Conveyor { DropDelayConditions:{Delay:number;MaxPackets:number}[]; InitialPlantList:{PlantType:PlantKind;Weight:number;MinCount?:number;MinWeightFactor?:number;MaxCount?:number;MaxWeightFactor?:number}[] }
+export interface ConveyorPlant {PlantType:PlantKind;Weight:number;MinCount?:number;MinWeightFactor?:number;MaxCount?:number;MaxWeightFactor?:number;MaxCountCooldownSeconds?:number}
+export interface Conveyor { DropDelayConditions:{Delay:number;MaxPackets:number}[]; InitialPlantList:ConveyorPlant[] }
 export interface Level {
+  boss:{kind:'zombossmech_egypt'|'zombossmech_egypt2';reserved:number;row:number;column:number;deathRow:number;deathColumn:number}|null;
   waves: ZombieKind[][]; actions:SpawnAction[][]; minHealth:number;maxHealth:number;flagInterval:number;
   match:{types:number}|null;suppressFlag:boolean;preset:PlantKind[]|null;initialPlants:{kind:PlantKind;row:number;column:number}[];randomGraves:{count:number;start:number;end:number}|null;
   maxPlants:number|null;maxSun:number|null;flowerLine:number|null;blacklist:PlantKind[];lastStand:{sun:number;food:number}|null;
@@ -52,6 +57,9 @@ export function readLevel(source: SourceLevel): Level {
   const byName = new Map(source.objects.flatMap(o => (o.aliases ?? []).map(name => [name, o] as const)));
   const actions=(manager.Waves as string[][]).map(wave=>wave.map(name=>{
     const action=byName.get(reference(name))!,d=action.objdata;
+    if(action.objclass==='ModifyConveyorWaveActionProps')return {mode:'conveyor' as const,zombies:[],food:0,columnStart:0,columnEnd:8,groupSize:1,interval:0,add:(d.Add as (ConveyorPlant&{Type:string})[]).map(p=>({...p,PlantType:reference(p.Type) as PlantKind})),remove:(d.Remove as {Type:string}[]).map(p=>reference(p.Type) as PlantKind)};
+    if(action.objclass==='SpawnGravestonesWaveActionProps')return {mode:'graves' as const,zombies:[],food:0,columnStart:0,columnEnd:8,groupSize:1,interval:0,graveCount:(d.GravestonePool as {Count:number}[]).reduce((n,g)=>n+g.Count,0),positions:(d.SpawnPositionsPool as {mX:number;mY:number}[]).map(p=>({column:p.mX,row:p.mY}))};
+    if(action.objclass==='SpawnZombiesFromGridItemSpawnerProps')return {mode:'graveZombies' as const,zombies:(d.Zombies as {Type:string}[]).map(z=>({kind:reference(z.Type) as ZombieKind,row:null})),food:Number(d.AdditionalPlantfood),columnStart:0,columnEnd:8,groupSize:1,interval:0,wait:Number(d.ZombieSpawnWaitTime)};
     const mode:SpawnAction['mode']=action.objclass==='StormZombieSpawnerProps'?'storm':action.objclass==='SpawnZombiesFromGroundSpawnerProps'?'ground':'walk';
     const defaults=mode==='storm'?{ColumnStart:4,ColumnEnd:8,GroupSize:2,TimeBetweenGroups:2}:{ColumnStart:0,ColumnEnd:8,GroupSize:1,TimeBetweenGroups:0};
     const data={...defaults,AdditionalPlantfood:0,...d};
@@ -72,7 +80,9 @@ export function readLevel(source: SourceLevel): Level {
   const flowers=activeChallenges.find(o=>o.objclass==='StarChallengeZombieDistanceProps');
   const lastStand=source.objects.find(o=>o.objclass==='LastStandMinigameProperties');
   const match=source.objects.find(o=>o.objclass==='CamelMinigameProperties');
+  const boss=source.objects.find(o=>o.objclass==='ZombossBattleModuleProperties')?.objdata;
   return {
+    boss:boss?{kind:boss.ZombossMechType as 'zombossmech_egypt'|'zombossmech_egypt2',reserved:Number(boss.ReservedColumnCount),row:(boss.ZombossSpawnGridPosition as {mY:number}).mY,column:(boss.ZombossSpawnGridPosition as {mX:number}).mX,deathRow:Number(boss.ZombossDeathRow),deathColumn:Number(boss.ZombossDeathColumn)}:null,
     maxPlants:limit?Number(limit.objdata.MaximumPlants):null,maxSun:sunLimit?Number(sunLimit.objdata.MaximumSun):null,flowerLine:flowers?Number(flowers.objdata.TargetDistance):null,
     blacklist:seedBank&&'PlantBlackList' in seedBank?seedBank.PlantBlackList as PlantKind[]:[],lastStand:lastStand?{sun:Number(lastStand.objdata.StartingSun),food:Number(lastStand.objdata.StartingPlantfood)}:null,
     mold:mold?[...new Map([
@@ -97,4 +107,4 @@ export interface SpecialTiming {gargPharaoh:number;gargSmash:number;gargSmashEnd
 export interface CampaignTiming { cabbage:number;cabbageDuration:number;cabbageFood:number;cabbageFoodEnd:number;boomerang:number;boomerangDuration:number;boomerangCatch:number;ice:number;iceDuration:number;iceFood:number;iceFoodEnd:number }
 export interface BonkTiming {attack:number;heavy:number;foodStart:number;foodHit:number}
 export interface AnimationTiming { bonk?:BonkTiming; shoot:number;shootDuration:number;produce:number;produceDuration:number;mineGrow:number;mineExplode:number;mineDeath:number;raStart:number;raEnd:number;campaign?:CampaignTiming;special?:SpecialTiming }
-export const plantLabels: Record<PlantKind, string> = { peashooter:'豌豆射手',sunflower:'向日葵',wallnut:'坚果',potatomine:'土豆地雷',cabbagepult:'卷心菜投手',bloomerang:'回旋镖射手',iceburg:'冰冻生菜',gravebuster:'噬碑藤',twinsunflower:'双胞向日葵',iceweed:'冰地刺',bonkchoy:'菜问',repeater:'双发射手',kernelpult:'玉米投手',melonpult:'西瓜投手' };
+export const plantLabels: Record<PlantKind, string> = { peashooter:'豌豆射手',sunflower:'向日葵',wallnut:'坚果',potatomine:'土豆地雷',cabbagepult:'卷心菜投手',bloomerang:'回旋镖射手',iceburg:'冰冻生菜',gravebuster:'噬碑藤',twinsunflower:'双胞向日葵',iceweed:'冰地刺',bonkchoy:'菜问',repeater:'双发射手',kernelpult:'玉米投手',melonpult:'西瓜投手',snowdrop:'雪莲',imitater:'模仿者',peapod:'豌豆荚',cherry_bomb:'樱桃炸弹',celerystalker:'潜伏芹菜',parsnip:'防风草',sapfling:'树脂投手' };

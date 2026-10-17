@@ -5,7 +5,7 @@ import type { PlantKind } from '../game/level';
 import type { SpriteArt } from '../shell/types';
 import type { CameraIntro } from './presentation';
 export interface Rig { rig: string; armature: string; animation: string; group?: string }
-export interface NarrativeStep { Character: 'crazydave'|'winnie'; Action: string; Lines?: {zh:string;en:string}; Animation?: string; Voice?: string }
+export interface NarrativeStep { Character: 'crazydave'|'winnie'|'zombossicon'; Action: string; Lines?: {zh:string;en:string}; Animation?: string; Voice?: string }
 export interface BattleCatalog { intro: NarrativeStep[]; sounds: Record<string,string[]>; ui: Record<string, SpriteArt>; rigs: Record<string, Rig>; presentation: {camera:CameraIntro;seedChoosingCameraX:number;corpseFadeDuration:number;mowerDeathDuration:number;armDropHealthFraction:number;readySetPlant:number[]} }
 
 export interface CampaignCatalog {actors:Record<string,Rig>;rigs:Record<string,Rig>;ui:Record<string,SpriteArt>;sounds:Record<string,string[]>;narratives:Record<string,NarrativeStep[]>}
@@ -19,7 +19,7 @@ export class BattleArt {
     this.catalog = await json<BattleCatalog>('battle/catalog.json');
     if(day>1){
       this.campaign=await json<CampaignCatalog>('campaign/catalog.json');
-      const names=['food','iceTrap',...(day>=17?['dirtSpawn','tombBone','mold','endangered','pharaohBreak']:[]),...(plants.includes('kernelpult')?['corn','butter','butter2']:[]),...(plants.includes('melonpult')?['melon','melon_pf']:[]),...(day>=3?['grave','sandstorm']:[]),...(plants.includes('cabbagepult')?['cabbage']:[]),...(plants.includes('bloomerang')?['boomerang']:[]),...(day===4||day===8?['conveyor']:[]),...([7,10,14,16].includes(day)?['dirtSpawn']:[]),...([10,14].includes(day)?['tombBone']:[]),...(day===13?['mold']:[]),...(day===15?['endangered']:[]),...(plants.includes('iceweed')?['iceSaw']:[]),...(day===8?['pharaohBreak']:[]),...(day===5?['dirtSpawn','sprout','powerSnow','snowHit','cherryExplosion','wizardFinger','wizardPoint','tossPar','flameFinger','flameSquare']:[])];
+      const names=['food','iceTrap',...(day===27?['flower']:[]),...([25,35].includes(day)?['bossMissile','bossTarget','bossEscape','bossPortal','zombossicon']:[]),...(plants.includes('snowdrop')?['snowdrop','snowdrop_freeze']:[]),...(plants.includes('sapfling')?['sapfling','sapfling_pf','sapTile']:[]),...(plants.includes('parsnip')?['parsnip_child','parsnip_child_small']:[]),...(plants.includes('cherry_bomb')?['cherryExplosion']:[]),...(day>=17?['dirtSpawn','tombBone','mold','endangered','pharaohBreak']:[]),...(plants.includes('kernelpult')?['corn','butter','butter2']:[]),...(plants.includes('melonpult')?['melon','melon_pf']:[]),...(day>=3?['grave','sandstorm']:[]),...(plants.includes('cabbagepult')?['cabbage']:[]),...(plants.includes('bloomerang')?['boomerang']:[]),...([4,8,25,29,35].includes(day)?['conveyor']:[]),...([7,10,14,16].includes(day)?['dirtSpawn']:[]),...([10,14].includes(day)?['tombBone']:[]),...(day===13?['mold']:[]),...(day===15?['endangered']:[]),...(plants.includes('iceweed')?['iceSaw']:[]),...(day===8?['pharaohBreak']:[]),...(day===5?['dirtSpawn','sprout','powerSnow','snowHit','cherryExplosion','wizardFinger','wizardPoint','tossPar','flameFinger','flameSquare']:[])];
       const rigs=Object.fromEntries(names.map(name=>[name,this.campaign.rigs[name]]));
       this.catalog={...this.catalog,rigs:{...this.catalog.rigs,...rigs},ui:{...this.catalog.ui,...this.campaign.ui},sounds:{...this.catalog.sounds,...this.campaign.sounds}};
     }
