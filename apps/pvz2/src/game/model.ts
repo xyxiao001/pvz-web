@@ -1,3 +1,4 @@
+import {PirateFinalePlants} from './pirate-finale-plants';
 import {EscapeRoots} from './escape-root';
 import {PirateBattle,pirateArmor,seaCell,swinging,isFlying} from './pirate';
 import mowerPresentation from '../../public/assets/battle/mower.json';
@@ -10,7 +11,7 @@ export interface Plant {
   id: number; kind: PlantKind; row: number; column: number; hp: number; armor: number;
   age: number; nextAction: number; action: 'idle' | 'shoot' | 'produce' | 'food' | 'grow' | 'explode' | 'catch';
   leap?:{x:number;y:number;at:number};heads?:number;imitate?:PlantKind;hidden?:boolean;retreat?:number;animation?:string;variant?:boolean;eventIndex?:number;
-  rootGrown?:boolean;spikes?:number;boosted?:boolean; endangered?:boolean; facing?:number;heavy?:boolean;
+  transformed?:boolean;leaves?:number;rootGrown?:boolean;spikes?:number;boosted?:boolean; endangered?:boolean; facing?:number;heavy?:boolean;
   actionAt: number; fired: boolean; burst: number; nextBurst: number;
 }
 export interface Zombie { captain?:{parrot:boolean;health:number;next:number};parrot?:{captain:number;target:number|null;y:number;height:number;capture:number;fleeing:boolean;escaped:boolean;carrying?:Plant}; stunnedUntil?:number; pirate?:{animation:string;at:number;elapsed:number;next:number;count:number;fired:boolean;imp:boolean};barrel?:number;pusher?:number;detachedAt?:number; swing?:{at:number;judge:number;end:number;failure:boolean};route?:{spawnLane:number;spawnWave:number;points:{x:number;y:number}[];index:number;y:number;angle:number}; sappedUntil?:number; butteredUntil?:number;reversed?:boolean;landUntil?:number; id: number; kind: ZombieKind; row: number; x: number; hp: number; armor: number; eating: boolean; absorbed: number; absorbUntil: number; absorbState:'idle'|'start'|'loop'|'end'; absorbAt:number;deathCause:DeathCause; frozenUntil:number;chilledUntil:number;food:boolean;entry:SpawnAction['mode'];entryAt:number;entryX:number;camelPart:number;team:number;leap:{fromX:number;fromY:number;toX:number;toRow:number;at:number;duration?:number}|null }
@@ -32,6 +33,8 @@ export interface Effect { id: number; x: number; y: number; kind: 'plant' | 'rem
 export type GameEvent = { type: 'shot' | 'plant' | 'sun' | 'explode' | 'win' | 'lose' | 'food' | 'wave' | 'storm' | 'raid' | 'sprout' | 'flip' | 'match' | 'mower' };
 
 export class Game {
+  readonly finale=new PirateFinalePlants(this);
+  plantsLost=0;
   readonly escape=new EscapeRoots(this);
   readonly pirate=new PirateBattle(this);
   boss:EgyptBoss|null=null;
@@ -39,7 +42,7 @@ export class Game {
   sap:{id:number;row:number;column:number;until:number;powered:boolean}[]=[];
   private pendingGraveSpawns:{action:SpawnAction;at:number}[]=[];
   phase: 'playing' | 'paused' | 'won' | 'lost' = 'playing';
-  lossReason:'brains'|'protected'|'plants'|'sun'|'flowers'|'score'|'sunProduced'|'killChallenge'='brains';
+  lossReason:'plantsLost'|'brains'|'protected'|'plants'|'sun'|'flowers'|'score'|'sunProduced'|'killChallenge'='brains';
   preparing=false;
   foodLimit=3;
   shovelRefund=0;
@@ -109,7 +112,7 @@ export class Game {
     if(!level.mowers)this.mowers.forEach(m=>m.spent=true);
     if(level.world==='egypt'&&level.day===2&&tutorial)this.addPlant('peashooter',2,2);
     this.conveyorPlants=level.conveyor?level.conveyor.InitialPlantList.map(p=>({...p})):[];
-    if(level.boss)this.boss=level.boss.kind==='zombossmech_pirate'?new PirateBoss(this):new EgyptBoss(this);
+    if(level.boss)this.boss=level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
     if(level.cannon){this.nextWave=4+RULES.normalWaveEntrance;level.cannon.RowHasCannon.forEach((has,row)=>{if(has)this.addPlant('coconutcannon',row,1);});}
   }
 
@@ -125,7 +128,7 @@ export class Game {
     const p = this.props.plants[kind];
     const placementKind=kind==='imitater'?this.imitateKind:kind;
     const existing=this.plants.find(p=>p.row===row&&p.column===column);
-    const repairing=kind==='spikerock'&&existing?.kind==='spikerock'&&existing.spikes!<p.MaxSpike;
+    const repairing=kind==='spikerock'&&existing?.kind==='spikerock'&&existing.spikes!<p.MaxSpike||kind==='chardguard'&&existing?.kind==='chardguard'&&existing.leaves!<p.MaxBounceTime;
     const stacking=kind==='peapod'&&existing?.kind==='peapod'&&existing.heads!<5;
     if(seaCell(this.level.planks,row,column))return false;
     if(kind==='imitater'&&this.imitateKind===null)return false;
@@ -137,7 +140,7 @@ export class Game {
       || (placementKind==='gravebuster'?!this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0):this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0)) || existing&&!stacking&&!repairing) return false;
     if(packet){this.conveyor.splice(this.conveyor.indexOf(packet),1);this.nextCard=Math.min(this.nextCard,this.time+this.conveyorDelay());}
     else {const cost=this.seedCost(kind);this.sun -= cost; this.sunSpent+=cost;this.cooldowns[kind] = this.preparing?0:this.seedCooldown(kind);}
-    if(repairing)existing.spikes=p.MaxSpike;else if(stacking){existing.heads!++;existing.hp=p.Toughness;}else this.addPlant(kind, row, column);
+    if(repairing){if(kind==='chardguard'){existing.leaves=p.MaxBounceTime;existing.hp=p.Toughness;}else existing.spikes=p.MaxSpike;}else if(stacking){existing.heads!++;existing.hp=p.Toughness;}else this.addPlant(kind, row, column);
     if(this.boosts.has(kind)&&!this.preparing){this.usedBoosts.add(kind);if(kind==='imitater')this.plants.at(-1)!.boosted=true;else this.plantFood(row,column,true);}
     this.checkChallenges();
     this.events.push({ type: 'plant' });
@@ -150,6 +153,8 @@ export class Game {
     this.plants.push({ id: ++this.id, kind, row, column, hp: p.Toughness, armor: 0, age: 0, nextAction,
       action: 'idle', actionAt: this.time, fired: false, burst: 0, nextBurst: 0 });
     const plant=this.plants.at(-1)!;
+    if(kind==='chardguard')plant.leaves=p.MaxBounceTime;
+    if(kind==='jalapeno')plant.animation='Attack';
     if(kind==='escaperoot'){plant.rootGrown=false;plant.animation='Baby_Start';}
     if(kind==='peapod')plant.heads=1;
     if(kind==='spikerock')plant.spikes=p.MaxSpike;
@@ -163,6 +168,7 @@ export class Game {
     if (this.phase !== 'playing'||this.plants.some(p=>p.row===row&&p.column===column&&p.endangered)) return;
     const plant=this.plants.find(p=>p.row===row&&p.column===column);
     if(plant){
+      if(!this.preparing)this.plantsLost++;
       const cost=this.props.plants[plant.kind].SunCost*(plant.kind==='peapod'?plant.heads!:1);
       if(this.preparing){this.sun+=cost;this.sunSpent-=cost;}
       else if(this.shovelRefund>0&&!this.level.conveyor&&!this.level.match&&!this.level.powerups){
@@ -172,6 +178,7 @@ export class Game {
     }
     if(this.plants.some(p=>p.row===row&&p.column===column))this.effect('remove',cellX(column),rowY(row));
     this.plants = this.plants.filter(p => p.row !== row || p.column !== column);
+    this.checkChallenges();
   }
 
   mowerPointer(x:number,y:number,held:boolean,begin=false) {
@@ -194,9 +201,10 @@ export class Game {
   plantFood(row: number, column: number, boost=false): boolean {
     const plant = this.plants.find(p => p.row === row && p.column === column && p.hp>0);
     if(plant?.kind==='escaperoot'&&(!plant.rootGrown||plant.action!=='idle'||plant.animation!=='Idle'))return false;
-    if (!plant || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['gravebuster','imitater','cherry_bomb'].includes(plant.kind)) return false;
+    if (!plant || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['gravebuster','imitater','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
     if(!boost)this.food--; plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
+    if(this.finale.handles(plant.kind))this.finale.food(plant);
     if(plant.kind==='escaperoot')this.escape.food(plant);
     if (plant.kind === 'repeater') {plant.burst=this.props.plants.repeater.PlantfoodPeaCount;plant.nextBurst=this.time+2/plant.burst;plant.animation='Food';plant.eventIndex=0;}
     if(['kernelpult','melonpult','snowdrop','sapfling','celerystalker','snapdragon','spikeweed','spikerock','springbean','threepeater','coconutcannon'].includes(plant.kind)){plant.animation='Food';plant.eventIndex=0;}
@@ -515,7 +523,7 @@ export class Game {
     const elapsed=(this.time-p.actionAt)*(p.kind==='parsnip'&&p.action==='shoot'?Math.max(1,1/props.AttackInterval):1);
     if(p.kind==='imitater'){
       if(elapsed>=timelines.Death.events.find(e=>e.name==='showPlant')!.at){
-        this.addPlant(p.imitate!,p.row,p.column);p.hp=0;if(p.boosted)this.plantFood(p.row,p.column,true);
+        this.addPlant(p.imitate!,p.row,p.column);p.hp=0;p.transformed=true;if(p.boosted)this.plantFood(p.row,p.column,true);
       }return;
     }
     if(p.kind==='cherry_bomb'){
@@ -744,7 +752,7 @@ export class Game {
   startLastStand(){this.preparing=false;}
   private checkChallenges(){
     if(this.phase!=='playing')return;
-    const reason=this.level.maxPlants!==null&&this.plants.length>this.level.maxPlants?'plants':this.level.maxSun!==null&&this.sunSpent>this.level.maxSun?'sun':null;
+    const reason=this.level.maxPlantsLost!==null&&this.plantsLost>this.level.maxPlantsLost?'plantsLost':this.level.maxPlants!==null&&this.plants.length>this.level.maxPlants?'plants':this.level.maxSun!==null&&this.sunSpent>this.level.maxSun?'sun':null;
     if(reason){this.lossReason=reason;this.phase='lost';this.events.push({type:'lose'});}
   }
   tick(dt: number) {
@@ -784,9 +792,10 @@ export class Game {
       if(z.entry==='storm'&&this.time-z.entryAt<=1)z.x=z.entryX+(1070-z.entryX)*(1-(this.time-z.entryAt));
       if(z.leap){const t=Math.min(1,(this.time-z.leap.at)/(z.leap.duration??.5));z.x=z.leap.fromX+(z.leap.toX-z.leap.fromX)*t;if(t===1){z.row=z.leap.toRow;if(z.kind==='egypt_imp'||z.kind==='pirate_imp')z.landUntil=this.time+14/30;if(this.level.world==='pirate'&&seaCell(this.level.planks,z.row,Math.floor((z.x-BOARD.left)/BOARD.cellWidth))&&!isFlying(z)){z.hp=0;z.deathCause='water';}z.leap=null;}}
     }
-    this.tickConveyor(dt);this.tickPower(dt);this.tickMatching();this.escape.tick(dt);
+    this.tickConveyor(dt);this.tickPower(dt);this.tickMatching();this.escape.tick(dt);this.finale.tick(dt);
     for (const p of this.plants) {
       if(p.leap){if(this.time-p.leap.at<.5)continue;delete p.leap;}
+      if(this.finale.handles(p.kind)){this.finale.tickPlant(p,dt);continue;}
       if(p.kind==='escaperoot'){this.escape.tickPlant(p,dt);continue;}
       if(p.kind==='threepeater'){p.age+=dt;this.tickThreepeater(p);continue;}
       if(p.kind==='snapdragon'||p.kind==='coconutcannon'||p.kind==='spikeweed'||p.kind==='spikerock'||p.kind==='springbean'){p.age+=dt;this.pirate.tickPlant(p,dt);continue;}
@@ -883,7 +892,7 @@ export class Game {
     for (const z of this.zombies) {
       if(z===this.boss?.zombie||z.hp<=0||z.leap||z.landUntil!==undefined&&this.time<z.landUntil||this.time<z.frozenUntil||z.stunnedUntil!==undefined&&this.time<z.stunnedUntil||z.butteredUntil!==undefined&&this.time<z.butteredUntil||(z.entry!=='walk'&&this.time-z.entryAt<(z.entry==='ground'?1.35:1)))continue;
       if(this.pirate.tickZombie(z,dt)||this.tickSpecialZombie(z,dt))continue;
-      const target = this.plants.filter(p => p.hp > 0 && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='cherry_bomb'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column)[0];
+      const target = this.plants.filter(p => p.hp > 0 && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='cherry_bomb'&&p.kind!=='jalapeno'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column)[0];
       z.eating = !!target;
       if(target&&(z.kind==='explorer'||z.kind==='explorer_veteran')&&this.specialZombies.get(z.id)!.torch){target.hp=0;target.armor=0;}
       else if (target) { const amount = (z.kind==='egypt_imp'?100:this.props.zombies[z.kind].EatDPS) * dt*(this.time<z.chilledUntil?.5:1), armor = Math.min(target.armor, amount); target.armor -= armor; target.hp -= amount - armor;if(target.hp<=0&&target.kind==='parsnip')this.launchParsnip(target,false); }
@@ -923,6 +932,7 @@ export class Game {
       if (z.absorbed) this.dropSun(z.x, rowY(z.row) - 65, z.absorbed, 'ra');
     }
     this.zombies = this.zombies.filter(z => z===this.boss?.zombie||z.hp > 0&&!(z.reversed&&!z.parrot&&z.x>1070));
+    this.plantsLost+=this.plants.filter(p=>p.hp<=0&&!p.transformed).length;
     this.plants = this.plants.filter(p => p.hp > 0);
     this.checkChallenges();
     if(this.level.mustProtect>0&&this.plants.filter(p=>p.endangered).length<this.level.mustProtect&&this.phase==='playing'){this.lossReason='protected';this.phase='lost';this.events.push({type:'lose'});}

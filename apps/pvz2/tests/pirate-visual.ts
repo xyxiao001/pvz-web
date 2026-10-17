@@ -18,12 +18,12 @@ const shell=new WorldShell(worldHost,async id=>{battle=createBattle(battleHost,a
 async function clean(){if(battle){await battle.dispose();battle=undefined;}if(scene){await scene.dispose();scene=undefined;}sceneHost.hidden=true;worldHost.hidden=true;battleHost.hidden=true;}
 function button(label:string,action:()=>Promise<void>|void){const b=document.createElement('button');b.textContent=label;b.onclick=async()=>{try{await action();}catch(e){status.textContent=String(e);throw e;}};controls.append(b);}
 button('世界解锁',async()=>{await clean();worldHost.hidden=false;await shell.init();});
-for(let day=1;day<=30;day++)button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`pirate${day}`],progress);await battle.enter();});
-for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30])button(`场景${day}`,async()=>{
+for(let day=1;day<=35;day++)button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`pirate${day}`],progress);await battle.enter();});
+for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35])button(`场景${day}`,async()=>{
  await clean();sceneHost.hidden=false;scene=new Scene();const config=BATTLE_LEVELS[`pirate${day}`],level=readLevel(await json<SourceLevel>(config.source));
  const [base,campaign,extra,flag]=await Promise.all([json<Properties>('levels/properties.json'),json<Properties>('campaign/properties.json'),json<Properties>('pirate/properties.json'),json<Properties['zombies']['mummy_flag']>('battle/flag.json')]);
  const props={...campaign,plants:{...base.plants,...campaign.plants,...extra.plants},zombies:{...base.zombies,...campaign.zombies,...extra.zombies,mummy_flag:flag},armors:{...base.armors,...campaign.armors,...extra.armors},projectiles:{...campaign.projectiles,...extra.projectiles},plantAnimations:{...campaign.plantAnimations,...extra.plantAnimations}};
- await scene.init(sceneHost,()=>{},config,['sunflower','peashooter','kernelpult','snapdragon','coconutcannon','spikeweed','springbean','threepeater','spikerock','cherry_bomb','escaperoot'],level);
+ await scene.init(sceneHost,()=>{},config,['sunflower','peashooter','kernelpult','snapdragon','coconutcannon','spikeweed','springbean','threepeater','spikerock','cherry_bomb','escaperoot','xshot','chardguard','dandelion','jalapeno','lightningreed'],level);
  game=new Game(level,props,scene.timing,z=>({x:z.x,y:rowY(z.row)}),42,false);scene.frameCombat();
  if(!level.cannon){game.sun=9999;for(let row=0;row<5;row++){game.cooldowns.snapdragon=0;game.plant('snapdragon',row,1);}game.spawnZombie('pirate_armor2',0,cellX(6));if(level.waves.flat().includes('swashbuckler'))game.spawnZombie('swashbuckler',2,1070);if(level.waves.flat().includes('seagull'))game.spawnZombie('seagull',3,cellX(7));}
  if(day>=7&&level.waves.flat().includes('barrelroller'))game.spawnZombie('barrelroller',2,cellX(6));if(day===8)game.spawnZombie('pirate_gargantuar',1,cellX(8));if(day===10)game.spawnZombie('cannon',4,1070);
@@ -57,3 +57,14 @@ button('逃脱树根换位',()=>{
 button('逃脱树根大招',()=>{game!.food=1;game!.plantFood(0,0);scene!.sync(game!,0);scene!.render();});
 button('推进半秒',()=>{for(let i=0;i<30;i++){game!.tick(1/60);scene!.sync(game!,1/60);}scene!.render();});
 button('重甲海盗',()=>{game!.spawnZombie('pirate_armor4',1,cellX(5));scene!.sync(game!,0);scene!.render();});
+
+button('终章植物与鹈鹕',()=>{
+ game!.level.mustProtect=0;for(const z of game!.zombies)game!.damage(z,1000000);game!.tick(1/60);scene!.sync(game!,1/60);game!.plants=[];
+ for(const [row,kind] of (['chardguard','dandelion','lightningreed','jalapeno','xshot'] as const).entries()){
+  game!.conveyor.push({id:910000+row,kind,lane:0,position:0});game!.plant(kind,row,2,910000+row);
+  game!.spawnZombie(row===4?'pelican':'pirate_armor4',row,cellX(5));
+ }
+ scene!.sync(game!,0);scene!.render();
+});
+button('终章植物大招',()=>{for(const p of [...game!.plants]){game!.food=1;game!.plantFood(p.row,p.column);}scene!.sync(game!,0);scene!.render();});
+button('击落鹈鹕',()=>{for(const z of game!.zombies)if(z.kind==='pelican')game!.damage(z,500);scene!.sync(game!,0);scene!.render();});

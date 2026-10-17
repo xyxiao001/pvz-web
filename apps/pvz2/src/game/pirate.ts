@@ -4,7 +4,7 @@ import type {Game,Plant,Zombie} from './model';
 export const seaCell=(planks:readonly number[]|null,row:number,column:number)=>planks!==null&&column>=5&&!planks.includes(row);
 export const pirateArmor=(kind:ZombieKind)=>kind==='pirate_armor4'?'pirate_armor4':kind==='pirate_armor1'?'pirate_armor1':kind==='pirate_armor2'?'pirate_armor2':null;
 export const zombieY=(z:Zombie)=>z.parrot?.y??z.route?.y??rowY(z.row);
-export const isFlying=(z:Zombie)=>z.kind==='seagull'||z.kind==='pirate_captain_parrot';
+export const isFlying=(z:Zombie)=>z.kind==='seagull'||z.kind==='pelican'||z.kind==='pirate_captain_parrot';
 export const swinging=(z:Zombie,time:number)=>!!z.swing&&time<z.swing.end;
 
 export interface CannonShot {id:number;x:number;y:number;row:number;age:number;food?:boolean;explodeAt?:number}
@@ -35,7 +35,7 @@ export class PirateBattle {
   }
   private bounce(z:Zombie){
     const g=this.#game;
-    if(z===g.boss?.zombie||z.hp<=0||z.leap||swinging(z,g.time)||['seagull','pirate_captain_parrot','pirate_gargantuar','cannon'].includes(z.kind))return;
+    if(z===g.boss?.zombie||z.hp<=0||z.leap||swinging(z,g.time)||['seagull','pelican','pirate_captain_parrot','pirate_gargantuar','cannon'].includes(z.kind))return;
     let row=z.row;const column=Math.floor((z.x-BOARD.left)/BOARD.cellWidth);
     if(column>=4&&!seaCell(g.level.planks,row,8)){
       if(row>0&&seaCell(g.level.planks,row-1,8))row--;

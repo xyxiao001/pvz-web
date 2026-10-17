@@ -12,11 +12,11 @@ import { assetUrl, json, loadInBatches } from '../assets/load';
 import { BOARD, cellX, rowY, PLANT_KINDS, type AnimationTiming, type PlantKind, type ZombieKind, type Level } from '../game/level';
 import { isCamel, isMatchCamel, type DeathCause, Game, Plant, Zombie, ZombieDeath } from '../game/model';
 
-type RigName = PlantKind | 'pirateCaptain'|'pirateParrot'| 'barrelroller'|'pirateBarrel'|'pirateGargantuar'|'pirateImp'|'impCannon'| 'pirate'|'pirateFlag'|'swashbuckler'|'seagull'| 'boss' | 'torchlight' | 'pharaohWeak' | 'mummy' | 'ra' | 'camel' | 'camelTouch' | 'gargantuar' | 'imp' | 'explorer' | 'tombraiser' | 'pharaoh' | 'pharaohInner';
+type RigName = PlantKind | 'pirateCaptain'|'pirateParrot'| 'barrelroller'|'pirateBarrel'|'pirateGargantuar'|'pirateImp'|'impCannon'| 'pirate'|'pirateFlag'|'swashbuckler'|'seagull'|'pelican'| 'boss' | 'torchlight' | 'pharaohWeak' | 'mummy' | 'ra' | 'camel' | 'camelTouch' | 'gargantuar' | 'imp' | 'explorer' | 'tombraiser' | 'pharaoh' | 'pharaohInner';
 const RIGS: Record<RigName, { armature: string; idle: string; scale: number }> = {
-  escaperoot:{armature:'EscapeRoot',idle:'Baby_Loop',scale:.55},spikerock:{armature:'Spikerock',idle:'Idle',scale:.55},threepeater:{armature:'Threepeater',idle:'Idle',scale:.55},pirateCaptain:{armature:'Captain',idle:'Walk',scale:.51},pirateParrot:{armature:'Parrot',idle:'Flying',scale:.51},
+  xshot:{armature:'Rotobaga',idle:'Idle',scale:.55},chardguard:{armature:'ChardGuard',idle:'Idle',scale:.55},dandelion:{armature:'Dandelion',idle:'Idle',scale:.55},jalapeno:{armature:'Jalapeno',idle:'Idle',scale:.55},lightningreed:{armature:'LightningReed',idle:'Idle',scale:.55},escaperoot:{armature:'EscapeRoot',idle:'Baby_Loop',scale:.55},spikerock:{armature:'Spikerock',idle:'Idle',scale:.55},threepeater:{armature:'Threepeater',idle:'Idle',scale:.55},pirateCaptain:{armature:'Captain',idle:'Walk',scale:.51},pirateParrot:{armature:'Parrot',idle:'Flying',scale:.51},
   spikeweed:{armature:'Spikeweed',idle:'Idle',scale:.55},springbean:{armature:'SpringBean',idle:'Idle',scale:.55},barrelroller:{armature:'BarrelPusher',idle:'Walk',scale:.51},pirateBarrel:{armature:'Barrel',idle:'Walk',scale:.51},pirateGargantuar:{armature:'PirateGargantuar',idle:'Walk',scale:.51},pirateImp:{armature:'Imp',idle:'Walk',scale:.51},impCannon:{armature:'ImpCannon',idle:'Idle',scale:.51},
-  pirate:{armature:'PirateBasic',idle:'Walk',scale:.51},pirateFlag:{armature:'PirateFlag',idle:'Walk',scale:.51},swashbuckler:{armature:'Swashbuckler',idle:'Walk',scale:.51},seagull:{armature:'SeagullZombie',idle:'Walk',scale:.51},snapdragon:{armature:'SnapDragon',idle:'Idle',scale:.55},coconutcannon:{armature:'CoconutCannon',idle:'Idle',scale:.55},
+  pelican:{armature:'PelicanZombie',idle:'Walk',scale:.51},pirate:{armature:'PirateBasic',idle:'Walk',scale:.51},pirateFlag:{armature:'PirateFlag',idle:'Walk',scale:.51},swashbuckler:{armature:'Swashbuckler',idle:'Walk',scale:.51},seagull:{armature:'SeagullZombie',idle:'Walk',scale:.51},snapdragon:{armature:'SnapDragon',idle:'Idle',scale:.55},coconutcannon:{armature:'CoconutCannon',idle:'Idle',scale:.55},
   boss:{armature:'Zomboss',idle:'Idle',scale:.51},torchlight:{armature:'TorchlightZombie',idle:'Walk',scale:.51},pharaohWeak:{armature:'WeakPharaohZombie',idle:'Walk',scale:.51},
   snowdrop:{armature:'SnowDrop',idle:'Idle',scale:.55},imitater:{armature:'Imitater',idle:'Idle',scale:.55},peapod:{armature:'Peapod',idle:'Idle',scale:.55},cherry_bomb:{armature:'CherryBomb',idle:'Idle',scale:.55},celerystalker:{armature:'CeleryStalker',idle:'Idle_Hidden',scale:.55},parsnip:{armature:'Parsnip',idle:'Idle',scale:.55},sapfling:{armature:'Sapfling',idle:'Idle',scale:.55},
   repeater:{armature:'Repeater',idle:'Idle',scale:.56},kernelpult:{armature:'KernelPult',idle:'Idle',scale:.55},melonpult:{armature:'Melon-pult',idle:'Idle',scale:.55},
@@ -234,7 +234,7 @@ export class Scene {
       if(p.leap){const t=Math.min(1,(game.time-p.leap.at)/.5);actor.root.position.set(p.leap.x+(cellX(p.column)-p.leap.x)*t,p.leap.y+(rowY(p.row)-p.leap.y)*t-100*4*t*(1-t));}
       if(p.kind==='escaperoot')actor.rootGrown=p.rootGrown;
       if(p.kind==='bonkchoy')actor.rig.scale.x=RIGS.bonkchoy.scale*(p.facing??1);
-      actor.rig.animation.timeScale=p.kind==='coconutcannon'&&['Shoot','Food'].includes(p.animation!)?2:p.kind==='parsnip'&&p.action==='shoot'?Math.max(1,1/game.props.plants.parsnip.AttackInterval):p.kind==='iceburg'&&p.action==='food'?.8:1;
+      actor.rig.animation.timeScale=game.finale.handles(p.kind)?game.finale.rate(p):p.kind==='coconutcannon'&&['Shoot','Food'].includes(p.animation!)?2:p.kind==='parsnip'&&p.action==='shoot'?Math.max(1,1/game.props.plants.parsnip.AttackInterval):p.kind==='iceburg'&&p.action==='food'?.8:1;
       const animation = this.plantAnimation(p, game);
       this.animate(actor, animation, p.action === 'idle' ? 0 : p.actionAt, animation==='FoodBig'?1:p.action==='food'&&(p.kind==='sunflower'||p.kind==='twinsunflower')?game.props.plants[p.kind].PlantfoodTime: ['shoot','produce','grow','explode','catch'].includes(p.action)||p.action==='food'&&['cabbagepult','iceburg','wallnut'].includes(p.kind)||animation==='Spawn_Baby'?1:0);
     }
@@ -263,7 +263,7 @@ export class Scene {
         if(z.parrot.capture>0&&!actor.capturing)this.onSound('pirateParrot/captureSound');actor.capturing=z.parrot.capture>0;
         const p=z.parrot.carrying;if(p){alive.add(p.id);const carried=this.actors.get(p.id)??this.addActor(p.id,p.kind);carried.captured=true;carried.root.position.set(z.x,z.parrot.y-z.parrot.height+50);carried.root.zIndex=z.parrot.y;carried.rig.animation.timeScale=0;}
       }
-      actor.rig.animation.timeScale=game.time<z.frozenUntil||z.stunnedUntil!==undefined&&game.time<z.stunnedUntil||z.butteredUntil!==undefined&&game.time<z.butteredUntil?0:game.time<z.chilledUntil?.5:z.kind==='seagull'?1.5:1;
+      actor.rig.animation.timeScale=game.time<z.frozenUntil||z.stunnedUntil!==undefined&&game.time<z.stunnedUntil||z.butteredUntil!==undefined&&game.time<z.butteredUntil?0:game.time<z.chilledUntil?.5:(z.kind==='seagull'||z.kind==='pelican')?1.5:1;
       actor.rig.tint=game.time<z.frozenUntil||game.time<z.chilledUntil?0x9ce8ff:z.food?0xb0ff83:0xffffff;
       const entering=z.entry!=='walk'&&game.time-z.entryAt<(z.entry==='ground'?1.35:1);
       if(z.entry==='ground'){
@@ -298,7 +298,7 @@ export class Scene {
     }
     for(const death of game.deaths)if(!this.seenDeaths.has(death.zombie.id)){this.seenDeaths.add(death.zombie.id);this.killZombie(death);}
     for (const [id, actor] of this.actors) if (!alive.has(id)&&!actor.death&&PLANT_KINDS.includes(actor.kind as PlantKind)) {
-      if(actor.kind==='escaperoot'&&(id<0||actor.rootGrown)||actor.captured||actor.kind==='imitater'||actor.kind==='cherry_bomb'||actor.kind==='gravebuster'||actor.animation==='Charging'||actor.kind==='iceburg'&&actor.animation==='Death'||game.effects.some(effect=>effect.kind==='remove'&&effect.x===actor.root.x&&effect.y===actor.root.y)){this.removeActor(id,actor);continue;}
+      if(actor.kind==='escaperoot'&&(id<0||actor.rootGrown)||actor.captured||actor.kind==='imitater'||actor.kind==='cherry_bomb'||actor.kind==='jalapeno'||actor.kind==='gravebuster'||actor.animation==='Charging'||actor.kind==='iceburg'&&actor.animation==='Death'||game.effects.some(effect=>effect.kind==='remove'&&effect.x===actor.root.x&&effect.y===actor.root.y)){this.removeActor(id,actor);continue;}
       const animation=actor.kind==='escaperoot'?'Baby_Death':actor.kind==='wallnut'?actor.animation.replace('Idle','Death'):actor.kind==='potatomine'?'Death_Baby':'Death';
       const timeline=animationTimeline(this.skeletons.get(actor.kind)!,RIGS[actor.kind].armature,animation);
       this.animate(actor,animation,0,1);actor.death={cause:'plant',elapsed:0,fadeAt:timeline.duration,fallAt:Infinity};
@@ -322,11 +322,12 @@ export class Scene {
           slot.displayIndex=visible?0:-1;
           if(visible&&game.time-bomb!.at>=timeline!.events.find(e=>e.name==='charge')!.at&&!actor.rootCharged){slot.childArmature!.animation.play('Attack',1);actor.rootCharged=true;if(bomb!.variant>=2)this.onSound('escaperoot/cherryChargeSound');}
         }
+        if(actor.kind==='chardguard'){const p=game.plants.find(p=>p.id===id);const hand=slot.name.match(/HAND([012])/);if(p&&hand)slot.displayIndex=p.leaves!>2-Number(hand[1])?0:-1;}
         if(actor.kind==='spikerock'){const spikes=actor.death?0:game.plants.find(p=>p.id===id)!.spikes!;if(slot.name==='spikeL')slot.displayIndex=spikes>=1?0:-1;if(slot.name==='spikeM')slot.displayIndex=spikes>=2?0:-1;if(slot.name==='spikeR')slot.displayIndex=spikes>=3?0:-1;}
         if(actor.kind==='iceweed'){const spikes=game.iceweedSpikes.get(id)??1;if(slot.name.endsWith('_S1'))slot.displayIndex=spikes>=2?1:0;if(slot.name.endsWith('_S2'))slot.displayIndex=spikes>=3?1:0;}
         if((actor.kind==='explorer'||actor.kind==='torchlight')&&state&&!state.torch&&slot.name.startsWith('FIRE'))slot.displayIndex=-1;
       }
-      if((actor.kind==='pirateParrot'||actor.kind==='mummy'&&actor.root.scale.x<0||game.level.cannon&&actor.kind==='seagull')&&!alive.has(id)&&!actor.death)this.removeActor(id,actor);
+      if((actor.kind==='pirateParrot'||actor.kind==='mummy'&&actor.root.scale.x<0||game.level.cannon&&(actor.kind==='seagull'||actor.kind==='pelican'))&&!alive.has(id)&&!actor.death)this.removeActor(id,actor);
     }
     for (const actor of this.actors.values()) if (actor.armor?.visible) {
       const bone = actor.rig.armature.getBone('armorSOCKET')!;
@@ -379,12 +380,12 @@ export class Scene {
     if(death.cause==='water'){this.removeActor(z.id,actor);return;}
     if(z.kind==='cannon'&&z.pirate?.animation==='Explode'){this.removeActor(z.id,actor);return;}
     if(z.swing?.failure){this.removeActor(z.id,actor);return;}
-    if(actor.kind==='seagull'){
+    if((actor.kind==='seagull'||actor.kind==='pelican')){
       actor.rig.armature.getSlot('Seagull')!.childArmature!.animation.play(death.cause==='potato'?'Explode':z.butteredUntil!==undefined?'Death':'Escape',1);
-      if(z.butteredUntil!==undefined||death.cause==='potato')this.onSound('seagull/seagullButteredSounds');
-      if(death.cause==='potato'){const feathers=this.rig('seagull','ParticleSeagull');feathers.scale.set(.51);feathers.position.copyFrom(actor.root.position);feathers.animation.play('Play',1);feathers.zIndex=actor.root.zIndex;this.actorLayer.addChild(feathers);this.particles.set(-z.id,feathers);}
+      if(z.butteredUntil!==undefined||death.cause==='potato')this.onSound(actor.kind+'/seagullButteredSounds');
+      if(death.cause==='potato'){const feathers=this.rig(actor.kind,'ParticleSeagull');feathers.scale.set(.51);feathers.position.copyFrom(actor.root.position);feathers.animation.play('Play',1);feathers.zIndex=actor.root.zIndex;this.actorLayer.addChild(feathers);this.particles.set(-z.id,feathers);}
     }
-    if(!['pirateParrot','pirateBarrel','impCannon','seagull','camel','camelTouch','pharaoh','pharaohWeak'].includes(actor.kind))this.dropFragment(actor,'head');this.onSound(actor.kind==='pirateParrot'?'pirateParrot/deathSound':'zombieLimbPop');
+    if(!['pirateParrot','pirateBarrel','impCannon','seagull','pelican','camel','camelTouch','pharaoh','pharaohWeak'].includes(actor.kind))this.dropFragment(actor,'head');this.onSound(actor.kind==='pirateParrot'?'pirateParrot/deathSound':'zombieLimbPop');
     if(actor.armor?.visible){this.dropFragment(actor,z.kind.endsWith('_armor4')?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone');actor.armor.visible=false;}
     if(death.cause==='match'&&actor.plank){actor.plank.removeFromParent();actor.plank.dispose();actor.plank=undefined;}
     if(death.cause==='potato'){this.removeActor(z.id,actor);return;}
@@ -404,7 +405,7 @@ export class Scene {
           actor.rig.scale.y=RIGS[actor.kind].scale*(1+.5*(1-(1-t)*(1-t)));
           if(t===1){this.removeActor(id,actor);continue;}
         } else {
-          if(actor.kind==='seagull'&&before<.4&&death.elapsed>=.4)this.dropFragment(actor,'head');
+          if((actor.kind==='seagull'||actor.kind==='pelican')&&before<.4&&death.elapsed>=.4)this.dropFragment(actor,'head');
           if(before<death.fallAt&&death.elapsed>=death.fallAt)this.onSound('zombieLie');
           if(death.elapsed>=death.fadeAt)actor.root.alpha=Math.max(0,1-(death.elapsed-death.fadeAt)/this.art.catalog.presentation.corpseFadeDuration);
           if(actor.root.alpha===0){this.removeActor(id,actor);continue;}
@@ -413,7 +414,7 @@ export class Scene {
       if(actor.kind==='camel'&&!death)actor.rig.armature.getSlot('PLANK')!.displayIndex=actor.camelFrame!;
       // The original BodyGrouper controls these slots independently of animation poses.
       for(const slot of actor.rig.armature.getSlots()) {
-        if(death&&death.cause!=='plant'&&(slot.name.endsWith('_HEAD')||actor.kind==='seagull'&&death.elapsed>=.4&&slot.name.endsWith('_head')))slot.displayIndex=-1;
+        if(death&&death.cause!=='plant'&&(slot.name.endsWith('_HEAD')||(actor.kind==='seagull'||actor.kind==='pelican')&&death.elapsed>=.4&&slot.name.endsWith('_head')))slot.displayIndex=-1;
         if(actor.armLost&&slot.name.endsWith('_HAND'))slot.displayIndex=-1;
         if(actor.armLost&&slot.name.endsWith('_ARM'))slot.displayIndex=0;
       }
@@ -529,6 +530,11 @@ export class Scene {
         const rig=object(`zap-${z.id}`,'wizardPoint','Idle',power.x,power.y,1);rig.scale.set(Math.hypot(dx,dy)/175,.5);rig.rotation=Math.atan2(dy,dx);rig.zIndex=1100;
       }
     }
+    for(const sound of game.finale.sounds.splice(0))this.onSound(sound);
+    for(const shot of game.finale.shots){const name=shot.kind==='rotobaga'?(shot.food?'rotobagaFood':'rotobaga'):(shot.food?'dandelionFood':'dandelionShot');const rig=object(`finale-shot-${shot.id}`,name,'Idle',shot.x,shot.y,.5);rig.rotation=Math.atan2(shot.vy,shot.vx);}
+    for(const v of game.finale.visuals){const rig=object(`finale-fx-${v.id}`,v.name,v.animation,v.x,v.y,.5);rig.animation.lastAnimationState!.playTimes=1;if(v.toX!==undefined){const dx=v.toX-v.x,dy=v.toY!-v.y;rig.rotation=Math.atan2(dy,dx);rig.scale.set(Math.hypot(dx,dy)/200,.5);}}
+    for(const c of game.finale.clouds){const age=game.time-c.at,animation=age<.5?'Spawn':age>=.5+game.props.plants.lightningreed.PlantfoodDuration?'Fade':'Idle';const rig=object(`reed-cloud-${c.id}`,'reedCloud',animation,c.x,c.y,.55);if(animation!=='Idle')rig.animation.lastAnimationState!.playTimes=1;for(const slot of rig.armature.getSlots())if(slot.name.includes('LIGHTNING'))slot.displayIndex=c.striking||animation!=='Idle'?0:-1;}
+    for(const f of game.finale.fires)for(let column=0;column<9;column++){const age=game.time-f.at-Math.abs(column-f.column)/18;if(age<0)continue;const animation=age<game.props.plantAnimations.jalapenoFire.Spawn.duration?'Spawn':age>=game.props.plants.jalapeno.Duration?'Fade':'Idle';const rig=object(`jalapeno-${f.id}-${column}`,'jalapenoFire',animation,cellX(column),rowY(f.row),.24*BOARD.cellWidth/68);rig.scale.y=.24*15/20*BOARD.cellHeight/80.77;if(animation!=='Idle')rig.animation.lastAnimationState!.playTimes=1;}
     for(const grape of game.escape.grapes)object(`grape-${grape.id}`,'grapeshot',grape.vx>0?'WalkR':grape.vx<0?'WalkL':grape.vy<0?'WalkU':'WalkD',grape.x,grape.y,.5);
     for(const pea of game.peas)object(`pea-${pea.id}`,'pea','Idle',pea.x,pea.y,.5,pea.mega?'pea_g':'pea0');
     for (const [key,rig] of this.objects) if (!alive.has(key)) { rig.removeFromParent(); rig.dispose(); this.objects.delete(key); }
