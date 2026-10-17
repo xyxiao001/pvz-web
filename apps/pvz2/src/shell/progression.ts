@@ -59,6 +59,7 @@ export class ProgressStore {
     }
     if(level==='pirate7'||level==='pirate8'){const rewards=this.campaignRewards();rewards.push({level,type:level==='pirate7'?'note':'worldtrophy',id:level==='pirate7'?'note_pirate':'worldkey',count:1});this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));}
     if(['pirate4','pirate5','pirate16','pirate19','pirate23','pirate25','pirate27','pirate30','pirate33'].includes(level)){const rewards=this.campaignRewards();rewards.push({level,type:level==='pirate4'||level==='pirate25'||level==='pirate33'?'worldtrophy':'pinata',id:level==='pirate33'?'dangerroom_pirate2':level==='pirate25'?'worldtrophy_pirate':level==='pirate4'?'dangerroom_pirate':'spine_pirate',count:1});this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));}
+    if(level==='cowboy7'||level==='cowboy8'){const rewards=this.campaignRewards();rewards.push({level,type:level==='cowboy7'?'note':'worldtrophy',id:level==='cowboy7'?'note_cowboy':'worldkey',count:1});this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));}
     if(level==='cowboy2'||level==='cowboy3'){const rewards=this.campaignRewards();rewards.push({level,type:level==='cowboy2'?'pinata':'worldtrophy',id:level==='cowboy2'?'spine_cowboy':'dangerroom_cowboy',count:1});this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));}
     this.storage.setItem(completionKey(level), '1');
     this.storage.setItem(PENDING_KEY, JSON.stringify({ world, level }));

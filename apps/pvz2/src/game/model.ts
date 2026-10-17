@@ -213,7 +213,7 @@ export class Game {
     if(this.finale.handles(plant.kind))this.finale.food(plant);
     if(plant.kind==='escaperoot')this.escape.food(plant);
     if (plant.kind === 'repeater') {plant.burst=this.props.plants.repeater.PlantfoodPeaCount;plant.nextBurst=this.time+2/plant.burst;plant.animation='Food';plant.eventIndex=0;}
-    if(['kernelpult','melonpult','snowdrop','sapfling','celerystalker','snapdragon','spikeweed','spikerock','springbean','threepeater','coconutcannon'].includes(plant.kind)){plant.animation='Food';plant.eventIndex=0;}
+    if(['kernelpult','melonpult','wintermelon','snowdrop','sapfling','celerystalker','snapdragon','spikeweed','spikerock','springbean','threepeater','coconutcannon'].includes(plant.kind)){plant.animation='Food';plant.eventIndex=0;}
     if(plant.kind==='spikerock')plant.spikes=this.props.plants.spikerock.MaxSpike;
     if(plant.kind==='threepeater'){plant.burst=0;plant.nextBurst=this.time+.01;}
     if(plant.kind==='peapod'||plant.kind==='parsnip'){plant.animation='FoodStart';plant.eventIndex=0;plant.burst=plant.kind==='peapod'?5:this.props.plants.parsnip.PlantfoodSummonCount;}
@@ -284,7 +284,7 @@ export class Game {
     // Pharaoh's coffin protects its inner zombie: breaking it does not carry excess damage through.
     if(zombie.kind==='pharaoh'||zombie.kind==='pharaoh_weak'){const excess=Math.max(0,amount-zombie.armor),weak=zombie.kind==='pharaoh_weak';zombie.armor=Math.max(0,zombie.armor-amount);if(zombie.armor===0){zombie.kind='pharaoh_inner';zombie.landUntil=this.time+80/30;if(weak){zombie.hp-=excess;if(zombie.hp<=0)zombie.deathCause=cause;}}return;}
     amount=this.cowboy.damage(zombie,amount);
-    const armorDamage = Math.min(zombie.armor, amount); zombie.armor -= armorDamage; zombie.hp -= amount - armorDamage;
+    const armorDamage = Math.min(zombie.armor, amount); zombie.armor -= armorDamage; zombie.hp -= amount - armorDamage;this.cowboy.damaged(zombie);
     if(isCamel(zombie.kind)&&!isMatchCamel(zombie.kind)&&zombie.armor===0){zombie.kind='mummy';}
     if (zombie.hp<=0)zombie.deathCause=cause;
   }
@@ -662,10 +662,10 @@ export class Game {
             }
             for(const g of this.graves)if(g!==directGrave&&Math.abs(cellX(g.column)-m.targetX)<123&&Math.abs(rowY(g.row)-50-m.targetY)<147)g.hp-=5+(Math.abs(cellX(g.column)-m.targetX)<41&&Math.abs(rowY(g.row)-50-m.targetY)<49?prop.Damage:0);
           }
-          else if(z){this.damage(z,m.damage);if((m.projectile==='butter'||m.projectile==='butter2')&&z!==this.boss?.zombie){z.butteredUntil=this.time+this.props.projectiles[m.projectile].ButterDuration;if(isFlying(z))z.hp=0;}}
-          if(m.projectile==='melon'||m.projectile==='melon_pf'){
+          else if(z){this.damage(z,m.damage);if(m.projectile==='winter_melon'||m.projectile==='winter_melon_pf')this.chill(z,this.props.projectiles[m.projectile].ChillDuration);if((m.projectile==='butter'||m.projectile==='butter2')&&z!==this.boss?.zombie){z.butteredUntil=this.time+this.props.projectiles[m.projectile].ButterDuration;if(isFlying(z))z.hp=0;}}
+          if(m.projectile==='melon'||m.projectile==='melon_pf'||m.projectile==='winter_melon'||m.projectile==='winter_melon_pf'){
             const splash=this.props.projectiles[m.projectile].SplashDamage[0].Damage!;
-            for(const target of this.zombies)if(target!==z&&Math.abs(target.x-m.targetX)<123&&Math.abs(rowY(target.row)-m.targetY)<147)this.damage(target,splash);
+            for(const target of this.zombies)if(target!==z&&Math.abs(target.x-m.targetX)<123&&Math.abs(rowY(target.row)-m.targetY)<147){this.damage(target,splash);if(m.projectile==='winter_melon'||m.projectile==='winter_melon_pf')this.chill(target,this.props.projectiles[m.projectile].SplashDamage[0].ChillDuration!);}
             for(const grave of this.graves)if(grave.id!==m.targetId&&Math.abs(cellX(grave.column)-m.targetX)<123&&Math.abs(rowY(grave.row)-m.targetY)<147)grave.hp-=splash;
           }
           if(m.projectile==='snowdrop'||m.projectile==='snowdrop_freeze'){
@@ -679,7 +679,7 @@ export class Game {
             if(previous){previous.until=until;previous.powered=m.powered;}else this.sap.push({id:++this.id,row,column,until,powered:m.powered});
           }
           const grave=this.graves.find(g=>g.id===m.targetId);if(grave)grave.hp-=m.damage;
-          if(m.projectile&&['corn','butter','butter2','melon','melon_pf','snowdrop','snowdrop_freeze','sapfling','sapfling_pf'].includes(m.projectile))this.effects.push({id:++this.id,kind:'projectileHit',projectile:m.projectile,x:m.x,y:m.y,age:0});
+          if(m.projectile&&['corn','butter','butter2','melon','melon_pf','winter_melon','winter_melon_pf','snowdrop','snowdrop_freeze','sapfling','sapfling_pf'].includes(m.projectile))this.effects.push({id:++this.id,kind:'projectileHit',projectile:m.projectile,x:m.x,y:m.y,age:0});
           else this.effect(m.kind==='snow'?'snowHit':'cabbageHit',m.x,m.y);removed.add(m.id);
         }
       }else{
@@ -801,7 +801,7 @@ export class Game {
     this.cowboy.tick(dt);
     for(const z of this.zombies){
       if(z.entry==='storm'&&this.time-z.entryAt<=1)z.x=z.entryX+(1070-z.entryX)*(1-(this.time-z.entryAt));
-      if(z.leap){const t=Math.min(1,(this.time-z.leap.at)/(z.leap.duration??.5));z.x=z.leap.fromX+(z.leap.toX-z.leap.fromX)*t;if(t===1){z.row=z.leap.toRow;this.cowboy.landed(z);if(z.kind==='egypt_imp'||z.kind==='pirate_imp')z.landUntil=this.time+14/30;if(this.level.world==='pirate'&&seaCell(this.level.planks,z.row,Math.floor((z.x-BOARD.left)/BOARD.cellWidth))&&!isFlying(z)){z.hp=0;z.deathCause='water';}z.leap=null;}}
+      if(z.leap){const t=Math.min(1,(this.time-z.leap.at)/(z.leap.duration??.5));z.x=z.leap.fromX+(z.leap.toX-z.leap.fromX)*t;if(t===1){z.row=z.leap.toRow;this.cowboy.landed(z);if(z.kind==='egypt_imp'||z.kind==='pirate_imp'||z.kind==='west_bullrider')z.landUntil=this.time+14/30;if(this.level.world==='pirate'&&seaCell(this.level.planks,z.row,Math.floor((z.x-BOARD.left)/BOARD.cellWidth))&&!isFlying(z)){z.hp=0;z.deathCause='water';}z.leap=null;}}
     }
     this.tickConveyor(dt);this.tickPower(dt);this.tickMatching();this.escape.tick(dt);this.finale.tick(dt);
     for (const p of this.plants) {
@@ -813,7 +813,7 @@ export class Game {
       if(p.kind==='snapdragon'||p.kind==='coconutcannon'||p.kind==='spikeweed'||p.kind==='spikerock'||p.kind==='springbean'){p.age+=dt;this.pirate.tickPlant(p,dt);continue;}
       const previousAge=p.age;
       p.age += dt;
-      if(['repeater','kernelpult','melonpult','snowdrop','sapfling'].includes(p.kind)){this.tickLatePlant(p);continue;}
+      if(['repeater','kernelpult','melonpult','wintermelon','snowdrop','sapfling'].includes(p.kind)){this.tickLatePlant(p);continue;}
       if(['peapod','imitater','cherry_bomb','celerystalker','parsnip'].includes(p.kind)){this.tickFinalePlant(p);continue;}
       if(p.kind==='bonkchoy'){this.tickBonk(p);continue;}
       if(p.kind==='gravebuster'){
@@ -970,6 +970,6 @@ export class Game {
         this.nextWave = this.time + (this.level.corral?0:(this.wave + 1) % this.level.flagInterval === 0 ? RULES.flagWaveEntrance : RULES.normalWaveEntrance);
       }
     }
-    if ((this.boss?this.boss.defeated:this.wave === this.level.waves.length && !this.pending.length &&!this.pendingGraveSpawns.length&& !this.zombies.length && !this.pendingPharaohs.length) && this.phase === 'playing') {if(this.level.killChallenge&&!this.killChallengeComplete){this.phase='lost';this.lossReason='killChallenge';this.events.push({type:'lose'});}else if(this.level.targetSun!==null&&this.sunProduced<this.level.targetSun){this.phase='lost';this.lossReason='sunProduced';this.events.push({type:'lose'});}else if(this.level.cannon&&this.pirate.score<this.level.cannon.MinScore){this.phase='lost';this.lossReason='score';this.events.push({type:'lose'});}else {this.phase = 'won'; this.events.push({ type: 'win' });} }
+    if ((this.boss?this.boss.defeated:this.wave === this.level.waves.length && !this.pending.length &&!this.pendingGraveSpawns.length&& !this.zombies.length && !this.cowboy.chickenThrowers.length && !this.pendingPharaohs.length) && this.phase === 'playing') {if(this.level.killChallenge&&!this.killChallengeComplete){this.phase='lost';this.lossReason='killChallenge';this.events.push({type:'lose'});}else if(this.level.targetSun!==null&&this.sunProduced<this.level.targetSun){this.phase='lost';this.lossReason='sunProduced';this.events.push({type:'lose'});}else if(this.level.cannon&&this.pirate.score<this.level.cannon.MinScore){this.phase='lost';this.lossReason='score';this.events.push({type:'lose'});}else {this.phase = 'won'; this.events.push({ type: 'win' });} }
   }
 }

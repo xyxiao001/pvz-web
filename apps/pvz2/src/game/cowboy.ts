@@ -2,12 +2,13 @@ import {BOARD,cellX,rowY,type ZombieKind} from './level';
 import type {Game,Plant,Zombie} from './model';
 export const cowboyArmor=(kind:ZombieKind)=>kind==='cowboy_armor1'?'cowboy_armor1':kind==='cowboy_armor2'?'cowboy_armor2':null;
 export interface CowboyZombie {
- animation?:string;at:number;elapsed:number;fuse?:number;ignited?:boolean;dirty?:boolean;
+ chickens?:boolean;imp?:boolean;fired?:boolean;animation?:string;at:number;elapsed:number;fuse?:number;ignited?:boolean;dirty?:boolean;
  poncho?:number;plate?:number;dance?:boolean;danceBeat?:number;lane?:{from:number;to:number;at:number;y?:number};
  chiliUntil?:number;tailAt?:number;poisonAt?:number;poisonDuration?:number;farted?:boolean;hat?:boolean;
 }
 export class CowboyBattle {
  carts:{id:number;row:number;column:number;start:number;end:number}[]=[];
+ chickenThrowers:{x:number;row:number;reversed:boolean;left:number;cooldown:number}[]=[];
  selected:number|null=null;
  sounds:string[]=[];
  effects:{id:number;kind:'chiliFart'|'prospectorSmoke'|'prospectorTail'|'ponchoBreak'|'plateDrop'|'cowboyHat';x:number;y:number;at:number}[]=[];
@@ -32,10 +33,12 @@ export class CowboyBattle {
  }
  spawn(z:Zombie){
   const g=this.#game,props=g.props.zombies[z.kind];
+  if(z.kind==='chicken_farmer')z.west={at:g.time,elapsed:0,chickens:true};
+  if(z.kind==='cowboy_gargantuar')z.west={at:g.time,elapsed:0,imp:true,animation:'Walk',fired:false};
   if(z.kind==='piano')z.west={at:g.time,elapsed:0};
   if(z.kind==='prospector')z.west={at:g.time,elapsed:0,fuse:props.ExplodeCountdown,ignited:true,dirty:false};
   if(z.kind.startsWith('poncho'))z.west={at:g.time,elapsed:0,poncho:props.PonchoToughness,plate:g.random()<props.ChanceToPlate?props.ShieldToughness:0};
-  if(z.kind.startsWith('cowboy'))z.west={at:g.time,elapsed:0,dance:false,danceBeat:0,hat:z.armor===0};
+  if(['cowboy','cowboy_armor1','cowboy_armor2','cowboy_flag'].includes(z.kind))z.west={at:g.time,elapsed:0,dance:false,danceBeat:0,hat:z.armor===0};
  }
  damage(z:Zombie,amount:number){
   const state=z.west;if(state?.poncho!==undefined){
@@ -43,13 +46,29 @@ export class CowboyBattle {
     if(used>0&&state[key]===0)this.effect(key==='poncho'?'ponchoBreak':'plateDrop',z.x,rowY(z.row));}
   }return amount;
  }
+ damaged(z:Zombie){
+  const g=this.#game,s=z.west,p=g.props.zombies.chicken_farmer;
+  if(z.kind==='chicken_farmer'&&s!.chickens&&z.hp<=p.Toughness*p.ChickeningHealthPercentage&&g.time>=z.frozenUntil&&g.time>=(z.butteredUntil??0)&&g.time>=(z.stunnedUntil??0)){
+   s!.chickens=false;this.sounds.push('chickenFarmer/chickenActionSound');
+   this.chickenThrowers.push({x:z.x,row:z.row,reversed:!!z.reversed,left:p.ChickeningDuration+(1-2*g.random())*p.ChickeningDurationVariance,cooldown:0});
+  }
+ }
  private effect(kind:CowboyBattle['effects'][number]['kind'],x:number,y:number){this.effects.push({id:++this.serial,kind,x,y,at:this.#game.time});}
  die(z:Zombie){if(z.west?.hat){z.west.hat=false;this.effect('cowboyHat',z.x,rowY(z.row)-90);}}
  cold(z:Zombie){if(z.kind==='prospector')z.west!.ignited=false;}
  landed(z:Zombie){if(z.kind==='prospector'&&z.west!.animation==='Flying'){z.reversed=!z.reversed;z.west!.animation='FlyEnd';z.west!.at=this.#game.time;z.landUntil=this.#game.time+this.#game.props.zombies.prospector.LandingStunnTime;this.sounds.push('prospector/landSound');}}
  eaten(p:Plant,z:Zombie){if(p.kind==='chilibean'&&z.kind!=='piano'){z.west??={at:0,elapsed:0};z.west.poisonAt=this.#game.time;z.west.poisonDuration=this.#game.props.plants.chilibean.ChiliStunDuration;}}
  tick(dt:number){
-  const g=this.#game;if(g.zombies.some(z=>z.kind==='piano'&&z.hp>0&&z.x<cellX(9)&&g.time>=z.frozenUntil&&g.time>=(z.butteredUntil??0)&&g.time>=(z.stunnedUntil??0)))this.pianoUntil=g.time+1;this.pianoPlaying=g.time<this.pianoUntil;
+  const g=this.#game;
+  for(const thrower of this.chickenThrowers){
+   thrower.left-=dt;thrower.cooldown-=dt;
+   if(thrower.cooldown<0){const p=g.props.zombies.chicken_farmer;thrower.cooldown=p.ChickeningInterval+(1-2*g.random())*p.ChickeningIntervalVariance;
+    const rows=[thrower.row,thrower.row+1,thrower.row-1].filter(r=>r>=0&&r<5),row=rows[Math.floor(g.random()*rows.length)];
+    const chicken=g.spawnZombie(g.random()*101<100?'chicken':'chicken_pumpkin',row,thrower.x+(1-2*g.random())*BOARD.cellWidth);chicken.reversed=thrower.reversed;
+   }
+  }
+  this.chickenThrowers=this.chickenThrowers.filter(t=>t.left>=0);
+  if(g.zombies.some(z=>z.kind==='piano'&&z.hp>0&&z.x<cellX(9)&&g.time>=z.frozenUntil&&g.time>=(z.butteredUntil??0)&&g.time>=(z.stunnedUntil??0)))this.pianoUntil=g.time+1;this.pianoPlaying=g.time<this.pianoUntil;
   if(this.pianoPlaying)this.pianoTime+=dt;else this.pianoTime=0;
   for(const z of g.zombies){const s=z.west;
    if(!s)continue;
@@ -67,6 +86,7 @@ export class CowboyBattle {
  }
  tickZombie(z:Zombie,dt:number){
   const g=this.#game,s=z.west;
+  if(z.kind==='cowboy_gargantuar')return this.tickGargantuar(z,dt);
   if(s?.poisonAt!==undefined&&g.time-s.poisonAt>=2)return true;
   if(z.kind==='piano'&&z.hp<=g.props.zombies.piano.Toughness/2){if(!s!.animation){s!.animation='Walk_Break';s!.at=g.time;}else if(s!.animation==='Walk_Break'&&g.time-s!.at>=g.props.plantAnimations.piano.Walk_Break.duration)s!.animation='Walk_Broken';}
   if(z.kind==='prospector'){
@@ -78,7 +98,7 @@ export class CowboyBattle {
    if(s!.ignited&&!s!.dirty&&z.x<cellX(9)){const previous=s!.fuse!;s!.fuse!-=dt*(g.time<z.chilledUntil?.5:1);if(Math.floor(previous/(10/3))!==Math.floor(s!.fuse!/(10/3)))this.sounds.push('prospector/igniteSound');if(s!.fuse!<=0){s!.animation='FlyStart';s!.at=g.time;s!.elapsed=0;return true;}}
   }
   // The pinned class uses CowboyPianoDancingSpeedScale=1; DanceSPSScale in JSON is not read.
-  if(z.kind.startsWith('cowboy')&&s){
+  if(['cowboy','cowboy_armor1','cowboy_armor2','cowboy_flag'].includes(z.kind)&&s){
    const dancing=this.pianoPlaying&&z.x<cellX(9);
    if(dancing!==s.dance){s.dance=dancing;if(!z.eating){s.animation=dancing?'DanceStart':'DanceEnd';s.at=g.time;s.elapsed=0;}}
    if(s.animation==='DanceStart'||s.animation==='DanceEnd'){s.elapsed+=dt;if(s.elapsed<1/3)return true;delete s.animation;}
@@ -86,6 +106,29 @@ export class CowboyBattle {
    if(dancing&&beat!==s.danceBeat&&!s.lane){const choices=[z.row-1,z.row+1].filter(r=>r>=0&&r<=4);s.lane={from:z.row,to:choices[Math.floor(g.random()*choices.length)],at:g.time};}s.danceBeat=beat;
   }
   return false;
+ }
+ private tickGargantuar(z:Zombie,dt:number){
+  const g=this.#game,s=z.west!,timelines=g.props.plantAnimations.cowboyGargantuar;
+  const target=g.plants.filter(p=>p.hp>0&&!p.leap&&p.row===z.row&&Math.abs(cellX(p.column)-z.x)<75&&!(p.kind==='escaperoot'&&p.rootGrown)&&!(p.kind==='springbean'&&['Ready','Idle_Ready'].includes(p.animation!))).sort((a,b)=>b.column-a.column)[0];
+  const start=(animation:string)=>{s.animation=animation;s.at=g.time;s.elapsed=0;s.fired=false;};
+  if(s.animation==='Walk'){
+   if(s.imp&&z.hp<g.props.zombies.cowboy_gargantuar.Toughness/2&&z.x>cellX(2)){start('Throw');this.sounds.push('cowboyGargantuar/ImpThrowSaySounds');}
+   else if(target)start('Smash');else return false;
+  }
+  s.elapsed+=dt*(g.time<z.chilledUntil?.5:1);
+  const event=s.animation==='Smash'?'smash':'impThrow';
+  if(!s.fired&&s.elapsed>=timelines[s.animation!].events.find(e=>e.name===event)!.at){
+   s.fired=true;
+   if(event==='impThrow'){s.imp=false;const imp=g.spawnZombie('west_bullrider',z.row,z.x);imp.reversed=z.reversed;imp.leap={fromX:z.x,fromY:rowY(z.row)-100,toX:cellX(z.reversed?6:2),toRow:z.row,at:g.time,duration:1.5};}
+   else {
+    if(target){if(target.kind==='spikeweed'||target.kind==='spikerock'){g.damage(z,g.props.plants[target.kind].Damage);if(target.action!=='food'){if(target.kind==='spikerock'){target.spikes!--;if(target.spikes===0)target.hp=0;}else target.hp=0;}}else {target.hp=0;target.armor=0;}}
+    // The west giant's smash point is 260 source pixels ahead (the actor scale is .51).
+    const x=z.x-260.4515*.51*(z.reversed?-1:1);
+    for(const p of g.plants)if(p.hp>0&&p.row===z.row&&Math.abs(cellX(p.column)-x)<BOARD.cellWidth){const damage=g.props.zombies.cowboy_gargantuar.SplashDamageToPlants,armor=Math.min(damage,p.armor);p.armor-=armor;p.hp-=damage-armor;}
+   }
+  }
+  if(s.elapsed>=timelines[s.animation!].duration)start('Walk');
+  return true;
  }
  food(p:Plant){p.animation='Food';p.eventIndex=0;p.burst=0;p.nextBurst=this.#game.time;this.sounds.push(p.kind+'/foodSound');}
  tickPlant(p:Plant){

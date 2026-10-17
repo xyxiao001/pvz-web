@@ -33,3 +33,42 @@ export function playCowboy(g:Game,frame:number){
  for(let r=0;r<5;r++)if(!occupied(r,2)&&g.sun>=250)g.plant('sunflower',r,2);
  for(const z of threats)if(z.kind==='piano')g.plant('spikeweed',z.row,Math.min(8,Math.max(0,Math.floor((z.x-170)/82))));
 }
+
+export function playCowboyNext(g:Game,frame:number){
+ for(const s of [...g.suns])g.collect(s.id);
+ for(const p of [...g.pickups])g.collectPickup(p.id);
+ if(g.preparing){
+  for(const row of [0,1,2,3,4]){g.plant('snapdragon',row,4);g.plant('spikeweed',row,5);g.plant('wallnut',row,6);}
+  g.startLastStand();return;
+ }
+ if(frame%12)return;
+ const occupied=(r:number,c:number)=>g.plants.some(p=>p.row===r&&p.column===c);
+ const threats=g.zombies.filter(z=>z.hp>0&&!z.leap).sort((a,b)=>a.x-b.x);
+ if(g.level.day===8){
+  for(const c of g.cowboy.carts){const z=threats.filter(z=>z.row>=c.start&&z.row<=c.end&&z.x>cellX(c.column)).sort((a,b)=>a.x-b.x)[0];if(z){g.cowboy.select(c.row,c.column);g.cowboy.move(z.row);}}
+  for(const packet of [...g.conveyor]){
+   if(packet.kind==='peapod'){
+    const rows=[...new Set([...threats.map(z=>z.row),0,1,2,3,4])];
+    const positions=rows.flatMap(row=>[0,1,2,3].map(column=>({row,column,p:g.plants.find(p=>p.row===row&&p.column===column)}))).filter(c=>g.cowboy.canPlant(c.row,c.column)&&(!c.p||c.p.kind==='peapod'&&c.p.heads!<5)).sort((a,b)=>(a.p?.heads??0)-(b.p?.heads??0));
+    for(const p of positions)if(g.plant(packet.kind,p.row,p.column,packet.id))break;
+   }else if(packet.kind==='wallnut'){for(const row of [...new Set([...threats.map(z=>z.row),0,1,2,3,4])])if(g.plant(packet.kind,row,6,packet.id))break;}
+   else if(packet.kind==='chilibean'){const z=threats.find(z=>z.kind!=='cowboy_gargantuar'&&z.kind!=='piano');if(z)g.plant(packet.kind,z.row,Math.max(0,Math.min(8,Math.floor((z.x-190)/82))),packet.id);}
+   else {for(let row=0;row<5;row++)if(g.plant(packet.kind,row,3,packet.id))break;}
+  }
+ }else if(g.level.day===6){
+  for(const z of threats)if(z.kind==='piano')g.plant('spikeweed',z.row,Math.min(8,Math.max(0,Math.floor((z.x-190)/82))));
+ }else if(g.level.day===9){
+  for(const z of threats){
+   if(!g.plants.some(p=>p.row===z.row&&p.kind==='splitpea'))for(const c of [3,2,4])if(g.plant('splitpea',z.row,c))break;
+   if(z.x<cellX(6))g.plant('wallnut',z.row,6);
+   if(z.x<cellX(5))g.plant('chilibean',z.row,Math.max(0,Math.floor((z.x-190)/82)));
+  }
+  for(let row=0;row<5;row++)for(const c of [0,1])if(!occupied(row,c)&&g.plant('sunflower',row,c))break;
+  for(let row=0;row<5;row++)if(!occupied(row,2))g.plant('lightningreed',row,2);
+  for(let row=0;row<5;row++)if(!occupied(row,4))g.plant('wintermelon',row,4);
+ }else {
+  playCowboy(g,frame);
+  if(g.level.day===10)for(let row=0;row<5;row++)if(!occupied(row,1))g.plant('lightningreed',row,1);
+ }
+ if(g.food>0){const target=threats.find(z=>z.kind==='cowboy_gargantuar'||z.x<cellX(5));if(target){const p=g.plants.find(p=>p.row===target.row&&['peapod','splitpea','repeater','snapdragon','lightningreed'].includes(p.kind));if(p)g.plantFood(p.row,p.column);}}
+}

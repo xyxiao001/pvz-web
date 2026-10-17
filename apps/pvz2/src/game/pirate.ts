@@ -35,7 +35,7 @@ export class PirateBattle {
   }
   private bounce(z:Zombie){
     const g=this.#game;
-    if(z===g.boss?.zombie||z.hp<=0||z.leap||swinging(z,g.time)||['seagull','pelican','pirate_captain_parrot','pirate_gargantuar','cannon'].includes(z.kind))return;
+    if(z===g.boss?.zombie||z.hp<=0||z.leap||swinging(z,g.time)||['seagull','pelican','pirate_captain_parrot','pirate_gargantuar','cowboy_gargantuar','cannon'].includes(z.kind))return;
     let row=z.row;const column=Math.floor((z.x-BOARD.left)/BOARD.cellWidth);
     if(column>=4&&!seaCell(g.level.planks,row,8)){
       if(row>0&&seaCell(g.level.planks,row-1,8))row--;
@@ -57,7 +57,7 @@ export class PirateBattle {
           if(z.kind==='pirate_barrel'){z.hp=0;continue;}
           g.damage(z,(props.PlantfoodSideDPS+(Math.abs(z.x-x)<BOARD.cellWidth/2?props.PlantfoodDPS:0))*dt);
           z.stunnedUntil=g.time+.2;
-          if(z!==g.boss?.zombie&&!['pirate_gargantuar','cannon'].includes(z.kind)&&Math.abs(z.x-x)>=BOARD.cellWidth/2)z.x+=Math.sign(x-z.x)*Math.min(Math.abs(x-z.x),props.PlantfoodDragSPS*BOARD.cellWidth*dt);
+          if(z!==g.boss?.zombie&&!['pirate_gargantuar','cowboy_gargantuar','cannon'].includes(z.kind)&&Math.abs(z.x-x)>=BOARD.cellWidth/2)z.x+=Math.sign(x-z.x)*Math.min(Math.abs(x-z.x),props.PlantfoodDragSPS*BOARD.cellWidth*dt);
         }
         return;
       }
@@ -74,7 +74,7 @@ export class PirateBattle {
       if(p.animation!=='Idle_Ready'&&nearby){start('Ready');return;}
       if(p.animation==='Idle_Ready'){
         if(!nearby){start('Recover');return;}
-        const target=targets.find(z=>z!==g.boss?.zombie&&!['pirate_gargantuar','cannon'].includes(z.kind));
+        const target=targets.find(z=>z!==g.boss?.zombie&&!['pirate_gargantuar','cowboy_gargantuar','cannon'].includes(z.kind));
         if(target){this.bounce(target);start('Bounce');return;}
       }
       return;
@@ -241,7 +241,7 @@ export class PirateBattle {
       if(shot.food){
         if(shot.explodeAt===undefined){
           for(const z of g.zombies)if(z.hp>0&&!z.leap&&!swinging(z,g.time)&&g.inLane(z,shot.row)&&Math.abs(z.x-shot.x)<45){
-            if(z===g.boss?.zombie||['pirate_gargantuar','cannon'].includes(z.kind)){shot.explodeAt=g.time;break;}
+            if(z===g.boss?.zombie||['pirate_gargantuar','cowboy_gargantuar','cannon'].includes(z.kind)){shot.explodeAt=g.time;break;}
             z.x+=shot.x-old;z.stunnedUntil=g.time+.1;
           }
           if(shot.x>=BOARD.left+8*BOARD.cellWidth)shot.explodeAt=g.time;
