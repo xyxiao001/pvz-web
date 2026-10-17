@@ -67,7 +67,7 @@ export class EgyptBoss {
       while(choices.length){const kind=choices[Math.floor(this.game.random()*choices.length)];this.summon.push(kind);points-=this.game.props.zombies[kind].WavePointCost;choices=choices.filter(k=>this.game.props.zombies[k].WavePointCost<=points);}
       this.foodSent=false;this.jump(7,this.randomRow(),'summon');
     }else if(action.actionName==='shoot'){
-      this.aim();this.play('Shoot');
+      this.aim();this.play(this.shootAnimation);
     }else if(action.actionName==='rush'){this.play('Stomp');}
     else {
       const options=[...(this.zombie.row>1?['WalkU']:[]),...(this.zombie.row<4?['WalkD']:[]),...(column>7?['WalkL']:column<7?['WalkR']:[])];
@@ -75,6 +75,7 @@ export class EgyptBoss {
       this.movement={x:this.zombie.x,y:this.y,toX:this.zombie.x+(animation==='WalkL'?-82:animation==='WalkR'?82:0),row,duration:35/30,elapsed:0};this.play(animation);
     }
   }
+  protected shootAnimation='Shoot';
   protected aim(){
     const plants=this.game.plants;
     const cell=this.game.random()>.5&&plants.length?plants[Math.floor(this.game.random()*plants.length)]:{row:Math.floor(this.game.random()*5),column:Math.floor(this.game.random()*6)};

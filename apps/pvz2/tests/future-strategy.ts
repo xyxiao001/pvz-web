@@ -116,3 +116,48 @@ export function playFutureFourth(g:Game,frame:number){
   const p=g.plants.filter(p=>['laser_bean','citron','magnifyinggrass'].includes(p.kind)&&p.row===z.row&&p.action!=='food').sort((a,b)=>Number(g.level.powerTiles.some(t=>t.row===b.row&&t.column===b.column))-Number(g.level.powerTiles.some(t=>t.row===a.row&&t.column===a.column)))[0];if(p)g.plantFood(p.row,p.column);
  }
 }
+
+export function playFutureFifth(g:Game,frame:number){
+ for(const s of [...g.suns])if(!s.bomb)g.collect(s.id);
+ for(const p of [...g.pickups])g.collectPickup(p.id);
+ if(frame%12)return;
+ const threats=g.zombies.filter(z=>z.hp>0&&z!==g.boss?.zombie&&z.kind!=='future_protector_shield').sort((a,b)=>a.x-b.x);
+ const occupied=(r:number,c:number)=>g.plants.some(p=>p.hp>0&&p.row===r&&p.column===c);
+ const rows=[...new Set([...threats.map(z=>z.row),0,1,2,3,4])];
+ if(g.level.day===25){
+  for(const packet of [...g.conveyor]){
+   if(packet.kind==='powerplant_alpha'||packet.kind==='powerplant_beta'){
+    const col=packet.kind==='powerplant_alpha'?0:1;for(let row=0;row<5;row++)if(g.plant(packet.kind,row,col,packet.id))break;continue;
+   }
+   if(packet.kind==='blover'){if(threats.some(z=>['future_jetpack','future_jetpack_disco'].includes(z.kind)||z.kind==='future_imp'&&z.future?.animation==='Fall'))g.plant('blover',4,6,packet.id);continue;}
+   const cols=packet.kind==='holonut'?[4,3,5]:packet.kind==='citron'?[0,1,2,3]:[1,0,2,3,5];
+   let placed=false;for(const c of cols){for(const r of rows)if(!occupied(r,c)&&g.plant(packet.kind,r,c,packet.id)){placed=true;break;}if(placed)break;}
+  }
+  if(g.food>0){const target=g.boss!.targets.find(t=>g.level.powerTiles.some(q=>q.row===t.row&&q.column===t.column)&&g.plants.some(p=>p.row===t.row&&p.column===t.column&&p.action!=='food'));if(target)g.plantFood(target.row,target.column);}
+ }else if(g.level.day===22){
+  if(g.preparing){for(let r=0;r<5;r++){g.plant('laser_bean',r,[1,3].includes(r)?2:0);g.plant('snapdragon',r,3);g.plant('wallnut',r,4);}g.startLastStand();}
+  if(threats.some(z=>['future_jetpack','future_jetpack_disco'].includes(z.kind)&&z.x<cellX(6)))g.plant('blover',4,8);
+ }else if(g.level.day===21){
+  const canAdd=()=>g.plants.length<16;
+  for(const r of rows)if(canAdd()&&!g.plants.some(p=>p.kind==='laser_bean'&&p.row===r))g.plant('laser_bean',r,2);
+  for(let r=0;r<5;r++)if(canAdd()&&!occupied(r,0))g.plant('twinsunflower',r,0);
+  for(let r=0;r<5;r++)if(r!==2&&canAdd()&&!occupied(r,1))g.plant('laser_bean',r,1);
+  if(canAdd()&&!occupied(2,4))g.plant('holonut',2,4);
+  if(g.food>0&&threats.some(z=>z.x<cellX(6))){const p=g.plants.find(p=>p.kind==='holonut'&&p.action!=='food'&&!g.future.holonuts.get(p.id)?.shield);if(p)g.plantFood(p.row,p.column);}
+  if(g.food>0&&g.sunProduced<5000){const p=g.plants.find(p=>p.kind==='twinsunflower'&&p.row===2&&p.column===0&&p.action!=='food');if(p)g.plantFood(p.row,p.column);}
+  if(canAdd()&&threats.some(z=>['future_jetpack','future_jetpack_disco'].includes(z.kind)||z.kind==='future_imp'&&z.future?.animation==='Fall'))g.plant('blover',4,8);
+ }else if(g.level.day===23){
+  for(let r=0;r<5;r++)if(g.sunSpent+50<=2250&&!occupied(r,0))g.plant('sunflower',r,0);
+  for(const r of rows)if(g.sunSpent+200<=2250&&!g.plants.some(p=>p.kind==='laser_bean'&&p.row===r))g.plant('laser_bean',r,2);
+  if(g.sunSpent+200<=2000)for(const r of rows)if(!occupied(r,1))g.plant('laser_bean',r,1);
+  if(g.sunSpent+50<=2250&&g.plants.length<15&&threats.some(z=>['future_jetpack','future_jetpack_disco'].includes(z.kind)||z.kind==='future_imp'&&z.future?.animation==='Fall'))g.plant('blover',4,8);
+ }else{
+  for(const r of rows)if(!g.plants.some(p=>p.kind==='laser_bean'&&p.row===r))g.plant('laser_bean',r,1);
+  for(const c of [1,0,2])for(let r=0;r<5;r++)if(!occupied(r,c))g.plant('laser_bean',r,c);
+  for(const z of threats)if(z.x<cellX(5))g.plant('tallnut',z.row,4);
+  if(threats.some(z=>['future_jetpack','future_jetpack_disco'].includes(z.kind)||z.kind==='future_imp'&&z.future?.animation==='Fall'))g.plant('blover',4,8);
+ }
+ for(const z of threats)if(g.food>0&&(g.level.day===22?z.x<cellX(3):(z.x<cellX(5)||threats.filter(t=>t.row===z.row).length>=3||z.kind==='future_gargantuar'))){
+  const p=g.plants.filter(p=>['laser_bean','citron','snapdragon'].includes(p.kind)&&p.row===z.row&&p.action!=='food').sort((a,b)=>Number(g.level.powerTiles.some(t=>t.row===b.row&&t.column===b.column))-Number(g.level.powerTiles.some(t=>t.row===a.row&&t.column===a.column)))[0];if(p)g.plantFood(p.row,p.column);
+ }
+}

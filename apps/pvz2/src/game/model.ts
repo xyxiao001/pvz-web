@@ -1,3 +1,4 @@
+import {FutureBoss} from './future-boss';
 import {FutureBattle,futureArmor,type FutureZombie} from './future';
 import {WesternFinale} from './western-finale';
 import {WesternPlants} from './western-plants';
@@ -127,7 +128,7 @@ export class Game {
     if(!level.mowers)this.mowers.forEach(m=>m.spent=true);
     if(level.world==='egypt'&&level.day===2&&tutorial)this.addPlant('peashooter',2,2);
     this.conveyorPlants=level.conveyor?level.conveyor.InitialPlantList.map(p=>({...p})):[];
-    if(level.boss)this.boss=level.boss.kind.startsWith('zombossmech_cowboy')?new CowboyBoss(this):level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
+    if(level.boss)this.boss=level.boss.kind==='zombossmech_future'?new FutureBoss(this):level.boss.kind.startsWith('zombossmech_cowboy')?new CowboyBoss(this):level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
     if(level.cannon){this.nextWave=4+RULES.normalWaveEntrance;level.cannon.RowHasCannon.forEach((has,row)=>{if(has)this.addPlant('coconutcannon',row,1);});}
   }
 
@@ -136,14 +137,14 @@ export class Game {
   random() { this.seed = (Math.imul(this.seed, 1664525) + 1013904223) >>> 0; return this.seed / 4294967296; }
   private effect(kind: Effect['kind'], x: number, y: number) { this.effects.push({ id: ++this.id, kind, x, y, age: 0 }); }
 
-  seedCost(kind:PlantKind){return this.props.plants[kind==='imitater'&&this.imitateKind!==null?this.imitateKind:kind].SunCost;}
+  seedCost(kind:PlantKind){if(kind==='powerplant'||kind==='imitater'&&this.imitateKind==='powerplant'){const costs=this.props.plants.powerplant.SunCostList,count=this.level.powerTiles.filter(t=>t.group==='epsilon').length+this.plants.filter(p=>p.hp>0&&p.kind==='powerplant').length;return costs[Math.min(count,costs.length-1)];}return this.props.plants[kind==='imitater'&&this.imitateKind!==null?this.imitateKind:kind].SunCost;}
   seedCooldown(kind:PlantKind){return this.props.plants[kind==='imitater'&&this.imitateKind!==null?this.imitateKind:kind].Cooldown;}
 
   plant(kind: PlantKind, row: number, column: number, packetId?:number): boolean {
     const p = this.props.plants[kind];
-    const tilePlant=kind==='powerplant_alpha'||kind==='powerplant_beta';
+    const tilePlant=kind==='powerplant'||kind==='powerplant_alpha'||kind==='powerplant_beta';
     // Native powertile tags use tilePutable: ordinary plants may share the square.
-    if(tilePlant&&(this.level.powerTiles.some(t=>t.row===row&&t.column===column)||this.plants.some(p=>p.row===row&&p.column===column&&(p.endangered||p.kind==='powerplant_alpha'||p.kind==='powerplant_beta'))))return false;
+    if(tilePlant&&(this.level.powerTiles.some(t=>t.row===row&&t.column===column)||this.plants.some(p=>p.row===row&&p.column===column&&(p.endangered||p.kind==='powerplant'||p.kind==='powerplant_alpha'||p.kind==='powerplant_beta'))))return false;
     const placementKind=kind==='imitater'?this.imitateKind:kind;
     const existing=this.plants.find(p=>p.row===row&&p.column===column);
     const repairing=kind==='holonut'&&existing?.kind==='holonut'&&(existing.hidden||existing.hp<=p.Toughness*2/3)||this.wallnutFirstAid&&(kind==='wallnut'||kind==='tallnut')&&existing?.kind===kind&&existing.hp<=p.Toughness*(kind==='tallnut'?2/3:.75)||kind==='spikerock'&&existing?.kind==='spikerock'&&existing.spikes!<p.MaxSpike||kind==='chardguard'&&existing?.kind==='chardguard'&&existing.leaves!<p.MaxBounceTime;
@@ -230,7 +231,7 @@ export class Game {
     if(plant?.kind==='holonut'&&!this.future.nutFoodable(plant))return false;
     if(plant?.kind==='tallnut'&&plant.armor>0)return false;
     if(plant?.kind==='escaperoot'&&(!plant.rootGrown||plant.action!=='idle'||plant.animation!=='Idle'))return false;
-    if (!plant || plant.leap?.pushed || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['powerplant_alpha','powerplant_beta','empea','blover','gravebuster','imitater','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
+    if (!plant || plant.leap?.pushed || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['powerplant','powerplant_alpha','powerplant_beta','empea','blover','gravebuster','imitater','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
     if(!boost){this.food--;this.future.link(plant);} plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
     if(plant.kind==='splitpea'||plant.kind==='chilibean')this.cowboy.food(plant);
