@@ -52,6 +52,7 @@ export class Scene {
   private conveyorLayer=new Container();
   private actorLayer = new Container();
   private particles = new Map<number,PixiArmatureDisplay>();
+  private foodLights = new Map<string,{rig:PixiArmatureDisplay;ending:boolean}>();
   private seenEffects = new Set<number>();
   private seenDeaths = new Set<number>();
   private fragments: Fragment[] = [];
@@ -246,6 +247,7 @@ export class Scene {
       const timeline=animationTimeline(this.skeletons.get(actor.kind)!,RIGS[actor.kind].armature,animation);
       this.animate(actor,animation,0,1);actor.death={cause:'plant',elapsed:0,fadeAt:timeline.duration,fallAt:Infinity};
     }
+    this.updateFoodLights(game);
     this.clock.advanceTime(dt); this.art.clock.advanceTime(dt); PixiFactory.advanceTime(0);
     this.updateDeaths(dt);
     for(const [id,actor] of this.actors){
@@ -346,6 +348,24 @@ export class Scene {
     this.fragments=this.fragments.filter(fragment=>{if(fragment.rig.alpha>0)return true;fragment.rig.removeFromParent();fragment.rig.dispose();return false;});
   }
   get hasDeathAnimations(){return [...this.actors.values()].some(actor=>actor.death)||this.fragments.length>0;}
+  private updateFoodLights(game:Game) {
+    const active=new Set<string>();
+    for(const plant of game.plants)if(plant.action==='food'){
+      const key=`${plant.id}:${plant.actionAt}`;active.add(key);
+      if(!this.foodLights.has(key)){
+        const rig=this.art.build('plantDirt','Start','plant_food_light');
+        rig.label='plant-food-light';rig.animation.play('Start',1);
+        rig.position.set(cellX(plant.column),rowY(plant.row));rig.scale.set(.5);rig.zIndex=rowY(plant.row)-.5;
+        this.actorLayer.addChild(rig);this.foodLights.set(key,{rig,ending:false});
+      }
+    }
+    // Start switches itself to looping Idle in the native skeleton. Plant.foodEnd
+    // explicitly plays End; completion alone can never retire an Idle light.
+    for(const [key,light] of this.foodLights){
+      if(!active.has(key)&&!light.ending){light.rig.animation.play('End',1);light.ending=true;}
+      if(light.ending&&light.rig.animation.isCompleted){light.rig.removeFromParent();light.rig.dispose();this.foodLights.delete(key);}
+    }
+  }
   private updateParticles() {
     for(const [id,rig] of this.particles)if(rig.animation.isCompleted){rig.removeFromParent();rig.dispose();this.particles.delete(id);}
   }
@@ -404,6 +424,7 @@ export class Scene {
     for (const [key,rig] of this.objects) if (!alive.has(key)) { rig.removeFromParent(); rig.dispose(); this.objects.delete(key); }
     for (const effect of game.effects) if(!this.seenEffects.has(effect.id)) {
       this.seenEffects.add(effect.id);
+      if(effect.kind==='food')continue;
       if(effect.kind==='collect'){
         const rig=this.art.build('sun','Normal');rig.position.set(effect.x,effect.y);rig.scale.set(.5);rig.zIndex=1000;this.actorLayer.addChild(rig);
         this.sunFlights.push({rig,x:effect.x,y:effect.y,age:0});continue;
@@ -416,8 +437,8 @@ export class Scene {
       };
       const spec=special[effect.kind];
       const name=spec?spec.name:effect.kind==='explode'?'spudow':effect.kind==='hit'?'peaHit':'plantDirt';
-      const animation=spec?spec.animation:effect.kind==='explode'?'Explode':effect.kind==='hit'?['Play','Play1','Play2'][effect.id%3]:effect.kind==='food'?'Start':effect.kind==='remove'?'Remove':'Plant';
-      const rig=this.art.build(name,animation,spec?spec.armature:effect.kind==='food'?'plant_food_light':undefined);
+      const animation=spec?spec.animation:effect.kind==='explode'?'Explode':effect.kind==='hit'?['Play','Play1','Play2'][effect.id%3]:effect.kind==='remove'?'Remove':'Plant';
+      const rig=this.art.build(name,animation,spec?.armature);
       rig.animation.play(animation,1);rig.position.set(effect.x,effect.y);rig.scale.set(.5);rig.zIndex=effect.y+2;
       this.actorLayer.addChild(rig);this.particles.set(effect.id,rig);
       if(effect.kind==='hit')this.onSound('peaHit');
@@ -501,6 +522,7 @@ export class Scene {
     for (const rig of this.objects.values()) {rig.removeFromParent();rig.dispose();} this.objects.clear();
     for(const rig of this.npcs.values()){rig.removeFromParent();rig.dispose();}this.npcs.clear();
     for(const rig of this.particles.values()){rig.removeFromParent();rig.dispose();}this.particles.clear();
+    for(const {rig} of this.foodLights.values()){rig.removeFromParent();rig.dispose();}this.foodLights.clear();
     for(const fragment of this.fragments){fragment.rig.removeFromParent();fragment.rig.dispose();}this.fragments=[];
     for(const flight of this.sunFlights){flight.rig.removeFromParent();flight.rig.dispose();}this.sunFlights=[];
     this.seenDeaths.clear();this.seenEffects.clear();this.npcTransition=null;

@@ -15,7 +15,7 @@ let serial=9000;
 function zombie(kind:ZombieKind,x:number,row=2):Zombie {
   return {id:serial++,kind,row,x,hp:props.zombies[kind].Toughness,armor:kind==='mummy_armor1'?370:0,eating:false,absorbed:0,absorbUntil:0,absorbState:'idle',absorbAt:0,deathCause:'normal',frozenUntil:0,chilledUntil:0,food:false,entry:'walk',entryAt:0,entryX:x,camelPart:0,team:0,leap:null};
 }
-function report(){state.textContent=`时间 ${game.time.toFixed(2)} · 活僵尸 ${game.zombies.length} · 死亡记录 ${game.deaths.length} · 阳光 ${game.suns.length} · 演出 ${scene.hasDeathAnimations?'进行中':'已结束'}`;}
+function report(){const lights=scene.app.stage.children.flatMap(layer=>layer.children).flatMap(layer=>layer.children).filter(node=>node.label==='plant-food-light').length;state.textContent=`光柱 ${lights} · 时间 ${game.time.toFixed(2)} · 活僵尸 ${game.zombies.length} · 死亡记录 ${game.deaths.length} · 阳光 ${game.suns.length} · 演出 ${scene.hasDeathAnimations?'进行中':'已结束'}`;}
 function render(){scene.sync(game,0);scene.render();report();}
 scene.onPoint=(x,y)=>{const sun=game.suns.find(s=>Math.hypot(x-s.x,y-s.y)<38);if(sun){game.collect(sun.id);render();}};
 function reset(){scene.reset();scene.setCamera(0);game=new Game(level,props,scene.timing,zombie=>scene.absorptionTarget(zombie),42);}
@@ -37,6 +37,8 @@ for(const button of document.querySelectorAll<HTMLButtonElement>('[data-action]'
     case 'spawn':reset();scene.frameCombat();game.zombies=(['mummy','mummy_flag','ra','mummy_armor1'] as const).map((kind,i)=>zombie(kind,1070,i));game.suns.push({id:8000,x:cellX(4),y:rowY(2),targetY:rowY(2),value:50,age:0,from:'sky',vx:0,vy:0,groundAge:0,absorber:null,absorbAge:0});render();break;
     case 'reset':zombies();break;
     case 'normal':case 'potato':case 'mower':for(const z of game.zombies){z.hp=0;z.deathCause=button.dataset.action;}advance(1/60);break;
+    case 'food':reset();game.sun=1000;game.food=4;for(const [row,kind] of (['peashooter','sunflower','wallnut','potatomine'] as const).entries()){game.plant(kind,row,2);game.plantFood(row,2);}render();break;
+    case 'remove-food':for(const p of [...game.plants])game.shovel(p.row,p.column);render();break;
     case 'effects':effects();break;
     case 'ra':ra();break;
     case 'collect':for(const sun of [...game.suns])game.collect(sun.id);render();break;
