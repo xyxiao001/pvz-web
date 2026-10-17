@@ -1,4 +1,4 @@
-"""Export native Egypt map progression audio and plant rewards through day 16."""
+"""Export native Egypt map progression audio and plant rewards through day 24."""
 import hashlib
 import importlib.util
 import json
@@ -9,7 +9,7 @@ spec = importlib.util.spec_from_file_location('shell_export', Path(__file__).wit
 e = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(e)
 plants = {}
-for plant, name in [(4, 'CabbagePult'), (5, 'Bloomerang'), (6, 'IcebergLettuce'), (12, 'GraveBuster'), (7, 'BonkChoy')]:
+for plant, name in [(4, 'CabbagePult'), (5, 'Bloomerang'), (6, 'IcebergLettuce'), (12, 'GraveBuster'), (7, 'BonkChoy'), (8, 'Repeater'), (25, 'SunflowerTwin')]:
     asset = e.read('plants/' + name + 'DIS')
     # AnimationController.onEnable replaces the prefab scale with CharacterScale (.42).
     asset.objects[1]['_lscale'] = [1, .42, .42, 1]

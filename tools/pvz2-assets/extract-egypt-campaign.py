@@ -1,4 +1,4 @@
-"""Export Egypt days 2–16 from the pinned build; no assets from PVZ1 are used."""
+"""Export Egypt days 2–35 from the pinned build; no assets from PVZ1 are used."""
 import hashlib
 import importlib.util
 import io
@@ -30,6 +30,7 @@ def props(path,names):
     return {name:next(o['objdata'] for o in objects if name in o.get('aliases',[])) for name in names}
 
 actors={name:rig(path) for name,path in {
+ 'repeater':'plants/RepeaterPLANT','kernelpult':'plants/KernelPultPLANT','melonpult':'plants/MelonPultPLANT','snowdrop':'plants/SnowDropPLANT','imitater':'plants/ImitaterPLANT','peapod':'plants/PeaPodPLANT','cherry_bomb':'plants/CherryBombPLANT','celerystalker':'plants/CeleryStalkerPLANT','parsnip':'plants/ParsnipPLANT','sapfling':'plants/SapflingPLANT','boss':'zombies/EgyptZombossMechZOMBIE',
  'cabbagepult':'plants/CabbagePultPLANT','bloomerang':'plants/BloomerangPLANT',
  'iceburg':'plants/IcebergLettucePLANT','camel':'zombies/EgyptCamelZOMBIE',
  'bonkchoy':'plants/BonkChoyPLANT','pharaoh':'zombies/EgyptPharaohZOMBIE','pharaohInner':'zombies/EgyptPharaohInnerZOMBIE',
@@ -39,6 +40,7 @@ actors['camelTouch']['armature']='CamelZombie'
 particles=e.read('resouce_prefabs/ParticlesRP').objects[1]['_components'][0]
 drops=e.read('resouce_prefabs/DroppingsRP').objects[1]['_components'][0]
 rigs={name:rig(path) for name,path in {
+ 'corn':'projectiles/Corn0PRJ','butter':'projectiles/Butter0PRJ','butter2':'projectiles/Butter2PRJ','melon':'projectiles/Melon0PRJ','melon_pf':'projectiles/Melon2PRJ',
  'powerSnow':'projectiles/PowerSnowPRJ','cherryExplosion':particles['cherryExplosion']['asset'],'snowHit':'2f931027-eee6-47a6-a5f4-62e24a03be0e',
  'grave':'tombstones/EgyptTOMB','cabbage':'projectiles/Cabbage0PRJ','boomerang':'projectiles/Boomerang0PRJ',
  'food':drops['plantFood']['asset'],'sprout':drops['sprout']['asset'],
@@ -64,13 +66,28 @@ texture_id=at.data[1][at.rec[5][0]]
 pixels=Image.open(io.BytesIO(c.native(texture_id,'png')))
 pixels.crop((rect['x'],rect['y'],rect['x']+rect['width'],rect['y']+rect['height'])).save(e.OUT/'night.webp',quality=95,method=6)
 # Preserve the source level objects, including row assignments and wave action classes.
-for day in range(2,17):c.write_json(e.OUT/f'egypt{day}.source.json',e.read(f'levels/egypt{day}').objects[0]['json'])
-properties={'plants':props('json/Objects/PlantProps',['cabbagepult','bloomerang','iceburg','gravebuster','twinsunflower','iceweed','bonkchoy']),
- 'zombies':props('json/Objects/ZombieProps',['mummy_armor2','camel_onehump','camel_twohump','camel_manyhump','camel_onehump_touch','camel_twohump_touch','camel_threehump_touch','egypt_gargantuar','egypt_imp','explorer','tomb_raiser','pharaoh','pharaoh_inner','camel_manyhump_touch']),
- 'armors':props('json/Objects/ArmorProps',['egypt_armor2']),
+for day in range(2,36):c.write_json(e.OUT/f'egypt{day}.source.json',e.read(f'levels/egypt{day}').objects[0]['json'])
+# Board-grid RTIDs are real authored mold masks, including day 22's Locations-only mask.
+board_maps=e.read('json/Objects/BoardGridMaps').objects[0]['json']
+c.write_json(e.OUT/'board-grid-maps.json',board_maps)
+properties={'plants':props('json/Objects/PlantProps',['cabbagepult','bloomerang','iceburg','gravebuster','twinsunflower','iceweed','bonkchoy','repeater','kernelpult','melonpult','snowdrop','imitater','peapod','cherry_bomb','celerystalker','parsnip','sapfling']),
+ 'zombies':props('json/Objects/ZombieProps',['mummy_armor2','camel_onehump','camel_twohump','camel_manyhump','camel_onehump_touch','camel_twohump_touch','camel_threehump_touch','egypt_gargantuar','egypt_imp','explorer','tomb_raiser','pharaoh','pharaoh_inner','camel_manyhump_touch','mummy_armor4','explorer_veteran','pharaoh_weak','zombossmech_egypt','zombossmech_egypt2']),
+ 'armors':props('json/Objects/ArmorProps',['egypt_armor2','egypt_armor4']),
  'grave':props('json/Objects/TombstoneProps',['gravestone_egypt'])['gravestone_egypt'],
- 'projectiles':props('json/Objects/ProjectileProps',['cabbage','cabbage_pf','boomerang','powerup_snow','tombraiser_bone','iceweed_saw'])}
+ 'projectiles':props('json/Objects/ProjectileProps',['cabbage','cabbage_pf','boomerang','powerup_snow','tombraiser_bone','iceweed_saw','corn','butter','butter2','melon','melon_pf','snowdrop','snowdrop_freeze','pea_mega','sapfling','sapfling_pf','zomboss_missile_egypt','zomboss_missile_egypt2'])}
 properties['powerups']={o['objdata']['TypeName']:o['objdata'] for o in e.read(powercomp['pupjson']['asset']).objects[0]['json']['objects'][:5]}
+properties['plantAnimations']={}
+for name in ['repeater','kernelpult','melonpult','snowdrop','imitater','peapod','cherry_bomb','celerystalker','parsnip','sapfling']:
+    skeleton=json.loads((e.OUT/'rigs'/actors[name]['rig']/'skeleton.json').read_text())
+    armature=next(a for a in skeleton['armature'] if a['name']==actors[name]['armature'])
+    timelines={}
+    for animation in armature['animation']:
+        frame=0;events=[]
+        for f in animation.get('frame',[]):
+            for event in f.get('events',[]):events.append({'name':event['name'],'at':frame/armature['frameRate']})
+            frame+=f.get('duration',1)
+        timelines[animation['name']]={'duration':animation.get('duration',1)/armature['frameRate'],'events':events}
+    properties['plantAnimations'][name]=timelines
 c.write_json(e.OUT/'properties.json',properties)
 npc=e.read('b697cdfd-e783-4f80-abbe-ac197db6cf97')
 narratives={}
@@ -80,7 +97,7 @@ def sound(name,value):
     for ref in refs:
         clip=e.read(ref['asset']);ext=clip.objects[0]['_native'];target=e.OUT/'audio'/(ref['asset']+ext)
         target.parent.mkdir(exist_ok=True);target.write_bytes(c.native(ref['asset'],ext.lstrip('.')));sounds[name].append(str(target.relative_to(c.OUT)))
-for name in ['EGYPT_CHALLENGE_CONVEYOR_INTRO','POWERUPS_TUTORIAL_INITIAL','POWERUPS_TUTORIAL_REPEAT','EGYPT_INTRO_GARGANTUAR','EGYPT_OUTRO_GARGANTUAR','EGYPT_CHALLENGE_PRESET_A','EGYPT_OUTRO_DANGER_ROOM_KEY','EGYPT_CHALLENGE_PROTECTPLANTS_A']:
+for name in ['EGYPT_CHALLENGE_CONVEYOR_INTRO','POWERUPS_TUTORIAL_INITIAL','POWERUPS_TUTORIAL_REPEAT','EGYPT_INTRO_GARGANTUAR','EGYPT_OUTRO_GARGANTUAR','EGYPT_CHALLENGE_PRESET_A','EGYPT_OUTRO_DANGER_ROOM_KEY','EGYPT_CHALLENGE_PROTECTPLANTS_A','EGYPT_CHALLENGE_LASTSTAND_A','EGYPT_INTRO_ZOMBOSS','EGYPT_OUTRO_ZOMBOSS','EGYPT_26_INTRO','EGYPT_31_INTRO','EGYPT_35_INTRO','EGYPT_35_OUTRO']:
     flow=next(o['objdata']['Flow'] for o in e.read('json/Objects/NarrativeList').objects[0]['json']['objects'] if name in o.get('aliases',[]))
     for step in flow:
         if 'Lines' in step:
@@ -90,7 +107,7 @@ for name in ['EGYPT_CHALLENGE_CONVEYOR_INTRO','POWERUPS_TUTORIAL_INITIAL','POWER
             step['Voice']=step['Character']+'/'+key
             sound(step['Voice'],npc.objects[35 if step['Character']=='crazydave' else 39][key])
     narratives[name]=flow
-for name,prefab in [('cabbagepult','CabbagePult'),('bloomerang','Bloomerang'),('bonkchoy','BonkChoy')]:
+for name,prefab in [('cabbagepult','CabbagePult'),('bloomerang','Bloomerang'),('bonkchoy','BonkChoy'),('repeater','Repeater'),('kernelpult','KernelPult'),('melonpult','MelonPult')]:
     co=next(x for x in walk(e.read('plants/'+prefab+'PLANT').objects) if 'soundRes' in x)
     for key,value in co['soundRes'].items():
         if isinstance(value,(dict,list)) and value:sound(name+'/'+key,value)

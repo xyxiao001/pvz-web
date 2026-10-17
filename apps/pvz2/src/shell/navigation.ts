@@ -1,7 +1,7 @@
 import type { Island, WorldMap } from './types';
 
 export const NAVIGATION_KEY = 'pvz2-web:world-navigation';
-export const LEVEL_ROUTES: Readonly<Record<string, string>> = Object.fromEntries([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16].map(day=>[`egypt${day}`,`egypt${day}`]));
+export const LEVEL_ROUTES: Readonly<Record<string, string>> = Object.fromEntries([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24].map(day=>[`egypt${day}`,`egypt${day}`]));
 export interface Navigation { world: string | null; chooser: number; cameras: Record<string, number> }
 export const initialNavigation = (): Navigation => ({ world: null, chooser: 0, cameras: {} });
 

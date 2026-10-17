@@ -9,6 +9,7 @@ import type { Scene } from './rendering/scene';
 import { cubicInOut, introCamera } from './rendering/presentation';
 
 const DESCRIPTIONS: Record<PlantKind,string> = {
+  repeater:'双发射手连续发射两颗豌豆。',kernelpult:'玉米投手抛射玉米粒，偶尔用黄油定住僵尸。',melonpult:'西瓜投手的西瓜能伤害落点周围的僵尸。',
   bonkchoy:'菜问快速拳击前后靠近的僵尸。',
   gravebuster:'噬碑藤吞噬墓碑，为种植腾出空间。',
   twinsunflower:'双胞向日葵一次生产双倍阳光。',
@@ -39,7 +40,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       <button id="plant-food" aria-label="使用能量豆" hidden><img alt="能量豆"><b>0 / 3</b></button>
       <div id="conveyor" hidden aria-label="传送带"></div>
       <div id="powerups" hidden>${(['fire','snow','toss','zap','cherry'] as const).map((kind,i)=>`<button data-power="${kind}" aria-label="${['火焰','雪球','抛掷','闪电','樱桃炸弹'][i]}" title="${['按住并拖动喷火','按住并拖动投掷雪球','划过僵尸将它推离庭院','按住并拖动释放闪电','点击庭院使用樱桃炸弹'][i]}"><img alt="${['火焰','雪球','抛掷','闪电','樱桃炸弹'][i]}"></button>`).join('')}<progress id="power-time" max="1" value="1"></progress></div>
-      <div id="game-tip" role="status" hidden></div>
+      <button id="laststand-start" class="battle-button" hidden>开始进攻</button><div id="game-tip" role="status" hidden></div>
       <div class="challenge-objective" hidden></div>
       <div class="level-name">${title}</div>
       <div id="wave-hud"><div id="wave-fill"></div><span id="wave-label"></span></div>
@@ -100,14 +101,15 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
 
     if (!scene) {
       const [{ Scene },props,level,flag,campaign] = await Promise.all([import('./rendering/scene'),json<Properties>('levels/properties.json'),json<SourceLevel>(levelConfig.source),json<ZombieProperties>('battle/flag.json'),levelConfig.day>1?json<Properties>('campaign/properties.json'):Promise.resolve(null)]);
-      if(campaign){Object.assign(props.plants,campaign.plants);Object.assign(props.zombies,campaign.zombies);Object.assign(props.armors,campaign.armors);Object.assign(props,{grave:campaign.grave,projectiles:campaign.projectiles,powerups:campaign.powerups});}
+      if(campaign){Object.assign(props.plants,campaign.plants);Object.assign(props.zombies,campaign.zombies);Object.assign(props.armors,campaign.armors);Object.assign(props,{grave:campaign.grave,projectiles:campaign.projectiles,powerups:campaign.powerups,plantAnimations:campaign.plantAnimations});}
       properties=props; properties.zombies.mummy_flag=flag; source=level; scene=new Scene();
       const parsed=readLevel(source);
+      cardOrder=cardOrder.filter(kind=>!parsed.blacklist.includes(kind));
       const actorPlants=[...new Set([...(parsed.preset??(parsed.conveyor?parsed.conveyor.InitialPlantList.map(p=>p.PlantType):parsed.match||parsed.powerups?[]:cardOrder)),...parsed.initialPlants.map(p=>p.kind),...parsed.protectedPlants.map(p=>p.kind)])];
       await scene.init($('#canvas-host'),(done,total)=>{
         $('#load-status').textContent=`正在准备植物与庭院 ${done} / ${total}`;
         const progress=$<HTMLProgressElement>('#load-progress');progress.max=total;progress.value=done;
-      },levelConfig.day,actorPlants);
+      },levelConfig.day,actorPlants,parsed);
       scene.onPoint=(x,y)=>{pointerDown=true;interact(x,y);};scene.onHover=hover;scene.onRelease=()=>{pointerDown=false;if(game?.power)game.powerPointer(game.power.x,game.power.y,false);};scene.onTick=tick;
       scene.onSound=sound;
       scene.onNPCEvent=(character,event)=>{
@@ -128,7 +130,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
 
       }
     }
-    cardOrder = availablePlants(levelConfig,progress.ownedPlants());
+    cardOrder = availablePlants(levelConfig,progress.ownedPlants()).filter(kind=>!readLevel(source).blacklist.includes(kind));
     $('.chooser-cards').innerHTML = cardOrder.map(kind=>`<button data-choose="${kind}" class="seed choose-card" aria-label="选择${plantLabels[kind]}" aria-pressed="false"><img alt="${plantLabels[kind]}" src="${cards.get(kind)!}"><span class="seed-price">${properties.plants[kind].SunCost}</span></button>`).join('');
     for(const kind of cardOrder)$(`[data-choose="${kind}"]`).onclick=()=>{
       describe(kind);const index=deck.indexOf(kind);if(index===-1&&deck.length<6){deck.push(kind);sound('cardChosen');}else if(index!==-1){deck.splice(index,1);sound('cardCancel');}updateDeck();
@@ -148,7 +150,9 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   }
   function prepareGame(){
     game=new Game(readLevel(source),properties,scene.timing,zombie=>scene.absorptionTarget(zombie),Date.now()>>>0,!progress.isComplete(levelConfig.id));
-    const objective=game.level.mold.length?'霉菌覆盖的地块不能种植':game.level.mustProtect?`保护好 ${game.level.mustProtect} 株向日葵`:'';
+    game.foodLimit=progress.rewards().some(r=>r.kind==='upgrade'&&r.id===2)?4:3;
+    if(!game.level.lastStand&&progress.rewards().some(r=>r.kind==='upgrade'&&r.id===0))game.sun+=25;
+    const objective=[game.level.mold.length?'霉菌覆盖的地块不能种植':'',game.level.mustProtect?`保护好 ${game.level.mustProtect} 株植物`:'',game.level.maxPlants!==null?`同时种植不超过 ${game.level.maxPlants} 株植物`:'',game.level.lastStand?`用 ${game.level.lastStand.sun} 阳光布置防线，再开始进攻`:''].filter(Boolean).join(' · ');
     for(const element of host.querySelectorAll<HTMLElement>('.challenge-objective')){element.textContent=objective;element.hidden=!objective;}
   }
   function survey() {
@@ -164,7 +168,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   function updateDeck() {
     for (let i=0;i<6;i++) {
       const button=$<HTMLButtonElement>(`[data-slot="${i}"]`),kind=deck[i];
-      button.disabled=screen==='choosing'?!kind:!kind||game.sun<properties.plants[kind].SunCost||game.cooldowns[kind]>0;
+      button.disabled=screen==='choosing'?!kind:!kind||game.sun<properties.plants[kind].SunCost||!game.preparing&&game.cooldowns[kind]>0;
       button.classList.toggle('empty',!kind);button.classList.toggle('selected',selected===kind);
       button.setAttribute('aria-label',kind?`${screen==='choosing'?'移除':'选择'}${plantLabels[kind]}`:'空卡槽');
       const image=button.querySelector<HTMLImageElement>('img')!;image.hidden=!kind;if(kind)image.src=cards.get(kind)!;
@@ -183,8 +187,8 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(levelConfig.mode!=='seedbank'){deck=readLevel(source).preset??[];start();return;}
     screen='choosing';deck=[];selected=null;speed=1;
     $('#overlay').hidden=true;$('#hud').hidden=false;$('#seed-chooser').hidden=false;$('#battle-announcement').hidden=true;
-    host.dataset.screen=screen;$('#sun-count').textContent='50';
-    describe('peashooter');updateDeck();
+    host.dataset.screen=screen;$('#sun-count').textContent=String(game.sun);
+    describe(cardOrder[0]);updateDeck();
     sound('cardChosen');playMusic();
   }
   function start() {
@@ -200,7 +204,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   }
   function updateHud() {
     $('#sun-count').textContent=String(game.sun);if(levelConfig.mode==='seedbank'||levelConfig.mode==='preset')updateDeck();
-    $('#plant-food b').textContent=`${game.food} / 3`;$('#plant-food').classList.toggle('selected',selected==='food');
+    $('#plant-food b').textContent=`${game.food} / ${game.foodLimit}`;$('#plant-food').classList.toggle('selected',selected==='food');
     if(levelConfig.mode==='conveyor')updateConveyor();
     for(const button of host.querySelectorAll<HTMLButtonElement>('[data-power]')){button.classList.toggle('selected',game.power?.kind===button.dataset.power);button.disabled=!!game.power&&game.power.remaining>0;}
     $<HTMLProgressElement>('#power-time').value=game.power&&game.power.remaining>0?game.power.remaining/game.power.total:1;
@@ -244,7 +248,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       const presentation=scene.art.catalog.presentation;transitionTime+=dt;
       const t=Math.min(1,transitionTime/presentation.camera.PanMoveLeftTime);
       scene.frameCombat(cubicInOut(t));scene.previewTick(dt);
-      if(t===1){scene.reset();scene.frameCombat();scene.sync(game,0);updateHud();screen='countdown';host.dataset.screen=screen;$('#battle-announcement').hidden=false;$('#battle-announcement').textContent='准备…';scene.start();sound('readySetPlant');playMusic();}return;
+      if(t===1){scene.reset();scene.frameCombat();scene.sync(game,0);updateHud();screen=game.preparing?'playing':'countdown';host.dataset.screen=screen;$('#laststand-start').hidden=!game.preparing;$('#battle-announcement').hidden=game.preparing;$('#battle-announcement').textContent='准备…';scene.start();if(!game.preparing)sound('readySetPlant');playMusic();}return;
     }
     if(screen==='choosing'){scene.previewTick(dt);return;}
     if(screen==='countdown') {
@@ -303,18 +307,19 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(game.phase==='won') {
       const first=!progress.isComplete(levelConfig.id);
       const reward=levelConfig.firstReward;
-      const rewardImage=first?(reward.plant?cards.get(reward.plant)!:levelConfig.day===7?assetUrl(scene.art.catalog.ui['note-egypt'].image):scene.art.image(scene.app,'reward',levelConfig.day===4?'powerups':[6,11,15].includes(levelConfig.day)?'Pinata':reward.image,[6,11,15].includes(levelConfig.day)?'Upgrades':[10,14,16].includes(levelConfig.day)?'CoinBag':undefined)):'';
+      const rewardImage=first?(reward.plant?cards.get(reward.plant)!:levelConfig.day===7?assetUrl(scene.art.catalog.ui['note-egypt'].image):scene.art.image(scene.app,'reward',levelConfig.day===4?'powerups':[6,11,15,22].includes(levelConfig.day)?'Pinata':reward.image,[6,11,15,22].includes(levelConfig.day)?'Upgrades':[17,21].includes(levelConfig.day)?'Upgrades':[10,14,16,18,20].includes(levelConfig.day)?'CoinBag':undefined)):'';
       const sprouts=game.sprouts+game.pickups.filter(p=>p.kind==='sprout').length;
       panel('关卡完成',`${first?`<img class="map-reward" src="${rewardImage}" alt="${levelConfig.firstReward.label}"><p>获得${levelConfig.firstReward.label}</p>`:`<p>${title}</p>`}${sprouts>0?`<p>植物幼苗 × ${sprouts}</p>`:''}<button id="result-map" class="battle-button">继续</button>`);
       $('#result-map').onclick=()=>{progress.finish(levelConfig.world,levelConfig.id,sprouts);menu();};
     } else {
-      panel(game.lossReason==='protected'?'需要保护的植物被吃掉了！':'僵尸吃掉了你的脑子！','<button id="again" class="battle-button">重新开始</button><button id="result-map" class="battle-button">返回地图</button>');
+      panel(game.lossReason==='plants'?'植物数量超过了关卡限制！':game.lossReason==='sun'?'消耗的阳光超过了关卡限制！':game.lossReason==='protected'?'需要保护的植物被吃掉了！':'僵尸吃掉了你的脑子！','<button id="again" class="battle-button">重新开始</button><button id="result-map" class="battle-button">返回地图</button>');
       $('#again').onclick=chooseSeeds;$('#result-map').onclick=menu;
     }
   }
   $('#plant-food').onclick=()=>{if(screen==='playing'&&game.food>0){selected=selected==='food'?null:'food';updateHud();}};
   for(const button of host.querySelectorAll<HTMLButtonElement>('[data-power]'))button.onclick=()=>{if(screen==='playing'&&game.selectPower(button.dataset.power as PowerKind)){selected=null;const soundName:Partial<Record<PowerKind,string>>={fire:'powerUpFlameStart',snow:'powerUpSnowStart',zap:'powerUpWizardStart',cherry:'powerUpCherryStart'};const name=soundName[button.dataset.power as PowerKind];if(name)sound(name);tip(button.title,5);updateHud();}};
   $('#narrative').onclick=nextNarrative;
+  $('#laststand-start').onclick=()=>{game.startLastStand();screen='countdown';host.dataset.screen=screen;countdown=0;$('#laststand-start').hidden=true;$('#battle-announcement').hidden=false;$('#battle-announcement').textContent='准备…';sound('readySetPlant');};
   $('#pause').onclick=pause;$('#start').onclick=start;$('#ready-back').onclick=menu;
   $('#speed').onclick=()=>{if(screen==='playing'){speed=speed===1?2:1;$('#speed').setAttribute('aria-pressed',String(speed===2));}};
   $('#shovel').onclick=()=>{if(screen==='playing'){selected=selected==='shovel'?null:'shovel';updateHud();}};

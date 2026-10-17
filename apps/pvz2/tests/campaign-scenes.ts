@@ -12,8 +12,8 @@ function render(){scene.sync(game,0);scene.render();state.textContent=`时间 ${
 function advance(seconds:number){for(let i=0;i<seconds*60;i++){game.tick(1/60);scene.sync(game,1/60);game.events.length=0;}render();}
 async function setup(name:string){
  fieldset.disabled=true;scene?.dispose();scene=new Scene();
- const day=name==='pharaoh'?12:name==='mold'?13:name==='bonk'?14:name==='protect'?15:name==='match16'?16:name==='match'?7:name==='garg'?8:name==='explorer'?9:name==='tomb'?10:name==='preset'?11:name==='power'?5:6;
- await scene.init(document.querySelector('#canvas')!,(n,total)=>{state.textContent=`加载 ${n}/${total}`;},day,['cabbagepult','bloomerang','iceburg',...(day===9?['iceweed' as const]:[]),...(day===10?['gravebuster' as const]:[]),...(day===11?['twinsunflower' as const]:[]),...(day===14?['bonkchoy' as const]:[])]);
+ const day=name==='lateplants'?21:name==='pharaoh'?12:name==='mold'?13:name==='bonk'?14:name==='protect'?15:name==='match16'?16:name==='match'?7:name==='garg'?8:name==='explorer'?9:name==='tomb'?10:name==='preset'?11:name==='power'?5:6;
+ await scene.init(document.querySelector('#canvas')!,(n,total)=>{state.textContent=`加载 ${n}/${total}`;},day,['cabbagepult','bloomerang','iceburg',...(day===21?['repeater' as const,'kernelpult' as const,'melonpult' as const]:[]),...(day===9?['iceweed' as const]:[]),...(day===10?['gravebuster' as const]:[]),...(day===11?['twinsunflower' as const]:[]),...(day===14?['bonkchoy' as const]:[])]);
  const level=readLevel(await json<SourceLevel>(`campaign/egypt${day}.source.json`));
  if(name==='camel'){level.actions=[[{...level.actions[0][0],zombies:[{kind:'camel_onehump',row:2}]}]];level.waves=[['camel_onehump']];level.flagInterval=100;}
  if(name==='storm'){level.actions=[level.actions[9].filter(a=>a.mode==='storm')];level.waves=[level.actions[0].flatMap(a=>a.zombies.map(z=>z.kind))];level.flagInterval=100;}
@@ -23,6 +23,7 @@ async function setup(name:string){
  else if(['garg','explorer','tomb','pharaoh','bonk'].includes(name)){advance(15.6);game.zombies[0].x=cellX(6);if(name==='garg'){game.zombies[0].hp=1700;advance(.1);}if(name==='tomb')advance(7);if(name==='bonk'){game.graves=[];game.sun=500;game.plant('bonkchoy',2,4);game.zombies[0].x=cellX(5);advance(.5);}render();}
  else if(name==='mold'||name==='protect'){render();}
  else if(name==='preset'){game.sun=500;game.plant('twinsunflower',2,0);advance(8);}
+ else if(name==='lateplants'){game.sun=2000;game.graves=[];for(const [r,kind] of (['repeater','kernelpult','melonpult'] as const).entries()){game.plant(kind,r+1,2);const z=zombie(r+1,cellX(8));z.hp=5000;game.zombies.push(z);}render();}
  else if(name==='plants'){
   game.sun=1000;game.plant('cabbagepult',1,2);game.plant('bloomerang',2,2);game.plant('iceburg',3,4);
   for(const row of [1,2,3])game.zombies.push(zombie(row,row===3?cellX(4)+30:cellX(8)));

@@ -170,3 +170,13 @@ test('sun attraction follows a moving staff target supplied by the animation sce
   tick(game,.2);const y=game.suns[0].y;assert.ok(y<400);
   point.y=550;tick(game,.2);assert.ok(game.suns[0].y>y);
 });
+
+test('peashooter food fires its 60 normal peas in two seconds and returns to idle',()=>{
+ const game=create();game.sun=100;game.food=1;game.plant('peashooter',2,0);game.events=[];
+ assert.equal(game.plantFood(2,0),true);tick(game,2.05);
+ assert.equal(game.events.filter(e=>e.type==='shot').length,60);
+ assert.equal(game.plants[0].burst,0);assert.equal(game.plants[0].action,'idle');
+ assert.ok(game.peas.every(p=>!p.mega&&p.damage===20&&p.speed!>=6.5*82&&p.speed!<=9.5*82));
+ assert.ok(new Set(game.peas.map(p=>p.y)).size>1);
+ tick(game,3);assert.equal(game.peas.length,0);
+});

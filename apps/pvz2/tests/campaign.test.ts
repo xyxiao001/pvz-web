@@ -310,8 +310,8 @@ test('normal sunflower food follows the pinned three Produce events, rather than
  assert.equal(g.suns.length,props.plants.sunflower.PlantfoodTime);assert.equal(g.suns.reduce((n,s)=>n+s.value,0),150);
 });
 
-test('Egypt 16 four-face matching finishes all eleven waves with remembered revealed faces',()=>{
- const g=create(16);
+for(const day of [16,23])test(`Egypt ${day} matching finishes all authored waves with remembered revealed faces`,()=>{
+ const g=create(day);
  const memory=new Map<number,number>();
  for(let frame=0;frame<60*450&&g.phase==='playing';frame++){
   if(frame%8===0){
@@ -322,7 +322,7 @@ test('Egypt 16 four-face matching finishes all eleven waves with remembered reve
   }
   g.tick(1/60);g.events=[];
  }
- assert.equal(g.phase,'won',`time ${g.time}, wave ${g.wave}, remaining ${g.zombies.length}`);assert.equal(g.wave,11);
+ assert.equal(g.phase,'won',`time ${g.time}, wave ${g.wave}, remaining ${g.zombies.length}`);assert.equal(g.wave,g.level.waves.length);
 });
 test('Egypt 12–16 preserve authored waves, active objectives and native challenge plants',()=>{
  assert.deepEqual([12,13,14,15,16].map(day=>level(day).waves.length),[16,10,16,16,11]);
@@ -406,4 +406,91 @@ test('new actor actions, challenge tiles and Egypt trophy resolve in native asse
  assert.ok(animationTimeline(read<Skeleton>(`battle/rigs/${reward.rig}/skeleton.json`),reward.armature,'dangerroom_egypt'));
  assert.equal(read<{plants:Record<number,unknown>}>('shell/progression.json').plants[7]!==undefined,true);
  for(const name of ['EGYPT_OUTRO_DANGER_ROOM_KEY','EGYPT_CHALLENGE_PROTECTPLANTS_A'])for(const step of catalog.narratives[name])if(step.Lines){assert.ok(step.Voice);assert.ok(catalog.sounds[step.Voice!].every(path=>readFileSync(new URL('../public/assets/'+path,import.meta.url)).length>0));}
+});
+
+test('Egypt 17–24 preserve active limits, last-stand budgets, presets and authored mold locations',()=>{
+ assert.deepEqual([17,18,19,20,21,22,23,24].map(d=>level(d).waves.length),[10,7,10,12,12,16,10,10]);
+ assert.equal(level(17).maxPlants,14);assert.equal(level(19).maxPlants,12);assert.equal(level(22).maxPlants,15);
+ assert.deepEqual(level(18).lastStand,{sun:2000,food:2});assert.deepEqual(level(24).lastStand,{sun:2250,food:3});
+ assert.equal(level(19).mold.length,10);assert.equal(level(22).mold.length,10);
+ assert.deepEqual(level(21).preset,['twinsunflower','wallnut','iceburg','cabbagepult','kernelpult','melonpult']);
+ assert.equal(level(23).match!.types,5);assert.equal(level(20).mustProtect,4);
+});
+
+test('last stand pauses the simulation while preparing, refunds shovels and starts authored waves only on command',()=>{
+ const g=create(18);tick(g,30);assert.equal(g.time,0);assert.equal(g.wave,0);assert.equal(g.suns.length,0);
+ assert.equal(g.plant('sunflower',0,0),false);assert.equal(g.plant('iceburg',0,0),false);
+ assert.equal(g.plant('bloomerang',0,0),true);assert.equal(g.plant('bloomerang',1,0),true);assert.equal(g.cooldowns.bloomerang,0);
+ g.shovel(0,0);assert.equal(g.sun,1825);g.startLastStand();tick(g,4.6);assert.equal(g.wave,1);
+ const balance=g.sun;g.shovel(1,0);assert.equal(g.sun,balance);
+});
+
+test('active plant limit fails the challenge instead of silently preventing planting',()=>{
+ const g=create(17);g.sun=10000;g.graves=[];
+ for(let i=0;i<15;i++){g.cooldowns.wallnut=0;assert.equal(g.plant('wallnut',i%5,Math.floor(i/5)),true);}
+ assert.equal(g.phase,'lost');assert.equal(g.lossReason,'plants');
+});
+
+test('repeater emits both native Shoot events and ends plant food after FoodBig',()=>{
+ const g=create(17);g.graves=[];g.sun=500;g.plant('repeater',2,1);g.zombies.push(zombie(2,1000));
+ tick(g,.91);assert.equal(g.peas.length,1);tick(g,.1);assert.equal(g.peas.length,2);
+ g.food=1;g.plantFood(2,1);tick(g,2.1);assert.equal(g.plants[0].animation,'FoodBig');
+ tick(g,1.4);assert.equal(g.plants[0].action,'idle');assert.ok(g.peas.some(p=>p.damage===400));
+});
+
+test('kernel food launches butter at every target and melon damage splashes adjacent rows',()=>{
+ const g=create(21);g.graves=[];g.sun=1000;g.plant('kernelpult',0,0);g.plant('melonpult',2,0);
+ const target=zombie(2,cellX(5)),neighbor=zombie(1,cellX(5));target.hp=neighbor.hp=1000;g.zombies.push(target,neighbor);
+ g.food=1;g.plantFood(0,0);tick(g,.4);assert.equal(g.missiles.filter(m=>m.projectile==='butter2').length,2);
+ tick(g,2);assert.ok(target.butteredUntil!>g.time);assert.equal(target.frozenUntil,0);assert.ok(target.hp<=720);assert.ok(neighbor.hp<=760);
+});
+
+for(const day of [18,24])test(`Egypt ${day} last stand can finish from its authored starting budget`,()=>{
+ const g=create(day),kind=day===18?'bloomerang':'repeater'; // Use the authored random grave arrangement.
+ for(let r=0;r<5;r++){g.plant(kind,r,0);g.plant(kind,r,1);for(const c of [2,3,4])if(g.plant('wallnut',r,c))break;}
+ assert.equal(g.sun,0);g.startLastStand();
+ for(let frame=0;frame<60*900&&g.phase==='playing';frame++){
+  for(const p of [...g.pickups])g.collectPickup(p.id);
+  if(frame%30===0){const z=[...g.zombies].sort((a,b)=>a.x-b.x)[0];if(z&&z.x<cellX(5)){const p=g.plants.find(p=>p.kind===kind&&p.row===z.row);if(p)g.plantFood(p.row,p.column);}}
+  g.tick(1/60);g.events.length=0;
+ }
+ assert.equal(g.phase,'won',`day ${day}, time ${g.time}, wave ${g.wave}, reason ${g.lossReason}`);
+});
+
+for(const day of [17,19,20,21,22])test(`Egypt ${day} completes with legal cards and active challenge limits`,()=>{
+ const g=create(day),offset=[19,22].includes(day)?2:0,preset=day===21;
+ g.foodLimit=4;if(day>=22)g.sun+=25;
+ for(let frame=0;frame<60*1000&&g.phase==='playing';frame++){
+  for(const s of [...g.suns])g.collect(s.id);for(const p of [...g.pickups])g.collectPickup(p.id);
+  if(frame%15===0){
+   const occupied=(r:number,c:number)=>g.plants.some(p=>p.row===r&&p.column===c),threats=[...g.zombies].sort((a,b)=>a.x-b.x);
+   const plant=(kind:Parameters<Game['plant']>[0],r:number,c:number)=>{if(g.level.maxPlants===null||g.plants.length<g.level.maxPlants)g.plant(kind,r,c);};
+   const attack=preset?'cabbagepult':day===22?'repeater':'bloomerang',producer=preset?'twinsunflower':'sunflower';
+   for(const z of threats)if(!g.plants.some(p=>p.row===z.row&&p.kind===attack))plant(attack,z.row,offset+1);
+   for(let r=0;r<5;r++)if(!occupied(r,offset))plant(producer,r,offset);
+   for(const z of threats)if(z.x<cellX(7)){
+    if(!g.plants.some(p=>p.row===z.row&&p.kind==='wallnut'))plant('wallnut',z.row,offset+3);
+    if(z.frozenUntil<=g.time)plant('iceburg',z.row,Math.floor((z.x-190)/82));
+   }
+   if(!preset)for(const grave of g.graves)if(grave.column<=6)plant('gravebuster',grave.row,grave.column);
+   for(let r=0;r<5;r++)if(!occupied(r,offset+1))plant(attack,r,offset+1);
+   if(g.level.maxPlants===null)for(const c of [offset+2,offset+3])for(let r=0;r<5;r++)if(!occupied(r,c))plant(preset?'melonpult':attack,r,c);
+   const target=threats.find(z=>z.x<cellX(7));if(target){const p=g.plants.find(p=>p.row===target.row&&p.kind===attack);if(p)g.plantFood(p.row,p.column);}
+  }
+  g.tick(1/60);g.events.length=0;
+ }
+ assert.equal(g.phase,'won',`day ${day} time ${g.time} wave ${g.wave} reason ${g.lossReason}`);
+});
+
+test('Egypt 17–24 map chain grants food slots, starting sun, Repeater and Twin Sunflower once',()=>{
+ const data=new Map<string,string>(),progress=new ProgressStore({getItem:k=>data.get(k)??null,setItem:(k,v)=>{data.set(k,v);},removeItem:k=>{data.delete(k);}}),map=read<WorldMap>('shell/maps/egypt.json');
+ for(let day=1;day<=24;day++){
+  const id=`egypt${day}`;progress.finish('egypt',id);
+  const events=completionEvents(map,id,progress.completed(map),progress.rewardNodes('egypt'));
+  for(const e of events)if(e.action==='reward')progress.award('egypt',map.islands.find(n=>n.node===e.node)!);
+  if(day>=17&&day<24)assert.ok(events.some(e=>e.action==='open'&&map.islands.find(n=>n.node===e.node)!.levels.includes(`egypt${day+1}`)));
+  progress.finishPresentation();progress.finish('egypt',id);assert.equal(progress.pending(),null);
+ }
+ assert.ok(progress.ownedPlants().has(8));assert.ok(progress.ownedPlants().has(25));
+ assert.ok(progress.rewards().some(r=>r.kind==='upgrade'&&r.id===2));assert.ok(progress.rewards().some(r=>r.kind==='upgrade'&&r.id===0));
 });

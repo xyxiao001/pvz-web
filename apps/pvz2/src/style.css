@@ -57,3 +57,5 @@ button{font:inherit;cursor:pointer;border:0;padding:0;background:transparent;col
 .chooser-cards:has(.choose-card:nth-child(9)) .choose-card { width:calc((100% - 4cqw)/5); }
 .chooser-objective { position:absolute;left:0;right:0;top:45%;margin:0;text-align:center;color:#442913;font-size:1.3cqw;line-height:1.4; }
 }
+
+.battle-app #laststand-start { position:absolute; bottom:3%;left:42%;z-index:5;pointer-events:auto; }

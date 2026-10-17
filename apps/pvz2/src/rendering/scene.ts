@@ -9,6 +9,7 @@ import { isCamel, isMatchCamel, type DeathCause, Game, Plant, Zombie, ZombieDeat
 
 type RigName = PlantKind | 'mummy' | 'ra' | 'camel' | 'camelTouch' | 'gargantuar' | 'imp' | 'explorer' | 'tombraiser' | 'pharaoh' | 'pharaohInner';
 const RIGS: Record<RigName, { armature: string; idle: string; scale: number }> = {
+  repeater:{armature:'Repeater',idle:'Idle',scale:.56},kernelpult:{armature:'KernelPult',idle:'Idle',scale:.55},melonpult:{armature:'Melon-pult',idle:'Idle',scale:.55},
   peashooter: { armature: 'Peashooter', idle: 'Idle', scale: .56 },
   sunflower: { armature: 'Sunflower', idle: 'Idle', scale: .55 },
   wallnut: { armature: 'Wall-nut', idle: 'Idle1', scale: .55 },
@@ -69,18 +70,18 @@ export class Scene {
   private scale = 1;
   private tick = (ticker: Ticker) => this.onTick(ticker.deltaMS / 1000);
 
-  async init(host: HTMLElement, progress: (done: number, total: number) => void,day=1,plantActors:PlantKind[]=['peashooter','sunflower','wallnut','potatomine']) {
+  async init(host: HTMLElement, progress: (done: number, total: number) => void,day=1,plantActors:PlantKind[]=['peashooter','sunflower','wallnut','potatomine'],level?:Level) {
     await this.app.init({ width: BOARD.width, height: BOARD.height, background: '#b5924c', antialias: true,
       resolution: Math.min(window.devicePixelRatio, 2), autoDensity: true, autoStart: false });
     host.append(this.app.canvas);
     this.app.canvas.setAttribute('aria-label', '神秘埃及战场，五行九列。选择植物后点击地块种植。');
     this.app.stage.eventMode = 'none';
     this.app.stage.addChild(this.world,this.conveyorLayer);
-    const lawn = new Sprite(await Assets.load<Texture>(assetUrl([4,5,7,8,16].includes(day)?'campaign/night.webp':'egypt/lawn.webp')));
+    const lawn = new Sprite(await Assets.load<Texture>(assetUrl([4,5,7,8,16,18,23,24].includes(day)?'campaign/night.webp':'egypt/lawn.webp')));
     lawn.width=1974;lawn.height=768;
     lawn.position.set(-340, -40); this.world.addChild(lawn, this.highlight, this.actorLayer);
     this.actorLayer.sortableChildren = true;
-    const actorNames:RigName[]=[...new Set<RigName>(['peashooter','sunflower','wallnut','potatomine','mummy','ra',...plantActors,...([6,8,9,10,11,12,13,14,15].includes(day)?['camel' as const]:[]),...([7,16].includes(day)?['camelTouch' as const]:[]),...(day===8?['gargantuar' as const,'imp' as const]:[]),...(day===9?['explorer' as const]:[]),...([10,14].includes(day)?['tombraiser' as const]:[]),...([12,14,15].includes(day)?['pharaoh' as const,'pharaohInner' as const]:[])])];
+    const actorNames:RigName[]=[...new Set<RigName>(['peashooter','sunflower','wallnut','potatomine','mummy','ra',...plantActors,...(level?[...new Set(level.waves.flat().map(zombieRig)),...(level.waves.flat().includes('egypt_gargantuar')?['imp' as const]:[]),...(level.waves.flat().includes('pharaoh')?['pharaohInner' as const]:[])]:[]),...([6,8,9,10,11,12,13,14,15].includes(day)?['camel' as const]:[]),...([7,16].includes(day)?['camelTouch' as const]:[]),...(day===8?['gargantuar' as const,'imp' as const]:[]),...(day===9?['explorer' as const]:[]),...([10,14].includes(day)?['tombraiser' as const]:[]),...([12,14,15].includes(day)?['pharaoh' as const,'pharaohInner' as const]:[])])];
     const artCount=await this.art.init(this.app,(done,total)=>progress(done+1,total+actorNames.length+1),day,plantActors);
     if(day===4||day===8){for(const lane of [0,1]){
       const rig=this.art.build('conveyor','Idle'),bounds=rig.getLocalBounds();
@@ -160,7 +161,7 @@ export class Scene {
     const rig = this.rig(name, flag ? 'EgyptFlagZombie' : RIGS[name].armature); rig.scale.set(RIGS[name].scale);
     root.addChild(shade, rig); this.actorLayer.addChild(root);
     const actor: Actor = { root, rig, kind:name, animation: '', actionAt: -1, armLost:false,camelFrame:name==='camel'?0:undefined };
-    const events:Partial<Record<RigName,Record<string,string>>>={bonkchoy:{attackAir:'attackAirSound',attackGoal:'attackGoalSound',attackHeavy:'defeatSound',foodAttack:'attackAirSound'},cabbagepult:{LobSound:'lobSound'},bloomerang:{ShootSound:'shootSound',catch:'catchSound'},iceburg:{explode:'deadSound',foodExplode:'foodBlastSound'},tombraiser:{puke:'pukeSound',throw:'throwSound'},gargantuar:{step:'stepSounds',swing:'swingSounds',smash:'smashSounds',afterSmash:'afterSmashSaySounds',impThrow:'ImpThrowSounds',deathPole:'deathPoleSounds',deathFall:'deathFallSounds'}};
+    const events:Partial<Record<RigName,Record<string,string>>>={repeater:{ShootSound:'shootSound',shootMega:'shootMegaSound'},kernelpult:{LobSound:'lobSound'},melonpult:{Lob:'lobSound'},bonkchoy:{attackAir:'attackAirSound',attackGoal:'attackGoalSound',attackHeavy:'defeatSound',foodAttack:'attackAirSound'},cabbagepult:{LobSound:'lobSound'},bloomerang:{ShootSound:'shootSound',catch:'catchSound'},iceburg:{explode:'deadSound',foodExplode:'foodBlastSound'},tombraiser:{puke:'pukeSound',throw:'throwSound'},gargantuar:{step:'stepSounds',swing:'swingSounds',smash:'smashSounds',afterSmash:'afterSmashSaySounds',impThrow:'ImpThrowSounds',deathPole:'deathPoleSounds',deathFall:'deathFallSounds'}};
     if(events[name])rig.addDBEventListener(EventObject.FRAME_EVENT,event=>{const key=events[name]![event.name];if(key)this.onSound(name+'/'+key);},this);
     if(name==='camelTouch'){actor.plank=this.rig(name,'_plank');actor.plank.scale.set(.51,.51*.989);actor.plank.position.set(-.42*.51,-141.306*.51);actor.plank.animation.play('IdleBack',0);root.addChild(actor.plank);}
     if(name==='gravebuster')this.onSound('gravebuster/chompSound');
@@ -173,6 +174,7 @@ export class Scene {
   }
 
   private plantAnimation(plant: Plant, game: Game) {
+    if(plant.animation)return plant.animation;
     if(plant.kind==='bonkchoy')return plant.action==='food'?(game.time-plant.actionAt<game.timing.bonk!.foodStart?'FoodStart':'Food'):plant.action==='shoot'?(plant.heavy?'Defeat':'Attack'):'Idle';
     if(plant.kind==='gravebuster')return plant.age<game.timing.special!.graveBust?'Spawn':'Busting';
     if(plant.kind==='iceweed'&&plant.action==='shoot')return 'Attack';
@@ -197,7 +199,7 @@ export class Scene {
       if(p.kind==='bonkchoy')actor.rig.scale.x=RIGS.bonkchoy.scale*(p.facing??1);
       actor.rig.animation.timeScale=p.kind==='iceburg'&&p.action==='food'?.8:1;
       const animation = this.plantAnimation(p, game);
-      this.animate(actor, animation, p.action === 'idle' ? 0 : p.actionAt, p.action==='food'&&(p.kind==='sunflower'||p.kind==='twinsunflower')?game.props.plants[p.kind].PlantfoodTime: ['shoot','produce','grow','explode','catch'].includes(p.action)||p.action==='food'&&['cabbagepult','iceburg'].includes(p.kind)||animation==='Spawn_Baby'?1:0);
+      this.animate(actor, animation, p.action === 'idle' ? 0 : p.actionAt, animation==='FoodBig'?1:p.action==='food'&&(p.kind==='sunflower'||p.kind==='twinsunflower')?game.props.plants[p.kind].PlantfoodTime: ['shoot','produce','grow','explode','catch'].includes(p.action)||p.action==='food'&&['cabbagepult','iceburg'].includes(p.kind)||animation==='Spawn_Baby'?1:0);
     }
     for (const z of game.zombies) {
       alive.add(z.id);
@@ -208,7 +210,7 @@ export class Scene {
       actor=actor??this.addActor(z.id,zombieRig(z.kind),z.kind==='mummy_flag');
       actor.root.scale.x=z.reversed?-1:1;
       actor.root.position.set(z.x, rowY(z.row)); actor.root.zIndex = rowY(z.row) + 1;
-      actor.rig.animation.timeScale=game.time<z.frozenUntil?0:game.time<z.chilledUntil?.5:1;
+      actor.rig.animation.timeScale=game.time<z.frozenUntil||z.butteredUntil!==undefined&&game.time<z.butteredUntil?0:game.time<z.chilledUntil?.5:1;
       actor.rig.tint=game.time<z.frozenUntil||game.time<z.chilledUntil?0x9ce8ff:z.food?0xb0ff83:0xffffff;
       const entering=z.entry!=='walk'&&game.time-z.entryAt<(z.entry==='ground'?1.35:1);
       if(z.entry==='ground'){
@@ -350,7 +352,7 @@ export class Scene {
   get hasDeathAnimations(){return [...this.actors.values()].some(actor=>actor.death)||this.fragments.length>0;}
   private updateFoodLights(game:Game) {
     const active=new Set<string>();
-    for(const plant of game.plants)if(plant.action==='food'){
+    for(const plant of game.plants)if(plant.action==='food'&&(game.phase==='playing'||game.phase==='paused')){
       const key=`${plant.id}:${plant.actionAt}`;active.add(key);
       if(!this.foodLights.has(key)){
         const rig=this.art.build('plantDirt','Start','plant_food_light');
@@ -401,7 +403,8 @@ export class Scene {
     }
     for(const p of game.pickups)object(`pickup-${p.id}`,p.kind,'Idle',p.x,p.y+Math.sin(p.age*3)*4,p.kind==='food'?.7:.8).zIndex=1000;
     for(const m of game.missiles){
-      const rig=object(`missile-${m.id}`,m.kind==='snow'?'powerSnow':m.kind==='bone'?'tombBone':m.kind==='saw'?'iceSaw':m.kind,'Idle',m.x,m.y,m.powered?.65:.5,['snow','bone','saw'].includes(m.kind)?undefined:m.kind==='cabbage'?(m.powered?'Projectile2':'Projectile1'):(m.powered?'Projectile1':'Projectile0'));
+      const nativeProjectile=m.projectile&&m.projectile!=='cabbage'&&m.projectile!=='cabbage_pf'?m.projectile:null;
+      const rig=object(`missile-${m.id}`,nativeProjectile??(m.kind==='snow'?'powerSnow':m.kind==='bone'?'tombBone':m.kind==='saw'?'iceSaw':m.kind),'Idle',m.x,m.y,m.powered?.65:.5,nativeProjectile||['snow','bone','saw'].includes(m.kind)?undefined:m.kind==='cabbage'?(m.powered?'Projectile2':'Projectile1'):(m.powered?'Projectile1':'Projectile0'));
       rig.zIndex=1000;rig.rotation=m.kind==='boomerang'?m.age*20:m.age*3;
     }
     for(const z of game.zombies){
@@ -420,7 +423,7 @@ export class Scene {
         const rig=object(`zap-${z.id}`,'wizardPoint','Idle',power.x,power.y,1);rig.scale.set(Math.hypot(dx,dy)/175,.5);rig.rotation=Math.atan2(dy,dx);rig.zIndex=1100;
       }
     }
-    for(const pea of game.peas)object(`pea-${pea.id}`,'pea','Idle',pea.x,pea.y,.5,pea.powered?'pea_g':'pea0');
+    for(const pea of game.peas)object(`pea-${pea.id}`,'pea','Idle',pea.x,pea.y,.5,pea.mega?'pea_g':'pea0');
     for (const [key,rig] of this.objects) if (!alive.has(key)) { rig.removeFromParent(); rig.dispose(); this.objects.delete(key); }
     for (const effect of game.effects) if(!this.seenEffects.has(effect.id)) {
       this.seenEffects.add(effect.id);
@@ -435,7 +438,8 @@ export class Scene {
         toss:{name:'tossPar',animation:'Play'},graveHit:{name:'grave',animation:`Play${effect.stage}`,armature:'Particle'},
         cabbageHit:{name:'cabbage',animation:'Pop',armature:'Particle1'},boomerangHit:{name:'boomerang',animation:'Hit',armature:'Particle0'},
       };
-      const spec=special[effect.kind];
+      const projectileHits:Record<string,string>={corn:'Particle0',butter:'ParticleButter0',butter2:'ParticleButter0',melon:'Particle0',melon_pf:'ParticleMega'};
+      const spec=effect.kind==='projectileHit'?{name:effect.projectile!,animation:'Play',armature:projectileHits[effect.projectile!]}:special[effect.kind];
       const name=spec?spec.name:effect.kind==='explode'?'spudow':effect.kind==='hit'?'peaHit':'plantDirt';
       const animation=spec?spec.animation:effect.kind==='explode'?'Explode':effect.kind==='hit'?['Play','Play1','Play2'][effect.id%3]:effect.kind==='remove'?'Remove':'Plant';
       const rig=this.art.build(name,animation,spec?.armature);
