@@ -17,9 +17,9 @@ import { assetUrl, json, loadInBatches } from '../assets/load';
 import { BOARD, cellX, rowY, PLANT_KINDS, type AnimationTiming, type PlantKind, type ZombieKind, type Level } from '../game/level';
 import { isCamel, isMatchCamel, type DeathCause, Game, Plant, Zombie, ZombieDeath } from '../game/model';
 
-type RigName = PlantKind | 'darkKing'|'dragonImp'| 'darkWizard'| 'darkGargantuar'| 'dark'|'darkFlag'|'darkImp'|'darkJester'| 'jetpackVeteran'|'footballMech'|'futureGargantuar'|'discoMech'|'discoJetpack'|'future'|'futureFlag'|'futureJetpack'|'futureProtector'|'futureShield'|'futureImp'|'mechCone'| 'blackBull'|'bull'|'cowboyGargantuar'|'cowboyImp'|'chickenFarmer'|'chicken'|'chickenPumpkin'| 'cowboy'|'cowboyFlag'|'prospector'|'poncho'|'piano'| 'pirateCaptain'|'pirateParrot'| 'barrelroller'|'pirateBarrel'|'pirateGargantuar'|'pirateImp'|'impCannon'| 'pirate'|'pirateFlag'|'swashbuckler'|'seagull'|'pelican'| 'boss' | 'torchlight' | 'pharaohWeak' | 'mummy' | 'ra' | 'camel' | 'camelTouch' | 'gargantuar' | 'imp' | 'explorer' | 'tombraiser' | 'pharaoh' | 'pharaohInner';
+type RigName = PlantKind | 'darkWizardVeteran'| 'darkKing'|'dragonImp'| 'darkWizard'| 'darkGargantuar'| 'dark'|'darkFlag'|'darkImp'|'darkJester'| 'jetpackVeteran'|'footballMech'|'futureGargantuar'|'discoMech'|'discoJetpack'|'future'|'futureFlag'|'futureJetpack'|'futureProtector'|'futureShield'|'futureImp'|'mechCone'| 'blackBull'|'bull'|'cowboyGargantuar'|'cowboyImp'|'chickenFarmer'|'chicken'|'chickenPumpkin'| 'cowboy'|'cowboyFlag'|'prospector'|'poncho'|'piano'| 'pirateCaptain'|'pirateParrot'| 'barrelroller'|'pirateBarrel'|'pirateGargantuar'|'pirateImp'|'impCannon'| 'pirate'|'pirateFlag'|'swashbuckler'|'seagull'|'pelican'| 'boss' | 'torchlight' | 'pharaohWeak' | 'mummy' | 'ra' | 'camel' | 'camelTouch' | 'gargantuar' | 'imp' | 'explorer' | 'tombraiser' | 'pharaoh' | 'pharaohInner';
 const RIGS: Record<RigName, { armature: string; idle: string; scale: number }> = {
-  darkKing:{armature:'King',idle:'Idle',scale:.51},dragonImp:{armature:'Imp',idle:'Walk',scale:.51},peanut:{armature:'Peanut',idle:'Idle0',scale:.55},darkWizard:{armature:'Wizard',idle:'Walk',scale:.51},sunbean:{armature:'SunBean',idle:'Idle',scale:.55},darkGargantuar:{armature:'Gargantuar',idle:'Walk',scale:.51},fumeshroom:{armature:'FumeShroom',idle:'Idle',scale:.55},dark:{armature:'BasicZombie',idle:'Walk',scale:.51},darkFlag:{armature:'FlagZombie',idle:'Walk',scale:.51},darkImp:{armature:'Imp',idle:'Walk',scale:.51},darkJester:{armature:'Jester',idle:'Walk',scale:.51},
+  scaredyshroom:{armature:'ScaredyShroom',idle:'Idle',scale:.55},chomper:{armature:'Chomper',idle:'Idle',scale:.55},floawerPot:{armature:'FloawerPot',idle:'Idle',scale:.55},darkWizardVeteran:{armature:'WizardVeteran',idle:'Walk',scale:.51},darkKing:{armature:'King',idle:'Idle',scale:.51},dragonImp:{armature:'Imp',idle:'Walk',scale:.51},peanut:{armature:'Peanut',idle:'Idle0',scale:.55},darkWizard:{armature:'Wizard',idle:'Walk',scale:.51},sunbean:{armature:'SunBean',idle:'Idle',scale:.55},darkGargantuar:{armature:'Gargantuar',idle:'Walk',scale:.51},fumeshroom:{armature:'FumeShroom',idle:'Idle',scale:.55},dark:{armature:'BasicZombie',idle:'Walk',scale:.51},darkFlag:{armature:'FlagZombie',idle:'Walk',scale:.51},darkImp:{armature:'Imp',idle:'Walk',scale:.51},darkJester:{armature:'Jester',idle:'Walk',scale:.51},
   applemortar:{armature:'AppleMortar',idle:'Idle',scale:.55},wasabiwhip:{armature:'WasabiWhip',idle:'Idle',scale:.55},electricblueberry:{armature:'ElectricBlueBerry',idle:'Idle00',scale:.55},pinkstarfruit:{armature:'PinkStarFruit',idle:'Idle',scale:.55},redstinger:{armature:'RedStinger',idle:'Idle',scale:.55},jetpackVeteran:{armature:'JetpackVeteran',idle:'Walk',scale:.51},powerplant:{armature:'TileTurnip',idle:'Idle',scale:.55},starfruit:{armature:'StarFruit',idle:'Idle',scale:.55},holonut:{armature:'InfiNut',idle:'Idle',scale:.55},footballMech:{armature:'MechFootball',idle:'Walk',scale:.51},powerplant_alpha:{armature:'TileTurnip',idle:'Idle',scale:.55},powerplant_beta:{armature:'TileTurnip',idle:'Idle',scale:.55},citron:{armature:'Citron',idle:'Idle',scale:.55},empea:{armature:'EMPeach',idle:'Idle',scale:.55},futureGargantuar:{armature:'Gargantuar',idle:'Walk',scale:.51},discoMech:{armature:'MechDisco',idle:'Walk',scale:.51},discoJetpack:{armature:'JetpackDisco',idle:'Walk',scale:.51},laser_bean:{armature:'LaserBean',idle:'Idle',scale:.55},blover:{armature:'Blover',idle:'Idle',scale:.55},future:{armature:'FutureBasic',idle:'Walk',scale:.51},futureFlag:{armature:'FutureFlag',idle:'Walk',scale:.51},futureJetpack:{armature:'JetpackZombie',idle:'Walk',scale:.51},futureProtector:{armature:'Protector',idle:'Walk',scale:.51},futureShield:{armature:'Shield',idle:'Idle',scale:.51},futureImp:{armature:'FutureImp',idle:'Walk',scale:.51},mechCone:{armature:'MechCone',idle:'Walk',scale:.51},
   shadowshroom:{armature:'ShadowShroom',idle:'Idle',scale:.55},stallia:{armature:'Stallia',idle:'Idle',scale:.55},hurrikale:{armature:'Hurrikale',idle:'Idle',scale:.55},sunshroom:{armature:'SunShroom',idle:'Idle_Small',scale:.55},puffshroom:{armature:'PuffShroom',idle:'Idle',scale:.55},banana:{armature:'BananaLauncher',idle:'Idle',scale:.55},electriccurrant:{armature:'ElectricCurrant',idle:'Idle',scale:.55},hypnoshroom:{armature:'HypnoShroom',idle:'Idle',scale:.55},blackBull:{armature:'Bull_Black',idle:'Walk',scale:.51},
   electricpeashooter:{armature:'ElectricPeashooter',idle:'Idle',scale:.55},magnetshroom:{armature:'MagnetShroom',idle:'Idle',scale:.55},magnifyinggrass:{armature:'MagnifyingGrass',idle:'Idle',scale:.55},
@@ -175,6 +175,7 @@ export class Scene {
   }
 
   private rig(name: RigName, armature = RIGS[name].armature) {
+    if(name==='darkWizardVeteran'&&(armature==='head'||armature==='arm'))armature+='_v';
     if(name==='dark'&&armature==='Cone')armature='Corn';
     const rig = this.factory.buildArmatureDisplay(armature, name)!;
     rig.armature.clock = this.clock; return rig;
@@ -184,7 +185,7 @@ export class Scene {
     const rig = this.rig(kind);
     rig.animation.play(kind === 'potatomine' ? 'Idle' : RIGS[kind].idle, 0);
     rig.armature.advanceTime(.01);
-    if(['fumeshroom','starfruit','electricpeashooter','magnetshroom','magnifyinggrass','shadowshroom','stallia','hurrikale','sunshroom','puffshroom','banana','electriccurrant','hypnoshroom'].includes(kind))for(const slot of rig.armature.getSlots())if(slot.name.startsWith('COS'))slot.displayIndex=-1;
+    if(['scaredyshroom','fumeshroom','starfruit','electricpeashooter','magnetshroom','magnifyinggrass','shadowshroom','stallia','hurrikale','sunshroom','puffshroom','banana','electriccurrant','hypnoshroom'].includes(kind))for(const slot of rig.armature.getSlots())if(slot.name.startsWith('COS'))slot.displayIndex=-1;
     const canvas = this.app.renderer.extract.canvas({ target: rig, resolution: 2 });
     const url = (canvas as HTMLCanvasElement).toDataURL('image/png');
     rig.dispose(); PixiFactory.advanceTime(0);
@@ -263,13 +264,15 @@ export class Scene {
       alive.add(p.id);
       const actor = this.actors.get(p.id) ?? this.addActor(p.id, p.kind);
       actor.root.position.set(cellX(p.column), rowY(p.row)); actor.root.zIndex = rowY(p.row);
+      if(p.kind==='floawerPot'){actor.root.zIndex-=1;const moving=game.darkPlants.states.get(p.id)!.moving;if(moving){const t=Math.min(1,(game.time-moving.at)/game.props.plants.floawerPot.MoveToPosTime),e=1-(1-t)**2;actor.root.position.set(moving.x+(cellX(p.column)-moving.x)*e,moving.y+(rowY(p.row)-moving.y)*e-70*4*t*(1-t));}}
+      else if(game.plants.some(q=>q.kind==='floawerPot'&&q.row===p.row&&q.column===p.column))actor.root.y-=40;
       if(p.leap){const t=Math.min(1,(game.time-p.leap.at)/(p.kind==='chilibean'?.8:.5));actor.root.position.set(p.leap.x+(cellX(p.column)-p.leap.x)*t,p.leap.y+(rowY(p.row)-p.leap.y)*t-(p.leap.pushed&&Math.abs(cellX(p.column)-p.leap.x)===BOARD.cellWidth?0:100)*4*t*(1-t));}
       if(p.kind==='escaperoot')actor.rootGrown=p.rootGrown;
       if(p.kind==='sunshroom')actor.rig.scale.set(.55*[.6,.8,1][game.westFinale.states.get(p.id)!.stage]);
       if(p.kind==='bonkchoy')actor.rig.scale.x=RIGS.bonkchoy.scale*(p.facing??1);
       actor.root.visible=p.sheep===undefined;
       if(p.kind==='peanut')actor.rig.armature.getSlot('ARMOR')!.displayIndex=p.armor>0?(p.armor>game.props.plants.peanut.ArmorToughness*2/3?0:p.armor>game.props.plants.peanut.ArmorToughness/3?1:2):-1;
-      actor.rig.animation.timeScale=game.corralWaiting||p.sheep!==undefined?0:game.future.handles(p.kind)?game.future.rate(p):game.western.handles(p.kind)?game.western.rate(p):game.finale.handles(p.kind)?game.finale.rate(p):p.kind==='coconutcannon'&&['Shoot','Food'].includes(p.animation!)?2:p.kind==='parsnip'&&p.action==='shoot'?Math.max(1,1/game.props.plants.parsnip.AttackInterval):p.kind==='iceburg'&&p.action==='food'?.8:1;
+      actor.rig.animation.timeScale=game.corralWaiting||p.sheep!==undefined?0:game.darkPlants.handles(p.kind)?game.darkPlants.rate(p):game.future.handles(p.kind)?game.future.rate(p):game.western.handles(p.kind)?game.western.rate(p):game.finale.handles(p.kind)?game.finale.rate(p):p.kind==='coconutcannon'&&['Shoot','Food'].includes(p.animation!)?2:p.kind==='parsnip'&&p.action==='shoot'?Math.max(1,1/game.props.plants.parsnip.AttackInterval):p.kind==='iceburg'&&p.action==='food'?.8:1;
       const animation = this.plantAnimation(p, game);
       this.animate(actor, animation, p.action === 'idle' ? 0 : p.actionAt, animation==='FoodBig'?1:p.action==='food'&&(p.kind==='sunflower'||p.kind==='twinsunflower')?game.props.plants[p.kind].PlantfoodTime: ['shoot','produce','grow','explode','catch'].includes(p.action)||p.action==='food'&&['cabbagepult','iceburg','wallnut'].includes(p.kind)||animation==='Spawn_Baby'?1:0);
     }
@@ -338,7 +341,7 @@ export class Scene {
     for(const death of game.deaths)if(!this.seenDeaths.has(death.zombie.id)){this.seenDeaths.add(death.zombie.id);this.killZombie(death);}
     for (const [id, actor] of this.actors) if (!alive.has(id)&&!actor.death&&PLANT_KINDS.includes(actor.kind as PlantKind)) {
       if(actor.kind==='powerplant'||actor.kind==='powerplant_alpha'||actor.kind==='powerplant_beta'||actor.kind==='empea'||actor.kind==='blover'&&actor.animation==='Death'||actor.kind==='hurrikale'||actor.kind==='stallia'&&actor.animation==='Death'||actor.kind==='puffshroom'&&actor.animation==='Fade'||actor.kind==='escaperoot'&&(id<0||actor.rootGrown)||actor.captured||actor.kind==='imitater'||actor.kind==='cherry_bomb'||actor.kind==='jalapeno'||actor.kind==='gravebuster'||actor.animation==='Charging'||actor.kind==='iceburg'&&actor.animation==='Death'||game.effects.some(effect=>effect.kind==='remove'&&effect.x===actor.root.x&&effect.y===actor.root.y)){this.removeActor(id,actor);continue;}
-      const animation=actor.kind==='peanut'?(/(?:Idle|Shoot)[23]/.test(actor.animation)?'Death23':'Death01'):actor.kind==='redstinger'?(actor.root.x>=cellX(6)?'Death_Hide':actor.root.x>=cellX(3)?'Death_Scared':'Death'):actor.kind==='banana'&&actor.animation==='IdleSad'?'DeathSad':actor.kind==='escaperoot'?'Baby_Death':(actor.kind==='wallnut'||actor.kind==='tallnut')?actor.animation.replace('Idle','Death'):actor.kind==='potatomine'?'Death_Baby':actor.kind==='magnetshroom'&&['Resting','AbsorbEnd'].includes(actor.animation)?'DeathDark':'Death';
+      const animation=actor.kind==='scaredyshroom'&&actor.animation.startsWith('Hid')?'DeathHiding':actor.kind==='floawerPot'&&actor.animation.includes('Iron')?'Death_Iron':actor.kind==='peanut'?(/(?:Idle|Shoot)[23]/.test(actor.animation)?'Death23':'Death01'):actor.kind==='redstinger'?(actor.root.x>=cellX(6)?'Death_Hide':actor.root.x>=cellX(3)?'Death_Scared':'Death'):actor.kind==='banana'&&actor.animation==='IdleSad'?'DeathSad':actor.kind==='escaperoot'?'Baby_Death':(actor.kind==='wallnut'||actor.kind==='tallnut')?actor.animation.replace('Idle','Death'):actor.kind==='potatomine'?'Death_Baby':actor.kind==='magnetshroom'&&['Resting','AbsorbEnd'].includes(actor.animation)?'DeathDark':'Death';
       const timeline=animationTimeline(this.skeletons.get(actor.kind)!,RIGS[actor.kind].armature,animation);
       this.animate(actor,animation,0,1);actor.death={cause:'plant',elapsed:0,fadeAt:timeline.duration,fallAt:Infinity};
     }
@@ -362,9 +365,10 @@ export class Scene {
     for(const [id,actor] of this.actors){
       const state=game.specialZombies.get(id);
       if(actor.kind==='puffshroom'&&!actor.death){const p=game.plants.find(p=>p.id===id)!,life=game.westFinale.states.get(id)!.life;actor.rig.armature.getSlot('head')!.displayIndex=life>40?0:life>20?1:2;actor.root.alpha=p.action!=='food'&&life<10&&life>0&&Math.floor(4*life)%4===1?100/255:1;}
+      if(actor.kind==='chomper'&&!actor.death){const count=game.darkPlants.states.get(id)!.chews.length;for(const slot of actor.rig.armature.getSlots()){if(['ARM1','ARM1_','HAND1','HAND1_'].includes(slot.name))slot.displayIndex=count>=1?0:-1;if(['ARM2','ARM2_','HAND2','HAND2_'].includes(slot.name))slot.displayIndex=count>=2?0:-1;}}
       for(const slot of actor.rig.armature.getSlots()){
         if(actor.kind==='laser_bean'&&slot.name.endsWith('_FS')&&slot.childArmature&&slot.childArmature.animation.lastAnimationName!=='Floor')slot.childArmature.animation.play('Floor',0);
-        if((actor.kind==='fumeshroom'||game.future.handles(actor.kind as PlantKind)||game.western.handles(actor.kind as PlantKind)||game.westFinale.handles(actor.kind as PlantKind))&&slot.name.startsWith('COS'))slot.displayIndex=-1;
+        if((game.darkPlants.handles(actor.kind as PlantKind)||actor.kind==='fumeshroom'||game.future.handles(actor.kind as PlantKind)||game.western.handles(actor.kind as PlantKind)||game.westFinale.handles(actor.kind as PlantKind))&&slot.name.startsWith('COS'))slot.displayIndex=-1;
         if(actor.kind==='bull'||actor.kind==='blackBull'){const z=game.zombies.find(z=>z.id===id)??game.deaths.find(d=>d.zombie.id===id)?.zombie;if(z){if(slot.name.includes('_IMP')&&!z.west!.imp)slot.displayIndex=-1;if(slot.name.includes('_bp1'))slot.displayIndex=z.hp<=game.props.zombies[z.kind].Toughness*2/3&&z.hp>game.props.zombies[z.kind].Toughness/3?0:-1;if(slot.name.includes('_bp2'))slot.displayIndex=z.hp<=game.props.zombies[z.kind].Toughness/3?0:-1;}}
         if((actor.kind==='darkGargantuar'||actor.kind==='cowboyGargantuar')&&[...game.zombies,...game.westFinale.allies].find(z=>z.id===id)?.west?.imp===false&&slot.name.includes('_IMP'))slot.displayIndex=-1;
         if(actor.kind==='chickenFarmer'&&slot.name.includes('_CHICK')&&[...game.zombies,...game.westFinale.allies].find(z=>z.id===id)?.west?.chickens===false)slot.displayIndex=-1;
@@ -446,7 +450,7 @@ export class Scene {
     actor.root.position.set(z.x,zombieY(z)-(z.parrot?.height??0));actor.root.zIndex=zombieY(z)+1;actor.rig.animation.timeScale=1;actor.rig.tint=0xffffff;if(actor.kind==='cowboy'||actor.kind==='cowboyFlag')actor.rig.armature.getSlot('hat_HEAD')!.displayIndex=-1;
     if(actor.mask){actor.root.mask=null;actor.mask.destroy();actor.mask=undefined;actor.rig.y=0;}
     if(death.cause==='blow'){if(z.kind==='future_imp'&&z.future!.animation==='Fall')actor.root.y=rowY(z.row)-600*Math.max(0,1-(death.at-z.entryAt))**2;actor.death={cause:'blow',elapsed:0,fadeAt:Infinity,fallAt:Infinity};return;}
-    if(death.cause==='water'){this.removeActor(z.id,actor);return;}
+    if(death.cause==='water'||death.cause==='swallow'){this.removeActor(z.id,actor);return;}
     if(z.kind==='chicken'||z.kind==='chicken_pumpkin'){this.chickenFeathers(actor,-z.id,'PlayFloor');this.removeActor(z.id,actor);return;}
     if(z.kind==='cannon'&&z.pirate?.animation==='Explode'){this.removeActor(z.id,actor);return;}
     if(z.swing?.failure){this.removeActor(z.id,actor);return;}
@@ -542,6 +546,8 @@ export class Scene {
       return rig;
     };
     for(const t of game.level.powerTiles){const rig=object(`power-tile-${t.row}-${t.column}`,'tile_'+t.group,game.plants.some(p=>p.row===t.row&&p.column===t.column)?'Idle_Lit':'Idle_Unlit',cellX(t.column),rowY(t.row)-31,.44);rig.zIndex=-100;}
+    for(const sound of game.darkPlants.sounds.splice(0))this.onSound(sound);
+    for(const shot of game.darkPlants.spores){const rig=object(`scaredy-${shot.id}`,shot.knockback?'scaredyFood':'scaredyShot',shot.hitAt===undefined?'Idle':'Fade',shot.x,shot.y,.55);if(shot.hitAt!==undefined)rig.animation.lastAnimationState!.playTimes=1;}
     for(const sound of game.dark.sounds.splice(0))this.onSound(sound);
     for(const s of game.dark.sheep){const rig=object(`wizard-sheep-${s.id}`,'wizardSheep',s.animation,cellX(s.plant.column),rowY(s.plant.row),.55);rig.animation.lastAnimationState!.playTimes=s.animation==='Idle0'?0:1;}
     for(const l of game.dark.links){const rig=object(`wizard-link-${l.id}`,'wizardLink','Play1',l.x,l.y,1);rig.rotation=Math.atan2(l.toY-l.y,l.toX-l.x);rig.scale.set(Math.hypot(l.toX-l.x,l.toY-l.y)/2509,.55);rig.animation.lastAnimationState!.playTimes=1;}

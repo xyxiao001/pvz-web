@@ -3,7 +3,7 @@ import type {Game,Plant,Zombie} from './model';
 import potionProperties from '../../public/assets/dark/potions.json';
 import graveProperties from '../../public/assets/dark/graves.json';
 import projectileRules from '../../public/assets/dark/jester-projectiles.json';
-export const darkArmor=(kind:ZombieKind)=>kind==='dark_armor3'?'dark_armor3':kind==='dark_armor1'?'dark_armor1':kind==='dark_armor2'?'dark_armor2':null;
+export const darkArmor=(kind:ZombieKind)=>kind==='dark_armor4'?'dark_armor4':kind==='dark_armor3'?'dark_armor3':kind==='dark_armor1'?'dark_armor1':kind==='dark_armor2'?'dark_armor2':null;
 export const graveArt=(kind?:string)=>kind==='gravestoneSunOnDestruction'?'graveSun':kind==='gravestonePlantfoodOnDestruction'?'graveFood':'grave';
 export interface Potion {id:number;kind:'zombiepotion_speed'|'zombiepotion_toughness';row:number;column:number;animation:'Spawn'|'Idle'|'Consume'|'Splat';at:number;dropped:boolean}
 export interface DarkZombie {speed:number;toughness:number;scaleFrom:number;scaleAt:number;bean:boolean;health:number;sun:number;blastAt:number}
@@ -38,8 +38,8 @@ export class DarkBattle {
   wizards=new Map<number,Wizard>();
   sheep:Sheep[]=[];
   links:{id:number;x:number;y:number;toX:number;toY:number;at:number}[]=[];
-  spawn(z:Zombie){if(z.kind==='dark_king'){z.x=cellX(8);this.kings.set(z.id,{animation:'Spawn',at:this.#game.time,elapsed:0,event:0,cooldown:0,given:null,effectAt:0});}if(z.kind==='dark_wizard'){const p=this.#game.props.zombies.dark_wizard;this.wizards.set(z.id,{animation:'Walk',at:this.#game.time,elapsed:0,cooldown:p.TimeBeforeFirst+this.#game.random()*p.TimeBeforeFirstAdditional,first:true,target:null,event:0});}}
-  private sheepable(p:Plant){return p.hp>0&&p.sheep===undefined&&p.action!=='food'&&!p.hidden&&!p.leap&&!this.#game.props.plants[p.kind].CannotBeSheepenedByWizard;}
+  spawn(z:Zombie){if(z.kind==='dark_king'){z.x=cellX(8);this.kings.set(z.id,{animation:'Spawn',at:this.#game.time,elapsed:0,event:0,cooldown:0,given:null,effectAt:0});}if(z.kind==='dark_wizard'||z.kind==='dark_wizard_veteran'){const p=this.#game.props.zombies[z.kind];this.wizards.set(z.id,{animation:'Walk',at:this.#game.time,elapsed:0,cooldown:p.TimeBeforeFirst+this.#game.random()*p.TimeBeforeFirstAdditional,first:true,target:null,event:0});}}
+  private sheepable(p:Plant){return p.hp>0&&p.sheep===undefined&&p.action!=='food'&&!p.hidden&&!p.leap&&!this.#game.props.plants[p.kind].CannotBeSheepenedByWizard&&!this.#game.plants.some(q=>q.row===p.row&&q.column===p.column&&q.hp>0&&this.#game.props.plants[q.kind].CannotBeSheepenedByWizard);}
   private wizardTarget(z:Zombie,s:Wizard){const plants=this.#game.plants.filter(p=>this.sheepable(p));return plants.sort((a,b)=>Number(cellX(a.column)>z.x)-Number(cellX(b.column)>z.x)||(s.first?Math.abs(a.row-z.row)-Math.abs(b.row-z.row):0)||b.column-a.column)[0];}
   private tickWizards(dt:number){
     const g=this.#game;
@@ -47,16 +47,16 @@ export class DarkBattle {
     this.sheep=this.sheep.filter(s=>s.animation!=='Die'||g.time-s.at<g.props.plantAnimations.wizardSheep.Die.duration);
     this.links=this.links.filter(l=>g.time-l.at<g.props.plantAnimations.wizardLink.Play1.duration);
     for(const z of g.zombies){const s=this.wizards.get(z.id);if(!s||z.hp<=0||z.leap||g.time<z.frozenUntil||g.time<(z.stunnedUntil??0)||g.time<(z.butteredUntil??0))continue;
-      const prop=g.props.zombies.dark_wizard,rate=(g.time<z.chilledUntil?.5:1)*Math.pow(1.5,z.dark?.speed??0);
+      const prop=g.props.zombies[z.kind],rate=(g.time<z.chilledUntil?.5:1)*Math.pow(1.5,z.dark?.speed??0);
       if(s.animation==='Walk'){
         if(z.x>cellX(9))continue;
         s.cooldown-=dt*rate;const close=g.plants.find(p=>this.sheepable(p)&&p.row===z.row&&Math.abs(z.x-cellX(p.column))<38);
         const target=close??(s.cooldown<=0?this.wizardTarget(z,s):undefined);
         if(target){s.target=target.id;s.animation='Attack';s.at=g.time;s.elapsed=0;s.event=0;z.eating=false;}
       }else{
-        s.elapsed+=dt*rate;const timeline=g.props.plantAnimations.darkWizard.Attack;
+        s.elapsed+=dt*rate;const timeline=g.props.plantAnimations[z.kind==='dark_wizard_veteran'?'darkWizardVeteran':'darkWizard'].Attack;
         while(s.event<timeline.events.length&&s.elapsed>=timeline.events[s.event].at){const e=timeline.events[s.event++].name;
-          if(e==='charge'||e==='chargeSay'||e==='magic')this.sounds.push('darkWizard/'+(e==='charge'?'chargeSounds':e==='chargeSay'?'chargeSaySounds':'magicSounds'));
+          if(e==='charge'||e==='chargeSay'||e==='magic')this.sounds.push((z.kind==='dark_wizard_veteran'?'darkWizardVeteran':'darkWizard')+'/'+(e==='charge'?'chargeSounds':e==='chargeSay'?'chargeSaySounds':'magicSounds'));
           if(e==='magic'){let p=g.plants.find(p=>p.id===s.target&&this.sheepable(p));p??=this.wizardTarget(z,s);if(p){p.sheep=z.id;this.sheep.push({id:++this.serial,plant:p,wizard:z.id,at:g.time,animation:'Spawn'});this.links.push({id:++this.serial,x:z.x-18,y:rowY(z.row)-100,toX:cellX(p.column),toY:rowY(p.row)-40,at:g.time});this.visual('wizardHit',cellX(p.column),rowY(p.row));s.cooldown=prop.TimeBetween+g.random()*prop.TimeBetweenAdditional;}s.first=false;}
         }
         if(s.elapsed>=timeline.duration){s.animation='Walk';s.at=g.time;}
@@ -151,6 +151,7 @@ export class DarkBattle {
     this.visuals=this.visuals.filter(v=>g.time-v.at<v.duration&&(v.owner===undefined||g.plants.some(p=>p.id===v.owner&&p.hp>0)));
     for(const [id] of this.fumes)if(!g.plants.some(p=>p.id===id&&p.hp>0)){this.fumes.delete(id);}
     if(!g.zombies.some(z=>z.kind==='dark_juggler')&&!this.reflected.length)return;
+    g.darkPlants.spores=g.darkPlants.spores.filter(p=>p.hitAt!==undefined||!this.catchShot(p.x,p.y,1,p.knockback?'scaredyshroom_spore2':'scaredyshroom_spore',p.knockback?'scaredyFood':'scaredyShot',g.props.projectiles.scaredyshroom_spore.Damage));
     g.peas=g.peas.filter(p=>!this.catchShot(p.x,p.y,p.vector?.vx??1,'pea','pea',p.damage,p.mega?'pea_g':'pea0'));
     g.missiles=g.missiles.filter(p=>{
       if(!['cabbage','boomerang'].includes(p.kind))return true;

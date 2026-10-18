@@ -13,7 +13,7 @@ import type { Scene } from './rendering/scene';
 import { cubicInOut, introCamera } from './rendering/presentation';
 
 const DESCRIPTIONS: Record<PlantKind,string> = {peanut:'既能发射豌豆，也能抵挡僵尸；受损后射速降低。',sunbean:'被僵尸吃掉后，使它受到伤害时掉落阳光。',fumeshroom:'向前喷出浓雾，穿透多个僵尸。',applemortar:'向三行投掷苹果，击中后使僵尸短暂眩晕。',wasabiwhip:'挥动火焰长鞭，攻击前后的僵尸。',electricblueberry:'召唤雷云，追踪并电击僵尸。',pinkstarfruit:'向五个方向发射星星，根据僵尸位置切换方向。',redstinger:'靠后种植可连续攻击，靠前种植可抵挡更多伤害。',
-  powerplant:'瓷砖萝卜生成紫色能量瓷砖，种植得越多，阳光费用越高。',holonut:'全息坚果在受损后恢复投影，能量豆可生成整列护盾。',powerplant_alpha:'在地块上生成绿色能量瓷砖。',powerplant_beta:'在地块上生成红色能量瓷砖。',citron:'充能柚子蓄能后发射强力电浆弹。',empea:'电磁桃释放电磁脉冲，使附近的机械僵尸暂时失灵。',laser_bean:'激光豆发射激光，穿透整行僵尸和护盾。',blover:'三叶草吹走所有悬空的僵尸。',shadowshroom:'毒影菇被吃掉后使僵尸中毒，大招让所有僵尸中毒。',stallia:'大丽菊释放香气，让附近僵尸减速。',hurrikale:'飓风甘蓝吹退并冰冷整行僵尸。',sunshroom:'阳光菇逐渐长大，生产更多阳光。',puffshroom:'小喷菇免费种植，近距离攻击，寿命有限。',banana:'点击香蕉火箭炮，再选择落点，轰击附近僵尸。',electriccurrant:'同一行或列的电流醋栗会连接电网。',hypnoshroom:'魅惑菇被吃掉后，让僵尸转身为你作战。',
+  scaredyshroom:'胆小菇远程发射孢子，僵尸靠近时躲藏。能量豆会让周围的胆小菇一起爆发。',chomper:'大嘴花吞下前方僵尸，消化时仍可再吞一只。',floawerPot:'花盆可以承载植物，阻止巫师将这一格的植物变成羊。空花盆用能量豆强化后，可点击移动。',powerplant:'瓷砖萝卜生成紫色能量瓷砖，种植得越多，阳光费用越高。',holonut:'全息坚果在受损后恢复投影，能量豆可生成整列护盾。',powerplant_alpha:'在地块上生成绿色能量瓷砖。',powerplant_beta:'在地块上生成红色能量瓷砖。',citron:'充能柚子蓄能后发射强力电浆弹。',empea:'电磁桃释放电磁脉冲，使附近的机械僵尸暂时失灵。',laser_bean:'激光豆发射激光，穿透整行僵尸和护盾。',blover:'三叶草吹走所有悬空的僵尸。',shadowshroom:'毒影菇被吃掉后使僵尸中毒，大招让所有僵尸中毒。',stallia:'大丽菊释放香气，让附近僵尸减速。',hurrikale:'飓风甘蓝吹退并冰冷整行僵尸。',sunshroom:'阳光菇逐渐长大，生产更多阳光。',puffshroom:'小喷菇免费种植，近距离攻击，寿命有限。',banana:'点击香蕉火箭炮，再选择落点，轰击附近僵尸。',electriccurrant:'同一行或列的电流醋栗会连接电网。',hypnoshroom:'魅惑菇被吃掉后，让僵尸转身为你作战。',
   starfruit:'杨桃向五个方向发射星星。',electricpeashooter:'电能豌豆发射穿透电球，并向附近的僵尸释放电流。',magnetshroom:'磁力菇吸走僵尸的金属护甲，消化后可以再次吸取。',magnifyinggrass:'点击棱镜草，消耗50阳光发射彩虹光弹。',
   wintermelon:'冰西瓜投出冰瓜，对落点附近的僵尸造成伤害并减速。',splitpea:'裂荚射手向前发射一颗豌豆，向后连射两颗。',chilibean:'巴豆被吃掉后会毒死僵尸，并使它身后的同路僵尸眩晕。',xshot:'旋转芜菁向四个斜向射击。',chardguard:'甜菜护卫可以用叶片把僵尸推回去。',dandelion:'蒲公英向附近三行发射爆炸种子。',jalapeno:'火爆辣椒烧毁一整行的僵尸。',lightningreed:'闪电芦苇的电流会在附近僵尸间传导。',escaperoot:'点击逃脱树根，再点击另一株植物即可换位。成熟后遇到僵尸会变成爆炸植物。',spikerock:'钢地刺能刺破三个滚桶，伤害踩在上面的僵尸。',threepeater:'三线射手同时向所在行和相邻两行发射豌豆。',spikeweed:'地刺可以伤害踩在上面的僵尸，并刺破滚桶。',springbean:'弹簧豆可以弹开僵尸，也能把靠近海边的僵尸弹入水中。',snapdragon:'火龙草向前方三行喷火，灼烧靠近的僵尸。',coconutcannon:'点击椰子加农炮发射炮弹，爆炸后需要时间重新装填。',snowdrop:'雪莲抛出冰霜花瓣，使僵尸减速，偶尔将它冻住。',imitater:'选择本关的一种植物，模仿者会在种下后变成它。',peapod:'在同一格重复种植，最多叠加五个豌豆头。',cherry_bomb:'樱桃炸弹炸毁周围九宫格内的僵尸。',celerystalker:'潜伏芹菜藏在地下，攻击走过身后的僵尸。',parsnip:'防风草用钳子攻击前方，被吃掉后冲出去继续攻击。',sapfling:'树脂投手在落点留下树脂，减缓僵尸的移动。',
   repeater:'双发射手连续发射两颗豌豆。',kernelpult:'玉米投手抛射玉米粒，偶尔用黄油定住僵尸。',melonpult:'西瓜投手的西瓜能伤害落点周围的僵尸。',
@@ -235,7 +235,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     $('#hud').hidden=true;$('#overlay').hidden=true;$('#seed-chooser').hidden=true;host.hidden=true;onReturn();
   }
   function updateHud() {
-    if(selected){game.escape.cancel();game.westFinale.cancel();}
+    if(selected){game.escape.cancel();game.westFinale.cancel();game.darkPlants.cancel();}
     $('#sun-count').textContent=String(game.sun);if(levelConfig.mode==='seedbank'||levelConfig.mode==='preset')updateDeck();
     $('#plant-food b').textContent=`${game.food} / ${game.foodLimit}`;$('#plant-food').classList.toggle('selected',selected==='food');
     if(levelConfig.mode==='conveyor')updateConveyor();
@@ -266,12 +266,14 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     const sun=[...game.suns].reverse().find(s=>Math.hypot(x-s.x,y-s.y)<38);
     if(sun){game.collect(sun.id);updateHud();return;}
     const column=Math.floor((x-BOARD.left)/BOARD.cellWidth),row=Math.floor((y-BOARD.top)/BOARD.cellHeight);
-    if(selected){game.escape.cancel();game.westFinale.cancel();}
+    if(selected){game.escape.cancel();game.westFinale.cancel();game.darkPlants.cancel();}
+    if(selected===null&&game.darkPlants.selected!==null){game.darkPlants.move(row,column);updateHud();return;}
     if(selected===null&&game.westFinale.selected!==null){game.westFinale.fire(row,column);updateHud();return;}
     if(selected===null&&game.escape.selected!==null){game.escape.exchange(row,column);updateHud();return;}
     if(selected==='shovel'){game.shovel(row,column);sound('shovelDig');}
     else if(selected==='food'){if(game.plantFood(row,column)){selected=null;scene.highlightCell(-1,-1,0);}}
     else if(selected&&game.plant(selected,row,column,packetId)){selected=null;scene.highlightCell(-1,-1,0);}
+    else if(selected===null&&game.darkPlants.select(row,column)){game.escape.cancel();game.westFinale.cancel();}
     else if(selected===null&&game.westFinale.select(row,column))game.cowboy.select(row,column);
     else if(selected===null&&!game.cowboy.select(row,column)&&!game.escape.select(row,column)&&!game.western.fire(row,column))game.pirate.fire(row,column);
     updateHud();
