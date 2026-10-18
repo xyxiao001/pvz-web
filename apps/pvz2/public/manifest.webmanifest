@@ -1,0 +1,14 @@
+{
+  "id": "/pvz2/",
+  "name": "植物大战僵尸 2",
+  "short_name": "植物大战僵尸 2",
+  "description": "穿越时空，开启植物大战僵尸 2 的世界冒险。",
+  "lang": "zh-CN",
+  "start_url": "/pvz2/",
+  "scope": "/pvz2/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#10191b",
+  "theme_color": "#12433f",
+  "icons": [{ "src": "icons/app.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

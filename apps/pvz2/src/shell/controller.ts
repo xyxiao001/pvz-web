@@ -1,4 +1,5 @@
 import '../audio-controls.css';
+import { showPwa } from '../pwa';
 import { reportError } from '../errors';
 import { playAudio } from '../audio';
 import type { OuterFeatures, Feature } from '../outer/controller';
@@ -270,8 +271,9 @@ export class WorldShell {
   }
   private closeModal() { delete this.host.dataset.store; this.renderer.setStoreOpen(false); this.$('.map-modal').hidden=true; this.$('.map-modal').innerHTML=''; }
   private settings() {
-    this.modal('设置',`<div class="settings-section"><h3>声音</h3>${audioControls(this.audio)}</div><div class="settings-section"><h3>游玩方式</h3><label class="free-play-option"><span class="free-play-copy"><strong>自由选关</strong><small>解锁世界与关卡入口，通关进度照常保存。</small></span><input data-test-unlock type="checkbox" role="switch" aria-label="自由选关" ${this.progress.temporaryUnlock?'checked':''}><span class="free-play-switch" aria-hidden="true"></span></label><p class="settings-note">${this.progress.temporaryUnlock?'已开启 · 关闭后恢复按进度解锁':'未开启 · 按通关进度解锁'}</p></div><p class="settings-saved">设置自动保存到本机，刷新后仍有效</p><button class="native-button close-dialog">返回游戏</button><a class="switch-version" href="/">植物大战僵尸 1</a>`);
+    this.modal('设置',`<div class="settings-section"><h3>声音</h3>${audioControls(this.audio)}</div><div class="settings-section"><h3>游玩方式</h3><label class="free-play-option"><span class="free-play-copy"><strong>自由选关</strong><small>解锁世界与关卡入口，通关进度照常保存。</small></span><input data-test-unlock type="checkbox" role="switch" aria-label="自由选关" ${this.progress.temporaryUnlock?'checked':''}><span class="free-play-switch" aria-hidden="true"></span></label><p class="settings-note">${this.progress.temporaryUnlock?'已开启 · 关闭后恢复按进度解锁':'未开启 · 按通关进度解锁'}</p></div><button class="settings-pwa" data-pwa>安装与更新 <span>桌面安装 · 离线资源 · 版本管理 ›</span></button><p class="settings-saved">设置自动保存到本机，刷新后仍有效</p><button class="native-button close-dialog">返回游戏</button><a class="switch-version" href="/">植物大战僵尸 1</a>`);
     this.$('.native-window').classList.add('settings-window');
+    this.$<HTMLButtonElement>('[data-pwa]').onclick = showPwa;
     this.$<HTMLInputElement>('[data-test-unlock]').onchange=async event=>{
       this.progress.temporaryUnlock=(event.target as HTMLInputElement).checked;
       if(this.map)await this.openWorld(this.currentWorld);else await this.showChooser();

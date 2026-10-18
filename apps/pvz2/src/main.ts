@@ -1,6 +1,7 @@
 import './shell/style.css';
 import './cursor.css';
 import './errors.css';
+import { registerPwa } from './pwa';
 import { installErrorReporting } from './errors';
 import { BATTLE_LEVELS } from './game/levels';
 import { WorldShell } from './shell/controller';
@@ -18,3 +19,5 @@ const shell = new WorldShell(host, async (level, progress) => {
   await battle.enter();
 });
 void shell.init();
+
+void registerPwa();
