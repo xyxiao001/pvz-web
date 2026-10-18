@@ -1,3 +1,4 @@
+import { playAudio } from '../audio';
 import { Rectangle } from 'pixi.js';
 import { EventObject, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
 import { json, assetUrl } from '../assets/load';
@@ -53,8 +54,8 @@ export class OuterFeatures {
     this.$<HTMLButtonElement>('.outer-close').disabled=false;this.$('.outer-close').onclick=()=>{void this.exit();};
   }
   private run(task:Promise<unknown>){this.host.inert=true;this.pending.add(task);void task.finally(()=>{this.pending.delete(task);if(this.pending.size===0)this.host.inert=false;});}
-  private playMusic(path:string){this.music.loop=true;this.music.volume=readAudio().music;this.music.src=assetUrl(path);if(this.music.volume)this.musicPlay=this.music.play();}
-  private sound(path:string){const clip=new Audio(assetUrl(path));clip.volume=readAudio().effects;if(!clip.volume)return;this.sounds.add(clip);clip.onended=()=>this.sounds.delete(clip);void clip.play();}
+  private playMusic(path:string){this.music.loop=true;this.music.volume=readAudio().music;this.music.src=assetUrl(path);if(this.music.volume)this.musicPlay=playAudio(this.music);}
+  private sound(path:string){const clip=new Audio(assetUrl(path));clip.volume=readAudio().effects;if(!clip.volume)return;this.sounds.add(clip);clip.onended=()=>this.sounds.delete(clip);void playAudio(clip);}
   private picture(entry:AlmanacEntry,zombie=false){const key=(zombie?'z:':'p:')+entry.kind;if(!this.images.has(key))this.images.set(key,zombie?this.stage.capture([cardSpec('background',entry.background),{...this.catalog.almanac.zombieCards.find(r=>r.armature==='Zombie')!,animation:entry.card},cardSpec('upper_dots','dotsNoPrice')],new Rectangle(-119,-75,238,150)):plantCard(this.stage,entry.card,entry.background));return this.images.get(key)!;}
   private plant(kind:string){return this.catalog.plants.find(p=>p.kind===kind)!;}
   private wallet(){const w=this.progress.shop().read();return `<div class="outer-wallet" aria-live="polite">金币 ${w.coin.toLocaleString('en-US')}　钻石 ${w.gem.toLocaleString('en-US')}</div>`;}

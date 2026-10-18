@@ -1,3 +1,5 @@
+import { rewardPlantArt } from './reward-art';
+import { reportError } from '../errors';
 import { textureScope } from '../assets/textures';
 import 'pixi.js/prepare';
 import { Application, Assets, Container, Sprite, Texture, Text, ColorMatrixFilter, Rectangle } from 'pixi.js';
@@ -282,7 +284,7 @@ export class MapRenderer {
     this.camera = clampCamera(map, camera); this.positionMap(); this.start();
   }
   private plantDraws(island: Island): MapDraw[] {
-    return this.progression.plants[island.plant].map(draw => ({ ...draw,
+    return rewardPlantArt(island,this.progression,this.catalog,error=>reportError(error,`地图奖励展示：${this.map!.id}`)).map(draw => ({ ...draw,
       island: island.node, role: 'reward', x: island.x + draw.x, y: island.y + draw.y, parallax: 1,
     }));
   }
@@ -304,19 +306,21 @@ export class MapRenderer {
   async presentCompletion(events: MapEvent[], onEvent: (event: MapEvent) => void, sound: (name: string) => void) {
     let elapsed = 0, next = 0;
     const end = Math.max(...events.map(e => e.at + (e.action === 'reward' ? 0 : this.progression.durations[e.action])));
-    await new Promise<void>(resolve => {
+    await new Promise<void>((resolve, reject) => {
       const tick = () => {
-        elapsed += Math.min(this.app.ticker.deltaMS / 1000, .05);
-        while (next < events.length && events[next].at <= elapsed) {
-          const event = events[next++], island = this.map!.islands.find(n => n.node === event.node)!;
-          if (event.action === 'finish') this.animateIsland(event.node, 'node', 'Finish', 'IdleFinished');
-          if (event.action === 'path') this.animateIsland(event.node, 'path', 'Push', 'Idle');
-          if (event.action === 'open') this.animateIsland(event.node, 'node', 'Open', 'IdleUnfinish');
-          if (event.action === 'reward' && island.kind === 1) this.revealPlant(island);
-          onEvent(event);
-          sound({ finish: 'levelNodeFinish', path: 'levelPathPush', open: 'levelNodeReveal', reward: 'plantNodeUnlock' }[event.action]);
-        }
-        if (elapsed >= end) { this.app.ticker.remove(tick); resolve(); }
+        try {
+          elapsed += Math.min(this.app.ticker.deltaMS / 1000, .05);
+          while (next < events.length && events[next].at <= elapsed) {
+            const event = events[next++], island = this.map!.islands.find(n => n.node === event.node)!;
+            if (event.action === 'finish') this.animateIsland(event.node, 'node', 'Finish', 'IdleFinished');
+            if (event.action === 'path') this.animateIsland(event.node, 'path', 'Push', 'Idle');
+            if (event.action === 'open') this.animateIsland(event.node, 'node', 'Open', 'IdleUnfinish');
+            if (event.action === 'reward' && island.kind === 1) this.revealPlant(island);
+            onEvent(event);
+            sound({ finish: 'levelNodeFinish', path: 'levelPathPush', open: 'levelNodeReveal', reward: 'plantNodeUnlock' }[event.action]);
+          }
+          if (elapsed >= end) { this.app.ticker.remove(tick); resolve(); }
+        } catch (error) { this.app.ticker.remove(tick); reject(error); }
       };
       this.app.ticker.add(tick);
     });

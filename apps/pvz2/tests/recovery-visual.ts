@@ -1,0 +1,20 @@
+import '../src/shell/style.css';
+import '../src/errors.css';
+import {WorldShell} from '../src/shell/controller';
+import {ProgressStore} from '../src/shell/progression';
+import {NAVIGATION_KEY} from '../src/shell/navigation';
+import {installErrorReporting} from '../src/errors';
+import {playAudio} from '../src/audio';
+installErrorReporting();
+const data=new Map<string,string>(),storage={getItem:(k:string)=>data.get(k)??null,setItem:(k:string,v:string)=>{data.set(k,v);},removeItem:(k:string)=>{data.delete(k);}};
+data.set(NAVIGATION_KEY,JSON.stringify({world:'pirate',chooser:1,cameras:{}}));
+const progress=new ProgressStore(storage);progress.finish('egypt','egypt8');progress.finishPresentation();progress.unlockWorld('pirate');
+const shell=new WorldShell(document.querySelector('#app')!,async()=>{},storage);await shell.init();
+const status=document.querySelector('#status')!;
+document.querySelector<HTMLButtonElement>('#return')!.onclick=async()=>{progress.finish('pirate','pirate1');await shell.resume();status.textContent=`返图完成，玉米投手=${progress.ownedPlants().has(30)}，待结算=${progress.pending()!==null}`;};
+document.querySelector<HTMLButtonElement>('#reload')!.onclick=async()=>{await shell.resume();status.textContent='重新打开完成';};
+document.querySelector<HTMLButtonElement>('#missing')!.onclick=async()=>{const art=shell['progression'],saved=art.plants[30];delete art.plants[30];await shell.resume();art.plants[30]=saved;status.textContent='缺失展示时地图仍已打开';};
+document.querySelector<HTMLButtonElement>('#failure')!.onclick=async()=>{const renderer=shell['renderer'],show=renderer.showMap;renderer.showMap=async()=>{renderer.showMap=show;throw new Error('测试：地图加载失败');};await shell.resume();status.textContent='可重试或返回世界选择';};
+document.querySelector<HTMLButtonElement>('#audio')!.onclick=async()=>{await playAudio({play:()=>Promise.reject(new DOMException('pause interrupted play','AbortError'))} as HTMLMediaElement);status.textContent='音频中断已正常结束';};
+
+document.querySelector<HTMLButtonElement>('#animation')!.onclick=async()=>{const renderer=shell['renderer'],animate=renderer['animateIsland'];renderer['animateIsland']=()=>{renderer['animateIsland']=animate;throw new Error('测试：通关演出失败');};progress.finish('pirate','pirate2');await shell.resume();status.textContent='演出异常已退出，可重试';};

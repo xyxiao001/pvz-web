@@ -1,4 +1,4 @@
-"""Export native map progression audio, Egypt rewards and Future 1–25 rewards."""
+"""Export native map progression audio, reward plants for all currently migrated worlds."""
 import hashlib
 import importlib.util
 import json
@@ -9,7 +9,15 @@ spec = importlib.util.spec_from_file_location('shell_export', Path(__file__).wit
 e = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(e)
 plants = {}
-for plant, name in [(85,'MagnetShroom'),(109,'SunBean'),(24,'SunShroom'),(51,'PuffShroom'),(11,'FumeShroom'),(4, 'CabbagePult'), (5, 'Bloomerang'), (6, 'IcebergLettuce'), (12, 'GraveBuster'), (7, 'BonkChoy'), (8, 'Repeater'), (25, 'SunflowerTwin'), (89, 'LaserBean'), (36, 'Blover'), (88, 'Citron'), (87, 'EMPeach'), (96, 'InfiNut'), (69, 'MagnifyingGrass'), (97, 'TileTurnipEpsilon')]:
+# Include every reward plant on the worlds already opened by the migration.
+# Derive native DIS names from the pinned feature table rather than a partial hand list.
+features = {p['ID']: p for p in e.read('json/Features/PlantFeatures').objects[0]['json']['PLANTS']}
+reward_ids = set()
+for world in ['egypt', 'pirate', 'cowboy', 'future', 'dark']:
+    world_map = json.loads((c.OUT / f'shell/maps/{world}.json').read_text())
+    reward_ids.update(i['plant'] for i in world_map['islands'] if i['kind'] == 1)
+for plant in sorted(reward_ids):
+    name = features[plant]['RES']['Disabled']
     asset = e.read('plants/' + name + 'DIS')
     # AnimationController.onEnable replaces the prefab scale with CharacterScale (.42).
     asset.objects[1]['_lscale'] = [1, .42, .42, 1]

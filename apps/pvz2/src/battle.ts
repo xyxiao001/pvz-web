@@ -1,3 +1,4 @@
+import { playAudio } from './audio';
 import './style.css';
 import './cursor.css';
 import { json, assetUrl } from './assets/load';
@@ -91,11 +92,11 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   const sound = (name: string) => {
     const variants = clips.get(name)!;
     const clip = variants[Math.floor(Math.random()*variants.length)];
-    clip.volume=preferences.effects; clip.currentTime=0; if (clip.volume>0) void clip.play();
+    clip.volume=preferences.effects; clip.currentTime=0; if (clip.volume>0) void playAudio(clip);
     return clip;
   };
   $('#corral-view').onclick=()=>{corralStreet=!corralStreet;corralPreview=-1;};
-  const playMusic = () => { music.volume=preferences.music; if(music.volume>0) void music.play(); };
+  const playMusic = () => { music.volume=preferences.music; if(music.volume>0) void playAudio(music); };
 
   async function enter() {
     host.hidden=false; screen='loading'; host.dataset.screen=screen; preferences=readAudio();

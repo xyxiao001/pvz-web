@@ -1,3 +1,14 @@
+import { reportError } from './errors';
+
+export async function playAudio(clip: HTMLMediaElement, report = reportError): Promise<void> {
+  try { await clip.play(); }
+  catch (error) {
+    // pause()/source changes intentionally cancel an in-flight play request.
+    if (error instanceof Error && error.name === 'AbortError') return;
+    report(error, `音频播放失败：${clip.currentSrc || clip.src}`);
+  }
+}
+
 // PVZ2 preferences are shared by its map and battle, independent of PVZ1 saves.
 const KEY = 'pvz2-web:audio';
 export interface AudioSettings { music: number; effects: number }

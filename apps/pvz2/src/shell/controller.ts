@@ -1,3 +1,5 @@
+import { reportError } from '../errors';
+import { playAudio } from '../audio';
 import type { OuterFeatures, Feature } from '../outer/controller';
 import { Tickets } from '../outer/tickets';
 import { readAudio, saveAudio, audioControls } from '../audio';
@@ -89,12 +91,12 @@ export class WorldShell {
   }
   private clickSound(name: string) {
     if (this.audio.effects === 0 || this.busy) return;
-    const clip = this.clickSounds.get(name)!; clip.volume = this.audio.effects; clip.currentTime = 0; void clip.play();
+    const clip = this.clickSounds.get(name)!; clip.volume = this.audio.effects; clip.currentTime = 0; void playAudio(clip);
   }
   private startMusic() {
     if (this.audio.music === 0) return;
     if (!this.music.src) this.music.src = assetUrl(this.catalog.music);
-    if(!this.musicPlay)this.musicPlay=this.music.play();
+    if(!this.musicPlay)this.musicPlay=playAudio(this.music);
   }
   private async choose(index: number) {
     if (this.busy || !this.$('.map-modal').hidden) return;
@@ -128,36 +130,42 @@ export class WorldShell {
   }
   private async openWorld(world: World) {
     this.loading(true); this.closeModal(); this.host.dataset.view = 'map'; this.currentWorld = world; this.cameraLayout = NaN;
-    this.map = await json<WorldMap>(`shell/maps/${world.id}.json`); this.navigation.world = world.id;
-    this.$('.world-labels').innerHTML = '';
-    const states = islandStates(this.map,this.completed(),this.progress.rewardNodes(this.map.id),this.progress.temporaryUnlock);
-    this.$('.map-level-targets').innerHTML = this.map.islands.filter(n=>n.kind===0).map(n=>`<button class="level-target" data-level-node="${n.node}" aria-label="${world.name} 第 ${n.name} 关 · ${states.get(n.node)==='finished'?'已完成':states.get(n.node)==='open'?'可进入':'未解锁'}${n.levels.some(id=>LEVEL_ROUTES[id])?'':' · 尚未接入'}"></button>`).join('');
-    for (const button of this.host.querySelectorAll<HTMLButtonElement>('[data-level-node]')) button.onclick = () => { void this.selectLevel(this.map!.islands.find(n=>n.node===Number(button.dataset.levelNode))!); };
-    const camera = Object.hasOwn(this.navigation.cameras,world.id) ? this.navigation.cameras[world.id] : 0;
-    const pending = this.progress.pending();
-    const completed = this.completed(), rewards = this.progress.rewardNodes(world.id);
-    const events = pending?.world === world.id ? completionEvents(this.map,pending.level,completed,rewards) : [];
-    const displayed = new Set(completed); if (events.length) displayed.delete(pending!.level);
-    await this.renderer.showMap(this.map,camera,displayed,world.night,rewards,this.progression,events,this.progress.temporaryUnlock);
-    this.$('.map-caption').textContent = `${world.name} · 拖动或滚轮浏览`;
-    this.save(); this.loading(false);
-    if (events.length) {
-      this.busy = true; this.$('.world-frame').inert = true;
-      await this.renderer.presentCompletion(events, event => {
-        if (event.action === 'reward') this.progress.award(world.id,this.map!.islands.find(n=>n.node===event.node)!);
-      }, name => {
-        const paths = this.progression.sounds[name];
-        const clip = new Audio(assetUrl(paths[Math.floor(Math.random()*paths.length)]));
-        clip.volume = this.audio.effects; if (clip.volume > 0) void clip.play();
-      });
-      this.progress.finishPresentation();
-      const finalStates = islandStates(this.map,this.completed(),this.progress.rewardNodes(world.id),this.progress.temporaryUnlock);
-      for (const button of this.host.querySelectorAll<HTMLElement>('[data-level-node]')) {
-        const island = this.map.islands.find(n=>n.node===Number(button.dataset.levelNode))!;
-        const state = finalStates.get(island.node);
-        button.setAttribute('aria-label',`${world.name} 第 ${island.name} 关 · ${state==='finished'?'已完成':state==='open'?'可进入':'未解锁'}${island.levels.some(id=>LEVEL_ROUTES[id])?'':' · 尚未接入'}`);
+    try {
+      this.map = await json<WorldMap>(`shell/maps/${world.id}.json`); this.navigation.world = world.id;
+      this.$('.world-labels').innerHTML = '';
+      const states = islandStates(this.map,this.completed(),this.progress.rewardNodes(this.map.id),this.progress.temporaryUnlock);
+      this.$('.map-level-targets').innerHTML = this.map.islands.filter(n=>n.kind===0).map(n=>`<button class="level-target" data-level-node="${n.node}" aria-label="${world.name} 第 ${n.name} 关 · ${states.get(n.node)==='finished'?'已完成':states.get(n.node)==='open'?'可进入':'未解锁'}${n.levels.some(id=>LEVEL_ROUTES[id])?'':' · 尚未接入'}"></button>`).join('');
+      for (const button of this.host.querySelectorAll<HTMLButtonElement>('[data-level-node]')) button.onclick = () => { void this.selectLevel(this.map!.islands.find(n=>n.node===Number(button.dataset.levelNode))!); };
+      const camera = Object.hasOwn(this.navigation.cameras,world.id) ? this.navigation.cameras[world.id] : 0;
+      const pending = this.progress.pending();
+      const completed = this.completed(), rewards = this.progress.rewardNodes(world.id);
+      const events = pending?.world === world.id ? completionEvents(this.map,pending.level,completed,rewards) : [];
+      const displayed = new Set(completed); if (events.length) displayed.delete(pending!.level);
+      await this.renderer.showMap(this.map,camera,displayed,world.night,rewards,this.progression,events,this.progress.temporaryUnlock);
+      this.$('.map-caption').textContent = `${world.name} · 拖动或滚轮浏览`;
+      this.save(); this.loading(false);
+      if (events.length) {
+        this.busy = true; this.$('.world-frame').inert = true;
+        await this.renderer.presentCompletion(events, event => {
+          if (event.action === 'reward') this.progress.award(world.id,this.map!.islands.find(n=>n.node===event.node)!);
+        }, name => {
+          const paths = this.progression.sounds[name];
+          const clip = new Audio(assetUrl(paths[Math.floor(Math.random()*paths.length)]));
+          clip.volume = this.audio.effects; if (clip.volume > 0) void playAudio(clip);
+        });
+        this.progress.finishPresentation();
+        const finalStates = islandStates(this.map,this.completed(),this.progress.rewardNodes(world.id),this.progress.temporaryUnlock);
+        for (const button of this.host.querySelectorAll<HTMLElement>('[data-level-node]')) {
+          const island = this.map.islands.find(n=>n.node===Number(button.dataset.levelNode))!;
+          const state = finalStates.get(island.node);
+          button.setAttribute('aria-label',`${world.name} 第 ${island.name} 关 · ${state==='finished'?'已完成':state==='open'?'可进入':'未解锁'}${island.levels.some(id=>LEVEL_ROUTES[id])?'':' · 尚未接入'}`);
+        }
       }
-      this.$('.world-frame').inert = false; this.busy = false;
+    } catch (error) {
+      reportError(error, `打开地图：${world.name}`, { retry: () => this.openWorld(world), back: () => this.showChooser() });
+    } finally {
+      this.$('.world-frame').inert = false;
+      this.loading(false);
     }
   }
   private layoutTargets(camera: number, carousel: number) {
