@@ -1,3 +1,4 @@
+import {FutureFinalPlants} from './future-final-plants';
 import {FutureBoss} from './future-boss';
 import {BOARD,cellX,rowY,type PlantKind} from './level';
 import type {Game,Plant,Zombie,Sun} from './model';
@@ -53,11 +54,12 @@ export class FutureBattle {
   private lasers=new Map<number,{hits:Set<number>;lastX:number;nextDirt:number}>();
   private blows=new Map<number,number>();
   private bombs:{x:number;y:number;at:number;hit:boolean}[]=[];
-  constructor(g:Game){this.#game=g;}
-  handles(kind:PlantKind){return ['pinkstarfruit','redstinger','starfruit','holonut','laser_bean','blover','citron','empea','powerplant','powerplant_alpha','powerplant_beta'].includes(kind);}
+  readonly finale:FutureFinalPlants;
+  constructor(g:Game){this.#game=g;this.finale=new FutureFinalPlants(g);}
+  handles(kind:PlantKind){return this.finale.handles(kind)||['pinkstarfruit','redstinger','starfruit','holonut','laser_bean','blover','citron','empea','powerplant','powerplant_alpha','powerplant_beta'].includes(kind);}
   private play(p:Plant,animation:string,action:Plant['action']='idle'){p.animation=animation;p.action=action;p.actionAt=this.#game.time;p.eventIndex=0;}
-  init(p:Plant){if(p.kind==='redstinger'){this.redStates.set(p.id,{rate:1,rayUntil:0});this.play(p,this.redIdle(p));return;}if(p.kind==='starfruit'||p.kind==='pinkstarfruit'){p.nextAction=0;this.play(p,'Idle');return;}if(p.kind==='holonut'){this.holonuts.set(p.id,{health:p.hp,faded:false,recover:Infinity,shield:0,shieldAt:0,column:p.column});this.play(p,'Appear','grow');this.sounds.push('holonut/appearSounds');return;}if(p.kind==='powerplant'||p.kind==='powerplant_alpha'||p.kind==='powerplant_beta'){this.play(p,'Dig','explode');this.sounds.push(p.kind+'/digSounds');return;}if(p.kind==='citron'){this.charge(p);return;}if(p.kind==='empea'){this.play(p,'Attack','explode');return;}this.play(p,p.kind==='blover'?'BlowStart':'Idle',p.kind==='blover'?'shoot':'idle');if(p.kind==='blover')this.sounds.push('blover/windSound');}
-  food(p:Plant){if(p.kind==='redstinger'){p.hp=this.#game.props.plants.redstinger.Toughness;this.redStates.get(p.id)!.rate=1;this.play(p,'FoodStart','food');return;}if(p.kind==='starfruit'||p.kind==='pinkstarfruit'){this.play(p,'FoodStart','food');return;}if(p.kind==='holonut'){this.recoverNut(p);this.play(p,'Food','food');return;}if(p.kind==='citron'){this.play(p,'Food','food');this.visual('citronLightning','Play',cellX(p.column),rowY(p.row));this.sounds.push('citron/foodSounds');return;}this.play(p,'FoodStart','food');this.lasers.set(p.id,{hits:new Set(),lastX:cellX(p.column),nextDirt:cellX(p.column)});this.sounds.push('laser_bean/foodSound');}
+  init(p:Plant){if(this.finale.handles(p.kind)){this.finale.init(p);return;}if(p.kind==='redstinger'){this.redStates.set(p.id,{rate:1,rayUntil:0});this.play(p,this.redIdle(p));return;}if(p.kind==='starfruit'||p.kind==='pinkstarfruit'){p.nextAction=0;this.play(p,'Idle');return;}if(p.kind==='holonut'){this.holonuts.set(p.id,{health:p.hp,faded:false,recover:Infinity,shield:0,shieldAt:0,column:p.column});this.play(p,'Appear','grow');this.sounds.push('holonut/appearSounds');return;}if(p.kind==='powerplant'||p.kind==='powerplant_alpha'||p.kind==='powerplant_beta'){this.play(p,'Dig','explode');this.sounds.push(p.kind+'/digSounds');return;}if(p.kind==='citron'){this.charge(p);return;}if(p.kind==='empea'){this.play(p,'Attack','explode');return;}this.play(p,p.kind==='blover'?'BlowStart':'Idle',p.kind==='blover'?'shoot':'idle');if(p.kind==='blover')this.sounds.push('blover/windSound');}
+  food(p:Plant){if(this.finale.handles(p.kind)){this.finale.food(p);return;}if(p.kind==='redstinger'){p.hp=this.#game.props.plants.redstinger.Toughness;this.redStates.get(p.id)!.rate=1;this.play(p,'FoodStart','food');return;}if(p.kind==='starfruit'||p.kind==='pinkstarfruit'){this.play(p,'FoodStart','food');return;}if(p.kind==='holonut'){this.recoverNut(p);this.play(p,'Food','food');return;}if(p.kind==='citron'){this.play(p,'Food','food');this.visual('citronLightning','Play',cellX(p.column),rowY(p.row));this.sounds.push('citron/foodSounds');return;}this.play(p,'FoodStart','food');this.lasers.set(p.id,{hits:new Set(),lastX:cellX(p.column),nextDirt:cellX(p.column)});this.sounds.push('laser_bean/foodSound');}
   link(p:Plant){
     const g=this.#game,t=g.level.powerTiles.find(t=>t.row===p.row&&t.column===p.column);if(!t)return;
     if(g.boss instanceof FutureBoss)g.boss.interruptTile(p.row,p.column);
@@ -65,7 +67,7 @@ export class FutureBattle {
   }
   visual(name:string,animation:string,x:number,y:number){const g=this.#game;this.visuals.push({id:++this.serial,name,animation,x,y,at:g.time,duration:g.props.plantAnimations[name][animation].duration});}
   tickPlant(p:Plant,dt:number){
-    const g=this.#game,props=g.props.plants[p.kind];p.age+=dt;if(p.kind==='redstinger'){if(p.hp>0)this.tickRed(p,dt);return;}if(p.kind==='starfruit'||p.kind==='pinkstarfruit'){this.tickStar(p);return;}if(p.kind==='holonut'){if(p.hp>0)this.tickNut(p);return;}
+    const g=this.#game,props=g.props.plants[p.kind];p.age+=dt;if(this.finale.handles(p.kind)){if(p.hp>0)this.finale.tickPlant(p,dt);return;}if(p.kind==='redstinger'){if(p.hp>0)this.tickRed(p,dt);return;}if(p.kind==='starfruit'||p.kind==='pinkstarfruit'){this.tickStar(p);return;}if(p.kind==='holonut'){if(p.hp>0)this.tickNut(p);return;}
     if(p.kind==='citron'||p.kind==='empea'||p.kind==='powerplant'||p.kind==='powerplant_alpha'||p.kind==='powerplant_beta'){this.tickNewPlant(p);return;}
     if(p.kind==='laser_bean'&&p.action==='idle'&&g.time>=p.nextAction&&g.zombies.some(z=>z.hp>0&&g.inLane(z,p.row)&&z.x>cellX(p.column)-20)){
       this.play(p,'Shoot','shoot');p.nextAction=g.time+props.ShootInterval+g.random()*props.ShootIntervalAdditional;this.sounds.push('laser_bean/shootSound');this.visual('laserBeam','Play',cellX(p.column),rowY(p.row)-50);
@@ -222,7 +224,7 @@ export class FutureBattle {
   }
   private animateIf(z:Zombie,animation:string){if(z.future!.animation!==animation)this.animate(z,animation);}
 
-  rate(p:Plant){return p.kind==='redstinger'?this.redStates.get(p.id)!.rate:p.kind==='citron'?(p.animation==='Food'?.7:p.animation==='Ready'?1:9.5/this.#game.props.plants.citron.ChargeTime):1;}
+  rate(p:Plant){return this.finale.handles(p.kind)?this.finale.rate(p):p.kind==='redstinger'?this.redStates.get(p.id)!.rate:p.kind==='citron'?(p.animation==='Food'?.7:p.animation==='Ready'?1:9.5/this.#game.props.plants.citron.ChargeTime):1;}
   private charge(p:Plant){this.play(p,'Charge','shoot');this.sounds.push('citron/chargeSounds');}
   private tickNewPlant(p:Plant){
     const g=this.#game;
@@ -324,6 +326,7 @@ export class FutureBattle {
   endRay(sun:Sun){this.visual('sunbombRay','Die',sun.x,sun.y);}
   defuse(sun:Sun){sun.bomb=false;sun.defusedAt=this.#game.time;this.endRay(sun);this.sounds.push('sunbomb/defuseSound');}
   tick(dt:number){
+    this.finale.tick(dt);
     for(const id of this.redStates.keys())if(!this.#game.plants.some(p=>p.id===id&&p.hp>0))this.redStates.delete(id);
     const g=this.#game;
     this.tickShots(dt);this.tickStars(dt);

@@ -10,7 +10,7 @@ export class FutureBoss extends EgyptBoss {
     for(let i=items.length-1;i>0;i--){const j=Math.floor(this.game.random()*(i+1));[items[i],items[j]]=[items[j],items[i]];}return items;
   }
   protected override aim(){
-    const g=this.game,settings=targeting.stages[this.stage];this.targets=[];this.shootAnimation='Shoot';
+    const g=this.game,settings=(g.props.zombies[this.zombie.kind].ZombossMechLevel===1?targeting.stages2:targeting.stages)[this.stage];this.targets=[];this.shootAnimation='Shoot';
     if(g.random()<=settings.shootRailWeight/(settings.shootRailWeight+settings.shootPlantWeight)){
       const groups:Level['powerTiles'][number]['group'][]=['alpha','beta','gamma','delta','epsilon'];
       let largest:Level['powerTiles']=[];

@@ -21,5 +21,5 @@ Object.assign(props,{plants:{...props.plants,...west.plants},zombies:{...props.z
 const future=read<Properties>('future/properties.json');
 Object.assign(props,{plants:{...props.plants,...future.plants},zombies:{...props.zombies,...future.zombies},armors:{...props.armors,...future.armors},projectiles:{...props.projectiles,...future.projectiles},plantAnimations:{...props.plantAnimations,...future.plantAnimations}});
 export const level=(day:number)=>readLevel(read<SourceLevel>(`future/future${day}.source.json`));
-export const create=(day:number)=>new Game(level(day),props,timing,z=>({x:z.x-25,y:rowY(z.row)-95}),1234);
+export const create=(day:number,seed=1234)=>new Game(level(day),props,timing,z=>({x:z.x-25,y:rowY(z.row)-95}),seed);
 export const tick=(g:Game,n:number)=>{for(let i=0;i<Math.round(n*60);i++)g.tick(1/60);};

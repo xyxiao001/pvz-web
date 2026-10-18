@@ -218,3 +218,37 @@ function playFutureSapProtection(g:Game){
  if(g.sun>=250)for(const c of [2,4,6])for(const r of rows)if(!occupied(r,c))g.plant('electricpeashooter',r,c);
  if(g.food>0){const p=g.time<130?g.plants.find(p=>p.kind==='sunflower'&&p.action!=='food'):g.plants.find(p=>p.kind==='electricpeashooter'&&p.action!=='food'&&threats.some(z=>z.row===p.row&&z.x<cellX(6)));if(p)g.plantFood(p.row,p.column);}
 }
+
+export function playFutureSeventh(g:Game,frame:number){
+ for(const s of [...g.suns])if(!s.bomb)g.collect(s.id);
+ for(const p of [...g.pickups])g.collectPickup(p.id);
+ if(frame%12)return;
+ const threats=g.zombies.filter(z=>z.hp>0&&z!==g.boss?.zombie&&z.kind!=='future_protector_shield').sort((a,b)=>a.x-b.x),occupied=(r:number,c:number)=>g.plants.some(p=>p.hp>0&&p.row===r&&p.column===c),rows=[...new Set([...threats.map(z=>z.row),0,1,2,3,4])];
+ const flying=threats.some(z=>['future_jetpack','future_jetpack_veteran','future_jetpack_disco'].includes(z.kind)||z.kind==='future_imp'&&z.future?.animation==='Fall');
+ if(g.level.conveyor){
+  for(const packet of [...g.conveyor]){
+   if(packet.kind==='powerplant_alpha'||packet.kind==='powerplant_beta'){for(const p of g.plants.filter(p=>['electricblueberry','citron','applemortar'].includes(p.kind)).sort((a,b)=>Number(b.kind==='electricblueberry')-Number(a.kind==='electricblueberry')))if(g.plant(packet.kind,p.row,p.column,packet.id))break;continue;}
+   if(packet.kind==='blover'){if(flying)g.plant('blover',4,6,packet.id);continue;}
+   if(packet.kind==='empea'){const z=threats.find(z=>['future_gargantuar','football_mech','mech_cone','disco_mech'].includes(z.kind)&&z.x<cellX(6));if(z)for(const c of [5,4,6])if(g.plant('empea',z.row,c,packet.id))break;continue;}
+   const cols=packet.kind==='holonut'?[4,5,3]:packet.kind==='wasabiwhip'?[3,4,2,5]:packet.kind==='applemortar'?[1,2,0]:packet.kind==='citron'?[1,2,0,3]:packet.kind==='electricblueberry'?[0,1,2]:[3,2,0,1,5];
+   let placed=false;for(const c of cols){for(const r of (packet.kind==='citron'&&g.boss?[...new Set([...threats.map(z=>z.row),g.boss.zombie.row,g.boss.zombie.row-1,0,1,2,3,4])]:rows))if(!occupied(r,c)&&g.plant(packet.kind,r,c,packet.id)){placed=true;break;}if(placed)break;}
+  }
+  if(g.food>0&&g.boss){const t=g.boss.targets.find(t=>g.level.powerTiles.some(q=>q.row===t.row&&q.column===t.column)&&g.plants.some(p=>p.row===t.row&&p.column===t.column&&p.action!=='food'));if(t)g.plantFood(t.row,t.column);}
+ }else{
+  if(threats.some(z=>z.kind==='future_imp'&&z.future?.animation==='Fall'||['future_jetpack','future_jetpack_veteran','future_jetpack_disco'].includes(z.kind)&&z.x<cellX(4)))for(const r of [4,3,2,1,0])for(const c of [8,7,6,5,4,3,2,1,0])if(g.plant('blover',r,c))break;
+  const attack=g.level.day===33?'snapdragon':'electricpeashooter';
+  if(g.level.day===33&&g.food>0&&threats.some(z=>z.x<cellX(7)&&!occupied(z.row,6))){const p=g.plants.find(p=>p.kind==='iceburg'&&p.action!=='food');if(p)g.plantFood(p.row,p.column);}
+  if(g.level.day===33){
+   for(const z of threats)if(z.x<cellX(8)){if(!occupied(z.row,6))g.plant('wallnut',z.row,6);if(z.x<cellX(8))g.plant('iceburg',z.row,7);if(z.x<cellX(7)&&!occupied(z.row,6))g.plant('cherry_bomb',z.row,7);}
+  }
+  for(const r of rows)if(threats.some(z=>z.row===r)&&!g.plants.some(p=>p.kind===attack&&p.row===r))for(const c of (g.level.day===33?[5,4,3,2]:[1,0,2,3,4,5]))if(!occupied(r,c)&&g.plant(attack,r,c))break;
+  if(g.level.day!==34)for(const c of [0,1])for(const r of rows)if(!occupied(r,c))g.plant('sunflower',r,c);
+  for(const c of (g.level.day===33?[5,4,3,2]:[1,2,3,4,5]))for(const r of rows)if(!occupied(r,c))g.plant(attack,r,c);
+  if(g.level.day===34&&g.food>0&&!occupied(2,5))g.plant('holonut',2,5);
+  if(g.level.day!==33)for(const z of threats){if(z.x<cellX(7))for(const c of [8,7,6,5,4,3,2,1,0])if(g.plant('hurrikale',z.row,c))break;if(z.x<cellX(5))for(const c of [Math.min(8,Math.floor((z.x-190)/82)),3,5,1])if(g.plant('cherry_bomb',z.row,c))break;}
+
+ }
+ if(g.level.day===32&&g.food>0&&g.time<100){const p=g.plants.find(p=>p.kind==='sunflower'&&p.action!=='food');if(p)g.plantFood(p.row,p.column);}
+ if(g.level.day!==35&&g.food>0&&threats.some(z=>z.x<cellX(7))){const p=g.plants.find(p=>p.kind==='holonut'&&p.action!=='food'&&!g.future.holonuts.get(p.id)?.shield);if(p)g.plantFood(p.row,p.column);}
+ for(const z of threats)if(g.food>0&&(z.x<cellX(4)||threats.length>=8||z.kind==='future_gargantuar')){const p=g.plants.filter(p=>['citron','applemortar','electricblueberry','electricpeashooter','lightningreed','laser_bean','snapdragon','wasabiwhip'].includes(p.kind)&&p.action!=='food'&&(p.row===z.row||p.kind==='applemortar'||p.kind==='electricblueberry')).sort((a,b)=>Number(g.level.powerTiles.some(t=>t.row===b.row&&t.column===b.column))-Number(g.level.powerTiles.some(t=>t.row===a.row&&t.column===a.column)))[0];if(p)g.plantFood(p.row,p.column);}
+}
