@@ -1,8 +1,10 @@
 import { playAudio } from './audio';
 import './style.css';
+import './audio-controls.css';
+import { plantReward } from './plant-reward';
 import './cursor.css';
 import { json, assetUrl } from './assets/load';
-import { readAudio, saveAudio, audioControls } from './audio';
+import { readAudio, saveAudio, audioControls, updateVolumeControl } from './audio';
 import { BOARD, rowY, plantLabels, readLevel, type PlantKind, type Properties, type SourceLevel, type ZombieProperties } from './game/level';
 import { Game, type PowerKind } from './game/model';
 import type { ProgressStore } from './shell/progression';
@@ -345,7 +347,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   }
   function bindAudio() {
     for(const input of host.querySelectorAll<HTMLInputElement>('[data-volume]'))input.oninput=()=>{
-      preferences[input.dataset.volume as 'music'|'effects']=Number(input.value);saveAudio(preferences);
+      preferences[input.dataset.volume as 'music'|'effects']=Number(input.value);saveAudio(preferences);updateVolumeControl(input);
     };
   }
   function pause() {
@@ -362,7 +364,8 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       const reward=levelConfig.firstReward;
       const rewardImage=first?(reward.plant?cards.get(reward.plant)!:reward.animation?scene.art.image(scene.app,'reward',reward.animation,reward.armature):reward.image.startsWith('note_')?assetUrl(scene.art.catalog.ui[`note-${levelConfig.world}`].image):scene.art.image(scene.app,'reward',levelConfig.day===4?'powerups':[6,11,15,22,27,30,34].includes(levelConfig.day)?'Pinata':(levelConfig.day===25?'egypt':[23,31].includes(levelConfig.day)?'dangerroom_egypt':reward.image),[6,11,15,22,27,30,34].includes(levelConfig.day)?'Upgrades':[17,21].includes(levelConfig.day)?'Upgrades':[10,14,16,18,20].includes(levelConfig.day)?'CoinBag':undefined)):'';
       const sprouts=game.sprouts+game.pickups.filter(p=>p.kind==='sprout').length;
-      panel('关卡完成',`${first?`<img class="map-reward" src="${rewardImage}" alt="${levelConfig.firstReward.label}"><p>获得${levelConfig.firstReward.label}</p>`:`<p>${title}</p>`}${sprouts>0?`<p>植物幼苗 × ${sprouts}</p>`:''}<button id="result-map" class="battle-button">继续</button>`);
+      panel(first&&reward.plant?'获得新植物':'关卡完成',`${first&&reward.plant?plantReward(rewardImage,reward.label,DESCRIPTIONS[reward.plant]):first?`<img class="map-reward" src="${rewardImage}" alt="${levelConfig.firstReward.label}"><p>获得${levelConfig.firstReward.label}</p>`:`<p>${title}</p>`}${sprouts>0?`<p>植物幼苗 × ${sprouts}</p>`:''}<button id="result-map" class="battle-button">继续</button>`);
+      if(first&&reward.plant){$('.battle-window').classList.add('plant-reward-window');$('#result-map').textContent='领取并继续';}
       $('#result-map').onclick=()=>{progress.finish(levelConfig.world,levelConfig.id,sprouts);menu();};
     } else {
       panel(game.lossReason==='plantsLost'?'损失的植物超过了关卡限制！':game.lossReason==='killChallenge'?'未完成限时击杀目标':game.lossReason==='sunProduced'?'未完成阳光生产目标':game.lossReason==='score'?'未达到目标分数':game.lossReason==='flowers'?'僵尸踩到了花坛！':game.lossReason==='plants'?'植物数量超过了关卡限制！':game.lossReason==='sun'?'消耗的阳光超过了关卡限制！':game.lossReason==='protected'?'需要保护的植物被吃掉了！':'僵尸吃掉了你的脑子！','<button id="again" class="battle-button">重新开始</button><button id="result-map" class="battle-button">返回地图</button>');

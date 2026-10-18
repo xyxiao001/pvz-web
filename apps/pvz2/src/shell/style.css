@@ -27,3 +27,20 @@
 
 .ticket-target{position:absolute;transform:translate(-50%,-50%);background:none;border:0;color:transparent;}
 [data-view="chooser"] .ticket-target{display:none}
+
+@scope (.world-shell) {
+.settings-window{width:52%;min-height:0;padding:1.1cqw 2.4cqw 1.4cqw}
+.settings-window h2{margin:0 0 1.8cqw;font-size:3cqw}
+.settings-window .settings-section{padding:1.2cqw 1.8cqw;margin-bottom:1.2cqw;border:.12cqw solid #7a4e2b;border-radius:1cqw;background:#ffe7ad30;box-shadow:inset 0 .12cqw #ffe1a44d;text-align:left}
+.settings-window .settings-section h3{margin:0 0 .4cqw;font:1.1cqw/1.4 "PingFang SC",sans-serif;color:#5a3924;letter-spacing:.15cqw}
+.settings-window .free-play-option{position:relative;display:flex;align-items:center;gap:1.5cqw;cursor:pointer;padding:.7cqw 0}
+.free-play-copy{flex:1;min-width:0}.free-play-copy strong{display:block;font-size:1.9cqw;font-weight:400;line-height:1.5}.free-play-copy small{display:block;margin-top:.4cqw;font:1.1cqw/1.65 "PingFang SC",sans-serif;color:#553b27}
+.free-play-option input{position:absolute;right:0;width:4.8cqw;height:3cqw;opacity:0;margin:0;cursor:pointer}
+.free-play-switch{width:4.8cqw;height:2.7cqw;flex-shrink:0;border:.18cqw solid #684427;border-radius:2cqw;background:#705035;box-shadow:inset 0 .15cqw .3cqw #0004;pointer-events:none}
+.free-play-switch::after{content:"";display:block;width:1.9cqw;height:1.9cqw;margin:.22cqw;border-radius:50%;background:#ffeab7;box-shadow:0 .12cqw .2cqw #0005;transition:transform .15s}
+.free-play-option input:checked+.free-play-switch{background:#86ae2d}.free-play-option input:checked+.free-play-switch::after{transform:translateX(2.05cqw);background:#fff8da}.free-play-option input:focus-visible+.free-play-switch{outline:.2cqw solid #fff3ac;outline-offset:.3cqw}
+.settings-window .settings-note{margin:.5cqw 0 0;font:1.05cqw/1.5 "PingFang SC",sans-serif;color:#60422a}
+.settings-window .settings-saved{margin:1.4cqw 0 1.2cqw;font:1.1cqw/1.5 "PingFang SC",sans-serif;color:#523a29}
+.settings-window .native-button{width:73%;margin:0 auto}.settings-window .switch-version{margin-top:1.3cqw;font-size:1.05cqw;opacity:.8}
+@media(prefers-reduced-motion:reduce){.free-play-switch::after{transition:none}}
+}

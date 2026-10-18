@@ -70,4 +70,15 @@ button{font:inherit;cursor:pointer;border:0;padding:0;background:transparent;col
 
 .seed.food-refresh { outline: 3px solid #8c9dff; outline-offset: -3px; }
 
-.volume-option input[type=checkbox]{width:1.8cqw;height:1.8cqw}.native-window .test-unlock-hint{font-size:1.25cqw;line-height:1.6;margin:0 auto 1cqw;max-width:42cqw}
+
+@scope (.battle-app) {
+.battle-window.plant-reward-window{width:48%;padding:.8cqw 2.4cqw 1.4cqw}
+.plant-reward-window h2{margin:0;font-size:2.6cqw;color:#fff4ba;text-shadow:0 .18cqw #664322}
+.plant-reward-art{position:relative;display:flex;align-items:center;justify-content:center;height:18cqw;margin:.8cqw auto 0;background:radial-gradient(ellipse,#fffbc799 0%,#fbd8794d 40%,transparent 70%)}
+.plant-reward-art img{position:relative;width:23cqw;height:auto;aspect-ratio:238/150;object-fit:contain;filter:drop-shadow(0 .6cqw .5cqw #4f2c2466);animation:reward-arrive .35s ease-out both}
+.plant-reward h3{font-size:3cqw;line-height:1.2;font-weight:400;margin:0 0 1cqw;color:#3e2a19}
+.plant-reward .plant-reward-description{font:1.35cqw/1.7 "PingFang SC",sans-serif;max-width:31cqw;margin:0 auto 1.6cqw;color:#513522}
+.plant-reward-window .battle-button{width:70%;margin:0 auto;font-size:1.8cqw;color:#fff8db}
+@keyframes reward-arrive{from{opacity:0;transform:translateY(1cqw) scale(.94)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.plant-reward-art img{animation:none}}
+}

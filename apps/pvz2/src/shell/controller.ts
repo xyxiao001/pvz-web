@@ -1,8 +1,9 @@
+import '../audio-controls.css';
 import { reportError } from '../errors';
 import { playAudio } from '../audio';
 import type { OuterFeatures, Feature } from '../outer/controller';
 import { Tickets } from '../outer/tickets';
-import { readAudio, saveAudio, audioControls } from '../audio';
+import { readAudio, saveAudio, audioControls, updateVolumeControl } from '../audio';
 import { assetUrl, json } from '../assets/load';
 import { NAVIGATION_KEY, LEVEL_ROUTES, initialNavigation, islandStates, type Navigation } from './navigation';
 import { ProgressStore, completionEvents } from './progression';
@@ -269,14 +270,15 @@ export class WorldShell {
   }
   private closeModal() { delete this.host.dataset.store; this.renderer.setStoreOpen(false); this.$('.map-modal').hidden=true; this.$('.map-modal').innerHTML=''; }
   private settings() {
-    this.modal('设置',`${audioControls(this.audio)}<label class="volume-option"><input data-test-unlock type="checkbox" ${this.progress.temporaryUnlock?'checked':''}>临时解锁全部关卡</label><p class="test-unlock-hint">仅本次页面有效，刷新后关闭。可直接进入已接入关卡，通关仍正常保存。</p><button class="native-button close-dialog">返回游戏</button><a class="switch-version" href="/">植物大战僵尸 1</a>`);
+    this.modal('设置',`<div class="settings-section"><h3>声音</h3>${audioControls(this.audio)}</div><div class="settings-section"><h3>游玩方式</h3><label class="free-play-option"><span class="free-play-copy"><strong>自由选关</strong><small>解锁世界与关卡入口，通关进度照常保存。</small></span><input data-test-unlock type="checkbox" role="switch" aria-label="自由选关" ${this.progress.temporaryUnlock?'checked':''}><span class="free-play-switch" aria-hidden="true"></span></label><p class="settings-note">${this.progress.temporaryUnlock?'已开启 · 关闭后恢复按进度解锁':'未开启 · 按通关进度解锁'}</p></div><p class="settings-saved">设置自动保存到本机，刷新后仍有效</p><button class="native-button close-dialog">返回游戏</button><a class="switch-version" href="/">植物大战僵尸 1</a>`);
+    this.$('.native-window').classList.add('settings-window');
     this.$<HTMLInputElement>('[data-test-unlock]').onchange=async event=>{
       this.progress.temporaryUnlock=(event.target as HTMLInputElement).checked;
       if(this.map)await this.openWorld(this.currentWorld);else await this.showChooser();
       this.settings();
     };
     for (const input of this.host.querySelectorAll<HTMLInputElement>('[data-volume]')) input.oninput=()=>{
-      this.audio[input.dataset.volume as 'music'|'effects']=Number(input.value);saveAudio(this.audio);
+      this.audio[input.dataset.volume as 'music'|'effects']=Number(input.value);saveAudio(this.audio);updateVolumeControl(input);
       this.music.volume=this.audio.music;if(this.audio.music>0)this.startMusic();
     };
   }

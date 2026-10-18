@@ -6,10 +6,15 @@ import type { Island, WorldMap } from './types';
 const completionKey = (level: string) => `pvz2-web:${level}-complete`;
 const REWARDS_KEY = 'pvz2-web:map-rewards';
 const PENDING_KEY = 'pvz2-web:pending-map-completion';
+const FREE_PLAY_KEY = 'pvz2-web:free-play';
 export interface MapReward { world: string; node: number; kind: 'plant' | 'upgrade'; id: number }
 export interface PendingCompletion { world: string; level: string }
 export class ProgressStore {
-  temporaryUnlock = false;
+  get temporaryUnlock() { return this.storage.getItem(FREE_PLAY_KEY) === '1'; }
+  set temporaryUnlock(enabled: boolean) {
+    if (enabled) this.storage.setItem(FREE_PLAY_KEY, '1');
+    else this.storage.removeItem(FREE_PLAY_KEY);
+  }
   constructor(private storage: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>) {}
   isComplete(level: string) { return this.storage.getItem(completionKey(level)) === '1'; }
   completed(map: WorldMap) { return new Set(map.islands.flatMap(n => n.levels).filter(id => this.isComplete(id))); }

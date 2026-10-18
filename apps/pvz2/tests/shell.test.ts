@@ -74,14 +74,15 @@ test('portal light armatures are resolved without global atlas overrides', () =>
   assert.ok(names.has('ray_green'));assert.ok(names.has('ray_blue'));
 });
 
-test('Temporary level unlock opens maps without granting completion, rewards or persistent world keys',()=>{
+test('Saved free play opens maps across reloads without granting completion, rewards or world keys',()=>{
  const data=new Map<string,string>(),storage={getItem:(k:string)=>data.get(k)??null,setItem:(k:string,v:string)=>{data.set(k,v);},removeItem:(k:string)=>{data.delete(k);}},store=new ProgressStore(storage);
  const dark=maps.find(m=>m.id==='dark')!,first=dark.islands.find(n=>n.levels.includes('dark1'))!,tenth=dark.islands.find(n=>n.levels.includes('dark10'))!;
  assert.equal(store.worldUnlocked('dark'),false);assert.equal(islandStates(dark,new Set()).get(first.node),'open');assert.equal(islandStates(dark,new Set()).get(tenth.node),'locked');
  const before=[...data];store.temporaryUnlock=true;
  assert.ok(maps.every(m=>store.worldUnlocked(m.id)));for(const map of maps){const states=islandStates(map,store.completed(map),store.rewardNodes(map.id),store.temporaryUnlock);assert.ok(map.islands.filter(n=>n.kind===0).every(n=>states.get(n.node)==='open'));}
- assert.deepEqual([...data],before);assert.equal(store.isComplete('dark10'),false);assert.deepEqual(store.rewards(),[]);assert.equal(store.worldKeys(),0);
+ assert.equal(data.get('pvz2-web:free-play'),'1');assert.deepEqual([...data].filter(([k])=>k!=='pvz2-web:free-play'),before);assert.equal(store.isComplete('dark10'),false);assert.deepEqual(store.rewards(),[]);assert.equal(store.worldKeys(),0);
  store.temporaryUnlock=false;assert.equal(store.worldUnlocked('dark'),false);assert.equal(islandStates(dark,new Set(),new Set(),store.temporaryUnlock).get(tenth.node),'locked');
- store.temporaryUnlock=true;assert.equal(new ProgressStore(storage).temporaryUnlock,false);
+ assert.equal(new ProgressStore(storage).temporaryUnlock,false);assert.deepEqual([...data],before);
+ store.temporaryUnlock=true;assert.equal(new ProgressStore(storage).temporaryUnlock,true);
  store.finish('dark','dark10');assert.equal(store.isComplete('dark10'),true);assert.equal(islandStates(dark,store.completed(dark),new Set(),true).get(tenth.node),'finished');
 });
