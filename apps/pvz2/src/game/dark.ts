@@ -1,14 +1,36 @@
 import {BOARD,cellX,rowY,type ZombieKind} from './level';
 import type {Game,Plant,Zombie} from './model';
+import potionProperties from '../../public/assets/dark/potions.json';
 import graveProperties from '../../public/assets/dark/graves.json';
 import projectileRules from '../../public/assets/dark/jester-projectiles.json';
-export const darkArmor=(kind:ZombieKind)=>kind==='dark_armor1'?'dark_armor1':kind==='dark_armor2'?'dark_armor2':null;
+export const darkArmor=(kind:ZombieKind)=>kind==='dark_armor3'?'dark_armor3':kind==='dark_armor1'?'dark_armor1':kind==='dark_armor2'?'dark_armor2':null;
 export const graveArt=(kind?:string)=>kind==='gravestoneSunOnDestruction'?'graveSun':kind==='gravestonePlantfoodOnDestruction'?'graveFood':'grave';
+export interface Potion {id:number;kind:'zombiepotion_speed'|'zombiepotion_toughness';row:number;column:number;animation:'Spawn'|'Idle'|'Consume'|'Splat';at:number;dropped:boolean}
+export interface DarkZombie {speed:number;toughness:number;scaleFrom:number;scaleAt:number;bean:boolean;health:number;sun:number;blastAt:number}
 interface Jester {animation:string;at:number;until:number}
 interface Reflected {id:number;owner:Zombie;name:string;armature?:string;x:number;y:number;fromX:number;fromY:number;at:number;damage:number;released:boolean;friendly:boolean}
 export class DarkBattle {
   readonly #game:Game;
   private serial=0;
+  potions:Potion[]=[];
+  private nextPotion=Infinity;
+  beanFood=new Set<number>();
+  zombie(z:Zombie){return z.dark??= {speed:0,toughness:0,scaleFrom:1,scaleAt:this.#game.time,bean:false,health:z.hp+z.armor,sun:0,blastAt:Infinity};}
+  scale(z:Zombie){if(!z.dark)return 1;const s=z.dark;return s.scaleFrom+(Math.pow(1.1,s.speed+s.toughness)-s.scaleFrom)*Math.min(1,(this.#game.time-s.scaleAt)/.2);}
+  private shuffle<T>(values:T[]){for(let i=values.length-1;i>0;i--){const j=Math.floor(this.#game.random()*(i+1));[values[i],values[j]]=[values[j],values[i]];}return values;}
+  private occupied(row:number,column:number){const g=this.#game;return g.plants.some(p=>p.hp>0&&p.row===row&&p.column===column)||g.graves.some(p=>p.hp>0&&p.row===row&&p.column===column)||this.blocks(row,column);}
+  blocks(row:number,column:number){return this.potions.some(p=>p.row===row&&p.column===column&&(p.animation==='Spawn'||p.animation==='Idle'));}
+  private resetPotionTimer(){const g=this.#game,t=g.level.potions!.PotionSpawnTimer;this.nextPotion=g.time+t.Min+g.random()*(t.Max-t.Min);}
+  private spawnPotion(row:number,column:number){const g=this.#game,types=g.level.potions!.PotionTypes,kind=types[Math.floor(g.random()*types.length)];if(this.occupied(row,column))return false;this.potions.push({id:++this.serial,kind,row,column,animation:'Spawn',at:g.time,dropped:false});return true;}
+  initLevel(){const p=this.#game.level.potions;if(!p)return;this.resetPotionTimer();const cells:{row:number;column:number}[]=[];for(let r=0;r<Math.ceil(p.MaxPotionCount/5)+1&&r<9;r++)for(let row=0;row<5;row++)for(let weight=0;weight<10-r;weight++)cells.push({row,column:9-r});let count=p.InitialPotionCount;for(const cell of this.shuffle(cells)){if(count===0)break;if(this.spawnPotion(cell.row,cell.column))count--;}}
+  eatPotion(z:Zombie){const g=this.#game;const p=this.potions.find(p=>p.dropped&&(p.animation==='Idle'||p.animation==='Spawn')&&p.row===z.row&&Math.abs(z.x-cellX(p.column)-8)<30&&(p.kind==='zombiepotion_speed'?(z.dark?.speed??0):(z.dark?.toughness??0))<potionProperties[p.kind].MaxEnchantLevel);if(!p)return false;const s=this.zombie(z);s.scaleFrom=this.scale(z);s.scaleAt=g.time;if(p.kind==='zombiepotion_speed')s.speed++;else s.toughness++;p.animation='Consume';p.at=g.time;this.sounds.push((p.kind==='zombiepotion_speed'?'potionSpeed':'potionToughness')+'/consume');z.eating=true;return true;}
+  eaten(p:Plant,z:Zombie){if(p.kind!=='sunbean')return;const s=this.zombie(z);s.bean=true;s.health=z.hp+z.armor;if(this.beanFood.has(p.id)){s.blastAt=this.#game.time+1;z.stunnedUntil=s.blastAt;this.visual('sunbeanBlast',z.x,rowY(z.row)-80);this.sounds.push('sunbean/burn','sunbean/burnStart');}else this.sounds.push('sunbean/buff','sunbean/buffMusic');}
+  tickBean(p:Plant,dt:number){p.age+=dt;if(p.action==='food'){const g=this.#game,t=g.props.plantAnimations.sunbean.Food;if(g.time-p.actionAt>=t.events.find(e=>e.name==='foodEnd')!.at){this.play(p,'FoodLoop');this.sounds.push('sunbean/foodEnd');}}}
+  private tickPotions(){const g=this.#game;for(const p of this.potions){const name=p.kind==='zombiepotion_speed'?'potionSpeed':'potionToughness',t=g.props.plantAnimations[name][p.animation];if(p.animation==='Spawn'&&!p.dropped&&g.time-p.at>=t.events.find(e=>e.name==='drop')!.at){p.dropped=true;this.sounds.push(name+'/drop');}if(p.animation==='Spawn'&&g.time-p.at>=t.duration){p.animation='Idle';p.at=g.time;}if((p.animation==='Spawn'||p.animation==='Idle')&&g.graves.some(t=>t.hp>0&&t.row===p.row&&t.column===p.column)){p.animation='Splat';p.at=g.time;this.sounds.push(name+'/splat');}}
+    this.potions=this.potions.filter(p=>p.animation==='Spawn'||p.animation==='Idle'||g.time-p.at<g.props.plantAnimations[p.kind==='zombiepotion_speed'?'potionSpeed':'potionToughness'][p.animation].duration);
+    if(g.level.potions&&g.time>=this.nextPotion){this.resetPotionTimer();if(this.potions.filter(p=>p.animation==='Spawn'||p.animation==='Idle').length<g.level.potions.MaxPotionCount){for(let col=8;col>=0;col--){let placed=false;for(const row of this.shuffle([0,1,2,3,4]))if(this.spawnPotion(row,col)){placed=true;break;}if(placed)break;}}}
+  }
+  settleBeans(){const g=this.#game;for(const z of g.zombies){const s=z.dark;if(!s?.bean)continue;if(g.time>=s.blastAt&&z.hp>0){z.hp=0;z.armor=0;z.deathCause='potato';this.sounds.push('sunbean/blastSounds');}const health=z.hp<=0?0:z.hp+z.armor;s.sun+=Math.max(0,s.health-health)*g.props.plants.sunbean.SunPerHitpoint;s.health=health;const value=Math.floor((s.sun+1e-8)/5)*5;if(value>=5){g.dropSun(z.x,rowY(z.row)-65,value,'ra');s.sun-=value;}}for(const id of this.beanFood)if(!g.plants.some(p=>p.id===id&&p.hp>0))this.beanFood.delete(id);}
   private soundAt=new Map<number,number>();
   jesters=new Map<number,Jester>();
   reflected:Reflected[]=[];
@@ -18,7 +40,7 @@ export class DarkBattle {
   constructor(game:Game){this.#game=game;}
   private play(p:Plant,animation:string,action:Plant['action']='idle'){p.animation=animation;p.action=action;p.actionAt=this.#game.time;p.eventIndex=0;}
   init(p:Plant){this.play(p,'Idle');p.nextAction=0;}
-  food(p:Plant){this.play(p,'Food','food');this.sounds.push('fumeshroom/foodSound');}
+  food(p:Plant){this.play(p,'Food','food');if(p.kind==='sunbean'){this.beanFood.add(p.id);this.sounds.push('sunbean/food');}else this.sounds.push('fumeshroom/foodSound');}
   private visual(name:string,x:number,y:number,owner?:number){this.visuals.push({owner,id:++this.serial,name,x,y,at:this.#game.time,duration:this.#game.props.plantAnimations[name].Play.duration});}
   tickPlant(p:Plant,dt:number){
     const g=this.#game,prop=g.props.plants.fumeshroom,x=cellX(p.column),y=rowY(p.row)-68;
@@ -61,6 +83,7 @@ export class DarkBattle {
   movement(z:Zombie){const s=this.jesters.get(z.id);return !s||s.animation==='Walk'?1:s.animation==='RotateLoop'?this.#game.props.zombies.dark_juggler.MoveSpeedMultiplierWhileJuggling:0;}
   tick(dt:number){
     const g=this.#game;
+    this.tickPotions();
     this.visuals=this.visuals.filter(v=>g.time-v.at<v.duration&&(v.owner===undefined||g.plants.some(p=>p.id===v.owner&&p.hp>0)));
     for(const [id] of this.fumes)if(!g.plants.some(p=>p.id===id&&p.hp>0)){this.fumes.delete(id);}
     if(!g.zombies.some(z=>z.kind==='dark_juggler')&&!this.reflected.length)return;

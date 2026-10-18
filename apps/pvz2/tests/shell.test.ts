@@ -1,3 +1,4 @@
+import { ProgressStore } from '../src/shell/progression';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -9,10 +10,10 @@ const read = <T>(path: string): T => JSON.parse(readFileSync(new URL(path, root)
 const catalog = read<Catalog>('shell/catalog.json');
 const maps = catalog.worlds.filter(w => w.enterable).map(w => read<WorldMap>(`shell/maps/${w.id}.json`));
 
-test('13 native maps retain connected source level graphs and Egypt 1–35 and Pirate 1–35 plus Cowboy/Future 1–35 and Dark 1–5 have battle routes', () => {
+test('13 native maps retain connected source level graphs and Egypt 1–35 and Pirate 1–35 plus Cowboy/Future 1–35 and Dark 1–10 have battle routes', () => {
   assert.equal(maps.length,13);
   assert.equal(catalog.worlds.length,15);
-  assert.deepEqual(Object.keys(LEVEL_ROUTES), [...Array.from({length:35},(_,i)=>`egypt${i+1}`),...Array.from({length:35},(_,i)=>`pirate${i+1}`),...Array.from({length:35},(_,i)=>`cowboy${i+1}`),...Array.from({length:35},(_,i)=>`future${i+1}`),...Array.from({length:5},(_,i)=>`dark${i+1}`)]);
+  assert.deepEqual(Object.keys(LEVEL_ROUTES), [...Array.from({length:35},(_,i)=>`egypt${i+1}`),...Array.from({length:35},(_,i)=>`pirate${i+1}`),...Array.from({length:35},(_,i)=>`cowboy${i+1}`),...Array.from({length:35},(_,i)=>`future${i+1}`),...Array.from({length:10},(_,i)=>`dark${i+1}`)]);
   for (const map of maps) {
     const nodes = new Set(map.islands.map(n => n.node));
     assert.equal(nodes.size,map.islands.length);
@@ -31,7 +32,7 @@ test('completion opens the next source node, browsing other worlds does not unlo
   const future=maps.find(m=>m.id==='future')!;assert.equal(islandStates(future,new Set()).get(future.islands.find(n=>n.levels.includes('future1'))!.node),'open');
   const after=islandStates(egypt,new Set(['egypt1']));
   assert.equal(after.get(first.node),'finished');assert.equal(after.get(second.node),'open');
-  for(const map of maps.filter(m=>!['egypt','pirate','future'].includes(m.id))) assert.ok([...islandStates(map,new Set(['egypt1'])).values()].every(s=>s==='locked'));
+  for(const map of maps.filter(m=>!['egypt','pirate','future','dark'].includes(m.id))) assert.ok([...islandStates(map,new Set(['egypt1'])).values()].every(s=>s==='locked'));
 });
 
 test('map scroll limits use native island bounds and worlds have independent camera positions', () => {
@@ -71,4 +72,16 @@ test('portal light armatures are resolved without global atlas overrides', () =>
   const portal=read<{armature:{name:string}[]}>('shell/rigs/ce8294b0-7c76-4c91-939a-12540455d8f9/skeleton.json');
   const names=new Set(portal.armature.map(a=>a.name));
   assert.ok(names.has('ray_green'));assert.ok(names.has('ray_blue'));
+});
+
+test('Temporary level unlock opens maps without granting completion, rewards or persistent world keys',()=>{
+ const data=new Map<string,string>(),storage={getItem:(k:string)=>data.get(k)??null,setItem:(k:string,v:string)=>{data.set(k,v);},removeItem:(k:string)=>{data.delete(k);}},store=new ProgressStore(storage);
+ const dark=maps.find(m=>m.id==='dark')!,first=dark.islands.find(n=>n.levels.includes('dark1'))!,tenth=dark.islands.find(n=>n.levels.includes('dark10'))!;
+ assert.equal(store.worldUnlocked('dark'),false);assert.equal(islandStates(dark,new Set()).get(first.node),'open');assert.equal(islandStates(dark,new Set()).get(tenth.node),'locked');
+ const before=[...data];store.temporaryUnlock=true;
+ assert.ok(maps.every(m=>store.worldUnlocked(m.id)));for(const map of maps){const states=islandStates(map,store.completed(map),store.rewardNodes(map.id),store.temporaryUnlock);assert.ok(map.islands.filter(n=>n.kind===0).every(n=>states.get(n.node)==='open'));}
+ assert.deepEqual([...data],before);assert.equal(store.isComplete('dark10'),false);assert.deepEqual(store.rewards(),[]);assert.equal(store.worldKeys(),0);
+ store.temporaryUnlock=false;assert.equal(store.worldUnlocked('dark'),false);assert.equal(islandStates(dark,new Set(),new Set(),store.temporaryUnlock).get(tenth.node),'locked');
+ store.temporaryUnlock=true;assert.equal(new ProgressStore(storage).temporaryUnlock,false);
+ store.finish('dark','dark10');assert.equal(store.isComplete('dark10'),true);assert.equal(islandStates(dark,store.completed(dark),new Set(),true).get(tenth.node),'finished');
 });

@@ -4,7 +4,7 @@ export function battleActors(level:Level,plants:readonly PlantKind[]){
   const names=new Set(['peashooter','sunflower','wallnut','potatomine','mummy','ra',...plants,...level.waves.flat().map(zombieRig)]);
   if(level.world==='pirate')names.add('pirateFlag');
   if(level.world==='west')names.add('cowboyFlag');
-  if(level.world==='dark'){names.add('darkFlag');if(names.has('hypnoshroom')){names.add('darkGargantuar');names.add('darkImp');}}
+  if(level.world==='dark'){names.add('darkFlag');if(names.has('hypnoshroom')||names.has('darkGargantuar')){names.add('darkGargantuar');names.add('darkImp');}}
   if(level.world==='future')names.add('futureFlag');
   if(names.has('jetpackVeteran'))names.add('future');
   if(names.has('futureGargantuar'))names.add('futureImp');
@@ -27,8 +27,10 @@ export function battleActors(level:Level,plants:readonly PlantKind[]){
 }
 export function battleEffects(level:Level,plants:readonly PlantKind[]){
   const names=new Set(['food']);
-  if(level.world==='dark')for(const n of ['darkLawn','mower','darkCone','darkBucket','graveSun','graveFood'])names.add(n);
+  if(level.world==='dark')for(const n of ['darkLawn','mower','darkCone','darkBucket','darkHelmet','graveSun','graveFood'])names.add(n);
   if(level.world==='future')for(const n of [(level.sunBomb||[8,11,16,22,25,27,31,35].includes(level.day))?'futureNightLawn':'futureLawn','mower','futureCone','futureBucket',...new Set(level.powerTiles.flatMap(t=>['tile_'+t.group,'tile_'+t.group+'Flash','tile_'+t.group+'Dot']))])names.add(n);
+  if(level.world==='dark'&&level.day===10)names.add('zombossicon');
+  if(level.potions)for(const n of ['potionSpeed','potionToughness'])names.add(n);
   if(level.sunBomb)for(const n of ['sunbomb','sunbombRay','sunbombBlast'])names.add(n);
   if(level.corral)for(const name of ['fenceHere','fenceThere'])names.add(name);
   if(level.world==='west')for(const name of ['cowboyLawn','mower','cowboyCone','cowboyBucket','rail','cart','prospectorSmoke','prospectorTail','ponchoBreak','plateDrop','cowboyHat'])names.add(name);
@@ -41,7 +43,7 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   if(level.waves.flat().includes('cowboy_armor4')||level.boss?.kind==='zombossmech_cowboy2')names.add('cowboyBricks');
   if((level.waves.flat().includes('future_armor4')||level.boss?.kind==='zombossmech_future2'))names.add('futureBricks');
   const plantEffects:Partial<Record<PlantKind,string[]>>={
-    fumeshroom:['fumeShot','fumeFood','fumeHit'],applemortar:['appleShot','appleFood','appleHit','appleFoodHit'],electricblueberry:['blueberryCloud'],pinkstarfruit:['pinkShot','pinkFood','pinkHit','pinkFoodHit'],redstinger:['redShot','redWeak','redHit','redRay'],powerplant:['tile_epsilon','tile_epsilonFlash','tile_epsilonDot'],starfruit:['starShot','starFood','starHit','starFoodHit'],holonut:['infinutShield'],powerplant_alpha:['tile_alpha','tile_alphaFlash','tile_alphaDot'],powerplant_beta:['tile_beta','tile_betaFlash','tile_betaDot'],citron:['citronShot','citronFood','citronHit','citronFoodHit','citronToss','citronLightning'],empea:['empBlast','empEffect'],laser_bean:['laserBeam','laserDirt'],shadowshroom:['shadowExpl'],hurrikale:['windUpper','windLower'],puffshroom:['puffshroom_spore','puffshroom_sporeHit'],banana:['bananaShot','bananaHit','bananaTarget'],electriccurrant:['currantLine','currantCenter','currantHit'],
+    sunbean:['sunbeanBlast'],fumeshroom:['fumeShot','fumeFood','fumeHit'],applemortar:['appleShot','appleFood','appleHit','appleFoodHit'],electricblueberry:['blueberryCloud'],pinkstarfruit:['pinkShot','pinkFood','pinkHit','pinkFoodHit'],redstinger:['redShot','redWeak','redHit','redRay'],powerplant:['tile_epsilon','tile_epsilonFlash','tile_epsilonDot'],starfruit:['starShot','starFood','starHit','starFoodHit'],holonut:['infinutShield'],powerplant_alpha:['tile_alpha','tile_alphaFlash','tile_alphaDot'],powerplant_beta:['tile_beta','tile_betaFlash','tile_betaDot'],citron:['citronShot','citronFood','citronHit','citronFoodHit','citronToss','citronLightning'],empea:['empBlast','empEffect'],laser_bean:['laserBeam','laserDirt'],shadowshroom:['shadowExpl'],hurrikale:['windUpper','windLower'],puffshroom:['puffshroom_spore','puffshroom_sporeHit'],banana:['bananaShot','bananaHit','bananaTarget'],electriccurrant:['currantLine','currantCenter','currantHit'],
     electricpeashooter:['electricpea','electricpea_pf','electricpea_small','electricFoot','electricLink','electricHit','electricBigHit','electricSmallHit'],magnetshroom:['cowboyBucket','plateDrop'],magnifyinggrass:['magnifying_grass','grassHit','grassFrom','grassTo','grassAbsorb','grassRay'],wintermelon:['winter_melon','winter_melon_pf'],chilibean:['chiliFart','chiliStun'],splitpea:['megaPea'],xshot:['rotobaga','rotobagaFood'],chardguard:['chardHand'],dandelion:['dandelionShot','dandelionFood','dandelionExplosion','dandelionFoodExplosion','dandelionThrow'],jalapeno:['jalapenoFire'],lightningreed:['reedCloud','reedHit','reedLink'],escaperoot:['grapeshot','escapeGrapeExplosion','cherryExplosion'],spikerock:['rockFood'],spikeweed:['spikeFood'],snapdragon:['snapFire','snapFood','snapBall'],coconutcannon:['coconut','coconutHit','coconutFood','coconutFoodHit'],iceburg:['iceTrap'],iceweed:['iceSaw','iceTrap'],snowdrop:['snowdrop','snowdrop_freeze','iceTrap'],
     sapfling:['sapfling','sapfling_pf','sapTile'],parsnip:['parsnip_child','parsnip_child_small'],cherry_bomb:['cherryExplosion'],
     kernelpult:['corn','butter','butter2'],melonpult:['melon','melon_pf'],cabbagepult:['cabbage'],bloomerang:['boomerang'],

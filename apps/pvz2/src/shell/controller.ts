@@ -122,7 +122,7 @@ export class WorldShell {
     for (const button of this.host.querySelectorAll<HTMLButtonElement>('[data-world-target]')) button.onclick = () => { void this.choose(Number(button.dataset.worldTarget)); };
 
     this.renderer.setWorldKeys(this.progress.worldKeys());
-    await this.renderer.showChooser(this.navigation.chooser,new Set(['egypt',...this.progress.unlockedWorlds()]));
+    await this.renderer.showChooser(this.navigation.chooser,new Set(this.catalog.worlds.filter(w=>this.progress.worldUnlocked(w.id)).map(w=>w.id)));
     this.$('.map-caption').textContent = '世界地图 · 点击两侧世界切换，再次点击进入';
     this.save(); this.loading(false);
   }
@@ -130,7 +130,7 @@ export class WorldShell {
     this.loading(true); this.closeModal(); this.host.dataset.view = 'map'; this.currentWorld = world; this.cameraLayout = NaN;
     this.map = await json<WorldMap>(`shell/maps/${world.id}.json`); this.navigation.world = world.id;
     this.$('.world-labels').innerHTML = '';
-    const states = islandStates(this.map,this.completed(),this.progress.rewardNodes(this.map.id));
+    const states = islandStates(this.map,this.completed(),this.progress.rewardNodes(this.map.id),this.progress.temporaryUnlock);
     this.$('.map-level-targets').innerHTML = this.map.islands.filter(n=>n.kind===0).map(n=>`<button class="level-target" data-level-node="${n.node}" aria-label="${world.name} 第 ${n.name} 关 · ${states.get(n.node)==='finished'?'已完成':states.get(n.node)==='open'?'可进入':'未解锁'}${n.levels.some(id=>LEVEL_ROUTES[id])?'':' · 尚未接入'}"></button>`).join('');
     for (const button of this.host.querySelectorAll<HTMLButtonElement>('[data-level-node]')) button.onclick = () => { void this.selectLevel(this.map!.islands.find(n=>n.node===Number(button.dataset.levelNode))!); };
     const camera = Object.hasOwn(this.navigation.cameras,world.id) ? this.navigation.cameras[world.id] : 0;
@@ -138,7 +138,7 @@ export class WorldShell {
     const completed = this.completed(), rewards = this.progress.rewardNodes(world.id);
     const events = pending?.world === world.id ? completionEvents(this.map,pending.level,completed,rewards) : [];
     const displayed = new Set(completed); if (events.length) displayed.delete(pending!.level);
-    await this.renderer.showMap(this.map,camera,displayed,world.night,rewards,this.progression,events);
+    await this.renderer.showMap(this.map,camera,displayed,world.night,rewards,this.progression,events,this.progress.temporaryUnlock);
     this.$('.map-caption').textContent = `${world.name} · 拖动或滚轮浏览`;
     this.save(); this.loading(false);
     if (events.length) {
@@ -151,7 +151,7 @@ export class WorldShell {
         clip.volume = this.audio.effects; if (clip.volume > 0) void clip.play();
       });
       this.progress.finishPresentation();
-      const finalStates = islandStates(this.map,this.completed(),this.progress.rewardNodes(world.id));
+      const finalStates = islandStates(this.map,this.completed(),this.progress.rewardNodes(world.id),this.progress.temporaryUnlock);
       for (const button of this.host.querySelectorAll<HTMLElement>('[data-level-node]')) {
         const island = this.map.islands.find(n=>n.node===Number(button.dataset.levelNode))!;
         const state = finalStates.get(island.node);
@@ -178,7 +178,7 @@ export class WorldShell {
   }
   private async selectLevel(island: Island) {
     if (this.busy || !this.$('.map-modal').hidden) return;
-    const state = islandStates(this.map!,this.completed(),this.progress.rewardNodes(this.map!.id)).get(island.node)!;
+    const state = islandStates(this.map!,this.completed(),this.progress.rewardNodes(this.map!.id),this.progress.temporaryUnlock).get(island.node)!;
     const id=island.levels.find(id=>LEVEL_ROUTES[id]);
     // WorldMap.ts ignores locked nodes; there is no native locked-level window.
     if (state === 'locked') return;
@@ -244,7 +244,7 @@ export class WorldShell {
     this.loading(true);
     const art=await this.renderer.worldDetails(world.id);
     this.loading(false);
-    if(world.id==='pirate'||world.id==='cowboy'){
+    if(world.id==='pirate'||world.id==='cowboy'||world.id==='future'||world.id==='dark'){
       this.modal(world.name,`<p>${world.description}</p><img class="world-banner" src="${art.background}" alt="${world.name}"><button class="native-button" data-unlock ${this.progress.worldKeys()<1?'disabled':''}>世界钥匙 × 1 · 解锁</button><div class="world-plant-cards">${art.cards.map(image=>`<img src="${image}" alt="本世界植物卡片">`).join('')}</div>`);
       this.$('.native-window').classList.add('world-description');this.$('[data-unlock]').onclick=()=>{if(this.progress.unlockWorld(world.id))void this.openWorld(world);};return;
     }
@@ -261,7 +261,12 @@ export class WorldShell {
   }
   private closeModal() { delete this.host.dataset.store; this.renderer.setStoreOpen(false); this.$('.map-modal').hidden=true; this.$('.map-modal').innerHTML=''; }
   private settings() {
-    this.modal('设置',`${audioControls(this.audio)}<button class="native-button close-dialog">返回游戏</button><a class="switch-version" href="/">植物大战僵尸 1</a>`);
+    this.modal('设置',`${audioControls(this.audio)}<label class="volume-option"><input data-test-unlock type="checkbox" ${this.progress.temporaryUnlock?'checked':''}>临时解锁全部关卡</label><p class="test-unlock-hint">仅本次页面有效，刷新后关闭。可直接进入已接入关卡，通关仍正常保存。</p><button class="native-button close-dialog">返回游戏</button><a class="switch-version" href="/">植物大战僵尸 1</a>`);
+    this.$<HTMLInputElement>('[data-test-unlock]').onchange=async event=>{
+      this.progress.temporaryUnlock=(event.target as HTMLInputElement).checked;
+      if(this.map)await this.openWorld(this.currentWorld);else await this.showChooser();
+      this.settings();
+    };
     for (const input of this.host.querySelectorAll<HTMLInputElement>('[data-volume]')) input.oninput=()=>{
       this.audio[input.dataset.volume as 'music'|'effects']=Number(input.value);saveAudio(this.audio);
       this.music.volume=this.audio.music;if(this.audio.music>0)this.startMusic();

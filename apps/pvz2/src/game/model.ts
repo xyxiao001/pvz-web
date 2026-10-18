@@ -1,4 +1,4 @@
-import {DarkBattle,darkArmor} from './dark';
+import {DarkBattle,darkArmor,type DarkZombie} from './dark';
 import {FutureBoss} from './future-boss';
 import {FutureBattle,futureArmor,type FutureZombie} from './future';
 import {WesternFinale} from './western-finale';
@@ -21,7 +21,7 @@ export interface Plant {
   transformed?:boolean;leaves?:number;rootGrown?:boolean;spikes?:number;boosted?:boolean; endangered?:boolean; facing?:number;heavy?:boolean;
   actionAt: number; fired: boolean; burst: number; nextBurst: number;
 }
-export interface Zombie { future?:FutureZombie; poison?:{until:number;dps:number};perfumeUntil?:number; magnetized?:boolean; west?:CowboyZombie; captain?:{parrot:boolean;health:number;next:number};parrot?:{captain:number;target:number|null;y:number;height:number;capture:number;fleeing:boolean;escaped:boolean;carrying?:Plant}; stunnedUntil?:number; pirate?:{animation:string;at:number;elapsed:number;next:number;count:number;fired:boolean;imp:boolean};barrel?:number;pusher?:number;detachedAt?:number; swing?:{at:number;judge:number;end:number;failure:boolean};route?:{spawnLane:number;spawnWave:number;points:{x:number;y:number}[];index:number;y:number;angle:number}; sappedUntil?:number; butteredUntil?:number;reversed?:boolean;landUntil?:number; id: number; kind: ZombieKind; row: number; x: number; hp: number; armor: number; eating: boolean; absorbed: number; absorbUntil: number; absorbState:'idle'|'start'|'loop'|'end'; absorbAt:number;deathCause:DeathCause; frozenUntil:number;chilledUntil:number;food:boolean;entry:SpawnAction['mode'];entryAt:number;entryX:number;camelPart:number;team:number;leap:{fromX:number;fromY:number;toX:number;toRow:number;at:number;duration?:number}|null }
+export interface Zombie { dark?:DarkZombie; future?:FutureZombie; poison?:{until:number;dps:number};perfumeUntil?:number; magnetized?:boolean; west?:CowboyZombie; captain?:{parrot:boolean;health:number;next:number};parrot?:{captain:number;target:number|null;y:number;height:number;capture:number;fleeing:boolean;escaped:boolean;carrying?:Plant}; stunnedUntil?:number; pirate?:{animation:string;at:number;elapsed:number;next:number;count:number;fired:boolean;imp:boolean};barrel?:number;pusher?:number;detachedAt?:number; swing?:{at:number;judge:number;end:number;failure:boolean};route?:{spawnLane:number;spawnWave:number;points:{x:number;y:number}[];index:number;y:number;angle:number}; sappedUntil?:number; butteredUntil?:number;reversed?:boolean;landUntil?:number; id: number; kind: ZombieKind; row: number; x: number; hp: number; armor: number; eating: boolean; absorbed: number; absorbUntil: number; absorbState:'idle'|'start'|'loop'|'end'; absorbAt:number;deathCause:DeathCause; frozenUntil:number;chilledUntil:number;food:boolean;entry:SpawnAction['mode'];entryAt:number;entryX:number;camelPart:number;team:number;leap:{fromX:number;fromY:number;toX:number;toRow:number;at:number;duration?:number}|null }
 export type DeathCause = 'electric' | 'water' | 'normal' | 'potato' | 'mower' | 'toss' | 'blow' | 'match';
 export const isCamel=(kind:ZombieKind)=>kind.startsWith('camel_');
 export const isMatchCamel=(kind:ZombieKind)=>kind.endsWith('_touch');
@@ -129,6 +129,7 @@ export class Game {
     if(!level.sunDrops)this.nextSun=Infinity;
     if(!level.mowers)this.mowers.forEach(m=>m.spent=true);
     if(level.world==='egypt'&&level.day===2&&tutorial)this.addPlant('peashooter',2,2);
+    this.dark.initLevel();
     this.conveyorPlants=level.conveyor?level.conveyor.InitialPlantList.map(p=>({...p})):[];
     if(level.boss)this.boss=level.boss.kind.startsWith('zombossmech_future')?new FutureBoss(this):level.boss.kind.startsWith('zombossmech_cowboy')?new CowboyBoss(this):level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
     if(level.cannon){this.nextWave=4+RULES.normalWaveEntrance;level.cannon.RowHasCannon.forEach((has,row)=>{if(has)this.addPlant('coconutcannon',row,1);});}
@@ -152,7 +153,7 @@ export class Game {
     const existing=this.plants.find(p=>p.row===row&&p.column===column);
     const repairing=kind==='redstinger'&&existing?.kind==='redstinger'&&column>=6&&existing.hp<p.Toughness*.75||kind==='holonut'&&existing?.kind==='holonut'&&(existing.hidden||existing.hp<=p.Toughness*2/3)||this.wallnutFirstAid&&(kind==='wallnut'||kind==='tallnut')&&existing?.kind===kind&&existing.hp<=p.Toughness*(kind==='tallnut'?2/3:.75)||kind==='spikerock'&&existing?.kind==='spikerock'&&existing.spikes!<p.MaxSpike||kind==='chardguard'&&existing?.kind==='chardguard'&&existing.leaves!<p.MaxBounceTime;
     const stacking=kind==='peapod'&&existing?.kind==='peapod'&&existing.heads!<5;
-    if(seaCell(this.level.planks,row,column)||!this.cowboy.canPlant(row,column))return false;
+    if(seaCell(this.level.planks,row,column)||!this.cowboy.canPlant(row,column)||this.dark.blocks(row,column))return false;
     if(kind==='imitater'&&this.imitateKind===null)return false;
     if(this.level.boss&&column>=BOARD.columns-this.level.boss.reserved)return false;
     const packet=this.conveyor.find(c=>c.id===packetId&&c.kind===kind);
@@ -176,7 +177,7 @@ export class Game {
       action: 'idle', actionAt: this.time, fired: false, burst: 0, nextBurst: 0 });
     const plant=this.plants.at(-1)!;
     if(this.western.handles(kind))plant.animation='Idle';
-    if(kind==='fumeshroom')this.dark.init(plant);
+    if(kind==='fumeshroom'||kind==='sunbean')this.dark.init(plant);
     if(this.future.handles(kind))this.future.init(plant);
     if(this.westFinale.handles(kind))this.westFinale.init(plant);
     if(kind==='chardguard')plant.leaves=p.MaxBounceTime;
@@ -232,6 +233,7 @@ export class Game {
   plantFood(row: number, column: number, boost=false): boolean {
     const plant = this.plants.find(p => p.row === row && p.column === column && p.hp>0);
     if(plant&&this.westFinale.handles(plant.kind)&&!this.westFinale.foodable(plant))return false;
+    if(plant?.kind==='sunbean'&&this.dark.beanFood.has(plant.id))return false;
     if(plant?.kind==='holonut'&&!this.future.nutFoodable(plant))return false;
     if(plant?.kind==='tallnut'&&plant.armor>0)return false;
     if(plant?.kind==='escaperoot'&&(!plant.rootGrown||plant.action!=='idle'||plant.animation!=='Idle'))return false;
@@ -239,7 +241,7 @@ export class Game {
     if(!boost){this.food--;this.future.link(plant);} plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
     if(plant.kind==='splitpea'||plant.kind==='chilibean')this.cowboy.food(plant);
-    if(plant.kind==='fumeshroom')this.dark.food(plant);
+    if(plant.kind==='fumeshroom'||plant.kind==='sunbean')this.dark.food(plant);
     if(this.future.handles(plant.kind))this.future.food(plant);
     if(this.westFinale.handles(plant.kind))this.westFinale.food(plant);
     if(this.western.handles(plant.kind))this.western.food(plant);
@@ -318,7 +320,7 @@ export class Game {
     if(this.boss?.zombie===zombie){this.boss.hit(amount);return;}
     // Pharaoh's coffin protects its inner zombie: breaking it does not carry excess damage through.
     if(zombie.kind==='pharaoh'||zombie.kind==='pharaoh_weak'){const excess=Math.max(0,amount-zombie.armor),weak=zombie.kind==='pharaoh_weak';zombie.armor=Math.max(0,zombie.armor-amount);if(zombie.armor===0){zombie.kind='pharaoh_inner';zombie.landUntil=this.time+80/30;if(weak){zombie.hp-=excess;if(zombie.hp<=0)zombie.deathCause=cause;}}return;}
-    amount=this.cowboy.damage(zombie,amount);
+    amount=this.cowboy.damage(zombie,amount)*Math.pow(.85,zombie.dark?.toughness??0);
     const armorDamage = Math.min(zombie.armor, amount); zombie.armor -= armorDamage; zombie.hp -= amount - armorDamage;this.cowboy.damaged(zombie);
     if(isCamel(zombie.kind)&&!isMatchCamel(zombie.kind)&&zombie.armor===0){zombie.kind='mummy';}
     if (zombie.hp<=0)zombie.deathCause=cause;
@@ -872,6 +874,7 @@ export class Game {
     for (const p of this.plants) {
       if(p.leap){if(this.time-p.leap.at<(p.kind==='chilibean'?.8:.5))continue;delete p.leap;}
       if(p.kind==='splitpea'||p.kind==='chilibean'){this.cowboy.tickPlant(p);continue;}
+      if(p.kind==='sunbean'){this.dark.tickBean(p,dt);continue;}
       if(p.kind==='fumeshroom'){this.dark.tickPlant(p,dt);continue;}
       if(this.future.handles(p.kind)){this.future.tickPlant(p,dt);continue;}
       if(this.westFinale.handles(p.kind)){this.westFinale.tickPlant(p,dt);continue;}
@@ -973,13 +976,14 @@ export class Game {
     for(const z of this.zombies)if(isMatchCamel(z.kind)&&z.hp>0){const front=camelFronts.get(z.team)!;if(this.zombies.some(other=>other.hp>0&&other.team!==z.team&&other.row===z.row&&other.x<front&&other.x+60>front))blockedCamels.add(z.team);}
     for (const z of this.zombies) {
       if(z===this.boss?.zombie||z.hp<=0||z.leap||z.landUntil!==undefined&&this.time<z.landUntil||this.time<z.frozenUntil||z.stunnedUntil!==undefined&&this.time<z.stunnedUntil||z.butteredUntil!==undefined&&this.time<z.butteredUntil||(z.entry!=='walk'&&this.time-z.entryAt<(z.entry==='ground'?1.35:1)))continue;
-      const statusDt=dt*(this.time<(z.perfumeUntil??0)?.5:1);
+      const statusDt=dt*Math.pow(1.5,z.dark?.speed??0)*(this.time<(z.perfumeUntil??0)?.5:1);
       if(this.future.tickZombie(z,statusDt)||this.cowboy.tickZombie(z,statusDt)||this.pirate.tickZombie(z,dt)||this.tickSpecialZombie(z,dt))continue;
       if(this.westFinale.blockEnemy(z,statusDt)||this.dark.movement(z)===0)continue;
+      if(this.dark.eatPotion(z))continue;
       const target = this.plants.filter(p => p.hp > 0 && !p.leap?.pushed && !(p.kind==='chilibean'&&p.leap) && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='empea'&&p.kind!=='blover'&&p.kind!=='hurrikale'&&p.kind!=='stallia'&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='cherry_bomb'&&p.kind!=='jalapeno'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column)[0];
       z.eating = !!target;
       if(target&&(z.kind==='explorer'||z.kind==='explorer_veteran')&&this.specialZombies.get(z.id)!.torch){target.hp=0;target.armor=0;}
-      else if (target) { const amount = (z.kind==='egypt_imp'?100:this.props.zombies[z.kind].EatDPS) * statusDt*(this.time<z.chilledUntil?.5:1), armor = Math.min(target.armor, amount); target.armor -= armor; target.hp -= (amount - armor)*this.future.plantDamageScale(target);if(target.hp<=0){this.cowboy.eaten(target,z);this.westFinale.eaten(target,z);}if(target.hp<=0&&target.kind==='parsnip')this.launchParsnip(target,false); }
+      else if (target) { const amount = (z.kind==='egypt_imp'?100:this.props.zombies[z.kind].EatDPS) * statusDt*(this.time<z.chilledUntil?.5:1), armor = Math.min(target.armor, amount); target.armor -= armor; target.hp -= (amount - armor)*this.future.plantDamageScale(target);if(target.hp<=0){this.cowboy.eaten(target,z);this.westFinale.eaten(target,z);this.dark.eaten(target,z);}if(target.hp<=0&&target.kind==='parsnip')this.launchParsnip(target,false); }
       else if(blockedCamels.has(z.team))continue;
       else if (this.time >= z.absorbUntil) z.x -= this.dark.movement(z)*(z.reversed?-1:1)* (this.time<z.chilledUntil?.5:1)*(this.time<(z.sappedUntil??0)?.5:1)*(z.kind==='piano'&&z.x>=cellX(9)?4:1)*(z.west?.animation==='Rush'?this.props.zombies[z.kind].RushSPS:this.props.zombies[z.kind].WalkSPS) * BOARD.cellWidth * statusDt;
       if (z.kind === 'ra' && z.x<BOARD.left+BOARD.columns*BOARD.cellWidth) {
@@ -1004,6 +1008,7 @@ export class Game {
       if (mower.x > 1230) { mower.spent = true; mower.active = false; }
     }
     if(this.level.killChallenge&&!this.killChallengeComplete)this.recentKills=this.recentKills.filter(at=>this.time-at<this.level.killChallenge!.seconds);
+    this.dark.settleBeans();
     for (const z of this.zombies) if (z!==this.boss?.zombie&&z.hp <= 0) {
       if(this.level.world==='pirate')this.pirate.die(z);
       this.cowboy.die(z);this.future.die(z);

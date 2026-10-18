@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {create,level,props,tick} from './dark-fixture';
 import {playDark} from './dark-strategy';
 import {cellX,rowY,type PlantKind} from '../src/game/level';
-for(const day of [1,2,3,4,5])test(`Dark Ages ${day} legal replay`,()=>{
+for(const day of [1,2,3,4,5,6,7,8,9,10])test(`Dark Ages ${day} legal replay`,()=>{
  const g=create(day),used=new Set<PlantKind>(),plant=g.plant.bind(g);g.plant=(kind,r,c,p)=>{const ok=plant(kind,r,c,p);if(ok)used.add(kind);return ok;};
  for(let f=0;f<90000&&g.phase==='playing';f++){playDark(g,f);g.tick(1/60);g.events.length=0;}
  console.log('dark'+day,g.phase,g.time,g.wave,[...used]);assert.equal(g.phase,'won');assert.ok(used.size<=6);assert.ok(!used.has('fumeshroom')||day>=5);
@@ -49,4 +49,31 @@ test('Empowered hypnoshroom converts dark zombies into native dark giants and pr
 test('Removing a food-powered fume clears its stream; jester cannot catch a non-reversible citron blast',()=>{
  const g=quiet();g.addPlant('fumeshroom',2,1);g.food=1;g.plantFood(2,1);tick(g,1.2);assert.equal(g.dark.fumes.size,1);assert.ok(g.dark.visuals.some(v=>v.name==='fumeFood'));g.shovel(2,1);tick(g,.1);assert.equal(g.dark.fumes.size,0);assert.ok(g.dark.visuals.every(v=>v.name!=='fumeFood'));
  const z=g.spawnZombie('dark_juggler',2,cellX(6));g.future.shots.push({id:101,x:z.x-30,y:rowY(2)-45,row:2,food:true,hits:new Set()});tick(g,.1);assert.equal(g.dark.reflected.length,0);assert.ok(z.hp<=0);
+});
+
+test('Dark 6–10 retain original setup, preset, potions, helmets, giant and rewards',()=>{
+ assert.deepEqual([6,7,8,9,10].map(d=>level(d).waves.length),[10,16,12,16,18]);
+ assert.deepEqual(level(6).lastStand,{sun:2000,food:4});assert.ok(level(6).blacklist.includes('sunbean'));
+ assert.deepEqual(level(8).preset,['sunshroom','sunbean','fumeshroom','wallnut','hypnoshroom','gravebuster']);
+ assert.deepEqual(level(9).potions,{InitialPotionCount:4,MaxPotionCount:15,PotionSpawnTimer:{Max:8,Min:4},PotionTypes:['zombiepotion_speed','zombiepotion_toughness']});
+ assert.equal(DARK_LEVELS.dark9.presentation.music,'dark/minigame.mp3');assert.equal(DARK_LEVELS.dark10.presentation.music,'dark/ultimate.mp3');assert.ok(battleEffects(level(10),[]).includes('zombossicon'));assert.equal(level(10).mowers,false);assert.ok(battleActors(level(10),[]).includes('darkImp'));
+ const g=create(7),z=g.spawnZombie('dark_armor3',2,cellX(5));assert.equal(z.hp,190);assert.equal(z.armor,1600);g.damage(z,100);assert.equal(z.armor,1500);assert.equal(g.western['metal'](z)?.name,'darkHelmet');
+ const data=new Map<string,string>(),storage={getItem:(k:string)=>data.get(k)??null,setItem:(k:string,v:string)=>{data.set(k,v);},removeItem:(k:string)=>{data.delete(k);}},store=new ProgressStore(storage);
+ for(let repeat=0;repeat<2;repeat++)for(const day of [8,9,10])store.finish('dark','dark'+day);
+ assert.deepEqual(store.campaignRewards().map(r=>r.id),['spine_dark','note_dark','worldkey']);assert.equal(store.worldKeys(),1);
+});
+test('Sunbean converts actual damage into sun and empowered bean burns its eater once',()=>{
+ const g=quiet();g.addPlant('sunbean',2,2);const z=g.spawnZombie('dark_armor3',2,cellX(2)+20);tick(g,.6);assert.ok(z.dark?.bean);assert.equal(g.plants.length,0);
+ g.damage(z,24);tick(g,.1);assert.equal(g.suns.length,0);g.damage(z,26);tick(g,.1);assert.equal(g.suns.reduce((n,s)=>n+s.value,0),10);
+ g.addPlant('sunbean',1,2);g.food=2;assert.equal(g.plantFood(1,2),true);tick(g,1.2);assert.equal(g.plants[0].animation,'FoodLoop');assert.equal(g.plantFood(1,2),false);
+ const giant=g.spawnZombie('dark_armor3',1,cellX(2)+20);tick(g,.6);assert.ok(giant.dark?.blastAt!>g.time);tick(g,2);assert.ok(!g.zombies.includes(giant));assert.equal(g.suns.reduce((n,s)=>n+s.value,0),365);tick(g,2);assert.equal(g.dark.visuals.length,0);assert.equal(g.dark.beanFood.size,0);
+});
+test('Potions drop before consumption, cap buffs at three, modify speed and damage, then recycle',()=>{
+ const g=create(9);g['nextWave']=Infinity;assert.equal(g.dark.potions.length,4);assert.ok(g.dark.potions.every(p=>p.column>=6&&p.column<=9));
+ g.dark.potions=[];g.graves=[];const z=g.spawnZombie('dark',2,cellX(5)+8);z.frozenUntil=100;
+ const add=(kind:'zombiepotion_speed'|'zombiepotion_toughness')=>{const p={id:g.nextEntityId(),kind,row:2,column:5,animation:'Spawn' as const,at:g.time,dropped:false};g.dark.potions.push(p);return p;};
+ let potion=add('zombiepotion_speed');assert.equal(g.dark.eatPotion(z),false);tick(g,.8);assert.equal(g.dark.eatPotion(z),true);assert.equal(z.dark!.speed,1);assert.equal(potion.animation,'Consume');assert.equal(g.dark.blocks(2,5),false);
+ for(let i=0;i<2;i++){add('zombiepotion_speed');tick(g,.8);assert.equal(g.dark.eatPotion(z),true);}add('zombiepotion_speed');tick(g,.8);assert.equal(g.dark.eatPotion(z),false);assert.equal(z.dark!.speed,3);
+ g.dark.potions=[];for(let i=0;i<3;i++){add('zombiepotion_toughness');tick(g,.8);g.dark.eatPotion(z);}assert.equal(z.dark!.toughness,3);g.damage(z,100);assert.ok(Math.abs(z.hp-(190-100*.85**3))<1e-8);tick(g,2);assert.ok(g.dark.potions.every(p=>p.animation!=='Consume'));
+ const start=z.x;z.frozenUntil=0;tick(g,.1);assert.ok(Math.abs(start-z.x-props.zombies.dark.WalkSPS*82*1.5**3*.1)<1e-7);assert.ok(Math.abs(g.dark.scale(z)-1.1**6)<1e-8);
 });

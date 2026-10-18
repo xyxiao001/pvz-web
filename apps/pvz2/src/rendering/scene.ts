@@ -18,7 +18,7 @@ import { isCamel, isMatchCamel, type DeathCause, Game, Plant, Zombie, ZombieDeat
 
 type RigName = PlantKind | 'darkGargantuar'| 'dark'|'darkFlag'|'darkImp'|'darkJester'| 'jetpackVeteran'|'footballMech'|'futureGargantuar'|'discoMech'|'discoJetpack'|'future'|'futureFlag'|'futureJetpack'|'futureProtector'|'futureShield'|'futureImp'|'mechCone'| 'blackBull'|'bull'|'cowboyGargantuar'|'cowboyImp'|'chickenFarmer'|'chicken'|'chickenPumpkin'| 'cowboy'|'cowboyFlag'|'prospector'|'poncho'|'piano'| 'pirateCaptain'|'pirateParrot'| 'barrelroller'|'pirateBarrel'|'pirateGargantuar'|'pirateImp'|'impCannon'| 'pirate'|'pirateFlag'|'swashbuckler'|'seagull'|'pelican'| 'boss' | 'torchlight' | 'pharaohWeak' | 'mummy' | 'ra' | 'camel' | 'camelTouch' | 'gargantuar' | 'imp' | 'explorer' | 'tombraiser' | 'pharaoh' | 'pharaohInner';
 const RIGS: Record<RigName, { armature: string; idle: string; scale: number }> = {
-  darkGargantuar:{armature:'Gargantuar',idle:'Walk',scale:.51},fumeshroom:{armature:'FumeShroom',idle:'Idle',scale:.55},dark:{armature:'BasicZombie',idle:'Walk',scale:.51},darkFlag:{armature:'FlagZombie',idle:'Walk',scale:.51},darkImp:{armature:'Imp',idle:'Walk',scale:.51},darkJester:{armature:'Jester',idle:'Walk',scale:.51},
+  sunbean:{armature:'SunBean',idle:'Idle',scale:.55},darkGargantuar:{armature:'Gargantuar',idle:'Walk',scale:.51},fumeshroom:{armature:'FumeShroom',idle:'Idle',scale:.55},dark:{armature:'BasicZombie',idle:'Walk',scale:.51},darkFlag:{armature:'FlagZombie',idle:'Walk',scale:.51},darkImp:{armature:'Imp',idle:'Walk',scale:.51},darkJester:{armature:'Jester',idle:'Walk',scale:.51},
   applemortar:{armature:'AppleMortar',idle:'Idle',scale:.55},wasabiwhip:{armature:'WasabiWhip',idle:'Idle',scale:.55},electricblueberry:{armature:'ElectricBlueBerry',idle:'Idle00',scale:.55},pinkstarfruit:{armature:'PinkStarFruit',idle:'Idle',scale:.55},redstinger:{armature:'RedStinger',idle:'Idle',scale:.55},jetpackVeteran:{armature:'JetpackVeteran',idle:'Walk',scale:.51},powerplant:{armature:'TileTurnip',idle:'Idle',scale:.55},starfruit:{armature:'StarFruit',idle:'Idle',scale:.55},holonut:{armature:'InfiNut',idle:'Idle',scale:.55},footballMech:{armature:'MechFootball',idle:'Walk',scale:.51},powerplant_alpha:{armature:'TileTurnip',idle:'Idle',scale:.55},powerplant_beta:{armature:'TileTurnip',idle:'Idle',scale:.55},citron:{armature:'Citron',idle:'Idle',scale:.55},empea:{armature:'EMPeach',idle:'Idle',scale:.55},futureGargantuar:{armature:'Gargantuar',idle:'Walk',scale:.51},discoMech:{armature:'MechDisco',idle:'Walk',scale:.51},discoJetpack:{armature:'JetpackDisco',idle:'Walk',scale:.51},laser_bean:{armature:'LaserBean',idle:'Idle',scale:.55},blover:{armature:'Blover',idle:'Idle',scale:.55},future:{armature:'FutureBasic',idle:'Walk',scale:.51},futureFlag:{armature:'FutureFlag',idle:'Walk',scale:.51},futureJetpack:{armature:'JetpackZombie',idle:'Walk',scale:.51},futureProtector:{armature:'Protector',idle:'Walk',scale:.51},futureShield:{armature:'Shield',idle:'Idle',scale:.51},futureImp:{armature:'FutureImp',idle:'Walk',scale:.51},mechCone:{armature:'MechCone',idle:'Walk',scale:.51},
   shadowshroom:{armature:'ShadowShroom',idle:'Idle',scale:.55},stallia:{armature:'Stallia',idle:'Idle',scale:.55},hurrikale:{armature:'Hurrikale',idle:'Idle',scale:.55},sunshroom:{armature:'SunShroom',idle:'Idle_Small',scale:.55},puffshroom:{armature:'PuffShroom',idle:'Idle',scale:.55},banana:{armature:'BananaLauncher',idle:'Idle',scale:.55},electriccurrant:{armature:'ElectricCurrant',idle:'Idle',scale:.55},hypnoshroom:{armature:'HypnoShroom',idle:'Idle',scale:.55},blackBull:{armature:'Bull_Black',idle:'Walk',scale:.51},
   electricpeashooter:{armature:'ElectricPeashooter',idle:'Idle',scale:.55},magnetshroom:{armature:'MagnetShroom',idle:'Idle',scale:.55},magnifyinggrass:{armature:'MagnifyingGrass',idle:'Idle',scale:.55},
@@ -286,14 +286,15 @@ export class Scene {
         this.shedShell(z.id,actor);actor=undefined;
       }
       actor=actor??this.addActor(z.id,zombieRig(z.kind),z.kind==='mummy_flag');
-      actor.root.scale.x=z.reversed?-1:1;
+      const potionScale=game.dark.scale(z);actor.root.scale.set((z.reversed?-1:1)*potionScale,potionScale);
       actor.root.position.set(z.x, zombieY(z)-(z.parrot?.height??0)); actor.root.zIndex = zombieY(z) + 1;
       if(z.parrot){
         if(z.parrot.capture>0&&!actor.capturing)this.onSound('pirateParrot/captureSound');actor.capturing=z.parrot.capture>0;
         const p=z.parrot.carrying;if(p){alive.add(p.id);const carried=this.actors.get(p.id)??this.addActor(p.id,p.kind);carried.captured=true;carried.root.position.set(z.x,z.parrot.y-z.parrot.height+50);carried.root.zIndex=z.parrot.y;carried.rig.animation.timeScale=0;}
       }
       actor.rig.animation.timeScale=game.corralWaiting||game.time<z.frozenUntil||z.stunnedUntil!==undefined&&game.time<z.stunnedUntil||z.butteredUntil!==undefined&&game.time<z.butteredUntil?0:game.time<z.chilledUntil?.5:(z.kind==='seagull'||z.kind==='pelican')?1.5:1;
-      actor.rig.tint=game.westFinale.allies.includes(z)?0xd990ff:z.poison?0xa4e25b:game.time<(z.perfumeUntil??0)?0xcd9ae0:game.time<z.frozenUntil||game.time<z.chilledUntil?0x9ce8ff:z.food?0xb0ff83:0xffffff;
+      actor.rig.animation.timeScale*=Math.pow(1.5,z.dark?.speed??0);
+      actor.rig.tint=game.westFinale.allies.includes(z)?0xd990ff:z.poison?0xa4e25b:game.time<(z.perfumeUntil??0)?0xcd9ae0:game.time<z.frozenUntil||game.time<z.chilledUntil?0x9ce8ff:z.food?0xb0ff83:z.dark?.toughness?0xd7aaff:z.dark?.speed?0xffbf80:z.dark?.bean?0xffef7f:0xffffff;
       const entering=z.entry!=='walk'&&game.time-z.entryAt<(z.entry==='ground'?1.35:1);
       if(z.entry==='ground'){
         if(entering&&!actor.mask){actor.mask=new Graphics().rect(-130,-250,260,250).fill(0xffffff);actor.root.addChild(actor.mask);actor.root.mask=actor.mask;}
@@ -317,10 +318,10 @@ export class Scene {
       }
       if(['dark','darkFlag','darkImp','darkJester','future','futureFlag','jetpackVeteran','futureJetpack','discoJetpack','chickenFarmer','cowboyImp','cowboy','cowboyFlag','prospector','poncho','piano','pirateCaptain','pirate','pirateFlag','swashbuckler','mummy','ra','explorer','torchlight','tombraiser','imp','pharaohInner'].includes(actor.kind)&&!actor.armLost&&z.hp<=game.props.zombies[z.kind].Toughness*this.art.catalog.presentation.armDropHealthFraction){actor.armLost=true;this.dropFragment(actor,'arm');this.onSound('zombieLimbPop');}
       if ((actor.kind==='dark'||actor.kind==='mummy'||actor.kind==='pirate'||actor.kind==='cowboy'||actor.kind==='future')&&z.armor > 0 && !actor.armor) {
-        actor.armor = this.rig(actor.kind, z.kind.endsWith('_armor4')?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone'); actor.armor.scale.set(.51); actor.root.addChild(actor.armor);
+        actor.armor = this.rig(actor.kind, z.kind==='dark_armor3'?'Helmet':z.kind.endsWith('_armor4')?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone'); actor.armor.scale.set(.51); actor.root.addChild(actor.armor);
       }
       if (actor.armor) {
-        if(actor.armor.visible&&z.armor<=0&&!z.magnetized){this.dropFragment(actor,z.kind.endsWith('_armor4')?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone');this.onSound('zombieLimbPop');}
+        if(actor.armor.visible&&z.armor<=0&&!z.magnetized){this.dropFragment(actor,z.kind==='dark_armor3'?'Helmet':z.kind.endsWith('_armor4')?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone');this.onSound('zombieLimbPop');}
         actor.armor.visible = z.armor > 0;
         const max=darkArmor(z.kind)?game.props.armors[darkArmor(z.kind)!].Toughness:futureArmor(z.kind)?game.props.armors[futureArmor(z.kind)!].Toughness:cowboyArmor(z.kind)?game.props.armors[cowboyArmor(z.kind)!].Toughness:pirateArmor(z.kind)?game.props.armors[pirateArmor(z.kind)!].Toughness:z.kind==='mummy_armor4'?game.props.armors.egypt_armor4.Toughness:z.kind==='mummy_armor2'?game.props.armors.egypt_armor2.Toughness:game.props.armors.egypt_armor1.Toughness;
         const animation = z.armor > max*2/3 ? 'Broken0' : z.armor > max/3 ? 'Broken1' : 'Broken2';
@@ -415,9 +416,9 @@ export class Scene {
   private removeActor(id:number,actor:Actor) {
     actor.plank?.removeFromParent();actor.plank?.dispose();actor.rig.removeFromParent();actor.rig.dispose();actor.armor?.removeFromParent();actor.armor?.dispose();actor.root.destroy({children:true});this.actors.delete(id);
   }
-  private dropFragment(actor:Actor,part:'head'|'arm'|'Cone'|'Bucket'|'Bricks') {
+  private dropFragment(actor:Actor,part:'head'|'arm'|'Cone'|'Bucket'|'Bricks'|'Helmet') {
     const rig=this.rig((actor.kind==='jetpackVeteran'||actor.kind==='futureJetpack'||actor.kind==='discoJetpack')?'future':actor.kind,part==='Bricks'?'BricksDrop':part);rig.scale.set(RIGS[actor.kind].scale);
-    rig.animation.play((part==='Cone'||part==='Bucket'||part==='Bricks')?actor.armor!.animation.lastAnimationName!:part==='arm'&&!['darkImp','imp','cowboyImp'].includes(actor.kind)?'newAnimation':'Idle',0);
+    rig.animation.play((part==='Cone'||part==='Bucket'||part==='Bricks'||part==='Helmet')?actor.armor!.animation.lastAnimationName!:part==='arm'&&!['darkImp','imp','cowboyImp'].includes(actor.kind)?'newAnimation':'Idle',0);
     const bone=actor.rig.armature.getBone(part==='head'?'head':part==='arm'?((actor.kind==='jetpackVeteran'||actor.kind==='futureJetpack'||actor.kind==='discoJetpack')?'armRoot_here':'arm_here'):'armorSOCKET')!;
     bone.updateGlobalTransform();
     const x=actor.root.x+actor.rig.x+bone.global.x*actor.rig.scale.x,y=actor.root.y+actor.rig.y+bone.global.y*actor.rig.scale.y;
@@ -448,7 +449,7 @@ export class Scene {
       if(death.cause==='potato'){const feathers=this.rig(actor.kind,'ParticleSeagull');feathers.scale.set(.51);feathers.position.copyFrom(actor.root.position);feathers.animation.play('Play',1);feathers.zIndex=actor.root.zIndex;this.actorLayer.addChild(feathers);this.particles.set(-z.id,feathers);}
     }
     if(!['footballMech','futureGargantuar','discoMech','futureProtector','futureShield','futureImp','mechCone','blackBull','bull','pirateParrot','pirateBarrel','impCannon','seagull','pelican','camel','camelTouch','pharaoh','pharaohWeak'].includes(actor.kind))this.dropFragment(actor,'head');if(actor.kind!=='bull'&&actor.kind!=='blackBull')this.onSound(actor.kind==='pirateParrot'?'pirateParrot/deathSound':'zombieLimbPop');
-    if(actor.armor?.visible){this.dropFragment(actor,z.kind.endsWith('_armor4')?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone');actor.armor.visible=false;}
+    if(actor.armor?.visible){this.dropFragment(actor,z.kind==='dark_armor3'?'Helmet':z.kind.endsWith('_armor4')?'Bricks':z.kind.endsWith('_armor2')?'Bucket':'Cone');actor.armor.visible=false;}
     if(death.cause==='match'&&actor.plank){actor.plank.removeFromParent();actor.plank.dispose();actor.plank=undefined;}
     if(death.cause==='potato'&&actor.kind!=='bull'&&actor.kind!=='blackBull'){this.removeActor(z.id,actor);return;}
     const animation=actor.kind==='pirateParrot'?'Die':'Death',timeline=animationTimeline(this.skeletons.get(actor.kind)!,actor.rig.armature.name,animation);
@@ -535,6 +536,7 @@ export class Scene {
     };
     for(const t of game.level.powerTiles){const rig=object(`power-tile-${t.row}-${t.column}`,'tile_'+t.group,game.plants.some(p=>p.row===t.row&&p.column===t.column)?'Idle_Lit':'Idle_Unlit',cellX(t.column),rowY(t.row)-31,.44);rig.zIndex=-100;}
     for(const sound of game.dark.sounds.splice(0))this.onSound(sound);
+    for(const p of game.dark.potions){const rig=object(`potion-${p.id}`,p.kind==='zombiepotion_speed'?'potionSpeed':'potionToughness',p.animation,cellX(p.column),rowY(p.row),.55);rig.animation.lastAnimationState!.playTimes=p.animation==='Idle'?0:1;}
     for(const v of game.dark.visuals){const rig=object(`dark-fx-${v.id}`,v.name,'Play',v.x,v.y,.55);rig.animation.lastAnimationState!.playTimes=1;}
     for(const p of game.dark.reflected)object(`dark-reflect-${p.id}`,p.name,'Idle',p.x,p.y,.55,p.armature);
     for(const sound of game.future.sounds.splice(0))this.onSound(sound);
@@ -753,7 +755,7 @@ export class Scene {
     for (const [index,kind] of [...new Set(kinds)].slice(0,6).entries()) {
       const actor = this.addActor(-index-1,zombieRig(kind),kind==='mummy_flag');
       actor.root.position.set(1280 + index % 2 * 70,260 + index * 65);
-      if(kind==='mummy_armor1'||kind==='mummy_armor2'||kind==='mummy_armor4'||pirateArmor(kind)||cowboyArmor(kind)||futureArmor(kind)||darkArmor(kind)){actor.armor=this.rig(actor.kind,kind.endsWith('_armor4')?'Bricks':kind.endsWith('_armor2')?'Bucket':'Cone');actor.armor.scale.set(.51);actor.armor.animation.play('Broken0',0);actor.root.addChild(actor.armor);}
+      if(kind==='mummy_armor1'||kind==='mummy_armor2'||kind==='mummy_armor4'||pirateArmor(kind)||cowboyArmor(kind)||futureArmor(kind)||darkArmor(kind)){actor.armor=this.rig(actor.kind,kind==='dark_armor3'?'Helmet':kind.endsWith('_armor4')?'Bricks':kind.endsWith('_armor2')?'Bucket':'Cone');actor.armor.scale.set(.51);actor.armor.animation.play('Broken0',0);actor.root.addChild(actor.armor);}
       this.animate(actor,'Idle');
       actor.rig.armature.advanceTime(.01);
     }

@@ -9,6 +9,7 @@ const PENDING_KEY = 'pvz2-web:pending-map-completion';
 export interface MapReward { world: string; node: number; kind: 'plant' | 'upgrade'; id: number }
 export interface PendingCompletion { world: string; level: string }
 export class ProgressStore {
+  temporaryUnlock = false;
   constructor(private storage: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>) {}
   isComplete(level: string) { return this.storage.getItem(completionKey(level)) === '1'; }
   completed(map: WorldMap) { return new Set(map.islands.flatMap(n => n.levels).filter(id => this.isComplete(id))); }
@@ -38,7 +39,7 @@ export class ProgressStore {
     const saved=this.storage.getItem('pvz2-web:campaign-rewards');return saved===null?[]:JSON.parse(saved);
   }
   unlockedWorlds():string[]{const saved=this.storage.getItem('pvz2-web:unlocked-worlds');return saved===null?[]:JSON.parse(saved);}
-  worldUnlocked(world:string){return world==='egypt'||this.unlockedWorlds().includes(world);}
+  worldUnlocked(world:string){return this.temporaryUnlock||world==='egypt'||this.unlockedWorlds().includes(world);}
   unlockWorld(world:string){if(this.worldUnlocked(world)||this.worldKeys()<1)return false;this.storage.setItem('pvz2-web:unlocked-worlds',JSON.stringify([...this.unlockedWorlds(),world]));return true;}
   worldKeys(){return this.campaignRewards().filter(r=>r.type==='worldtrophy'&&r.id==='worldkey').reduce((n,r)=>n+r.count,0)-this.unlockedWorlds().length;}
   finish(world: string, level: string, sprouts=0) {
@@ -63,6 +64,7 @@ export class ProgressStore {
     if(level==='cowboy2'||level==='cowboy3'||level==='cowboy14'||level==='cowboy17'||level==='cowboy22'||level==='cowboy25'||level==='cowboy26'||level==='cowboy30'||level==='cowboy33'||level==='cowboy34'){const rewards=this.campaignRewards();rewards.push({level,type:level==='cowboy3'||level==='cowboy25'||level==='cowboy33'?'worldtrophy':'pinata',id:level==='cowboy33'?'dangerroom_cowboy2':level==='cowboy25'?'worldtrophy_cowboy':level==='cowboy3'?'dangerroom_cowboy':'spine_cowboy',count:1});this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));}
     if(level==='future7'||level==='future8'){const rewards=this.campaignRewards();rewards.push({level,type:level==='future7'?'note':'worldtrophy',id:level==='future7'?'note_future':'worldkey',count:1});this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));}
     if(level==='future32'||level==='future33'||level==='future34'||level==='future4'||level==='future5'||level==='future11'||level==='future15'||level==='future22'||level==='future25'||level==='future27'||level==='future30'){const rewards=this.campaignRewards();rewards.push({level,type:level==='future32'||level==='future33'||level==='future4'||level==='future25'?'worldtrophy':'pinata',id:level==='future32'?'dangerroom_future2':level==='future33'?'dangerroom_future_sunbomb':level==='future25'?'worldtrophy_future':level==='future4'?'dangerroom_future':'spine_future',count:1});this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));}
+    if(['dark8','dark9','dark10'].includes(level)){const rewards=this.campaignRewards();rewards.push({level,type:level==='dark8'?'pinata':level==='dark9'?'note':'worldtrophy',id:level==='dark8'?'spine_dark':level==='dark9'?'note_dark':'worldkey',count:1});this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));}
     this.storage.setItem(completionKey(level), '1');
     this.storage.setItem(PENDING_KEY, JSON.stringify({ world, level }));
   }

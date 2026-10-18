@@ -244,10 +244,10 @@ export class MapRenderer {
       view.root.position.set(512 + x, 320 + draw.y); view.root.scale.set(draw.sx * scale, draw.sy * scale);
     }
   }
-  async showMap(map: WorldMap, camera: number, completed: ReadonlySet<string>, night: boolean, rewards: ReadonlySet<number>, progression: ProgressionArt, events: MapEvent[] = []) {
+  async showMap(map: WorldMap, camera: number, completed: ReadonlySet<string>, night: boolean, rewards: ReadonlySet<number>, progression: ProgressionArt, events: MapEvent[] = [], temporaryUnlock = false) {
     this.stop(); this.clear(); this.toolbar.children.forEach((child,i) => { child.visible = this.catalog.toolbar[i].owner !== 14; }); this.map = map; this.mode = 'map'; this.velocity = 0; this.setNight(night);
     this.progression = progression;
-    const states = islandStates(map, completed, rewards), dynamic: MapDraw[] = [], paths: MapDraw[] = [];
+    const states = islandStates(map, completed, rewards, temporaryUnlock), dynamic: MapDraw[] = [], paths: MapDraw[] = [];
     for (const island of map.islands) {
       const state = states.get(island.node)!;
       for (const next of island.next) {

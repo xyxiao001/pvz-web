@@ -8,10 +8,10 @@ export const initialNavigation = (): Navigation => ({ world: null, chooser: 0, c
 
 // Map progression and the port's implementation status are separate. Browsing a map
 // never unlocks its levels, grants world keys, or writes battle completion.
-export function islandStates(map: WorldMap, completed: ReadonlySet<string>, rewards: ReadonlySet<number> = new Set()) {
+export function islandStates(map: WorldMap, completed: ReadonlySet<string>, rewards: ReadonlySet<number> = new Set(), temporaryUnlock = false) {
   const states = new Map<number, 'locked' | 'open' | 'finished'>();
   for (const island of map.islands) states.set(island.node, (island.kind === 0 ? island.levels.some(id => completed.has(id)) : rewards.has(island.node)) ? 'finished'
-    : (map.id === 'egypt'||map.id==='pirate'||map.id==='future') && island.levels.some(id => map.startingLevels.includes(id)) ? 'open' : 'locked');
+    : (map.id === 'egypt'||map.id==='pirate'||map.id==='future'||map.id==='dark') && island.levels.some(id => map.startingLevels.includes(id)) ? 'open' : 'locked');
   const propagated = new Set<number>();
   const advance = (island: Island) => {
     if (propagated.has(island.node)) return;
@@ -26,6 +26,7 @@ export function islandStates(map: WorldMap, completed: ReadonlySet<string>, rewa
     }
   };
   for (const island of map.islands) if (states.get(island.node) === 'finished') advance(island);
+  if (temporaryUnlock) for (const island of map.islands) if (island.kind === 0 && states.get(island.node) === 'locked') states.set(island.node, 'open');
   return states;
 }
 export function bounds(map: WorldMap) {

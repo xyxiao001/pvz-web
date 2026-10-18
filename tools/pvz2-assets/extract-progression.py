@@ -9,7 +9,7 @@ spec = importlib.util.spec_from_file_location('shell_export', Path(__file__).wit
 e = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(e)
 plants = {}
-for plant, name in [(24,'SunShroom'),(51,'PuffShroom'),(11,'FumeShroom'),(4, 'CabbagePult'), (5, 'Bloomerang'), (6, 'IcebergLettuce'), (12, 'GraveBuster'), (7, 'BonkChoy'), (8, 'Repeater'), (25, 'SunflowerTwin'), (89, 'LaserBean'), (36, 'Blover'), (88, 'Citron'), (87, 'EMPeach'), (96, 'InfiNut'), (69, 'MagnifyingGrass'), (97, 'TileTurnipEpsilon')]:
+for plant, name in [(109,'SunBean'),(24,'SunShroom'),(51,'PuffShroom'),(11,'FumeShroom'),(4, 'CabbagePult'), (5, 'Bloomerang'), (6, 'IcebergLettuce'), (12, 'GraveBuster'), (7, 'BonkChoy'), (8, 'Repeater'), (25, 'SunflowerTwin'), (89, 'LaserBean'), (36, 'Blover'), (88, 'Citron'), (87, 'EMPeach'), (96, 'InfiNut'), (69, 'MagnifyingGrass'), (97, 'TileTurnipEpsilon')]:
     asset = e.read('plants/' + name + 'DIS')
     # AnimationController.onEnable replaces the prefab scale with CharacterScale (.42).
     asset.objects[1]['_lscale'] = [1, .42, .42, 1]
