@@ -1,5 +1,5 @@
 import type {Game} from '../src/game/model';
-import {cellX} from '../src/game/level';
+import {cellX,type PlantKind} from '../src/game/level';
 export function playFuture(g:Game,frame:number){
  for(const s of [...g.suns])if(!s.bomb)g.collect(s.id);
  for(const p of [...g.pickups])g.collectPickup(p.id);
@@ -160,4 +160,61 @@ export function playFutureFifth(g:Game,frame:number){
  for(const z of threats)if(g.food>0&&(g.level.day===22?z.x<cellX(3):(z.x<cellX(5)||threats.filter(t=>t.row===z.row).length>=3||z.kind==='future_gargantuar'))){
   const p=g.plants.filter(p=>['laser_bean','citron','snapdragon'].includes(p.kind)&&p.row===z.row&&p.action!=='food').sort((a,b)=>Number(g.level.powerTiles.some(t=>t.row===b.row&&t.column===b.column))-Number(g.level.powerTiles.some(t=>t.row===a.row&&t.column===a.column)))[0];if(p)g.plantFood(p.row,p.column);
  }
+}
+
+export function playFutureSixth(g:Game,frame:number){
+ for(const s of [...g.suns])if(!s.bomb)g.collect(s.id);
+ for(const p of [...g.pickups])g.collectPickup(p.id);
+ if(frame%12)return;
+ if(g.level.day===29){playFutureSapProtection(g);return;}
+ const threats=g.zombies.filter(z=>z.hp>0&&z.kind!=='future_protector_shield').sort((a,b)=>a.x-b.x);
+ const occupied=(r:number,c:number)=>g.plants.some(p=>p.hp>0&&p.row===r&&p.column===c);
+ const plant=(kind:PlantKind,r:number,c:number)=>g.level.day===26&&g.time>20&&g.sun-g.seedCost(kind)<50?false:g.plant(kind,r,c);
+ const rows=[...new Set([...threats.map(z=>z.row),0,1,2,3,4])];
+ if([26,27].includes(g.level.day)&&threats.some(z=>z.kind==='future_imp'&&z.future?.animation==='Fall'||['future_jetpack','future_jetpack_disco'].includes(z.kind)&&z.x<cellX(3)))g.plant('blover',4,8);
+ if([26,30].includes(g.level.day))for(const z of threats){
+  const c=Math.max(0,Math.min(8,Math.floor((z.x-190)/82)));
+  if(z.x<cellX(7))g.plant('iceburg',z.row,c);
+  if(z.x<cellX(5)&&threats.filter(q=>Math.abs(q.row-z.row)<=1&&Math.abs(q.x-z.x)<140).length>=3)for(const col of [c,c-1,c+1])if(col>=0&&col<9&&g.plant('cherry_bomb',z.row,col))break;
+ }
+ if(g.level.day===27){
+  if(g.preparing){for(let r=0;r<5;r++){g.plant('citron',r,0);}g.startLastStand();}
+
+ }else if(g.level.day===28){
+  for(const r of rows)if(!g.plants.some(p=>p.row===r&&p.kind==='redstinger'))g.plant('redstinger',r,1);
+  for(let r=0;r<5;r++)if(!occupied(r,0))plant('sunflower',r,0);
+  for(const c of [2,3,4])for(let r=0;r<5;r++)if(!occupied(r,c))g.plant(c===2?'redstinger':'pinkstarfruit',r,c);
+  if(!occupied(2,5))g.plant('holonut',2,5);
+ }else{
+  const first=0,attack=1;
+  if(g.level.day===30)for(const z of threats)if(z.x<cellX(6))g.plant('tallnut',z.row,4);
+  const attacker=g.level.day===30?'lightningreed':'electricpeashooter';
+  for(const r of rows)if(threats.some(z=>z.row===r)&&!g.plants.some(p=>p.kind===attacker&&p.row===r))plant(attacker,r,attack);
+  if(g.level.day!==30)for(let r=0;r<5;r++)if(!occupied(r,first))plant('sunflower',r,first);
+  if(g.level.day!==30)for(let r=0;r<5;r++)if(!occupied(r,first+3))plant('sunflower',r,first+3);
+  if(g.sun>=(g.level.day===30?125:250))for(const c of [attack,attack+1,attack+2])for(let r=0;r<5;r++)if(!occupied(r,c))plant(attacker,r,c);
+  if(g.level.day===30&&g.food>0&&!occupied(2,3))g.plant('holonut',2,3);
+
+ }
+ if(g.level.day===26&&g.food>0&&g.sun<200){const p=g.plants.find(p=>p.kind==='sunflower'&&p.action!=='food');if(p)g.plantFood(p.row,p.column);}
+ if(g.food>0&&threats.some(z=>z.x<cellX(7))){const p=g.plants.find(p=>p.kind==='holonut'&&p.action!=='food'&&!g.future.holonuts.get(p.id)?.shield);if(p)g.plantFood(p.row,p.column);}
+ for(const z of threats)if(g.food>0&&(z.x<cellX(4)||threats.filter(q=>q.row===z.row).length>=4||z.kind==='future_gargantuar')){
+  const p=g.plants.find(p=>['citron','electricpeashooter','lightningreed','redstinger','pinkstarfruit'].includes(p.kind)&&p.row===z.row&&p.action!=='food');if(p)g.plantFood(p.row,p.column);
+ }
+}
+
+function playFutureSapProtection(g:Game){
+ const threats=g.zombies.filter(z=>z.hp>0&&z.kind!=='future_protector_shield').sort((a,b)=>a.x-b.x),occupied=(r:number,c:number)=>g.plants.some(p=>p.row===r&&p.column===c),rows=[...new Set([...threats.map(z=>z.row),0,1,2,3,4])];
+ if(threats.some(z=>['future_jetpack','future_jetpack_disco'].includes(z.kind)&&z.x<cellX(3)||z.kind==='future_imp'&&z.future?.animation==='Fall'))g.plant('blover',4,8);
+ for(const z of threats){
+  const c=Math.max(2,Math.min(8,Math.floor((z.x-190)/82)));
+  if(z.x<cellX(5))for(const col of [8,7,6])if(g.plant('hurrikale',z.row,col))break;
+  if(['football_mech','mech_cone'].includes(z.kind)&&(z.future?.empUntil??0)<=g.time&&z.x<cellX(8))g.plant('empea',z.row,c);
+  if(z.x<cellX(5)&&threats.filter(q=>Math.abs(q.row-z.row)<=1&&Math.abs(q.x-z.x)<140).length>=3)for(const col of [c,c-1,c+1])if(col>=2&&col<9&&g.plant('cherry_bomb',z.row,col))break;
+ }
+ for(let r=0;r<5;r++)if(!occupied(r,3))g.plant('sunflower',r,3);
+ for(const r of rows)if(!g.plants.some(p=>p.kind==='electricpeashooter'&&p.row===r))g.plant('electricpeashooter',r,2);
+ for(let r=0;r<5;r++)if(!occupied(r,4))g.plant('sunflower',r,4);
+ if(g.sun>=250)for(const c of [2,4,6])for(const r of rows)if(!occupied(r,c))g.plant('electricpeashooter',r,c);
+ if(g.food>0){const p=g.time<130?g.plants.find(p=>p.kind==='sunflower'&&p.action!=='food'):g.plants.find(p=>p.kind==='electricpeashooter'&&p.action!=='food'&&threats.some(z=>z.row===p.row&&z.x<cellX(6)));if(p)g.plantFood(p.row,p.column);}
 }

@@ -1,4 +1,4 @@
-"""Export Far Future 1–25, with native power tiles and sun bombs, from the pinned build."""
+"""Export Far Future 1–30, with native power tiles and sun bombs, from the pinned build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -18,9 +18,17 @@ def rig(path):
 def props(path,names):
     objs=e.read('json/Objects/'+path).objects[0]['json']['objects']
     return {n:next(o['objdata'] for o in objs if n in o.get('aliases',[])) for n in names}
-paths={'powerplant':'plants/TileTurnipEpsilonPLANT','boss':'zombies/FutureZombossMechZOMBIE','starfruit':'plants/StarFruitPLANT','holonut':'plants/InfiNutPLANT','footballMech':'zombies/FutureMechFootballZOMBIE','powerplant_alpha':'plants/TileTurnipAlphaPLANT','powerplant_beta':'plants/TileTurnipBetaPLANT','citron':'plants/CitronPLANT','empea':'plants/EMPeachPLANT','futureGargantuar':'zombies/FutureGargantuarZOMBIE','discoMech':'zombies/FutureMechDiscoZOMBIE','discoJetpack':'zombies/FutureJetpackDiscoZOMBIE','laser_bean':'plants/LaserBeanPLANT','blover':'plants/BloverPLANT','future':'zombies/FutureBasicZOMBIE','futureFlag':'zombies/FutureFlagZOMBIE','futureJetpack':'zombies/FutureJetpackZOMBIE','futureShield':'zombies/FutureProtectorShieldZOMBIE','futureProtector':'zombies/FutureProtectorZOMBIE','futureImp':'zombies/FutureImpZOMBIE','mechCone':'zombies/FutureMechConeZOMBIE'}
+paths={'pinkstarfruit':'plants/PinkStarFruitPLANT','redstinger':'plants/RedStingerPLANT','jetpackVeteran':'zombies/FutureJetpackVeteranZOMBIE','powerplant':'plants/TileTurnipEpsilonPLANT','boss':'zombies/FutureZombossMechZOMBIE','starfruit':'plants/StarFruitPLANT','holonut':'plants/InfiNutPLANT','footballMech':'zombies/FutureMechFootballZOMBIE','powerplant_alpha':'plants/TileTurnipAlphaPLANT','powerplant_beta':'plants/TileTurnipBetaPLANT','citron':'plants/CitronPLANT','empea':'plants/EMPeachPLANT','futureGargantuar':'zombies/FutureGargantuarZOMBIE','discoMech':'zombies/FutureMechDiscoZOMBIE','discoJetpack':'zombies/FutureJetpackDiscoZOMBIE','laser_bean':'plants/LaserBeanPLANT','blover':'plants/BloverPLANT','future':'zombies/FutureBasicZOMBIE','futureFlag':'zombies/FutureFlagZOMBIE','futureJetpack':'zombies/FutureJetpackZOMBIE','futureShield':'zombies/FutureProtectorShieldZOMBIE','futureProtector':'zombies/FutureProtectorZOMBIE','futureImp':'zombies/FutureImpZOMBIE','mechCone':'zombies/FutureMechConeZOMBIE'}
 actors={n:rig(p) for n,p in paths.items()}
-rigs={n:rig(p) for n,p in {'bossMissile':'projectiles/FutureZombossMissilePRJ','starShot':'projectiles/Star0PRJ','starFood':'projectiles/StarFoodPRJ','starHit':'59b09237-6517-45a8-8b00-22844b9734ab','starFoodHit':'30b53c8b-3406-4462-8f77-7cf23791d987','infinutShield':'zombies/FutureInfiNutShieldZOMBIE','citronShot':'projectiles/Citron0PRJ','citronFood':'projectiles/CitronFoodPRJ','futureLawn':'lawns/FutureLAWN','futureNightLawn':'lawns/FutureNightLAWN','mower':'projectiles/FutureMowerPRJ','futureCone':'armors/FutureConeARMOR','futureBucket':'armors/FutureBucketARMOR','futureShield':'zombies/FutureProtectorShieldZOMBIE','sunbomb':'9e2726a5-09b5-4f87-9977-f88aef61ecc6'}.items()}
+red=e.read('plants/RedStingerPLANT')
+redco=next(o for o in walk(red.objects) if 'rayDB' in o)
+redray=red.ref(redco['rayDB'])
+actors['redstinger']={'rig':e.rig(redray['_dragonAsset']['asset'],redray['_dragonAtlasAsset']['asset']),'armature':'RedStinger','animation':'Idle','group':'future'}
+rigs={n:rig(p) for n,p in {'futureBricks':'armors/FutureBricksARMOR','pinkShot':'projectiles/PinkStar0PRJ','pinkFood':'projectiles/PinkStarFoodPRJ','redShot':'projectiles/RedStinger0PRJ','redWeak':'projectiles/RedStingerWeakPRJ','bossMissile':'projectiles/FutureZombossMissilePRJ','starShot':'projectiles/Star0PRJ','starFood':'projectiles/StarFoodPRJ','starHit':'59b09237-6517-45a8-8b00-22844b9734ab','starFoodHit':'30b53c8b-3406-4462-8f77-7cf23791d987','infinutShield':'zombies/FutureInfiNutShieldZOMBIE','citronShot':'projectiles/Citron0PRJ','citronFood':'projectiles/CitronFoodPRJ','futureLawn':'lawns/FutureLAWN','futureNightLawn':'lawns/FutureNightLAWN','mower':'projectiles/FutureMowerPRJ','futureCone':'armors/FutureConeARMOR','futureBucket':'armors/FutureBucketARMOR','futureShield':'zombies/FutureProtectorShieldZOMBIE','sunbomb':'9e2726a5-09b5-4f87-9977-f88aef61ecc6'}.items()}
+rigs['redRay']={**actors['redstinger'],'armature':'Ray','animation':'Idle'}
+for name,path in [('pinkHit','projectiles/PinkStar0PRJ'),('pinkFoodHit','projectiles/PinkStarFoodPRJ'),('redHit','projectiles/RedStinger0PRJ')]:
+    co=next(o for o in walk(e.read(path).objects) if 'PopSound' in o)
+    rigs[name]=rig(co['PopParticle'][0]['asset'])
 particle=next(o for o in walk(e.read('resouce_prefabs/ParticlesRP').objects) if 'empEffect' in o)
 rigs['empEffect']=rig(particle['empEffect']['asset'])
 for group in ['alpha','beta','gamma','delta','epsilon']:
@@ -44,7 +52,7 @@ boss_file=e.OUT/'rigs'/actors['boss']['rig']/'skeleton.json';boss_data=json.load
 for item in walk(boss_data):
     if item.get('action')=='Nope':del item['action']
 c.write_json(boss_file,boss_data)
-properties={'plants':props('PlantProps',['powerplant','starfruit','holonut','laser_bean','blover','citron','empea','powerplant_alpha','powerplant_beta']),'zombies':props('ZombieProps',['zombossmech_future','football_mech','future_infinut_shield','future_gargantuar','disco_mech','future_jetpack_disco','future','future_armor1','future_armor2','future_flag','future_jetpack','future_protector','future_imp','mech_cone','future_protector_shield']),'armors':props('ArmorProps',['future_armor1','future_armor2']),'projectiles':props('ProjectileProps',['zomboss_missile_future','star','star_pf','citron','citron_pf']),'plantAnimations':{}}
+properties={'plants':props('PlantProps',['pinkstarfruit','redstinger','powerplant','starfruit','holonut','laser_bean','blover','citron','empea','powerplant_alpha','powerplant_beta']),'zombies':props('ZombieProps',['future_armor4','future_jetpack_veteran','zombossmech_future','football_mech','future_infinut_shield','future_gargantuar','disco_mech','future_jetpack_disco','future','future_armor1','future_armor2','future_flag','future_jetpack','future_protector','future_imp','mech_cone','future_protector_shield']),'armors':props('ArmorProps',['future_armor4','future_armor1','future_armor2']),'projectiles':props('ProjectileProps',['pinkstar','pinkstar_pf','redstinger','redstinger_weak','zomboss_missile_future','star','star_pf','citron','citron_pf']),'plantAnimations':{}}
 for name,description in {**actors,**rigs}.items():
     sk=json.loads((e.OUT/'rigs'/description['rig']/'skeleton.json').read_text());arm=next(a for a in sk['armature'] if a['name']==description['armature']);timelines={}
     for animation in arm['animation']:
@@ -61,7 +69,7 @@ at=0;curve=[]
 for f in frames:
     curve.append({'at':at/laser['frameRate'],'x':101.85+f.get('x',0)});at+=f.get('duration',1)
 c.write_json(e.OUT/'laser-food-curve.json',curve)
-for day in range(1,26):c.write_json(e.OUT/f'future{day}.source.json',e.read(f'levels/future{day}').objects[0]['json'])
+for day in range(1,31):c.write_json(e.OUT/f'future{day}.source.json',e.read(f'levels/future{day}').objects[0]['json'])
 for path,name in [('lawns/FutureLAWN','lawn'),('lawns/FutureNightLAWN','lawn-night')]:
     lawn=e.read(path);co=next(x for x in walk(lawn.objects) if x.get('type')=='dragonBones.ArmatureDisplay')
     at=e.read(co['_dragonAtlasAsset']['asset']);atlas=json.loads(at.objects[0]['_atlasJson']);rect=next(x for x in atlas['SubTexture'] if x['name']==('LawnNight' if name=='lawn-night' else 'Lawn'))
@@ -73,13 +81,13 @@ def sound(name,value):
     for ref in refs:
         clip=e.read(ref['asset']);ext=clip.objects[0]['_native'];target=e.OUT/'audio'/(ref['asset']+ext);target.parent.mkdir(exist_ok=True)
         target.write_bytes(c.native(ref['asset'],ext.lstrip('.')));sounds[name].append(str(target.relative_to(c.OUT)))
-for name,path in {**paths,'starShot':'projectiles/Star0PRJ','starFood':'projectiles/StarFoodPRJ','citronShot':'projectiles/Citron0PRJ','citronFood':'projectiles/CitronFoodPRJ','futureShield':'zombies/FutureProtectorShieldZOMBIE','sunbomb':'9e2726a5-09b5-4f87-9977-f88aef61ecc6'}.items():
+for name,path in {**paths,'pinkShot':'projectiles/PinkStar0PRJ','pinkFood':'projectiles/PinkStarFoodPRJ','redShot':'projectiles/RedStinger0PRJ','redWeak':'projectiles/RedStingerWeakPRJ','starShot':'projectiles/Star0PRJ','starFood':'projectiles/StarFoodPRJ','citronShot':'projectiles/Citron0PRJ','citronFood':'projectiles/CitronFoodPRJ','futureShield':'zombies/FutureProtectorShieldZOMBIE','sunbomb':'9e2726a5-09b5-4f87-9977-f88aef61ecc6'}.items():
     for obj in walk(e.read(path).objects):
         for key,value in obj.items():
-            if key.lower().endswith(('sound','sounds','musicclip','musicclipweak')) and value:sound(name+'/'+key,value)
+            if (key.lower().endswith(('sound','sounds','musicclip','musicclipweak')) or name=='redstinger' and key in ['foodCharge','foodStart','rayEnd','rayStart','shootSoundsScared']) and value:sound(name+'/'+key,value)
 sound('boss/missileImpact',missileco['PopSound'])
 npc=e.read('b697cdfd-e783-4f80-abbe-ac197db6cf97');narratives={}
-for name in ['FUTURE_MANUAL_MOWERS','FUTURE_INTRO_ZOMBOSS','FUTURE_OUTRO_ZOMBOSS','FUTURE_CHALLENGE_PRESET_B','FUTURE_CHALLENGE_LASTSTAND_A','FUTURE_CHALLENGE_PROTECTPLANTS_A','FUTURE_CHALLENGE_PRESET_A','FUTURE_INTRO_GARGANTUAR','FUTURE_INTRO_FIRSTLEVEL','FUTURE_CHALLENGE_SUNBOMBS_A','FUTURE_OUTRO_DANGER_ROOM_KEY']:
+for name in ['FUTURE_26_INTRO','FUTURE_MANUAL_MOWERS','FUTURE_INTRO_ZOMBOSS','FUTURE_OUTRO_ZOMBOSS','FUTURE_CHALLENGE_PRESET_B','FUTURE_CHALLENGE_LASTSTAND_A','FUTURE_CHALLENGE_PROTECTPLANTS_A','FUTURE_CHALLENGE_PRESET_A','FUTURE_INTRO_GARGANTUAR','FUTURE_INTRO_FIRSTLEVEL','FUTURE_CHALLENGE_SUNBOMBS_A','FUTURE_OUTRO_DANGER_ROOM_KEY']:
     flow=next(o['objdata']['Flow'] for o in e.read('json/Objects/NarrativeList').objects[0]['json']['objects'] if name in o.get('aliases',[]))
     for step in flow:
         if 'Lines' in step:
@@ -93,4 +101,4 @@ for name,path in [('music','P1_LP_Future'),('minigame','MG_Future')]:
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{'note_future':e.sprite(c.decode_uuid(c.config['uuids'][c.path_index['note/future/spriteFrame']]))}})
 c.write_json(c.ROOT/'apps/pvz2/future-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Far Future 1–25')
+print('Exported Far Future 1–30')
