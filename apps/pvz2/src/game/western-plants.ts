@@ -43,9 +43,9 @@ export class WesternPlants {
   }
   private metal(z:Zombie):Metal|null {
     if(z.west?.plate){const fraction=z.west.plate/this.#game.props.zombies[z.kind].ShieldToughness;return {name:'plateDrop',animation:`Broken${fraction>2/3?0:fraction>1/3?1:2}`};}
-    if(z.armor>0&&z.kind==='cowboy_armor2'){
-      const max=this.#game.props.armors.cowboy_armor2.Toughness;
-      return {name:'cowboyBucket',animation:`Broken${z.armor>max*2/3?0:z.armor>max/3?1:2}`};
+    if(z.armor>0&&(z.kind==='cowboy_armor2'||z.kind==='dark_armor2')){
+      const max=this.#game.props.armors[z.kind==='dark_armor2'?'dark_armor2':'cowboy_armor2'].Toughness;
+      return {name:z.kind==='dark_armor2'?'darkBucket':'cowboyBucket',animation:`Broken${z.armor>max*2/3?0:z.armor>max/3?1:2}`};
     }return null;
   }
   private absorb(p:Plant,z:Zombie,food:boolean){

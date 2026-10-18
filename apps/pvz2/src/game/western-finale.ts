@@ -75,10 +75,10 @@ export class WesternFinale {
     g.kills++;
     if(z.food){g.pickups.push({id:-100000-z.id,kind:'food',x:z.x,y:rowY(z.row)-45,age:0});z.food=false;}
     let ally=z;
-    if(this.states.get(p.id)!.empowered){this.converted.add(z.id);ally=g.spawnZombie('cowboy_gargantuar',z.row,z.x);this.sounds.push('hypnoshroom/transGargSound');}
+    if(this.states.get(p.id)!.empowered){this.converted.add(z.id);ally=g.spawnZombie(z.kind.startsWith('dark')?'dark_gargantuar':'cowboy_gargantuar',z.row,z.x);this.sounds.push('hypnoshroom/transGargSound');}
     else this.sounds.push('hypnoshroom/tranSound');
     g.zombies=g.zombies.filter(q=>q!==z&&q!==ally);ally.reversed=true;ally.eating=false;
-    if(ally.west){ally.west.animation=ally.kind==='cowboy_gargantuar'?'Walk':undefined;ally.west.at=g.time;}
+    if(ally.west){ally.west.animation=(ally.kind==='cowboy_gargantuar'||ally.kind==='dark_gargantuar')?'Walk':undefined;ally.west.at=g.time;}
     this.allies.push(ally);this.sounds.push('hypnoshroom/hypnoBGSound','hypnoshroom/hyponoTurnSound');
   }
   adopt(z:Zombie){this.#game.zombies=this.#game.zombies.filter(q=>q!==z);this.allies.push(z);}

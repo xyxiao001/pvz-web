@@ -1,0 +1,10 @@
+import {readFileSync} from 'node:fs';
+import {props as previous,timing} from './future-fixture';
+import {Game} from '../src/game/model';
+import {readLevel,rowY,type Properties,type SourceLevel} from '../src/game/level';
+const read=<T>(path:string):T=>JSON.parse(readFileSync(new URL('../public/assets/dark/'+path,import.meta.url),'utf8'));
+const extra=read<Properties>('properties.json');
+export const props:Properties={...previous,plants:{...previous.plants,...extra.plants},zombies:{...previous.zombies,...extra.zombies},armors:{...previous.armors,...extra.armors},plantAnimations:{...previous.plantAnimations,...extra.plantAnimations}};
+export const level=(day:number)=>readLevel(read<SourceLevel>(`dark${day}.source.json`));
+export const create=(day:number,seed=1234)=>new Game(level(day),props,timing,z=>({x:z.x,y:rowY(z.row)-95}),seed,false);
+export {tick} from './future-fixture';

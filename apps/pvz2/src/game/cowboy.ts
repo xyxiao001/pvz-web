@@ -36,7 +36,7 @@ export class CowboyBattle {
   const g=this.#game,props=g.props.zombies[z.kind];
   if((z.kind==='west_bull'||z.kind==='west_bull_veteran'))z.west={at:g.time,elapsed:0,imp:true,fired:false,bull:{delay:props.BullRunAgainDelay,blocked:false,retreating:false,cheer:3}};
   if(z.kind==='chicken_farmer')z.west={at:g.time,elapsed:0,chickens:true};
-  if(z.kind==='cowboy_gargantuar')z.west={at:g.time,elapsed:0,imp:true,animation:'Walk',fired:false};
+  if(z.kind==='cowboy_gargantuar'||z.kind==='dark_gargantuar')z.west={at:g.time,elapsed:0,imp:true,animation:'Walk',fired:false};
   if(z.kind==='piano'||z.kind==='west_bullrider')z.west={at:g.time,elapsed:0};
   if(z.kind==='prospector')z.west={at:g.time,elapsed:0,fuse:props.ExplodeCountdown,ignited:true,dirty:false};
   if(z.kind.startsWith('poncho'))z.west={at:g.time,elapsed:0,poncho:props.PonchoToughness,plate:g.random()<props.ChanceToPlate?props.ShieldToughness:0};
@@ -89,7 +89,7 @@ export class CowboyBattle {
  tickZombie(z:Zombie,dt:number){
   const g=this.#game,s=z.west;
   if((z.kind==='west_bull'||z.kind==='west_bull_veteran'))return this.tickBull(z,dt);
-  if(z.kind==='cowboy_gargantuar')return this.tickGargantuar(z,dt);
+  if(z.kind==='cowboy_gargantuar'||z.kind==='dark_gargantuar')return this.tickGargantuar(z,dt);
   if(s?.poisonAt!==undefined&&g.time-s.poisonAt>=2)return true;
   if(z.kind==='piano'&&z.hp<=g.props.zombies.piano.Toughness/2){if(!s!.animation){s!.animation='Walk_Break';s!.at=g.time;}else if(s!.animation==='Walk_Break'&&g.time-s!.at>=g.props.plantAnimations.piano.Walk_Break.duration)s!.animation='Walk_Broken';}
   if(z.kind==='prospector'){
@@ -151,27 +151,29 @@ export class CowboyBattle {
   return true;
  }
  private tickGargantuar(z:Zombie,dt:number){
-  const g=this.#game,s=z.west!,timelines=g.props.plantAnimations.cowboyGargantuar;
+  const g=this.#game,s=z.west!,rig=z.kind==='dark_gargantuar'?'darkGargantuar':'cowboyGargantuar',timelines=g.props.plantAnimations[rig];
   const friendly=g.westFinale.allies.includes(z),foes=friendly?g.zombies:g.westFinale.allies;
   const foe=foes.find(a=>a.hp>0&&g.inLane(a,z.row)&&Math.abs(a.x-z.x)<90);
   const target=friendly?undefined:g.plants.filter(p=>p.hp>0&&!p.leap&&p.row===z.row&&Math.abs(cellX(p.column)-z.x)<75&&!(p.kind==='escaperoot'&&p.rootGrown)&&!(p.kind==='springbean'&&['Ready','Idle_Ready'].includes(p.animation!))).sort((a,b)=>b.column-a.column)[0];
   const start=(animation:string)=>{s.animation=animation;s.at=g.time;s.elapsed=0;s.fired=false;};
   if(s.animation==='Walk'){
-   if(s.imp&&z.hp<g.props.zombies.cowboy_gargantuar.Toughness/2&&(z.reversed?z.x<cellX(6):z.x>cellX(2))){start('Throw');this.sounds.push('cowboyGargantuar/ImpThrowSaySounds');}
+   if(s.imp&&z.hp<g.props.zombies[z.kind].Toughness/2&&(z.reversed?z.x<cellX(6):z.x>cellX(2))){start('Throw');this.sounds.push(rig+'/ImpThrowSaySounds');}
    else if(foe||target)start('Smash');else return false;
   }
   s.elapsed+=dt*(g.time<z.chilledUntil?.5:1);
   const event=s.animation==='Smash'?'smash':'impThrow';
   if(!s.fired&&s.elapsed>=timelines[s.animation!].events.find(e=>e.name===event)!.at){
    s.fired=true;
-   if(event==='impThrow'){s.imp=false;const imp=g.spawnZombie('west_bullrider',z.row,z.x);imp.reversed=z.reversed;imp.leap={fromX:z.x,fromY:rowY(z.row)-100,toX:cellX(z.reversed?6:2),toRow:z.row,at:g.time,duration:1.5};if(friendly)g.westFinale.adopt(imp);}
+   if(event==='impThrow'){s.imp=false;const imp=g.spawnZombie(z.kind==='dark_gargantuar'?'dark_imp':'west_bullrider',z.row,z.x);imp.reversed=z.reversed;imp.leap={fromX:z.x,fromY:rowY(z.row)-100,toX:cellX(z.reversed?6:2),toRow:z.row,at:g.time,duration:1.5};if(friendly)g.westFinale.adopt(imp);}
    else {
-    if(foe){if(friendly){const reflected=g.westFinale.hitAlly(foe,g.props.zombies.cowboy_gargantuar.SmashDamage);if(reflected)g.damage(z,reflected);}else g.damage(foe,g.props.zombies.cowboy_gargantuar.SmashDamage);}
+    if(foe){if(friendly){const reflected=g.westFinale.hitAlly(foe,g.props.zombies[z.kind].SmashDamage);if(reflected)g.damage(z,reflected);}else g.damage(foe,g.props.zombies[z.kind].SmashDamage);}
     else if(target){if(target.kind==='spikeweed'||target.kind==='spikerock'){g.damage(z,g.props.plants[target.kind].Damage);if(target.action!=='food'){if(target.kind==='spikerock'){target.spikes!--;if(target.spikes===0)target.hp=0;}else target.hp=0;}}else {target.hp=0;target.armor=0;}}
+    if(z.kind==='cowboy_gargantuar'){
     // The west giant's smash point is 260 source pixels ahead (the actor scale is .51).
     const x=z.x-260.4515*.51*(z.reversed?-1:1);
-    for(const a of foes)if(a.hp>0&&g.inLane(a,z.row)&&Math.abs(a.x-x)<BOARD.cellWidth+20)g.damage(a,g.props.zombies.cowboy_gargantuar.SplashDamageToZombies*(friendly?g.props.plants.hypnoshroom.HypnoedZombieDamageScale:1),'potato');
-    if(!friendly)for(const p of g.plants)if(p.hp>0&&p.row===z.row&&Math.abs(cellX(p.column)-x)<BOARD.cellWidth){const damage=g.props.zombies.cowboy_gargantuar.SplashDamageToPlants,armor=Math.min(damage,p.armor);p.armor-=armor;p.hp-=damage-armor;}
+    for(const a of foes)if(a.hp>0&&g.inLane(a,z.row)&&Math.abs(a.x-x)<BOARD.cellWidth+20)g.damage(a,g.props.zombies[z.kind].SplashDamageToZombies*(friendly?g.props.plants.hypnoshroom.HypnoedZombieDamageScale:1),'potato');
+    if(!friendly)for(const p of g.plants)if(p.hp>0&&p.row===z.row&&Math.abs(cellX(p.column)-x)<BOARD.cellWidth){const damage=g.props.zombies[z.kind].SplashDamageToPlants,armor=Math.min(damage,p.armor);p.armor-=armor;p.hp-=damage-armor;}
+    }
    }
   }
   if(s.elapsed>=timelines[s.animation!].duration)start('Walk');
