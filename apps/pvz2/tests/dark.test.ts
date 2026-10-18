@@ -3,14 +3,14 @@ import assert from 'node:assert/strict';
 import {create,level,props,tick} from './dark-fixture';
 import {playDark} from './dark-strategy';
 import {cellX,rowY,type PlantKind} from '../src/game/level';
-for(const day of [1,2,3,4,5,6,7,8,9,10])test(`Dark Ages ${day} legal replay`,()=>{
+for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15])test(`Dark Ages ${day} legal replay`,()=>{
  const g=create(day),used=new Set<PlantKind>(),plant=g.plant.bind(g);g.plant=(kind,r,c,p)=>{const ok=plant(kind,r,c,p);if(ok)used.add(kind);return ok;};
  for(let f=0;f<90000&&g.phase==='playing';f++){playDark(g,f);g.tick(1/60);g.events.length=0;}
  console.log('dark'+day,g.phase,g.time,g.wave,[...used]);assert.equal(g.phase,'won');assert.ok(used.size<=6);assert.ok(!used.has('fumeshroom')||day>=5);
 });
 const quiet=()=>{const g=create(5);g['nextWave']=Infinity;g.graves=[];return g;};
 test('Special graves produce 100 sun or one food pickup, including gravebuster removal',()=>{
- const g=quiet();g.graves=[{id:100,row:0,column:4,hp:0,stage:0,kind:'gravestoneSunOnDestruction'},{id:101,row:1,column:4,hp:0,stage:0,kind:'gravestonePlantfoodOnDestruction'}];tick(g,.1);assert.equal(g.suns.reduce((s,p)=>s+p.value,0),100);assert.equal(g.sunProduced,0);assert.equal(g.pickups.length,1);tick(g,1);assert.equal(g.pickups.length,1);
+ const g=quiet();g.graves=[{id:100,row:0,column:4,hp:0,stage:0,kind:'gravestoneSunOnDestruction'},{id:101,row:1,column:4,hp:0,stage:0,kind:'gravestonePlantfoodOnDestruction'}];tick(g,.1);assert.equal(g.suns.reduce((s,p)=>s+p.value,0),100);assert.equal(g.sunProduced,100);assert.equal(g.pickups.length,1);tick(g,1);assert.equal(g.pickups.length,1);
  g.graves.push({id:102,row:2,column:4,hp:700,stage:0,kind:'gravestoneSunOnDestruction'});g.addPlant('gravebuster',2,4);tick(g,10);assert.equal(g.graves.length,0);assert.ok(g.suns.some(s=>s.value===100));
 });
 test('Fume pierces a line, is not reflected, and finishes its three-second food stream',()=>{
@@ -76,4 +76,10 @@ test('Potions drop before consumption, cap buffs at three, modify speed and dama
  for(let i=0;i<2;i++){add('zombiepotion_speed');tick(g,.8);assert.equal(g.dark.eatPotion(z),true);}add('zombiepotion_speed');tick(g,.8);assert.equal(g.dark.eatPotion(z),false);assert.equal(z.dark!.speed,3);
  g.dark.potions=[];for(let i=0;i<3;i++){add('zombiepotion_toughness');tick(g,.8);g.dark.eatPotion(z);}assert.equal(z.dark!.toughness,3);g.damage(z,100);assert.ok(Math.abs(z.hp-(190-100*.85**3))<1e-8);tick(g,2);assert.ok(g.dark.potions.every(p=>p.animation!=='Consume'));
  const start=z.x;z.frozenUntil=0;tick(g,.1);assert.ok(Math.abs(start-z.x-props.zombies.dark.WalkSPS*82*1.5**3*.1)<1e-7);assert.ok(Math.abs(g.dark.scale(z)-1.1**6)<1e-8);
+});
+
+test('Wizard sheep restores after its owner dies, and peanut food finishes with armor',()=>{
+ const g=quiet();g.addPlant('wallnut',2,3);const p=g.plants[0],z=g.spawnZombie('dark_wizard',2,cellX(3)+35);tick(g,1.5);assert.equal(p.sheep,z.id);assert.equal(g.dark.sheep.length,1);const hp=p.hp;
+ g.spawnZombie('dark_gargantuar',2,cellX(3)+50);tick(g,3);assert.equal(p.hp,hp);g.damage(z,10000);tick(g,.1);assert.equal(p.sheep,undefined);tick(g,2);assert.equal(g.dark.sheep.length,0);assert.equal(g.dark.links.length,0);
+ const h=quiet();h.addPlant('peanut',2,1);h.food=1;assert.equal(h.plantFood(2,1),true);tick(h,4);assert.equal(h.plants[0].action,'idle');assert.equal(h.plants[0].armor,6000);assert.equal(h.plants[0].burst,0);
 });

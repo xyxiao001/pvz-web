@@ -7,11 +7,54 @@ export const darkArmor=(kind:ZombieKind)=>kind==='dark_armor3'?'dark_armor3':kin
 export const graveArt=(kind?:string)=>kind==='gravestoneSunOnDestruction'?'graveSun':kind==='gravestonePlantfoodOnDestruction'?'graveFood':'grave';
 export interface Potion {id:number;kind:'zombiepotion_speed'|'zombiepotion_toughness';row:number;column:number;animation:'Spawn'|'Idle'|'Consume'|'Splat';at:number;dropped:boolean}
 export interface DarkZombie {speed:number;toughness:number;scaleFrom:number;scaleAt:number;bean:boolean;health:number;sun:number;blastAt:number}
+interface Wizard {animation:'Walk'|'Attack';at:number;elapsed:number;cooldown:number;first:boolean;target:number|null;event:number}
+interface Sheep {id:number;plant:Plant;wizard:number;at:number;animation:'Spawn'|'Idle0'|'Die'}
 interface Jester {animation:string;at:number;until:number}
 interface Reflected {id:number;owner:Zombie;name:string;armature?:string;x:number;y:number;fromX:number;fromY:number;at:number;damage:number;released:boolean;friendly:boolean}
 export class DarkBattle {
   readonly #game:Game;
   private serial=0;
+  wizards=new Map<number,Wizard>();
+  sheep:Sheep[]=[];
+  links:{id:number;x:number;y:number;toX:number;toY:number;at:number}[]=[];
+  spawn(z:Zombie){if(z.kind==='dark_wizard'){const p=this.#game.props.zombies.dark_wizard;this.wizards.set(z.id,{animation:'Walk',at:this.#game.time,elapsed:0,cooldown:p.TimeBeforeFirst+this.#game.random()*p.TimeBeforeFirstAdditional,first:true,target:null,event:0});}}
+  private sheepable(p:Plant){return p.hp>0&&p.sheep===undefined&&p.action!=='food'&&!p.hidden&&!p.leap&&!this.#game.props.plants[p.kind].CannotBeSheepenedByWizard;}
+  private wizardTarget(z:Zombie,s:Wizard){const plants=this.#game.plants.filter(p=>this.sheepable(p));return plants.sort((a,b)=>Number(cellX(a.column)>z.x)-Number(cellX(b.column)>z.x)||(s.first?Math.abs(a.row-z.row)-Math.abs(b.row-z.row):0)||b.column-a.column)[0];}
+  private tickWizards(dt:number){
+    const g=this.#game;
+    for(const sheep of this.sheep){if(sheep.animation!=='Die'&&!g.zombies.some(z=>z.id===sheep.wizard&&z.hp>0)){delete sheep.plant.sheep;sheep.animation='Die';sheep.at=g.time;}else if(sheep.animation==='Spawn'&&g.time-sheep.at>=g.props.plantAnimations.wizardSheep.Spawn.duration){sheep.animation='Idle0';sheep.at=g.time;}}
+    this.sheep=this.sheep.filter(s=>s.animation!=='Die'||g.time-s.at<g.props.plantAnimations.wizardSheep.Die.duration);
+    this.links=this.links.filter(l=>g.time-l.at<g.props.plantAnimations.wizardLink.Play1.duration);
+    for(const z of g.zombies){const s=this.wizards.get(z.id);if(!s||z.hp<=0||z.leap||g.time<z.frozenUntil||g.time<(z.stunnedUntil??0)||g.time<(z.butteredUntil??0))continue;
+      const prop=g.props.zombies.dark_wizard,rate=(g.time<z.chilledUntil?.5:1)*Math.pow(1.5,z.dark?.speed??0);
+      if(s.animation==='Walk'){
+        if(z.x>cellX(9))continue;
+        s.cooldown-=dt*rate;const close=g.plants.find(p=>this.sheepable(p)&&p.row===z.row&&Math.abs(z.x-cellX(p.column))<38);
+        const target=close??(s.cooldown<=0?this.wizardTarget(z,s):undefined);
+        if(target){s.target=target.id;s.animation='Attack';s.at=g.time;s.elapsed=0;s.event=0;z.eating=false;}
+      }else{
+        s.elapsed+=dt*rate;const timeline=g.props.plantAnimations.darkWizard.Attack;
+        while(s.event<timeline.events.length&&s.elapsed>=timeline.events[s.event].at){const e=timeline.events[s.event++].name;
+          if(e==='charge'||e==='chargeSay'||e==='magic')this.sounds.push('darkWizard/'+(e==='charge'?'chargeSounds':e==='chargeSay'?'chargeSaySounds':'magicSounds'));
+          if(e==='magic'){let p=g.plants.find(p=>p.id===s.target&&this.sheepable(p));p??=this.wizardTarget(z,s);if(p){p.sheep=z.id;this.sheep.push({id:++this.serial,plant:p,wizard:z.id,at:g.time,animation:'Spawn'});this.links.push({id:++this.serial,x:z.x-18,y:rowY(z.row)-100,toX:cellX(p.column),toY:rowY(p.row)-40,at:g.time});this.visual('wizardHit',cellX(p.column),rowY(p.row));s.cooldown=prop.TimeBetween+g.random()*prop.TimeBetweenAdditional;}s.first=false;}
+        }
+        if(s.elapsed>=timeline.duration){s.animation='Walk';s.at=g.time;}
+      }
+    }
+    for(const [id] of this.wizards)if(!g.zombies.some(z=>z.id===id))this.wizards.delete(id);
+  }
+  peanutStage(p:Plant){return Math.max(0,Math.min(3,4-Math.ceil(p.hp/this.#game.props.plants.peanut.Toughness*4)));}
+  peanutFood(p:Plant){const g=this.#game;p.hp=g.props.plants.peanut.Toughness;p.armor=g.props.plants.peanut.ArmorToughness;this.play(p,'FoodStart','food');p.nextAction=Infinity;}
+  tickPeanut(p:Plant,dt:number){
+    const g=this.#game,prop=g.props.plants.peanut,stage=this.peanutStage(p);p.age+=dt;
+    const shoot=(food:boolean)=>{g.peas.push({id:g.nextEntityId(),row:p.row,x:cellX(p.column)+20,y:rowY(p.row)-49+(food?(g.random()-.5)*16:0),damage:20,powered:food,peanut:true,speed:(food?8+g.random()*3:8)*BOARD.cellWidth});};
+    if(p.action==='idle'){p.animation='Idle'+stage;if(g.time>=p.nextAction&&(g.zombies.some(z=>g.inLane(z,p.row)&&z.hp>0&&z.x>cellX(p.column)-20&&z.x<cellX(p.column)+4.5*BOARD.cellWidth)||g.graves.some(t=>t.hp>0&&t.row===p.row&&t.column>p.column&&t.column-p.column<=4.5))){p.variant=!p.variant;this.play(p,'Shoot'+stage+(stage<2&&p.variant?'1':'0'),'shoot');p.nextAction=g.time+(stage<2?prop.ShootInterval:prop.ShootIntervalSemi)+g.random()*(stage<2?prop.ShootIntervalAdditional:prop.ShootIntervalSemiAdditional);}}
+    if(p.animation==='FoodLoop'){while(p.burst>0&&g.time>=p.nextBurst){shoot(true);p.burst--;p.nextBurst+=2/prop.PlantfoodPeaCount;}if(g.time-p.actionAt>=2){this.play(p,'FoodEnd','food');this.sounds.push('peanut/foodEnd');}return;}
+    const timeline=g.props.plantAnimations.peanut[p.animation!],elapsed=g.time-p.actionAt;
+    while(p.eventIndex!<timeline.events.length&&elapsed>=timeline.events[p.eventIndex!].at){const event=timeline.events[p.eventIndex!++].name;if(event==='Shoot'){shoot(false);this.sounds.push('peanut/shoot');}if(event==='foodShoot'){this.play(p,'FoodLoop','food');p.burst=prop.PlantfoodPeaCount;p.nextBurst=g.time;this.sounds.push('peanut/food');return;}}
+    if(p.action!=='idle'&&elapsed>=timeline.duration){if(p.animation==='FoodEnd')p.nextAction=g.time;this.play(p,'Idle'+stage);}
+  }
+
   potions:Potion[]=[];
   private nextPotion=Infinity;
   beanFood=new Set<number>();
@@ -30,7 +73,7 @@ export class DarkBattle {
     this.potions=this.potions.filter(p=>p.animation==='Spawn'||p.animation==='Idle'||g.time-p.at<g.props.plantAnimations[p.kind==='zombiepotion_speed'?'potionSpeed':'potionToughness'][p.animation].duration);
     if(g.level.potions&&g.time>=this.nextPotion){this.resetPotionTimer();if(this.potions.filter(p=>p.animation==='Spawn'||p.animation==='Idle').length<g.level.potions.MaxPotionCount){for(let col=8;col>=0;col--){let placed=false;for(const row of this.shuffle([0,1,2,3,4]))if(this.spawnPotion(row,col)){placed=true;break;}if(placed)break;}}}
   }
-  settleBeans(){const g=this.#game;for(const z of g.zombies){const s=z.dark;if(!s?.bean)continue;if(g.time>=s.blastAt&&z.hp>0){z.hp=0;z.armor=0;z.deathCause='potato';this.sounds.push('sunbean/blastSounds');}const health=z.hp<=0?0:z.hp+z.armor;s.sun+=Math.max(0,s.health-health)*g.props.plants.sunbean.SunPerHitpoint;s.health=health;const value=Math.floor((s.sun+1e-8)/5)*5;if(value>=5){g.dropSun(z.x,rowY(z.row)-65,value,'ra');s.sun-=value;}}for(const id of this.beanFood)if(!g.plants.some(p=>p.id===id&&p.hp>0))this.beanFood.delete(id);}
+  settleBeans(){const g=this.#game;for(const z of g.zombies){const s=z.dark;if(!s?.bean)continue;if(g.time>=s.blastAt&&z.hp>0){z.hp=0;z.armor=0;z.deathCause='potato';this.sounds.push('sunbean/blastSounds');}const health=z.hp<=0?0:z.hp+z.armor;s.sun+=Math.max(0,s.health-health)*g.props.plants.sunbean.SunPerHitpoint;s.health=health;const value=Math.floor((s.sun+1e-8)/5)*5;if(value>=5){g.dropSun(z.x,rowY(z.row)-65,value,'plant');s.sun-=value;}}for(const id of this.beanFood)if(!g.plants.some(p=>p.id===id&&p.hp>0))this.beanFood.delete(id);}
   private soundAt=new Map<number,number>();
   jesters=new Map<number,Jester>();
   reflected:Reflected[]=[];
@@ -66,7 +109,7 @@ export class DarkBattle {
   }
   graveDestroyed(t:Game['graves'][number]){
     const g=this.#game;
-    if(t.kind==='gravestoneSunOnDestruction')g.dropSun(cellX(t.column),rowY(t.row)-45,graveProperties.gravestoneSunOnDestruction.SunValue,'ra');
+    if(t.kind==='gravestoneSunOnDestruction')g.dropSun(cellX(t.column),rowY(t.row)-45,graveProperties.gravestoneSunOnDestruction.SunValue,'plant');
     if(t.kind==='gravestonePlantfoodOnDestruction')g.pickups.push({id:g.nextEntityId(),kind:'food',x:cellX(t.column),y:rowY(t.row)-45,age:0});
   }
   /** Jester catches only incoming reversible projectiles while able to move. */
@@ -80,10 +123,10 @@ export class DarkBattle {
     state.until=Infinity;
     this.reflected.push({id:++this.serial,owner:z,name,armature,x,y,fromX:x,fromY:y,at:g.time,damage,released:false,friendly:false});return true;
   }
-  movement(z:Zombie){const s=this.jesters.get(z.id);return !s||s.animation==='Walk'?1:s.animation==='RotateLoop'?this.#game.props.zombies.dark_juggler.MoveSpeedMultiplierWhileJuggling:0;}
+  movement(z:Zombie){if(this.wizards.get(z.id)?.animation==='Attack')return 0;const s=this.jesters.get(z.id);return !s||s.animation==='Walk'?1:s.animation==='RotateLoop'?this.#game.props.zombies.dark_juggler.MoveSpeedMultiplierWhileJuggling:0;}
   tick(dt:number){
     const g=this.#game;
-    this.tickPotions();
+    this.tickPotions();this.tickWizards(dt);
     this.visuals=this.visuals.filter(v=>g.time-v.at<v.duration&&(v.owner===undefined||g.plants.some(p=>p.id===v.owner&&p.hp>0)));
     for(const [id] of this.fumes)if(!g.plants.some(p=>p.id===id&&p.hp>0)){this.fumes.delete(id);}
     if(!g.zombies.some(z=>z.kind==='dark_juggler')&&!this.reflected.length)return;
