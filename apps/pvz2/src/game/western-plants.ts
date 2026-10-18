@@ -1,3 +1,4 @@
+import {DarkBoss} from './dark-boss';
 import {BOARD,cellX,rowY,type PlantKind} from './level';
 import type {Game,Plant,Zombie} from './model';
 import {swinging} from './pirate';
@@ -32,6 +33,7 @@ export class WesternPlants {
   food(p:Plant){
     const g=this.#game,props=g.props.plants[p.kind];this.play(p,p.kind==='electricpeashooter'?'Food':'FoodStart','food');
     if(p.kind==='magnetshroom'){
+      if(g.boss instanceof DarkBoss)g.boss.magnetize();
       this.metals=this.metals.filter(m=>m.plant!==p.id);this.magnets.set(p.id,{restUntil:0,absorbUntil:g.time+props.PlantfoodAbsorbDuration,shootRate:1});this.sounds.push('magnetshroom/foodSound');
     }else if(p.kind==='magnifyinggrass'){
       const producers=g.plants.filter(q=>q.hp>0&&props.SunProducerList.includes(q.kind)).map(q=>q.id);

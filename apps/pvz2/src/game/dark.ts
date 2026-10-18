@@ -1,4 +1,4 @@
-import {BOARD,cellX,rowY,type ZombieKind} from './level';
+import {BOARD,cellX,rowY,type PlantKind,type ZombieKind} from './level';
 import type {Game,Plant,Zombie} from './model';
 import potionProperties from '../../public/assets/dark/potions.json';
 import graveProperties from '../../public/assets/dark/graves.json';
@@ -14,10 +14,31 @@ interface Reflected {id:number;owner:Zombie;name:string;armature?:string;x:numbe
 export class DarkBattle {
   readonly #game:Game;
   private serial=0;
+  kings=new Map<number,{animation:string;at:number;elapsed:number;event:number;cooldown:number;given:number|null;effectAt:number}>();
+  knightEffects:{id:number;target:number;at:number;animation:string}[]=[];
+  canPlant(kind:PlantKind,row:number,column:number){return !this.#game.zombies.some(z=>z.kind==='dark_king'&&z.hp>0&&z.row===row&&Math.abs(z.x-cellX(column))<BOARD.cellWidth/2&&!this.#game.props.zombies.dark_king.PlantablePlants.includes(kind));}
+  private kingTargets(z:Zombie){const g=this.#game,p=g.props.zombies.dark_king;return g.zombies.filter(t=>t.hp>0&&p.ValidKnightTargets.includes(t.kind)&&!(t.kind==='dark_armor3'&&t.armor>0)&&Math.abs(t.row-z.row)<=1&&t.x<=z.x+BOARD.cellWidth/2&&t.x>=z.x+(0.5-p.KnightingAreaW)*BOARD.cellWidth);}
+  private tickKings(dt:number){
+    const g=this.#game;
+    this.knightEffects=this.knightEffects.filter(f=>g.time-f.at<g.props.plantAnimations.knightEffect[f.animation].duration);
+    for(const z of g.zombies){const s=this.kings.get(z.id);if(!s||z.hp<=0||g.time<z.frozenUntil||g.time<(z.stunnedUntil??0)||g.time<(z.butteredUntil??0))continue;
+      const rate=(g.time<z.chilledUntil?.5:1)*Math.pow(1.5,z.dark?.speed??0),play=(name:string)=>{s.animation=name;s.at=g.time;s.elapsed=0;s.event=0;};
+      if(s.animation==='Idle'){s.cooldown-=dt*rate;if(s.cooldown<=0&&this.kingTargets(z).length)play('Attack');}
+      if(s.given!==null&&g.time>=s.effectAt&&s.cooldown>0){const t=g.zombies.find(t=>t.id===s.given&&t.hp>0&&t.armor>0);if(t){this.knightEffects.push({id:++this.serial,target:t.id,at:g.time,animation:'Play'+Math.floor(g.random()*4)});this.sounds.push('darkKing/knightEffectSounds');}s.effectAt=g.time+.5;}
+      s.elapsed+=dt*rate;const timeline=g.props.plantAnimations.darkKing[s.animation];
+      while(s.event<timeline.events.length&&s.elapsed>=timeline.events[s.event].at){const e=timeline.events[s.event++].name;
+        if(e==='Idle'){play('Idle');break;}
+        if(e==='smash'){for(const p of g.plants)if(p.row===z.row&&Math.abs(cellX(p.column)-z.x)<40)p.hp=0;for(const t of g.graves)if(t.row===z.row&&Math.abs(cellX(t.column)-z.x)<40)t.hp=0;}
+        if(e==='give'){const targets=this.kingTargets(z),t=targets[Math.floor(g.random()*targets.length)];if(t){t.kind='dark_armor3';t.armor=g.props.armors.dark_armor3.Toughness;t.magnetized=false;s.given=t.id;s.effectAt=g.time;s.cooldown=g.props.zombies.dark_king.DelayBetweenKnightings;}}
+      }
+      if(s.elapsed>=timeline.duration)play('Idle');
+    }
+    for(const [id] of this.kings)if(!g.zombies.some(z=>z.id===id))this.kings.delete(id);
+  }
   wizards=new Map<number,Wizard>();
   sheep:Sheep[]=[];
   links:{id:number;x:number;y:number;toX:number;toY:number;at:number}[]=[];
-  spawn(z:Zombie){if(z.kind==='dark_wizard'){const p=this.#game.props.zombies.dark_wizard;this.wizards.set(z.id,{animation:'Walk',at:this.#game.time,elapsed:0,cooldown:p.TimeBeforeFirst+this.#game.random()*p.TimeBeforeFirstAdditional,first:true,target:null,event:0});}}
+  spawn(z:Zombie){if(z.kind==='dark_king'){z.x=cellX(8);this.kings.set(z.id,{animation:'Spawn',at:this.#game.time,elapsed:0,event:0,cooldown:0,given:null,effectAt:0});}if(z.kind==='dark_wizard'){const p=this.#game.props.zombies.dark_wizard;this.wizards.set(z.id,{animation:'Walk',at:this.#game.time,elapsed:0,cooldown:p.TimeBeforeFirst+this.#game.random()*p.TimeBeforeFirstAdditional,first:true,target:null,event:0});}}
   private sheepable(p:Plant){return p.hp>0&&p.sheep===undefined&&p.action!=='food'&&!p.hidden&&!p.leap&&!this.#game.props.plants[p.kind].CannotBeSheepenedByWizard;}
   private wizardTarget(z:Zombie,s:Wizard){const plants=this.#game.plants.filter(p=>this.sheepable(p));return plants.sort((a,b)=>Number(cellX(a.column)>z.x)-Number(cellX(b.column)>z.x)||(s.first?Math.abs(a.row-z.row)-Math.abs(b.row-z.row):0)||b.column-a.column)[0];}
   private tickWizards(dt:number){
@@ -123,10 +144,10 @@ export class DarkBattle {
     state.until=Infinity;
     this.reflected.push({id:++this.serial,owner:z,name,armature,x,y,fromX:x,fromY:y,at:g.time,damage,released:false,friendly:false});return true;
   }
-  movement(z:Zombie){if(this.wizards.get(z.id)?.animation==='Attack')return 0;const s=this.jesters.get(z.id);return !s||s.animation==='Walk'?1:s.animation==='RotateLoop'?this.#game.props.zombies.dark_juggler.MoveSpeedMultiplierWhileJuggling:0;}
+  movement(z:Zombie){if(z.kind==='dark_king')return 0;if(this.wizards.get(z.id)?.animation==='Attack')return 0;const s=this.jesters.get(z.id);return !s||s.animation==='Walk'?1:s.animation==='RotateLoop'?this.#game.props.zombies.dark_juggler.MoveSpeedMultiplierWhileJuggling:0;}
   tick(dt:number){
     const g=this.#game;
-    this.tickPotions();this.tickWizards(dt);
+    this.tickPotions();this.tickWizards(dt);this.tickKings(dt);
     this.visuals=this.visuals.filter(v=>g.time-v.at<v.duration&&(v.owner===undefined||g.plants.some(p=>p.id===v.owner&&p.hp>0)));
     for(const [id] of this.fumes)if(!g.plants.some(p=>p.id===id&&p.hp>0)){this.fumes.delete(id);}
     if(!g.zombies.some(z=>z.kind==='dark_juggler')&&!this.reflected.length)return;

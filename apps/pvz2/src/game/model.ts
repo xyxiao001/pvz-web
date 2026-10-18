@@ -1,3 +1,4 @@
+import {DarkBoss} from './dark-boss';
 import {DarkBattle,darkArmor,type DarkZombie} from './dark';
 import {FutureBoss} from './future-boss';
 import {FutureBattle,futureArmor,type FutureZombie} from './future';
@@ -88,7 +89,7 @@ export class Game {
   private failedCards:number[]=[];
   private matchUntil=0;
   iceweedSpikes=new Map<number,number>();
-  conveyor:{id:number;kind:PlantKind;lane:number;position:number}[]=[];
+  conveyor:{id:number;kind:PlantKind;lane:number;position:number;forceBoosted?:boolean}[]=[];
   conveyorPlants:ConveyorPlant[]=[];
   private conveyorDeliveryCount=new Map<PlantKind,number>();
   private conveyorDelivered=new Map<PlantKind,number>();
@@ -131,7 +132,7 @@ export class Game {
     if(level.world==='egypt'&&level.day===2&&tutorial)this.addPlant('peashooter',2,2);
     this.dark.initLevel();
     this.conveyorPlants=level.conveyor?level.conveyor.InitialPlantList.map(p=>({...p})):[];
-    if(level.boss)this.boss=level.boss.kind.startsWith('zombossmech_future')?new FutureBoss(this):level.boss.kind.startsWith('zombossmech_cowboy')?new CowboyBoss(this):level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
+    if(level.boss)this.boss=level.boss.kind==='zombossmech_dark'?new DarkBoss(this):level.boss.kind.startsWith('zombossmech_future')?new FutureBoss(this):level.boss.kind.startsWith('zombossmech_cowboy')?new CowboyBoss(this):level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
     if(level.cannon){this.nextWave=4+RULES.normalWaveEntrance;level.cannon.RowHasCannon.forEach((has,row)=>{if(has)this.addPlant('coconutcannon',row,1);});}
   }
 
@@ -153,7 +154,7 @@ export class Game {
     const existing=this.plants.find(p=>p.row===row&&p.column===column);
     const repairing=kind==='peanut'&&existing?.kind==='peanut'&&existing.hp<p.Toughness*.75||kind==='redstinger'&&existing?.kind==='redstinger'&&column>=6&&existing.hp<p.Toughness*.75||kind==='holonut'&&existing?.kind==='holonut'&&(existing.hidden||existing.hp<=p.Toughness*2/3)||this.wallnutFirstAid&&(kind==='wallnut'||kind==='tallnut')&&existing?.kind===kind&&existing.hp<=p.Toughness*(kind==='tallnut'?2/3:.75)||kind==='spikerock'&&existing?.kind==='spikerock'&&existing.spikes!<p.MaxSpike||kind==='chardguard'&&existing?.kind==='chardguard'&&existing.leaves!<p.MaxBounceTime;
     const stacking=kind==='peapod'&&existing?.kind==='peapod'&&existing.heads!<5;
-    if(seaCell(this.level.planks,row,column)||!this.cowboy.canPlant(row,column)||this.dark.blocks(row,column)||existing?.sheep!==undefined)return false;
+    if(seaCell(this.level.planks,row,column)||!this.cowboy.canPlant(row,column)||this.dark.blocks(row,column)||!this.dark.canPlant(kind,row,column)||existing?.sheep!==undefined)return false;
     if(kind==='imitater'&&this.imitateKind===null)return false;
     if(this.level.boss&&column>=BOARD.columns-this.level.boss.reserved)return false;
     const packet=this.conveyor.find(c=>c.id===packetId&&c.kind===kind);
@@ -164,7 +165,8 @@ export class Game {
     if(packet){if(this.level.corral)this.corralWaiting=false;this.conveyor.splice(this.conveyor.indexOf(packet),1);if(!this.level.corral)this.nextCard=Math.min(this.nextCard,this.time+this.conveyorDelay());}
     else {const cost=this.seedCost(kind);this.sun -= cost; this.sunSpent+=cost;this.cooldowns[kind] = this.preparing?0:this.seedCooldown(kind);}
     if(repairing){if(kind==='holonut')this.future.recoverNut(existing);else if(kind==='peanut'||kind==='redstinger'||kind==='wallnut'||kind==='tallnut')existing.hp=p.Toughness;else if(kind==='chardguard'){existing.leaves=p.MaxBounceTime;existing.hp=p.Toughness;}else existing.spikes=p.MaxSpike;}else if(stacking){existing.heads!++;existing.hp=p.Toughness;}else this.addPlant(kind, row, column);
-    if(this.boosts.has(kind)&&!this.preparing){this.usedBoosts.add(kind);if(kind==='imitater')this.plants.at(-1)!.boosted=true;else this.plantFood(row,column,true);}
+    if(packet?.forceBoosted)this.plantFood(row,column,true);
+    else if(this.boosts.has(kind)&&!this.preparing){this.usedBoosts.add(kind);if(kind==='imitater')this.plants.at(-1)!.boosted=true;else this.plantFood(row,column,true);}
     this.checkChallenges();
     this.events.push({ type: 'plant' });
     return true;
@@ -650,7 +652,7 @@ export class Game {
       const counts=[0,1].map(lane=>this.conveyor.filter(c=>c.lane===lane).length);
       this.conveyorDelivered.set(chosen.PlantType,this.time);
       this.conveyorDeliveryCount.set(chosen.PlantType,(this.conveyorDeliveryCount.get(chosen.PlantType)??0)+1);
-      this.conveyor.push({id:++this.id,kind:chosen.PlantType,lane:counts[0]<=counts[1]?0:1,position:5});
+      this.conveyor.push({id:++this.id,kind:chosen.PlantType,forceBoosted:chosen.ForceBoosted,lane:counts[0]<=counts[1]?0:1,position:5});
       this.nextCard=this.time+this.conveyorDelay();
     }
     for(const lane of [0,1])this.conveyor.filter(c=>c.lane===lane).forEach((c,index)=>{c.position=Math.max(index,c.position-dt);});

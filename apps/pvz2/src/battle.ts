@@ -342,7 +342,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     for(const packet of game.conveyor){
       let button=element.querySelector<HTMLButtonElement>(`[data-packet="${packet.id}"]`);
       if(!button){button=document.createElement('button');button.className='seed';button.dataset.packet=String(packet.id);button.setAttribute('aria-label',`选择${plantLabels[packet.kind]}`);button.innerHTML=`<img src="${cards.get(packet.kind)!}" alt="${plantLabels[packet.kind]}">`;button.onclick=()=>{selected=packet.kind;packetId=packet.id;updateHud();};element.append(button);}
-      button.style.left=`${packet.position*19}%`;button.style.top=`${packet.lane*50}%`;button.classList.toggle('selected',packetId===packet.id&&selected===packet.kind);
+      button.style.left=`${packet.position*19}%`;button.style.top=`${packet.lane*50}%`;button.classList.toggle('selected',packetId===packet.id&&selected===packet.kind);button.classList.toggle('boosted',!!packet.forceBoosted);
     }
   }
   function bindAudio() {

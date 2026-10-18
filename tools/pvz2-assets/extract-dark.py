@@ -1,4 +1,4 @@
-"""Export Dark Ages 1–15, including graves and jester, from the pinned build."""
+"""Export Dark Ages 1–20, including graves and jester, from the pinned build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -18,7 +18,7 @@ def rig(path):
 def props(path,names):
     objs=e.read('json/Objects/'+path).objects[0]['json']['objects']
     return {n:next(o['objdata'] for o in objs if n in o.get('aliases',[])) for n in names}
-paths={'peanut':'plants/PeanutPLANT','darkWizard':'zombies/DarkWizardZOMBIE','sunbean':'plants/SunBeanPLANT','fumeshroom':'plants/FumeShroomPLANT','dark':'zombies/DarkBasicZOMBIE','darkFlag':'zombies/DarkFlagZOMBIE','darkImp':'zombies/DarkImpZOMBIE','darkJester':'zombies/DarkJesterZOMBIE','darkGargantuar':'zombies/DarkGargantuarZOMBIE'}
+paths={'darkKing':'zombies/DarkKingZOMBIE','dragonImp':'zombies/DragonImpZOMBIE','boss':'zombies/DarkZombossMechZOMBIE','peanut':'plants/PeanutPLANT','darkWizard':'zombies/DarkWizardZOMBIE','sunbean':'plants/SunBeanPLANT','fumeshroom':'plants/FumeShroomPLANT','dark':'zombies/DarkBasicZOMBIE','darkFlag':'zombies/DarkFlagZOMBIE','darkImp':'zombies/DarkImpZOMBIE','darkJester':'zombies/DarkJesterZOMBIE','darkGargantuar':'zombies/DarkGargantuarZOMBIE'}
 actors={n:rig(p) for n,p in paths.items()}
 rigs={n:rig(p) for n,p in {'darkLawn':'lawns/DarkLAWN','mower':'projectiles/DarkMowerPRJ','darkCone':'armors/DarkConeARMOR','darkBucket':'armors/DarkBucketARMOR','darkHelmet':'armors/DarkHelmetARMOR','potionSpeed':'plants/PotionSpeedPLANT','potionToughness':'plants/PotionToughnessPLANT','grave':'tombstones/DarkTOMB','graveSun':'tombstones/DarkSunTOMB','graveFood':'tombstones/DarkPFTOMB'}.items()}
 co=next(o for o in walk(e.read('plants/FumeShroomPLANT').objects) if 'shootParticle' in o)
@@ -32,8 +32,22 @@ c.write_json(fume_path,fume)
 rigs['sunbeanBlast']=rig(next(o['blastPar']['asset'] for o in walk(e.read('plants/SunBeanPLANT').objects) if 'blastPar' in o))
 wizard=next(o for o in walk(e.read('zombies/DarkWizardZOMBIE').objects) if 'shootPFB' in o)
 for name,key in [('wizardLink','shootPFB'),('wizardHit','hitPFB'),('wizardSheep','sheep')]:rigs[name]=rig(wizard[key]['asset'])
+boss=e.read('zombies/DarkZombossMechZOMBIE')
+bossco=next(x for x in walk(boss.objects) if 'fireSquarePar' in x)
+for name,key in [('bossEscape','portalEscape'),('bossPortal','portalSummon')]:
+    co=boss.ref(bossco[key]);rigs[name]={'rig':e.rig(co['_dragonAsset']['asset'],co['_dragonAtlasAsset']['asset']),'armature':co['_armatureName'],'animation':co['_animationName'],'group':'dark'}
+for name,key in [('dragonFire','fireSquarePar'),('dragonIntroFire','introFirePar'),('dragonShade','introShadePar')]:rigs[name]=rig(bossco[key]['asset'])
+rigs['bossMissile']=rig('projectiles/DarkZombossMissilePRJ')
+king=next(o for o in walk(e.read('zombies/DarkKingZOMBIE').objects) if 'knightEffectPar' in o)
+rigs['knightEffect']=rig(king['knightEffectPar']['asset'])
+# Legacy armature terminal actions are playback commands, not animation names.
+for actor in [actors['boss'],rigs['dragonFire']]:
+    file=e.OUT/'rigs'/actor['rig']/'skeleton.json';data=json.loads(file.read_text())
+    for obj in walk(data):
+        if obj.get('action')=='Nope' or obj.get('action')=='Idle' and any(event['name']=='die' for event in obj.get('events',[])):del obj['action']
+    c.write_json(file,data)
 rigs['peanutShot']=rig('projectiles/PeanutPRJ')
-properties={'plants':props('PlantProps',['fumeshroom','sunbean','peanut']),'zombies':props('ZombieProps',['dark','dark_armor1','dark_armor2','dark_armor3','dark_flag','dark_imp','dark_juggler','dark_gargantuar','dark_wizard']),'armors':props('ArmorProps',['dark_armor1','dark_armor2','dark_armor3']),'projectiles':{},'plantAnimations':{}}
+properties={'plants':props('PlantProps',['fumeshroom','sunbean','peanut']),'zombies':props('ZombieProps',['dark_king','dark_imp_dragon','zombossmech_dark','dark','dark_armor1','dark_armor2','dark_armor3','dark_flag','dark_imp','dark_juggler','dark_gargantuar','dark_wizard']),'armors':props('ArmorProps',['dark_armor1','dark_armor2','dark_armor3']),'projectiles':props('ProjectileProps',['zomboss_missile_dark']),'plantAnimations':{}}
 c.write_json(e.OUT/'graves.json',props('TombstoneProps',['gravestone_dark','gravestoneSunOnDestruction','gravestonePlantfoodOnDestruction']))
 # ProjectileProps defaults allow jester reversal unless explicitly disabled.
 c.write_json(e.OUT/'jester-projectiles.json',{a:{'reverse':not o['objdata'].get('CannotBeReversedByJester',False),'damage':o['objdata'].get('Damage',0)} for o in e.read('json/Objects/ProjectileProps').objects[0]['json']['objects'] for a in o.get('aliases',[])})
@@ -46,7 +60,7 @@ for name,description in {**actors,**rigs}.items():
             frame+=f.get('duration',1)
         timelines[animation['name']]={'duration':animation.get('duration',1)/arm['frameRate'],'events':events}
     properties['plantAnimations'][name]=timelines
-for day in range(1,16):c.write_json(e.OUT/f'dark{day}.source.json',e.read(f'levels/dark{day}').objects[0]['json'])
+for day in range(1,21):c.write_json(e.OUT/f'dark{day}.source.json',e.read(f'levels/dark{day}').objects[0]['json'])
 lawn=e.read('lawns/DarkLAWN');co=next(x for x in walk(lawn.objects) if x.get('type')=='dragonBones.ArmatureDisplay')
 at=e.read(co['_dragonAtlasAsset']['asset']);atlas=json.loads(at.objects[0]['_atlasJson']);rect=next(x for x in atlas['SubTexture'] if x['name']=='Lawn')
 pixels=Image.open(io.BytesIO(c.native(at.data[1][at.rec[5][0]],'png')))
@@ -67,7 +81,7 @@ for name,path in [('peanut','plants/PeanutPLANT'),('sunbean','plants/SunBeanPLAN
             for key,value in obj['soundRes'].items():
                 if key!='type':sound(name+'/'+key,value)
 npc=e.read('b697cdfd-e783-4f80-abbe-ac197db6cf97');narratives={}
-for name in ['DARK_INTRO_FIRSTLEVEL','DARK_INTRO_FUMESHROOM','DARK_INTRO_HYPNOSHROOM','DARK_INTRO_EVILPOTIONS','DARK_INTRO_GARGANTUAR','DARK_INTRO_PEANUT','DARK_OUTRO_DANGER_ROOM_KEY']:
+for name in ['DARK_INTRO_MAGNETSHROOM','DARK_INTRO_ZOMBOSS','DARK_OUTRO_ZOMBOSS','DARK_INTRO_FIRSTLEVEL','DARK_INTRO_FUMESHROOM','DARK_INTRO_HYPNOSHROOM','DARK_INTRO_EVILPOTIONS','DARK_INTRO_GARGANTUAR','DARK_INTRO_PEANUT','DARK_OUTRO_DANGER_ROOM_KEY']:
     flow=next(o['objdata']['Flow'] for o in e.read('json/Objects/NarrativeList').objects[0]['json']['objects'] if name in o.get('aliases',[]))
     for step in flow:
         if 'Lines' in step:
@@ -83,4 +97,4 @@ c.write_json(e.OUT/'potions.json',props('PlantProps',['zombiepotion_speed','zomb
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{'note-dark':e.sprite(c.decode_uuid(c.config['uuids'][c.path_index['note/dark/spriteFrame']]))}})
 c.write_json(c.ROOT/'apps/pvz2/dark-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Dark Ages 1–15')
+print('Exported Dark Ages 1–20')
