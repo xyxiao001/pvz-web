@@ -23,8 +23,8 @@ async function clean(){if(battle){await battle.dispose();battle=undefined;}if(sc
 function button(label:string,action:()=>Promise<void>|void){const b=document.createElement('button');b.textContent=label;b.onclick=async()=>{try{await action();}catch(e){status.textContent=String(e);throw e;}};controls.append(b);}
 function draw(){scene!.sync(game!,0);scene!.render();status.textContent=`第${game!.level.day}关${game!.boosts.size?"（花园强化）":""} / ${game!.time.toFixed(1)}s / ${game!.phase} / ${game!.wave}波 / ${game!.zombies.length}僵尸`;}
 button('世界地图',async()=>{await clean();worldHost.hidden=false;await shell.init();});
-for(const day of Array.from({length:25},(_,i)=>i+1))button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`dark${day}`],progress);await battle.enter();});
-for(const day of Array.from({length:25},(_,i)=>i+1))button(`场景${day}`,async()=>{
+for(const day of Array.from({length:30},(_,i)=>i+1))button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`dark${day}`],progress);await battle.enter();});
+for(const day of Array.from({length:30},(_,i)=>i+1))button(`场景${day}`,async()=>{
  await clean();sceneHost.hidden=false;scene=new Scene();const config=BATTLE_LEVELS[`dark${day}`],level=readLevel(await json<SourceLevel>(config.source));
  const groups=await Promise.all(['levels','campaign','pirate','cowboy','future','dark'].map(name=>json<Properties>(name+'/properties.json'))),flag=await json<Properties['zombies']['mummy_flag']>('battle/flag.json');
  const props=groups.reduce((a,b)=>({...a,...b,plants:{...a.plants,...b.plants},zombies:{...a.zombies,...b.zombies},armors:{...a.armors,...b.armors},projectiles:{...a.projectiles,...b.projectiles},plantAnimations:{...a.plantAnimations,...b.plantAnimations}}));props.zombies.mummy_flag=flag;
@@ -38,8 +38,11 @@ button('小丑与大喷菇检查',()=>{const g=game!;g['nextWave']=Infinity;g.gr
 button('大喷菇大招',()=>{game!.food=1;game!.plantFood(2,1);draw();});
 button('击倒僵尸',()=>{for(const z of game!.zombies)game!.damage(z,10000);game!.tick(1/60);scene!.sync(game!,1/60);draw();});
 
-button('阳光豆与药水检查',()=>{const g=game!;g['nextWave']=Infinity;g.graves=[];g.dark.potions=[];g.addPlant('sunbean',0,2);g.addPlant('sunbean',2,2);g.food=1;g.plantFood(2,2);g.spawnZombie('dark_armor3',0,cellX(2)+20);g.spawnZombie('dark_armor3',2,cellX(2)+20);g.spawnZombie('dark',4,cellX(5)+10);g.dark.potions.push({id:g.nextEntityId(),kind:'zombiepotion_speed',row:4,column:5,animation:'Spawn',at:g.time,dropped:false},{id:g.nextEntityId(),kind:'zombiepotion_toughness',row:3,column:6,animation:'Spawn',at:g.time,dropped:false});draw();});
+button('阳光豆与药水检查',()=>{const g=game!;g['nextWave']=Infinity;g.graves=[];g.dark.potions=[];g.addPlant('sunbean',0,2);g.addPlant('sunbean',2,2);g.food=1;g.plantFood(2,2);g.spawnZombie('dark_armor3',0,cellX(2)+20);g.spawnZombie('dark_armor3',2,cellX(2)+20);g.spawnZombie('dark',4,cellX(5)+10);g.dark.potions.push({id:g.nextEntityId(),group:0,kind:'zombiepotion_speed',row:4,column:5,animation:'Spawn',at:g.time,dropped:false},{id:g.nextEntityId(),group:0,kind:'zombiepotion_toughness',row:3,column:6,animation:'Spawn',at:g.time,dropped:false});draw();});
 
 button('花盆与新植物检查',()=>{const g=game!;g['nextWave']=Infinity;g.graves=[];g.dark.potions=[];g.addPlant('floawerPot',2,2);g.addPlant('scaredyshroom',2,2);g.addPlant('chomper',3,2);g.addPlant('floawerPot',1,2);g.food=3;g.plantFood(1,2);g.spawnZombie('dark_wizard_veteran',2,cellX(8));g.spawnZombie('dark_armor4',3,cellX(4));draw();});
 button('移动铁花盆',()=>{game!.darkPlants.select(1,2);game!.darkPlants.move(0,3);draw();});
 button('胆小菇与大嘴花大招',()=>{game!.plantFood(2,2);game!.plantFood(3,2);draw();});
+
+button('本批新植物与国王',()=>{const g=game!;g.graves=[];g.dark.potions=[];g.addPlant('guacodile',0,1);g.addPlant('jackolantern',4,1);g.spawnZombie('dark_armor4',0,cellX(4));g.spawnZombie('dark_armor4',4,cellX(3));g.spawnZombie('dark_king_veteran',2,cellX(8));g.spawnZombie('dark_juggler',2,cellX(7));draw();});
+button('鳄梨与南瓜大招',()=>{game!.food=2;game!.plantFood(0,1);game!.plantFood(4,1);draw();});

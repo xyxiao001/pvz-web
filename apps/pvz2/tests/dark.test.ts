@@ -71,7 +71,7 @@ test('Sunbean converts actual damage into sun and empowered bean burns its eater
 test('Potions drop before consumption, cap buffs at three, modify speed and damage, then recycle',()=>{
  const g=create(9);g['nextWave']=Infinity;assert.equal(g.dark.potions.length,4);assert.ok(g.dark.potions.every(p=>p.column>=6&&p.column<=9));
  g.dark.potions=[];g.graves=[];const z=g.spawnZombie('dark',2,cellX(5)+8);z.frozenUntil=100;
- const add=(kind:'zombiepotion_speed'|'zombiepotion_toughness')=>{const p={id:g.nextEntityId(),kind,row:2,column:5,animation:'Spawn' as const,at:g.time,dropped:false};g.dark.potions.push(p);return p;};
+ const add=(kind:'zombiepotion_speed'|'zombiepotion_toughness')=>{const p={id:g.nextEntityId(),group:0,kind,row:2,column:5,animation:'Spawn' as const,at:g.time,dropped:false};g.dark.potions.push(p);return p;};
  let potion=add('zombiepotion_speed');assert.equal(g.dark.eatPotion(z),false);tick(g,.8);assert.equal(g.dark.eatPotion(z),true);assert.equal(z.dark!.speed,1);assert.equal(potion.animation,'Consume');assert.equal(g.dark.blocks(2,5),false);
  for(let i=0;i<2;i++){add('zombiepotion_speed');tick(g,.8);assert.equal(g.dark.eatPotion(z),true);}add('zombiepotion_speed');tick(g,.8);assert.equal(g.dark.eatPotion(z),false);assert.equal(z.dark!.speed,3);
  g.dark.potions=[];for(let i=0;i<3;i++){add('zombiepotion_toughness');tick(g,.8);g.dark.eatPotion(z);}assert.equal(z.dark!.toughness,3);g.damage(z,100);assert.ok(Math.abs(z.hp-(190-100*.85**3))<1e-8);tick(g,2);assert.ok(g.dark.potions.every(p=>p.animation!=='Consume'));
