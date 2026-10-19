@@ -1,4 +1,4 @@
-"""Export Frostbite Caves 1–23 from the pinned Cocos build."""
+"""Export Frostbite Caves 1–28 from the pinned Cocos build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -39,7 +39,7 @@ for name,description in {**actors,**rigs}.items():
             frame+=f.get('duration',1)
         timelines[animation['name']]={'duration':animation.get('duration',1)/arm['frameRate'],'events':events}
     properties['plantAnimations'][name]=timelines
-for day in range(1,24):c.write_json(e.OUT/f'iceage{day}.source.json',e.read(f'levels/iceage{day}').objects[0]['json'])
+for day in range(1,29):c.write_json(e.OUT/f'iceage{day}.source.json',e.read(f'levels/iceage{day}').objects[0]['json'])
 lawn=e.read('lawns/IceageLAWN');co=next(x for x in walk(lawn.objects) if x.get('type')=='dragonBones.ArmatureDisplay')
 at=e.read(co['_dragonAtlasAsset']['asset']);atlas=json.loads(at.objects[0]['_atlasJson']);rect=next(x for x in atlas['SubTexture'] if x['name']=='Lawn')
 pixels=Image.open(io.BytesIO(c.native(at.data[1][at.rec[5][0]],'png')))
@@ -58,7 +58,7 @@ for name,path in {**paths,**rigpaths}.items():
             for key,value in obj['soundRes'].items():
                 if key not in ['type','volumeScale']:sound(name+'/'+key,value)
 npc=e.read('b697cdfd-e783-4f80-abbe-ac197db6cf97');narratives={}
-for name in ['ICEAGE_INTRO_FIREPEASHOOTER','ICEAGE_OUTRO_DANGER_ROOM_KEY','ICEAGE_INTRO_FIRSTLEVEL','ICEAGE_INTRO_ICEBLOCKS','ICEAGE_INTRO_HURRIKALE','ICEAGE_INTRO_PEPPERPULT','ICEAGE_INTRO_FLAMETHROWER','ICEAGE_INTRO_CHARDGUARD','ICEAGE_INTRO_GARGANTUAR','ICEAGE_INTRO_STUNION']:
+for name in ['ICEAGE_INTRO_XSHOT','ICEAGE_INTRO_FIREPEASHOOTER','ICEAGE_OUTRO_DANGER_ROOM_KEY','ICEAGE_INTRO_FIRSTLEVEL','ICEAGE_INTRO_ICEBLOCKS','ICEAGE_INTRO_HURRIKALE','ICEAGE_INTRO_PEPPERPULT','ICEAGE_INTRO_FLAMETHROWER','ICEAGE_INTRO_CHARDGUARD','ICEAGE_INTRO_GARGANTUAR','ICEAGE_INTRO_STUNION']:
     flow=next(o['objdata']['Flow'] for o in e.read('json/Objects/NarrativeList').objects[0]['json']['objects'] if name in o.get('aliases',[]))
     # Iceage 20's authored speaker has an extra leading space; it is the entered Winnie actor.
     if name=='ICEAGE_OUTRO_DANGER_ROOM_KEY':flow[2]['Character']='winnie'
@@ -75,4 +75,4 @@ c.write_json(e.OUT/'ice.json',props('TombstoneProps',['planttarget_iceblock','zo
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{'note-iceage':e.sprite(c.decode_uuid(c.config['uuids'][c.path_index['note/iceage/spriteFrame']]))}})
 c.write_json(c.ROOT/'apps/pvz2/iceage-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Frostbite Caves 1–23')
+print('Exported Frostbite Caves 1–28')

@@ -157,7 +157,7 @@ export function readLevel(source: SourceLevel): Level {
     ].map(c=>[`${c.row}:${c.column}`,c])).values()]:[],
     protectedPlants:protection?(protection.objdata.Plants as {PlantType:PlantKind;GridX:number;GridY:number}[]).map(p=>({kind:p.PlantType,row:p.GridY,column:p.GridX})):[],mustProtect:protection?Number(protection.objdata.MustProtectCount):0,
     match:match?{types:Number(match.objdata.CardTypesUsed)}:null,suppressFlag:manager.SuppressFlagZombie===true,
-    ...((world==='dark'||world==='beach'||world==='iceage'&&[11,19].includes(Number(definition.LevelNumber)))&&seedBank?.SelectionMethod==='chooser'&&seedBank.PresetPlantList?{chooserPlants:(seedBank.PresetPlantList as {PlantType:PlantKind}[]).map(p=>p.PlantType)}:{}),
+    ...((world==='dark'||world==='beach'||world==='iceage'&&[11,19,26].includes(Number(definition.LevelNumber)))&&seedBank?.SelectionMethod==='chooser'&&seedBank.PresetPlantList?{chooserPlants:(seedBank.PresetPlantList as {PlantType:PlantKind}[]).map(p=>p.PlantType)}:{}),
     preset:seedBank?.SelectionMethod==='preset'?(seedBank.PresetPlantList as {PlantType:PlantKind}[]).map(p=>p.PlantType):null,
     sliders:world==='iceage'?source.objects.filter(o=>o.objclass==='InitialGridItemProperties').flatMap(o=>(o.objdata.InitialGridItemPlacements as {TypeName:string;GridX:number;GridY:number}[]).filter(p=>p.TypeName.startsWith('slider_')).map(p=>({row:p.GridY,column:p.GridX,up:p.TypeName==='slider_up'}))):[],
     frozenPlants:initial&&initial.objdata.InitialPlantPlacements?(initial.objdata.InitialPlantPlacements as {Condition?:string;GridX:number;GridY:number}[]).filter(p=>p.Condition==='icecubed').map(p=>({row:p.GridY,column:p.GridX})):[],
