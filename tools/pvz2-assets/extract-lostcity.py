@@ -1,4 +1,4 @@
-"""Export Lost City 1–3 from the pinned Cocos build."""
+"""Export Lost City 1–8 from the pinned Cocos build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -18,11 +18,11 @@ def rig(path):
 def props(path,names):
     objs=e.read('json/Objects/'+path).objects[0]['json']['objects']
     return {n:next(o['objdata'] for o in objs if n in o.get('aliases',[])) for n in names}
-paths={'lostcity':'zombies/LostcityBasicZOMBIE','lostcityFlag':'zombies/LostcityFlagZOMBIE','lostPilot':'zombies/LostcityLostPilotZOMBIE'}
+paths={'akee':'plants/AKEEPLANT','lostExcavator':'zombies/LostcityExcavatorZOMBIE','lostJane':'zombies/LostcityJaneZOMBIE','lostImp':'zombies/LostcityImpZOMBIE','lostcity':'zombies/LostcityBasicZOMBIE','lostcityFlag':'zombies/LostcityFlagZOMBIE','lostPilot':'zombies/LostcityLostPilotZOMBIE'}
 actors={n:rig(p) for n,p in paths.items()}
-rigpaths={'lostcityLawn':'lawns/LostCityLAWN','lostcityNightLawn':'lawns/LostCityNightLAWN','mower':'projectiles/LostcityMowerPRJ','lostcityCone':'armors/LostcityConeARMOR','lostcityBucket':'armors/LostcityBucketARMOR'}
+rigpaths={'akeeShot':'projectiles/AKEEPRJ','akeeFood':'projectiles/AKEEFoodPRJ','shovelDrop':'78e304ad-6f07-45a7-97ed-8512ba2c563d','lostcityLawn':'lawns/LostCityLAWN','lostcityNightLawn':'lawns/LostCityNightLAWN','mower':'projectiles/LostcityMowerPRJ','lostcityCone':'armors/LostcityConeARMOR','lostcityBucket':'armors/LostcityBucketARMOR'}
 rigs={n:rig(p) for n,p in rigpaths.items()}
-properties={'plants':{},'zombies':props('ZombieProps',['lostcity','lostcity_armor1','lostcity_armor2','lostcity_flag','lostcity_lostpilot']),'armors':props('ArmorProps',['lostcity_armor1','lostcity_armor2']),'projectiles':{},'plantAnimations':{}}
+properties={'plants':props('PlantProps',['akee']),'zombies':props('ZombieProps',['lostcity_excavator','lostcity_jane','lostcity_imp','lostcity','lostcity_armor1','lostcity_armor2','lostcity_flag','lostcity_lostpilot']),'armors':props('ArmorProps',['lostcity_armor1','lostcity_armor2']),'projectiles':props('ProjectileProps',['akee','akee_pf']),'plantAnimations':{}}
 for name,description in {**actors,**rigs}.items():
     sk=json.loads((e.OUT/'rigs'/description['rig']/'skeleton.json').read_text());arm=next(a for a in sk['armature'] if a['name']==description['armature']);timelines={}
     for animation in arm['animation']:
@@ -32,7 +32,7 @@ for name,description in {**actors,**rigs}.items():
             frame+=f.get('duration',1)
         timelines[animation['name']]={'duration':animation.get('duration',1)/arm['frameRate'],'events':events}
     properties['plantAnimations'][name]=timelines
-for day in range(1,4):c.write_json(e.OUT/f'lostcity{day}.source.json',e.read(f'levels/lostcity{day}').objects[0]['json'])
+for day in range(1,9):c.write_json(e.OUT/f'lostcity{day}.source.json',e.read(f'levels/lostcity{day}').objects[0]['json'])
 for name,path in [('lawn','lawns/LostCityLAWN'),('lawn-night','lawns/LostCityNightLAWN')]:
     co=next(x for x in walk(e.read(path).objects) if x.get('type')=='dragonBones.ArmatureDisplay')
     at=e.read(co['_dragonAtlasAsset']['asset']);atlas=json.loads(at.objects[0]['_atlasJson']);rect=next(x for x in atlas['SubTexture'] if x['name']==('LawnNight' if name=='lawn-night' else 'Lawn'))
@@ -52,7 +52,7 @@ for name,path in {**paths,**rigpaths}.items():
             for key,value in obj['soundRes'].items():
                 if key not in ['type','volumeScale']:sound(name+'/'+key,value)
 npc=e.read('b697cdfd-e783-4f80-abbe-ac197db6cf97');narratives={}
-for name in ['LOSTCITY_1_INTRO','LOSTCITY_2_INTRO','LOSTCITY_3_INTRO']:
+for name in ['LOSTCITY_1_INTRO','LOSTCITY_2_INTRO','LOSTCITY_3_INTRO','LOSTCITY_4_INTRO']:
     flow=next(o['objdata']['Flow'] for o in e.read('json/Objects/NarrativeList').objects[0]['json']['objects'] if name in o.get('aliases',[]))
     for step in flow:
         if 'Lines' in step:
@@ -61,9 +61,9 @@ for name in ['LOSTCITY_1_INTRO','LOSTCITY_2_INTRO','LOSTCITY_3_INTRO']:
             if step['Character']=='zombossicon':step['Animation']='Idle'
             sound(step['Voice'],npc.objects[{'crazydave':35,'winnie':39,'zombossicon':31}[step['Character']]][key])
     narratives[name]=flow
-for name,path in [('music','P1_LP_Lostcity'),('minigame','MG_Lostcity')]:
+for name,path in [('music','P1_LP_Lostcity'),('minigame','MG_Lostcity'),('ultimate','UB_Lostcity')]:
     (e.OUT/(name+'.mp3')).write_bytes(c.native(c.config['uuids'][c.path_index['music/inGame/lostcity/'+path]],'mp3'))
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{}})
 c.write_json(c.ROOT/'apps/pvz2/lostcity-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Lost City 1–3')
+print('Exported Lost City 1–8')

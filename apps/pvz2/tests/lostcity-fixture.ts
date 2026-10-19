@@ -5,7 +5,7 @@ import {Game} from '../src/game/model';
 import {readLevel,rowY,type Properties,type SourceLevel} from '../src/game/level';
 const read=<T>(p:string):T=>JSON.parse(readFileSync(new URL('../public/assets/lostcity/'+p,import.meta.url),'utf8'));
 const extra=read<Properties>('properties.json');
-export const props:Properties={...ice,zombies:{...ice.zombies,...extra.zombies},armors:{...ice.armors,...extra.armors},plantAnimations:{...ice.plantAnimations,...extra.plantAnimations}};
+export const props:Properties={...ice,plants:{...ice.plants,...extra.plants},projectiles:{...ice.projectiles,...extra.projectiles},zombies:{...ice.zombies,...extra.zombies},armors:{...ice.armors,...extra.armors},plantAnimations:{...ice.plantAnimations,...extra.plantAnimations}};
 export const level=(day:number)=>readLevel(read<SourceLevel>(`lostcity${day}.source.json`));
 export const create=(day:number)=>new Game(level(day),props,timing,z=>({x:z.x,y:rowY(z.row)-95}),1234,false);
 export {tick};

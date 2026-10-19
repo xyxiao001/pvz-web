@@ -209,7 +209,7 @@ export class Game {
     this.plants.push({ id: ++this.id, kind, row, column, hp: p.Toughness, armor: 0, age: 0, nextAction,
       action: 'idle', actionAt: this.time, fired: false, burst: 0, nextBurst: 0 });
     const plant=this.plants.at(-1)!;
-    this.expedition.init(this.plants.at(-1)!);this.iceageCombat.init(plant);
+    this.lostcity.initPlant(plant);this.expedition.init(this.plants.at(-1)!);this.iceageCombat.init(plant);
     if(kind==='hotpotato')this.iceage.hot(plant);
     if(this.beachFinale.handles(kind))this.beachFinale.init(plant);
     if(kind==='homingthistle')this.beach.thistles.init(plant);
@@ -285,6 +285,7 @@ export class Game {
     if (!plant || plant.leap?.pushed || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['goldleaf','hotpotato','powerplant','powerplant_alpha','powerplant_beta','empea','blover','gravebuster','imitater','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
     if(!boost){this.food--;this.future.link(plant);} plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
+    if(plant.kind==='akee')this.lostcity.food(plant);
     if(plant.kind==='lavaguava'||plant.kind==='gatling')this.expedition.food(plant);
     if(plant.kind==='endurian'||plant.kind==='primalpeashooter'||plant.kind==='pepperpult'||plant.kind==='stunion'||plant.kind==='firepeashooter')this.iceageCombat.food(plant);
     if(this.beachFinale.handles(plant.kind))this.beachFinale.food(plant);
@@ -758,6 +759,7 @@ export class Game {
         const t=Math.min(1,m.age/m.duration);
         m.x=m.startX+(m.targetX-m.startX)*t;m.y=m.startY+(m.targetY-m.startY)*t-140*4*t*(1-t);
         if(t===1){
+          if(z&&m.kind==='cabbage'&&this.lostcity.blockShot(z,true,1)){removed.add(m.id);continue;}
           if(m.kind==='snow'){
             const prop=this.props.projectiles.powerup_snow;
             const direct=this.zombies.find(target=>target.hp>0&&Math.abs(target.x-m.targetX)<25&&Math.abs(rowY(target.row)-50-m.targetY)<45);
@@ -906,7 +908,7 @@ export class Game {
     this.pending = this.pending.filter(s => s.at > this.time);
 
     if(this.corralWaiting)return;
-    this.expedition.tick(dt);this.iceageCombat.tick(dt);this.iceage.tick(dt);this.beachFinale.tick(dt);this.beach.tick(dt);this.darkFinale.tick(dt);this.darkMemory.tick();this.dark.tick(dt);this.darkPlants.tick(dt);
+    this.lostcity.tickShots();this.expedition.tick(dt);this.iceageCombat.tick(dt);this.iceage.tick(dt);this.beachFinale.tick(dt);this.beach.tick(dt);this.darkFinale.tick(dt);this.darkMemory.tick();this.dark.tick(dt);this.darkPlants.tick(dt);
     this.cowboy.tick(dt);
     for(const z of [...this.zombies,...this.westFinale.allies]){
       if(z.entry==='storm'&&this.time-z.entryAt<=1)z.x=z.entryX+(1070-z.entryX)*(1-(this.time-z.entryAt));
@@ -934,6 +936,7 @@ export class Game {
       if(p.kind==='hotpotato'){this.iceage.tickHot(p);continue;}
       if(this.iceage.blocked(p))continue;
       if(p.sheep!==undefined){p.actionAt+=dt;p.nextAction+=dt;p.nextBurst+=dt;continue;}
+      if(p.kind==='akee'){this.lostcity.plant(p);continue;}
       if(p.kind==='lavaguava'||p.kind==='gatling'){this.expedition.plant(p,dt);continue;}
       if(p.kind==='pepperpult'){this.iceageCombat.tickPlant(p);continue;}
       if(p.kind==='primalpeashooter'){this.iceageCombat.primal(p);continue;}
@@ -1036,7 +1039,7 @@ export class Game {
       const target = this.zombies.filter(z => z.hp > 0 && !this.beach.diving(z) && (pea.vector?(z===this.boss?.zombie&&this.level.world==='iceage'?[1,2,3].some(row=>Math.abs(rowY(row)-40-pea.y)<35):Math.abs(rowY(z.row)-40-pea.y)<35):this.inLane(z,pea.row)) && z.x - 18 >= Math.min(oldX,pea.x) - 12 && z.x - 18 <= Math.max(oldX,pea.x) + 12).sort((a, b) => a.x - b.x)[0];
       const grave=this.graves.filter(g=>g.hp>0&&(pea.vector?Math.abs(rowY(g.row)-40-pea.y)<35:g.row===pea.row)&&cellX(g.column)-25>=oldX-12&&cellX(g.column)-25<=pea.x+12).sort((a,b)=>a.column-b.column)[0];
       if(grave&&(!target||cellX(grave.column)<target.x)){grave.hp-=pea.damage;this.effect('hit',pea.x,pea.y);pea.x=1300;}
-      else if (target) { if(pea.fire){target.frozenUntil=0;target.chilledUntil=0;}if(!this.beach.surfers.blockShot(target,pea.damage,oldX))this.damage(target, pea.damage); this.effect('hit', pea.x, pea.y); pea.x = 1300; }
+      else if (target) { if(pea.fire){target.frozenUntil=0;target.chilledUntil=0;}if(!this.lostcity.blockShot(target,false,pea.vector?.vx??360)&&!this.beach.surfers.blockShot(target,pea.damage,oldX))this.damage(target, pea.damage); this.effect('hit', pea.x, pea.y); pea.x = 1300; }
     }
     this.peas = this.peas.filter(p => p.x>-100 && p.x < 1200 && p.y>-100 && p.y<800);
     this.tickMissiles(dt);
@@ -1055,7 +1058,7 @@ export class Game {
     for (const z of this.zombies) {
       if(z===this.boss?.zombie||z.hp<=0||z.weasel?.exploding||z.leap||z.landUntil!==undefined&&this.time<z.landUntil||this.time<z.frozenUntil||z.stunnedUntil!==undefined&&this.time<z.stunnedUntil||z.butteredUntil!==undefined&&this.time<z.butteredUntil||(z.entry!=='walk'&&this.time-z.entryAt<(z.entry==='ground'?1.35:1)))continue;
       const statusDt=dt*Math.pow(1.5,z.dark?.speed??0)*(this.time<(z.perfumeUntil??0)?.5:1);
-      if(this.lostcity.tick(z,statusDt)||this.iceage.tickZombie(z)||this.iceageCombat.hunter(z,statusDt)||this.iceageCombat.dodo(z,statusDt)||this.iceageCombat.troglobite(z,statusDt))continue;
+      if(this.lostcity.excavate(z,statusDt)||this.lostcity.tick(z,statusDt)||this.iceage.tickZombie(z)||this.iceageCombat.hunter(z,statusDt)||this.iceageCombat.dodo(z,statusDt)||this.iceageCombat.troglobite(z,statusDt))continue;
       if(this.beach.fishers.tickZombie(z,statusDt)||this.beach.octopuses.tickZombie(z,statusDt)||this.beach.surfers.tickZombie(z,statusDt)||this.future.tickZombie(z,statusDt)||this.cowboy.tickZombie(z,statusDt)||this.pirate.tickZombie(z,dt)||this.tickSpecialZombie(z,dt))continue;
       if(this.beachFinale.block(z,statusDt)||this.westFinale.blockEnemy(z,statusDt)||this.dark.movement(z)===0)continue;
       if(this.dark.eatPotion(z))continue;

@@ -189,7 +189,7 @@ export class WesternFinale {
       }else{
         const old=shot.x;shot.x+=3.33*BOARD.cellWidth*dt;shot.distance+=shot.x-old;
         const target=g.zombies.filter(z=>z.hp>0&&g.inLane(z,shot.row)&&z.x>=old-20&&z.x<=shot.x+20).sort((a,b)=>a.x-b.x)[0];
-        if(target){g.damage(target,g.props.projectiles[shot.kind].Damage);this.visual(shot.kind+'Hit','Play',shot.x,shot.y);this.sounds.push(shot.kind==='seashroom_spore'?'seashroomProjectile/PopSound':'puffshroom_spore/impact');shot.age=99;}
+        if(target){if(!g.lostcity.blockShot(target,false,1))g.damage(target,g.props.projectiles[shot.kind].Damage);this.visual(shot.kind+'Hit','Play',shot.x,shot.y);this.sounds.push(shot.kind==='seashroom_spore'?'seashroomProjectile/PopSound':'puffshroom_spore/impact');shot.age=99;}
         if(shot.distance>=4*BOARD.cellWidth)shot.age=99;
       }
     }
