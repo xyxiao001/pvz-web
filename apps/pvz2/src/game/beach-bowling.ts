@@ -15,7 +15,7 @@ export class BeachBowling {
   tickPlant(p:Plant,dt:number){
     const g=this.g,s=this.states.get(p.id)!,props=g.props.plants.bowlingbulb;
     s.reload-=dt;
-    const enemies=()=>g.zombies.some(z=>z.hp>0&&g.inLane(z,p.row)&&!g.beach.diving(z)&&z.x>cellX(p.column)-15&&z.x<1150)||g.graves.some(b=>b.kind==='surfboard'&&b.hp>0&&b.row===p.row&&b.column>p.column);
+    const enemies=()=>g.zombies.some(z=>z.hp>0&&g.inLane(z,p.row)&&!g.beach.diving(z)&&z.x>cellX(p.column)-15&&z.x<1150)||g.graves.some(b=>(b.kind==='surfboard'||b.kind==='octopus')&&b.hp>0&&b.row===p.row&&b.column>p.column);
     if(p.action==='idle'){
       if(s.reload<=0){s.reload=props.AmmoRefreshTime;const next=[...props.LoadOrder].map(Number).find(i=>!s.loaded[i]);if(next!==undefined){s.loaded[next]=true;this.play(p,'Load'+next,'grow');g.beach.sounds.push('bowlingbulb/load');}}
       if(p.action==='idle'&&enemies()){const next=[...props.RollOrder].map(Number).find(i=>s.loaded[i]);if(next!==undefined){this.play(p,'Shoot'+next,'shoot');g.beach.sounds.push('bowlingbulb/preshoot');}}
@@ -41,7 +41,7 @@ export class BeachBowling {
       const row=Math.round((b.y-top)/BOARD.cellHeight);if(row!==b.row){b.row=row;b.blockedRow=null;}
       if(b.blockedRow===row)continue;
       const target=g.zombies.filter(z=>z.hp>0&&!z.leap&&g.inLane(z,row)&&!g.beach.diving(z)&&z.x>=before-25&&z.x<=b.x+25).sort((a,c)=>a.x-c.x)[0];
-      const board=g.graves.filter(t=>t.kind==='surfboard'&&t.hp>0&&t.row===row&&cellX(t.column)>=before-25&&cellX(t.column)<=b.x+25).sort((a,c)=>a.column-c.column)[0];
+      const board=g.graves.filter(t=>(t.kind==='surfboard'||t.kind==='octopus')&&t.hp>0&&t.row===row&&cellX(t.column)>=before-25&&cellX(t.column)<=b.x+25).sort((a,c)=>a.column-c.column)[0];
       if(!target&&!board)continue;
       const props=g.props.projectiles[b.kind],hitBoard=board&&(!target||cellX(board.column)<target.x),hitX=hitBoard?cellX(board.column):target.x;
       if(hitBoard)board.hp-=props.Damage;
@@ -50,7 +50,7 @@ export class BeachBowling {
       if(b.kind==='bowling_pf'){
         const splash=props.SplashDamage[0];
         for(const z of g.zombies)if((hitBoard||z!==target)&&z.hp>0&&Math.abs(z.x-hitX)<splash.Range.w*BOARD.cellWidth/2&&Math.abs(z.row-row)<splash.Range.h/2)g.damage(z,splash.Damage!);
-        for(const grave of g.graves)if(grave.kind==='surfboard'&&(!hitBoard||grave!==board)&&Math.abs(cellX(grave.column)-hitX)<splash.Range.w*BOARD.cellWidth/2&&Math.abs(grave.row-row)<splash.Range.h/2)grave.hp-=splash.Damage!;
+        for(const grave of g.graves)if((grave.kind==='surfboard'||grave.kind==='octopus')&&(!hitBoard||grave!==board)&&Math.abs(cellX(grave.column)-hitX)<splash.Range.w*BOARD.cellWidth/2&&Math.abs(grave.row-row)<splash.Range.h/2)grave.hp-=splash.Damage!;
         g.effects.push({id:g.nextEntityId(),kind:'explode',x:b.x,y:b.y,age:0});
       }else g.effects.push({id:g.nextEntityId(),kind:'hit',x:b.x,y:b.y,age:0});
       b.blockedRow=row;b.direction=row===0?1:row===4?-1:b.direction===0?(g.random()<.5?-1:1):-b.direction;

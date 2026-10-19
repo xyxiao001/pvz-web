@@ -19,8 +19,8 @@ async function clean(){if(battle){await battle.dispose();battle=undefined;}if(sc
 function button(label:string,action:()=>Promise<void>|void){const b=document.createElement('button');b.textContent=label;b.onclick=async()=>{try{await action();}catch(e){status.textContent=String(e);throw e;}};controls.append(b);}
 function draw(){scene!.sync(game!,0);scene!.render();status.textContent=`第${game!.level.day}关${game!.boosts.size?"（花园强化）":""} / ${game!.time.toFixed(1)}s / ${game!.phase} / ${game!.wave}波 / ${game!.zombies.length}僵尸`;}
 button('世界地图',async()=>{await clean();worldHost.hidden=false;await shell.init();});
-for(const day of Array.from({length:15},(_,i)=>i+1))button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`beach${day}`],progress);await battle.enter();});
-for(const day of Array.from({length:15},(_,i)=>i+1))button(`场景${day}`,async()=>{
+for(const day of Array.from({length:20},(_,i)=>i+1))button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`beach${day}`],progress);await battle.enter();});
+for(const day of Array.from({length:20},(_,i)=>i+1))button(`场景${day}`,async()=>{
  await clean();sceneHost.hidden=false;scene=new Scene();const config=BATTLE_LEVELS[`beach${day}`],level=readLevel(await json<SourceLevel>(config.source));
  const groups=await Promise.all(['levels','campaign','pirate','cowboy','future','dark','beach'].map(name=>json<Properties>(name+'/properties.json'))),flag=await json<Properties['zombies']['mummy_flag']>('battle/flag.json');
  const props=groups.reduce((a,b)=>({...a,...b,plants:{...a.plants,...b.plants},zombies:{...a.zombies,...b.zombies},armors:{...a.armors,...b.armors},projectiles:{...a.projectiles,...b.projectiles},plantAnimations:{...a.plantAnimations,...b.plantAnimations}}));props.zombies.mummy_flag=flag;
@@ -37,3 +37,6 @@ button('保龄大招',()=>{game!.food=1;game!.plantFood(0,1);draw();});
 
 button('冲浪与插板',()=>{game!.addPlant('lilypad',2,5);game!.addPlant('tallnut',2,5);game!.spawnZombie('beach_surfer',2,cellX(5)+40);game!.spawnZombie('beach_surfer',1,cellX(7));game!.addPlant('wallnut',3,1);game!.spawnZombie('beach_surfer',3,cellX(1)+40);game!.addPlant('bowlingbulb',3,0);draw();});
 button('击倒冲浪僵尸',()=>{for(const z of game!.zombies.filter(z=>z.kind==='beach_surfer'))game!.damage(z,10000);game!.tick(1/60);scene!.sync(game!,1/60);draw();});
+
+button('章鱼投掷',()=>{game!.addPlant('lilypad',2,4);game!.addPlant('wallnut',2,4);const z=game!.spawnZombie('beach_octopus',2,cellX(7));z.octopus!.cooldown=0;draw();});
+button('清除章鱼',()=>{for(const t of game!.graves)if(t.kind==='octopus')t.hp=0;game!.tick(1/60);scene!.sync(game!,1/60);draw();});
