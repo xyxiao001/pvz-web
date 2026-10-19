@@ -1,3 +1,4 @@
+import {isBowlingTool} from './beach-bowling';
 import {BeachBattle,beachArmor} from './beach';
 import {DarkFinalePlants} from './dark-finale-plants';
 import {DarkMemory} from './dark-memory';
@@ -164,7 +165,7 @@ export class Game {
     const pot=this.plants.find(p=>p.row===row&&p.column===column&&p.kind==='floawerPot');
     const existing=this.plants.find(p=>p.row===row&&p.column===column&&(kind==='lilypad'?p.kind==='lilypad':kind==='floawerPot'?p.kind==='floawerPot':p.kind!=='floawerPot'&&p.kind!=='lilypad'));
     if(pot&&this.darkPlants.states.get(pot.id)!.moving)return false;
-    const repairing=kind==='peanut'&&existing?.kind==='peanut'&&existing.hp<p.Toughness*.75||kind==='redstinger'&&existing?.kind==='redstinger'&&column>=6&&existing.hp<p.Toughness*.75||kind==='holonut'&&existing?.kind==='holonut'&&(existing.hidden||existing.hp<=p.Toughness*2/3)||this.wallnutFirstAid&&(kind==='wallnut'||kind==='tallnut')&&existing?.kind===kind&&existing.hp<=p.Toughness*(kind==='tallnut'?2/3:.75)||kind==='spikerock'&&existing?.kind==='spikerock'&&existing.spikes!<p.MaxSpike||kind==='chardguard'&&existing?.kind==='chardguard'&&existing.leaves!<p.MaxBounceTime;
+    const repairing=kind==='bowlingbulb'&&existing?.kind==='bowlingbulb'&&this.beach.bowling.states.get(existing.id)!.loaded.some(loaded=>!loaded)||kind==='peanut'&&existing?.kind==='peanut'&&existing.hp<p.Toughness*.75||kind==='redstinger'&&existing?.kind==='redstinger'&&column>=6&&existing.hp<p.Toughness*.75||kind==='holonut'&&existing?.kind==='holonut'&&(existing.hidden||existing.hp<=p.Toughness*2/3)||this.wallnutFirstAid&&(kind==='wallnut'||kind==='tallnut')&&existing?.kind===kind&&existing.hp<=p.Toughness*(kind==='tallnut'?2/3:.75)||kind==='spikerock'&&existing?.kind==='spikerock'&&existing.spikes!<p.MaxSpike||kind==='chardguard'&&existing?.kind==='chardguard'&&existing.leaves!<p.MaxBounceTime;
     const stacking=kind==='peapod'&&existing?.kind==='peapod'&&existing.heads!<5;
     if(seaCell(this.level.planks,row,column)||!this.cowboy.canPlant(row,column)||this.dark.blocks(row,column)||!this.dark.canPlant(kind,row,column)||existing?.sheep!==undefined)return false;
     if(kind==='imitater'&&this.imitateKind===null)return false;
@@ -177,7 +178,7 @@ export class Game {
       || (placementKind==='gravebuster'?!this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0):this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0)) || existing&&!tilePlant&&!stacking&&!repairing) return false;
     if(packet){if(this.level.corral)this.corralWaiting=false;this.conveyor.splice(this.conveyor.indexOf(packet),1);if(!this.level.corral)this.nextCard=Math.min(this.nextCard,this.time+this.conveyorDelay());}
     else {const cost=this.seedCost(kind);this.sun -= cost; this.sunSpent+=cost;this.cooldowns[kind] = this.preparing?0:this.seedCooldown(kind);}
-    if(repairing){if(kind==='holonut')this.future.recoverNut(existing);else if(kind==='peanut'||kind==='redstinger'||kind==='wallnut'||kind==='tallnut')existing.hp=p.Toughness;else if(kind==='chardguard'){existing.leaves=p.MaxBounceTime;existing.hp=p.Toughness;}else existing.spikes=p.MaxSpike;}else if(stacking){existing.heads!++;existing.hp=p.Toughness;}else this.addPlant(kind, row, column);
+    if(repairing){if(kind==='bowlingbulb')this.beach.bowling.replant(existing);else if(kind==='holonut')this.future.recoverNut(existing);else if(kind==='peanut'||kind==='redstinger'||kind==='wallnut'||kind==='tallnut')existing.hp=p.Toughness;else if(kind==='chardguard'){existing.leaves=p.MaxBounceTime;existing.hp=p.Toughness;}else existing.spikes=p.MaxSpike;}else if(stacking){existing.heads!++;existing.hp=p.Toughness;}else this.addPlant(kind, row, column);
     if(packet?.forceBoosted)this.plantFood(row,column,true);
     else if(this.boosts.has(kind)&&!this.preparing){this.usedBoosts.add(kind);if(kind==='imitater')this.plants.at(-1)!.boosted=true;else this.plantFood(row,column,true);}
     this.checkChallenges();
@@ -186,11 +187,13 @@ export class Game {
   }
 
   addPlant(kind: PlantKind, row: number, column: number) {
+    if(isBowlingTool(kind)){this.beach.bowling.tool(kind,row,column);return;}
     const p = this.props.plants[kind];
     const nextAction = this.time + ((kind === 'sunflower'||kind==='twinsunflower') ? p.ProduceCountdownStart + this.random() * p.ProduceCountdownStartAdditional : kind==='coconutcannon'?0:.4);
     this.plants.push({ id: ++this.id, kind, row, column, hp: p.Toughness, armor: 0, age: 0, nextAction,
       action: 'idle', actionAt: this.time, fired: false, burst: 0, nextBurst: 0 });
     const plant=this.plants.at(-1)!;
+    if(kind==='bowlingbulb')this.beach.bowling.init(plant);
     if(kind==='lilypad'||kind==='tanglekelp')this.beach.initPlant(plant);
     if(this.darkFinale.handles(kind))this.darkFinale.init(plant);
     if(this.darkPlants.handles(kind))this.darkPlants.init(plant);
@@ -263,6 +266,7 @@ export class Game {
     if(!boost){this.food--;this.future.link(plant);} plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
     if(plant.kind==='splitpea'||plant.kind==='chilibean')this.cowboy.food(plant);
+    if(plant.kind==='bowlingbulb')this.beach.bowling.food(plant);
     if(plant.kind==='lilypad'||plant.kind==='tanglekelp')this.beach.food(plant);
     if(this.darkFinale.handles(plant.kind))this.darkFinale.food(plant);
     if(this.darkPlants.handles(plant.kind))this.darkPlants.food(plant);
@@ -346,6 +350,7 @@ export class Game {
     if(this.boss?.zombie===zombie){this.boss.hit(amount);return;}
     // Pharaoh's coffin protects its inner zombie: breaking it does not carry excess damage through.
     if(zombie.kind==='pharaoh'||zombie.kind==='pharaoh_weak'){const excess=Math.max(0,amount-zombie.armor),weak=zombie.kind==='pharaoh_weak';zombie.armor=Math.max(0,zombie.armor-amount);if(zombie.armor===0){zombie.kind='pharaoh_inner';zombie.landUntil=this.time+80/30;if(weak){zombie.hp-=excess;if(zombie.hp<=0)zombie.deathCause=cause;}}return;}
+    if(zombie.kind==='beach_gargantuar'&&!this.beach.inWater(zombie))amount*=this.props.zombies[zombie.kind].TakingDamageScaleOnLand;
     amount=this.cowboy.damage(zombie,amount)*Math.pow(.85,zombie.dark?.toughness??0);
     const armorDamage = Math.min(zombie.armor, amount); zombie.armor -= armorDamage; zombie.hp -= amount - armorDamage;this.cowboy.damaged(zombie);
     if(isCamel(zombie.kind)&&!isMatchCamel(zombie.kind)&&zombie.armor===0){zombie.kind='mummy';}
@@ -874,7 +879,7 @@ export class Game {
     this.pending = this.pending.filter(s => s.at > this.time);
 
     if(this.corralWaiting)return;
-    this.beach.tick();this.darkFinale.tick(dt);this.darkMemory.tick();this.dark.tick(dt);this.darkPlants.tick(dt);
+    this.beach.tick(dt);this.darkFinale.tick(dt);this.darkMemory.tick();this.dark.tick(dt);this.darkPlants.tick(dt);
     this.cowboy.tick(dt);
     for(const z of [...this.zombies,...this.westFinale.allies]){
       if(z.entry==='storm'&&this.time-z.entryAt<=1)z.x=z.entryX+(1070-z.entryX)*(1-(this.time-z.entryAt));
@@ -900,6 +905,7 @@ export class Game {
     this.tickConveyor(dt);this.tickPower(dt);this.tickMatching();this.escape.tick(dt);this.finale.tick(dt);this.western.tick(dt);this.westFinale.tick(dt);this.future.tick(dt);
     for (const p of this.plants) {
       if(p.sheep!==undefined){p.actionAt+=dt;p.nextAction+=dt;p.nextBurst+=dt;continue;}
+      if(p.kind==='bowlingbulb'){this.beach.bowling.tickPlant(p,dt);continue;}
       if(p.kind==='lilypad'||p.kind==='tanglekelp'){this.beach.tickPlant(p);continue;}
       if(this.darkFinale.handles(p.kind)){this.darkFinale.tickPlant(p,dt);continue;}
       if(this.darkPlants.handles(p.kind)){this.darkPlants.tickPlant(p,dt);continue;}
@@ -973,7 +979,7 @@ export class Game {
         }
         if (this.time - p.actionAt >= (shoot ? (p.kind==='cabbagepult'?this.timing.campaign!.cabbageDuration:p.kind==='bloomerang'?this.timing.campaign!.boomerangDuration:this.timing.shootDuration) : this.timing.produceDuration)) p.action = 'idle';
       }
-      if (['peashooter','cabbagepult','bloomerang'].includes(p.kind) && p.action === 'idle' && this.time >= p.nextAction && (this.zombies.some(z => this.inLane(z,p.row) && z.x > cellX(p.column) - 15 && z.x < 1150 && z.hp > 0)||this.graves.some(g=>g.hp>0&&g.row===p.row&&cellX(g.column)>cellX(p.column)))) {
+      if (['peashooter','cabbagepult','bloomerang'].includes(p.kind) && p.action === 'idle' && this.time >= p.nextAction && (this.zombies.some(z => (p.kind==='cabbagepult'||!this.beach.diving(z)) && this.inLane(z,p.row) && z.x > cellX(p.column) - 15 && z.x < 1150 && z.hp > 0)||this.graves.some(g=>g.hp>0&&g.row===p.row&&cellX(g.column)>cellX(p.column)))) {
         p.action = 'shoot'; p.actionAt = this.time; p.fired = false;
         const prop=this.props.plants[p.kind];p.nextAction=this.time+(p.kind==='cabbagepult'?prop.ThrowInterval:prop.ShootInterval)+this.random()*(p.kind==='cabbagepult'?prop.ThrowIntervalAdditional:prop.ShootIntervalAdditional);
       }
@@ -989,7 +995,7 @@ export class Game {
     for (const pea of this.peas) {
       const oldX = pea.x; pea.x += dt * (pea.vector?pea.vector.vx:pea.powered ? pea.speed! : 360);
       if(pea.vector){const v=pea.vector;pea.y+=v.vy*dt+.5*v.ay*dt*dt;v.vy+=v.ay*dt;if(v.stopY!==undefined&&(v.ay>0?v.vy>=0:v.vy<=0)){pea.y=v.stopY;v.vy=0;v.ay=0;delete v.stopY;}}
-      const target = this.zombies.filter(z => z.hp > 0 && (pea.vector?Math.abs(rowY(z.row)-40-pea.y)<35:this.inLane(z,pea.row)) && z.x - 18 >= Math.min(oldX,pea.x) - 12 && z.x - 18 <= Math.max(oldX,pea.x) + 12).sort((a, b) => a.x - b.x)[0];
+      const target = this.zombies.filter(z => z.hp > 0 && !this.beach.diving(z) && (pea.vector?Math.abs(rowY(z.row)-40-pea.y)<35:this.inLane(z,pea.row)) && z.x - 18 >= Math.min(oldX,pea.x) - 12 && z.x - 18 <= Math.max(oldX,pea.x) + 12).sort((a, b) => a.x - b.x)[0];
       const grave=this.graves.filter(g=>g.hp>0&&(pea.vector?Math.abs(rowY(g.row)-40-pea.y)<35:g.row===pea.row)&&cellX(g.column)-25>=oldX-12&&cellX(g.column)-25<=pea.x+12).sort((a,b)=>a.column-b.column)[0];
       if(grave&&(!target||cellX(grave.column)<target.x)){grave.hp-=pea.damage;this.effect('hit',pea.x,pea.y);pea.x=1300;}
       else if (target) { this.damage(target, pea.damage); this.effect('hit', pea.x, pea.y); pea.x = 1300; }
@@ -1017,7 +1023,7 @@ export class Game {
       if(target&&(z.kind==='explorer'||z.kind==='explorer_veteran')&&this.specialZombies.get(z.id)!.torch){target.hp=0;target.armor=0;}
       else if (target) { const amount = (z.kind==='egypt_imp'?100:this.props.zombies[z.kind].EatDPS) * statusDt*(this.time<z.chilledUntil?.5:1), armor = Math.min(target.armor, amount); target.armor -= armor; target.hp -= (amount - armor)*this.future.plantDamageScale(target);if(target.hp<=0){this.cowboy.eaten(target,z);this.westFinale.eaten(target,z);this.dark.eaten(target,z);}if(target.hp<=0&&target.kind==='parsnip')this.launchParsnip(target,false); }
       else if(blockedCamels.has(z.team))continue;
-      else if (this.time >= z.absorbUntil) z.x -= this.dark.movement(z)*(z.reversed?-1:1)* (this.time<z.chilledUntil?.5:1)*(this.time<(z.sappedUntil??0)?.5:1)*(z.kind==='piano'&&z.x>=cellX(9)?4:1)*(z.west?.animation==='Rush'?this.props.zombies[z.kind].RushSPS:(z.memoryRunner?this.level.memory!.enemySpeed:this.props.zombies[z.kind].WalkSPS)) * BOARD.cellWidth * statusDt;
+      else if (this.time >= z.absorbUntil) z.x -= this.beach.speed(z)*this.dark.movement(z)*(z.reversed?-1:1)* (this.time<z.chilledUntil?.5:1)*(this.time<(z.sappedUntil??0)?.5:1)*(z.kind==='piano'&&z.x>=cellX(9)?4:1)*(z.west?.animation==='Rush'?this.props.zombies[z.kind].RushSPS:(z.memoryRunner?this.level.memory!.enemySpeed:this.props.zombies[z.kind].WalkSPS)) * BOARD.cellWidth * statusDt;
       if (z.kind === 'ra' && z.x<BOARD.left+BOARD.columns*BOARD.cellWidth) {
         let reserved=z.absorbed+this.suns.filter(s=>s.absorber===z.id).reduce((sum,s)=>sum+s.value,0);
         for(const sun of this.suns)if(sun.absorber===null&&sun.y>=BOARD.top&&sun.x>=BOARD.left&&sun.x<=BOARD.left+BOARD.columns*BOARD.cellWidth&&reserved+sun.value<=this.props.zombies.ra.MaxAbsorbValue){sun.absorber=z.id;sun.absorbAge=0;reserved+=sun.value;}

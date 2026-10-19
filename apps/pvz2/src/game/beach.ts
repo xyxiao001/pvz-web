@@ -1,20 +1,26 @@
 import {BOARD,cellX,type PlantKind,type ZombieKind} from './level';
 import type {Game,Plant,Zombie} from './model';
 import tags from '../../public/assets/beach/plant-tags.json';
+import {BeachBowling} from './beach-bowling';
 import {isFlying} from './pirate';
 export const beachArmor=(kind:ZombieKind)=>kind==='beach_armor1'||kind==='beach_fem_armor1'?'beach_armor1':kind==='beach_armor2'||kind==='beach_fem_armor2'?'beach_armor2':null;
 export class BeachBattle {
+  readonly bowling:BeachBowling;
   position=9;
   private from=9;private target=9;private changedAt=-Infinity;
   hands:{id:number;zombie:Zombie;at:number;hit:boolean}[]=[];
   sounds:string[]=[];
-  constructor(private readonly g:Game){}
+  constructor(private readonly g:Game){this.bowling=new BeachBowling(g);}
   init(){this.position=this.g.level.tide!.start;this.target=this.position;}
   change(position:number){this.from=this.position;this.target=position;this.changedAt=this.g.time;}
   water(column:number){return this.g.level.tide!==null&&column>=Math.ceil(this.position);}
+  inWater(z:Zombie){return this.water(Math.floor((z.x-BOARD.left)/BOARD.cellWidth));}
+  diving(z:Zombie){return z.kind==='beach_snorkel'&&this.inWater(z)&&!z.eating&&(z.entry!=='ground'||this.g.time-z.entryAt>=1.35);}
+  speed(z:Zombie){return z.kind==='beach_gargantuar'&&!this.inWater(z)?this.g.props.zombies[z.kind].SpeedScaleOnLand:1;}
   support(row:number,column:number){return this.g.plants.find(p=>p.hp>0&&p.row===row&&p.column===column&&(p.kind==='lilypad'||p.kind==='floawerPot'));}
   occupant(p:Plant){return this.g.plants.find(q=>q.hp>0&&q.id!==p.id&&q.row===p.row&&q.column===p.column);}
   canPlant(kind:PlantKind,row:number,column:number){
+    if(this.g.level.bowlingLine!==null&&column>=this.g.level.bowlingLine)return false;
     if(!this.g.level.tide)return kind!=='lilypad'&&kind!=='tanglekelp';
     const support=this.support(row,column),plantTags=(tags as Record<string,string[]>)[kind];
     if(kind==='lilypad')return !support&&column>=9-this.g.level.tide.max&&!this.g.plants.some(p=>p.hp>0&&p.row===row&&p.column===column&&(tags as Record<string,string[]>)[p.kind].some(t=>['aquatic','potatomine','spikeweed'].includes(t)));
@@ -50,14 +56,15 @@ export class BeachBattle {
     }
     if(g.time-p.actionAt>=timeline.duration&&p.hp>0)this.play(p,'Idle','idle');
   }
-  tick(){
+  tick(dt:number){
+    this.bowling.tick(dt);
     const g=this.g;
     if(g.level.tide){const t=Math.min(1,(g.time-this.changedAt)/3),e=t<.5?4*t*t*t:1-(-2*t+2)**3/2;this.position=this.from+(this.target-this.from)*e;
       for(const p of g.plants)if(p.hp>0&&p.action!=='food'&&p.kind!=='lilypad'&&!this.canPlant(p.kind,p.row,p.column))p.hp=0;
     }
     if(!this.hands.length)return;
     const timeline=g.props.plantAnimations.kelpHands.Play;
-    for(const h of this.hands)if(!h.hit&&g.time-h.at>=timeline.events.find(e=>e.name==='kill')!.at){h.hit=true;if(h.zombie.hp>0){g.damage(h.zombie,h.zombie.hp+h.zombie.armor,'water');}this.sounds.push('tanglekelp/pull','tanglekelp/hit');}
+    for(const h of this.hands)if(!h.hit&&g.time-h.at>=timeline.events.find(e=>e.name==='kill')!.at){h.hit=true;if(h.zombie.hp>0){if(h.zombie.kind==='beach_gargantuar')g.damage(h.zombie,g.props.plants.tanglekelp.DamageWhenDragFailed);else g.damage(h.zombie,h.zombie.hp+h.zombie.armor,'water');}this.sounds.push('tanglekelp/pull','tanglekelp/hit');}
     if(this.hands.length)this.hands=this.hands.filter(h=>g.time-h.at<timeline.duration);
   }
 }
