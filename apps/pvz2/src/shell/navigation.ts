@@ -11,7 +11,7 @@ export const initialNavigation = (): Navigation => ({ world: null, chooser: 0, c
 export function islandStates(map: WorldMap, completed: ReadonlySet<string>, rewards: ReadonlySet<number> = new Set(), temporaryUnlock = false) {
   const states = new Map<number, 'locked' | 'open' | 'finished'>();
   for (const island of map.islands) states.set(island.node, (island.kind === 0 ? island.levels.some(id => completed.has(id)) : rewards.has(island.node)) ? 'finished'
-    : (map.id === 'egypt'||map.id==='pirate'||map.id==='future'||map.id==='dark') && island.levels.some(id => map.startingLevels.includes(id)) ? 'open' : 'locked');
+    : (map.id === 'egypt'||map.id==='pirate'||map.id==='future'||map.id==='dark'||map.id==='beach') && island.levels.some(id => map.startingLevels.includes(id)) ? 'open' : 'locked');
   const propagated = new Set<number>();
   const advance = (island: Island) => {
     if (propagated.has(island.node)) return;
