@@ -19,12 +19,12 @@ async function clean(){if(battle){await battle.dispose();battle=undefined;}if(sc
 function button(label:string,action:()=>Promise<void>|void){const b=document.createElement('button');b.textContent=label;b.onclick=async()=>{try{await action();}catch(e){status.textContent=String(e);throw e;}};controls.append(b);}
 function draw(){scene!.sync(game!,0);scene!.render();status.textContent=`第${game!.level.day}关${game!.boosts.size?"（花园强化）":""} / ${game!.time.toFixed(1)}s / ${game!.phase} / ${game!.wave}波 / ${game!.zombies.length}僵尸`;}
 button('世界地图',async()=>{await clean();worldHost.hidden=false;await shell.init();});
-for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23])button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`lostcity${day}`],progress);await battle.enter();});
-for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23])button(`场景${day}`,async()=>{
+for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28])button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`lostcity${day}`],progress);await battle.enter();});
+for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28])button(`场景${day}`,async()=>{
  await clean();sceneHost.hidden=false;scene=new Scene();const config=BATTLE_LEVELS[`lostcity${day}`],level=readLevel(await json<SourceLevel>(config.source));
  const groups=await Promise.all(['levels','campaign','pirate','cowboy','future','dark','beach','iceage','lostcity'].map(name=>json<Properties>(name+'/properties.json'))),flag=await json<Properties['zombies']['mummy_flag']>('battle/flag.json');
  const props=groups.reduce((a,b)=>({...a,...b,plants:{...a.plants,...b.plants},zombies:{...a.zombies,...b.zombies},armors:{...a.armors,...b.armors},projectiles:{...a.projectiles,...b.projectiles},plantAnimations:{...a.plantAnimations,...b.plantAnimations}}));props.zombies.mummy_flag=flag;
- await scene.init(sceneHost,()=>{},config,[...config.plants.map(p=>p.kind),...(level.preset??[]),...level.protectedPlants.map(p=>p.kind),...level.initialPlants.map(p=>p.kind),...(level.conveyor?.InitialPlantList.map(p=>p.PlantType)??[]),...level.actions.flat().flatMap(a=>a.add?.map(p=>p.PlantType)??[])],level);game=new Game(level,props,scene.timing,z=>({x:z.x,y:rowY(z.row)}),1234,false);scene.frameCombat();draw();
+ await scene.init(sceneHost,()=>{},config,[...config.plants.map(p=>p.kind),...(level.preset??[]),...level.protectedPlants.map(p=>p.kind),...level.initialPlants.map(p=>p.kind),...(level.conveyor?.InitialPlantList.map(p=>p.PlantType)??[]),...level.actions.flat().flatMap(a=>a.add?.map(p=>p.PlantType)??[])],level);game=new Game(level,props,scene.timing,z=>scene!.absorptionTarget(z),1234,false);scene.frameCombat();draw();
 });
 for(const seconds of [.1,1,5])button(`推进${seconds}秒`,()=>{for(let i=0;i<seconds*60;i++){game!.tick(1/60);scene!.sync(game!,1/60);}draw();});
 
@@ -52,3 +52,7 @@ button('金蟾菇吞食',()=>{game!.addPlant('toadstool',2,1);game!.spawnZombie(
 button('金蟾菇大招',()=>{game!.food=1;game!.plantFood(2,1);for(const row of [0,1,3,4])game!.spawnZombie('lostcity',row,cellX(4));draw();});
 button('触发机关',()=>{game!.addPlant('puffshroom',0,4);game!.addPlant('puffshroom',2,4);game!.spawnZombie('lostcity_armor2',0,cellX(6));game!.spawnZombie('lostcity',3,cellX(5));draw();});
 button('遗迹猎人入场',()=>{game!.spawnZombie('lostcity_relichunter',2,1100);draw();});
+
+button('水晶骷髅蓄力',()=>{game!.addPlant('wallnut',2,3);game!.spawnZombie('lostcity_crystalskull',2,cellX(6)-15);draw();});
+button('水晶骷髅吸收阳光',()=>{game!.dropSun(cellX(6),rowY(2)-95,250,'plant');draw();});
+button('黄金叶种植',()=>{game!.addPlant('goldleaf',2,4);draw();});

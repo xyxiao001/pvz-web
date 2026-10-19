@@ -4,10 +4,38 @@ import {isFlying,swinging} from './pirate';
 import native from '../../public/assets/lostcity/properties.json';
 export const lostcityArmor=(kind:ZombieKind)=>kind==='lostcity_armor1'||kind==='lostcity_bug_armor1'?'lostcity_armor1':kind==='lostcity_armor2'||kind==='lostcity_bug_armor2'?'lostcity_armor2':null;
 export class LostCityBattle {
+ crystals=new Map<number,{animation:string;at:number;elapsed:number;event:number;charge:number;next:number}>();
+ crystalRays:{id:number;x:number;y:number;length:number;direction:number;at:number}[]=[];
+ private crystalTargets(z:Zombie,distance:number){const g=this.g;return g.plants.filter(p=>p.hp>0&&!p.hidden&&!p.leap&&p.row===z.row&&!['iceburg','potatomine','spikeweed','spikerock','lilypad'].includes(p.kind)&&(z.reversed?cellX(p.column)-z.x:z.x-cellX(p.column))>=0&&Math.abs(cellX(p.column)-z.x)<=distance);}
+ crystalSun(z:Zombie,value:number){this.crystals.get(z.id)!.charge-=native.zombies.lostcity_crystalskull.ChargingTimeDecrementPer50Sun*value/50;}
+ crystal(z:Zombie,dt:number){const s=this.crystals.get(z.id);if(!s)return false;const g=this.g,prop=native.zombies.lostcity_crystalskull,length=prop.LaserBeamLength/64*BOARD.cellWidth;
+  const play=(animation:string)=>{s.animation=animation;s.at=g.time;s.elapsed=0;s.event=0;};
+  if(s.animation==='Walk'){
+   s.next-=dt;if(z.x>=BOARD.left+9*BOARD.cellWidth||s.next>0||(!z.reversed&&!this.crystalTargets(z,length-BOARD.cellWidth/2).length)||z.reversed&&!g.zombies.some(t=>t!==z&&!t.reversed&&t.hp>0&&t.row===z.row&&t.x>=z.x&&t.x-z.x<=length-BOARD.cellWidth/2))return false;
+   play('AbsorbStart');s.charge=prop.ChargingTime;z.eating=false;g.beach.sounds.push('lostCrystal/absorbSounds','lostCrystal/absorbBG');
+  }
+  s.elapsed+=dt;
+  if(s.animation==='AbsorbStart'||s.animation==='Absorbing'){
+   s.charge-=dt;
+   if(!z.reversed)for(const sun of g.suns)if(sun.absorber===null){sun.absorber=z.id;sun.absorbAge=0;}
+   if(s.charge<=0){play('AbsorbEnd');s.next=prop.LaserCooldownTime;for(const sun of g.suns)if(sun.absorber===z.id)sun.absorber=null;g.beach.sounds.push('lostCrystal/absorbEndSound');}
+  }else s.next-=dt;
+  if(s.animation==='AbsorbStart'||s.animation==='AbsorbEnd'){const transition=native.crystalTransitions[s.animation];if(s.elapsed>=transition.at)play(transition.animation);}
+  if(s.animation==='Shoot'){
+   const timeline=g.props.plantAnimations.lostCrystal.Shoot;
+   while(s.event<timeline.events.length&&s.elapsed>=timeline.events[s.event].at){const event=timeline.events[s.event++].name;if(event==='shoot'){
+    if(!z.reversed)for(const p of this.crystalTargets(z,length)){p.hp-=prop.LaserBeamDamage*g.future.plantDamageScale(p);}
+    else for(const other of g.zombies)if(other!==z&&!other.reversed&&other.hp>0&&other.row===z.row&&other.x>=z.x&&other.x-z.x<=length)g.damage(other,prop.LaserBeamDamage,'potato');
+    const point=g.raTarget(z);this.crystalRays.push({id:g.nextEntityId(),...point,length:length-Math.abs(z.x-point.x),direction:z.reversed?-1:1,at:g.time});g.beach.sounds.push('lostCrystal/shootSounds');
+   }if(event==='switchingFalse'){play('Walk');return true;}}
+  }
+  return true;
+ }
  trapCooldown=new Map<number,number>();
  flames:{id:number;row:number;at:number;until:number}[]=[];
  boulders:{id:number;x:number;y:number;at:number}[]=[];
  tickTraps(dt:number){const g=this.g;
+  this.crystalRays=this.crystalRays.filter(r=>g.time-r.at<g.props.plantAnimations.crystalRay.Play.duration);
   for(const [i,t] of g.level.trapTiles.entries()){
    const next=this.trapCooldown.get(i);if(next!==undefined&&g.time<next)continue;
    const plant=g.plants.some(p=>p.hp>0&&!p.leap&&p.row===t.row&&p.column===t.column)&&!g.plants.some(p=>p.hp>0&&p.row===t.row&&p.column===t.column&&p.kind==='floawerPot');
@@ -159,7 +187,7 @@ export class LostCityBattle {
   b.animation=b.risen?'Walk_Bug_Risen':'Walk_Bug';return false;
  }
 
- spawn(z:Zombie){if(z.kind==='lostcity_relichunter'){const g=this.g,prop=g.props.zombies[z.kind],timeline=g.props.plantAnimations.lostRelic,back=timeline.SwingBack.events.find(e=>e.name==='swingJudge')!.at;z.x=cellX(prop.LandingColumns[Math.floor(g.random()*prop.LandingColumns.length)]);z.swing={at:g.time,judge:g.time+back,end:g.time+back+timeline.SwingSuccess.events.find(e=>e.name==='switchingFalse')!.at,failure:false};}if(z.kind==='lostcity_gargantuar')this.torches.set(z.id,true);if(z.kind.startsWith('lostcity_bug'))z.bug={hp:this.g.props.zombies[z.kind].BugToughness,animation:'Walk_Bug',at:this.g.time,risen:false,flying:true};if(z.kind==='lostcity_excavator')this.shovels.set(z.id,{animation:'Walk_Shovel',at:this.g.time,elapsed:0,event:0,held:true});if(z.kind==='lostcity_lostpilot')z.pilot={animation:z.entry==='parachute'?'Arrive':'Walk',at:this.g.time,event:0,hanging:z.entry==='parachute',left:this.g.props.zombies[z.kind].HangingNoEatTimeUntilDrop,fallTime:0};}
+ spawn(z:Zombie){if(z.kind==='lostcity_crystalskull')this.crystals.set(z.id,{animation:'Walk',at:this.g.time,elapsed:0,event:0,charge:0,next:0});if(z.kind==='lostcity_relichunter'){const g=this.g,prop=g.props.zombies[z.kind],timeline=g.props.plantAnimations.lostRelic,back=timeline.SwingBack.events.find(e=>e.name==='swingJudge')!.at;z.x=cellX(prop.LandingColumns[Math.floor(g.random()*prop.LandingColumns.length)]);z.swing={at:g.time,judge:g.time+back,end:g.time+back+timeline.SwingSuccess.events.find(e=>e.name==='switchingFalse')!.at,failure:false};}if(z.kind==='lostcity_gargantuar')this.torches.set(z.id,true);if(z.kind.startsWith('lostcity_bug'))z.bug={hp:this.g.props.zombies[z.kind].BugToughness,animation:'Walk_Bug',at:this.g.time,risen:false,flying:true};if(z.kind==='lostcity_excavator')this.shovels.set(z.id,{animation:'Walk_Shovel',at:this.g.time,elapsed:0,event:0,held:true});if(z.kind==='lostcity_lostpilot')z.pilot={animation:z.entry==='parachute'?'Arrive':'Walk',at:this.g.time,event:0,hanging:z.entry==='parachute',left:this.g.props.zombies[z.kind].HangingNoEatTimeUntilDrop,fallTime:0};}
  tick(z:Zombie,dt:number){
   const s=z.pilot;if(!s)return false;const g=this.g;
   const play=(name:string)=>{s.animation=name;s.at=g.time;s.event=0;};

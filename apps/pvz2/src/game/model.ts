@@ -137,7 +137,7 @@ export class Game {
   private threshold = 0;
   private pending: {fallTime?:number;kind:ZombieKind;at:number;row:number;x:number;mode:SpawnAction['mode'];food:boolean}[] = [];
 
-  constructor(readonly level: Level, readonly props: Properties, readonly timing: AnimationTiming, private readonly raTarget: (zombie: Zombie) => {x:number;y:number}, private seed = 1, tutorial=true) {
+  constructor(readonly level: Level, readonly props: Properties, readonly timing: AnimationTiming, readonly raTarget: (zombie: Zombie) => {x:number;y:number}, private seed = 1, tutorial=true) {
     this.cowboy=new CowboyBattle(this);
     if(level.corral)this.nextWave=0;
     if(level.lastStand){this.preparing=true;this.sun=level.lastStand.sun;this.food=level.lastStand.food;this.nextWave=4+RULES.normalWaveEntrance;}
@@ -1065,7 +1065,7 @@ export class Game {
     for (const z of this.zombies) {
       if(z===this.boss?.zombie||z.hp<=0||z.weasel?.exploding||z.leap||z.landUntil!==undefined&&this.time<z.landUntil||this.time<z.frozenUntil||z.stunnedUntil!==undefined&&this.time<z.stunnedUntil||z.butteredUntil!==undefined&&this.time<z.butteredUntil||(z.entry!=='walk'&&this.time-z.entryAt<(z.entry==='ground'?1.35:1)))continue;
       const statusDt=dt*Math.pow(1.5,z.dark?.speed??0)*(this.time<(z.perfumeUntil??0)?.5:1);
-      if(this.lostcity.porter(z)||this.lostcity.tickBug(z)||this.lostcity.excavate(z,statusDt)||this.lostcity.tick(z,statusDt)||this.iceage.tickZombie(z)||this.iceageCombat.hunter(z,statusDt)||this.iceageCombat.dodo(z,statusDt)||this.iceageCombat.troglobite(z,statusDt))continue;
+      if(this.lostcity.crystal(z,statusDt)||this.lostcity.porter(z)||this.lostcity.tickBug(z)||this.lostcity.excavate(z,statusDt)||this.lostcity.tick(z,statusDt)||this.iceage.tickZombie(z)||this.iceageCombat.hunter(z,statusDt)||this.iceageCombat.dodo(z,statusDt)||this.iceageCombat.troglobite(z,statusDt))continue;
       if(this.beach.fishers.tickZombie(z,statusDt)||this.beach.octopuses.tickZombie(z,statusDt)||this.beach.surfers.tickZombie(z,statusDt)||this.future.tickZombie(z,statusDt)||this.cowboy.tickZombie(z,statusDt)||this.pirate.tickZombie(z,dt)||this.tickSpecialZombie(z,dt))continue;
       if(this.beachFinale.block(z,statusDt)||this.westFinale.blockEnemy(z,statusDt)||this.dark.movement(z)===0)continue;
       if(this.dark.eatPotion(z))continue;
@@ -1126,7 +1126,7 @@ export class Game {
         const ra=this.zombies.find(z=>z.id===sun.absorber)!;sun.absorbAge+=dt;
         // sun.ts pulls in three .5-second bursts separated by .3-second rests, then continuously.
         if(sun.absorbAge>=2.4||sun.absorbAge%.8<.5){const {x,y}=this.raTarget(ra),dx=x-sun.x,dy=y-sun.y,distance=Math.hypot(dx,dy),move=4*BOARD.cellWidth*dt;
-          if(distance<=move){ra.absorbed+=sun.value;absorbed.add(sun.id);}else{sun.x+=dx/distance*move;sun.y+=dy/distance*move;}}
+          if(distance<=move){if(ra.kind==='lostcity_crystalskull')this.lostcity.crystalSun(ra,sun.value);else ra.absorbed+=sun.value;absorbed.add(sun.id);}else{sun.x+=dx/distance*move;sun.y+=dy/distance*move;}}
       }else if(sun.y<sun.targetY){sun.x+=sun.vx*dt;sun.y=Math.min(sun.targetY,sun.y+sun.vy*dt);if(sun.from!=='sky')sun.vy+=990*dt;}
       else {if(sun.bomb)this.future.defuse(sun);sun.groundAge+=dt;}
     }
