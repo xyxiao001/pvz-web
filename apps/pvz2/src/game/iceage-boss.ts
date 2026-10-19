@@ -13,7 +13,7 @@ export class IceageBoss extends EgyptBoss {
   private stunLeftIce=0;
   private action:BossAction|null=null;
   private repeatsLeft=0;
-  constructor(game:Game){super(game);this.zombie.row=2;this.y=rowY(2);this.shield=game.props.zombies.zombossmech_iceage.GlacierToughness;}
+  constructor(game:Game){super(game);this.zombie.row=2;this.y=rowY(2);this.shield=game.props.zombies[game.level.boss!.kind].GlacierToughness;}
   override covers(row:number){return Math.abs(row-this.zombie.row)<=1;}
   override get rate(){return ['Spawn','DeathStart','DeathIdle','Escape','StunStart','Stunning','StunEnd'].includes(this.animation)?1:this.current.AnimRateModifier*(this.game.time<this.zombie.chilledUntil?.5:1);}
   private change(name:string){this.animation=name;this.elapsed=0;this.cursor=0;this.animationSerial++;}
@@ -39,7 +39,7 @@ export class IceageBoss extends EgyptBoss {
     if(plants.some(p=>p.hp>0))return;
     const old=g.iceage.blocks.find(b=>b.hp>0&&b.row===row&&b.column===column);
     if(old){old.hp=ice.zomboss_iceage_glacier_block.Toughness;return;}
-    const list=g.props.zombies.zombossmech_iceage.GlacierBlockZombieList;
+    const list=g.props.zombies[g.level.boss!.kind].GlacierBlockZombieList;
     g.iceage.blocks.push({id:g.nextEntityId(),row,column,hp:ice.zomboss_iceage_glacier_block.Toughness,glacier:true,release:list[Math.floor(column/8*list.length)]});
   }
   private choose(){
@@ -59,7 +59,7 @@ export class IceageBoss extends EgyptBoss {
     if(name.startsWith('block'))this.block(Number(name[5]),Number(name[6]));
     if(/^wind\d\d$/.test(name))g.iceage.wind([{row:Number(name[4]),left:false},{row:Number(name[5]),left:false}]);
     if(name==='glacierM'){
-      this.shield=g.props.zombies.zombossmech_iceage.GlacierToughness;this.shieldAt=g.time;
+      this.shield=g.props.zombies[g.level.boss!.kind].GlacierToughness;this.shieldAt=g.time;
       for(let row=0;row<5;row++){const column=this.column(row);if(column!==undefined)this.block(row,column);}
     }
     if(name==='shoot'){for(const t of this.targets)this.icebergs.push({...t,id:g.nextEntityId(),age:0});this.targets=[];}

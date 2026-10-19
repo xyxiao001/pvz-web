@@ -19,8 +19,8 @@ async function clean(){if(battle){await battle.dispose();battle=undefined;}if(sc
 function button(label:string,action:()=>Promise<void>|void){const b=document.createElement('button');b.textContent=label;b.onclick=async()=>{try{await action();}catch(e){status.textContent=String(e);throw e;}};controls.append(b);}
 function draw(){scene!.sync(game!,0);scene!.render();status.textContent=`第${game!.level.day}关${game!.boosts.size?"（花园强化）":""} / ${game!.time.toFixed(1)}s / ${game!.phase} / ${game!.wave}波 / ${game!.zombies.length}僵尸`;}
 button('世界地图',async()=>{await clean();worldHost.hidden=false;await shell.init();});
-for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38])button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`iceage${day}`],progress);await battle.enter();});
-for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38])button(`场景${day}`,async()=>{
+for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40])button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`iceage${day}`],progress);await battle.enter();});
+for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40])button(`场景${day}`,async()=>{
  await clean();sceneHost.hidden=false;scene=new Scene();const config=BATTLE_LEVELS[`iceage${day}`],level=readLevel(await json<SourceLevel>(config.source));
  const groups=await Promise.all(['levels','campaign','pirate','cowboy','future','dark','beach','iceage'].map(name=>json<Properties>(name+'/properties.json'))),flag=await json<Properties['zombies']['mummy_flag']>('battle/flag.json');
  const props=groups.reduce((a,b)=>({...a,...b,plants:{...a.plants,...b.plants},zombies:{...a.zombies,...b.zombies},armors:{...a.armors,...b.armors},projectiles:{...a.projectiles,...b.projectiles},plantAnimations:{...a.plantAnimations,...b.plantAnimations}}));props.zombies.mummy_flag=flag;
@@ -54,3 +54,6 @@ button('僵王战植物',()=>{for(const row of [0,1,2,3,4]){game!.addPlant('fire
 button('榴莲接触攻击',()=>{game!.plants=[];game!.zombies=[];game!.iceage.blocks=[];game!.addPlant('endurian',2,3);game!.spawnZombie('iceage_armor2',2,cellX(3)+35);draw();});
 button('榴莲大招',()=>{game!.food=1;game!.plantFood(2,3);draw();});
 button('老练猎人与推冰',()=>{game!.plants=[];game!.zombies=[];game!.iceage.blocks=[];game!.addPlant('wallnut',2,1);game!.addPlant('wallnut',2,3);game!.spawnZombie('iceage_hunter_veteran',2,cellX(7));game!.spawnZombie('iceage_troglobite_veteran',4,cellX(4));draw();});
+
+button('熔岩与机枪',()=>{game!.addPlant('gatling',2,1);game!.addPlant('lavaguava',3,3);game!.spawnZombie('iceage_armor2',3,cellX(3)+30);game!.spawnZombie('iceage_armor4',2,cellX(5));draw();});
+button('机枪大招',()=>{game!.food=1;game!.plantFood(2,1);draw();});
