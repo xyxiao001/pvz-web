@@ -154,7 +154,7 @@ export class CowboyBattle {
   const g=this.#game,s=z.west!,rig=z.kind==='iceage_gargantuar'?'iceageGargantuar':z.kind==='beach_gargantuar'?'beachGargantuar':z.kind==='dark_gargantuar'?'darkGargantuar':'cowboyGargantuar',timelines=g.props.plantAnimations[rig];
   const friendly=g.westFinale.allies.includes(z),foes=friendly?g.zombies:g.westFinale.allies;
   const foe=foes.find(a=>a.hp>0&&g.inLane(a,z.row)&&Math.abs(a.x-z.x)<90);
-  const target=friendly?undefined:g.plants.filter(p=>p.hp>0&&p.kind!=='tanglekelp'&&p.sheep===undefined&&!p.leap&&p.row===z.row&&Math.abs(cellX(p.column)-z.x)<75&&!(p.kind==='escaperoot'&&p.rootGrown)&&!(p.kind==='springbean'&&['Ready','Idle_Ready'].includes(p.animation!))).sort((a,b)=>b.column-a.column)[0];
+  const target=friendly?undefined:g.plants.filter(p=>p.hp>0&&p.kind!=='stunion'&&p.kind!=='tanglekelp'&&p.sheep===undefined&&!p.leap&&p.row===z.row&&Math.abs(cellX(p.column)-z.x)<75&&!(p.kind==='escaperoot'&&p.rootGrown)&&!(p.kind==='springbean'&&['Ready','Idle_Ready'].includes(p.animation!))).sort((a,b)=>b.column-a.column)[0];
   const start=(animation:string)=>{s.animation=animation;s.at=g.time;s.elapsed=0;s.fired=false;};
   if(s.animation==='Walk'){
    if(s.imp&&z.hp<g.props.zombies[z.kind].Toughness*(z.kind==='iceage_gargantuar'?[g.props.zombies[z.kind].HealthPercentThrowImp0,g.props.zombies[z.kind].HealthPercentThrowImp1,g.props.zombies[z.kind].HealthPercentThrowImp2][s.iceageImps!]:.5)&&(z.reversed?z.x<cellX(6):z.x>cellX(2))){start('Throw');this.sounds.push(rig+'/ImpThrowSaySounds');}

@@ -27,6 +27,19 @@ export class IceageBattle {
     }
     return false;
   }
+  canPush(b:IceageBattle['blocks'][number],direction:number):boolean {
+    const column=b.column+direction,g=this.g;
+    if(column<0||direction>0&&column>8)return false;
+    const next=this.blocks.find(n=>n.hp>0&&n.row===b.row&&n.column===column);
+    if(next)return this.canPush(next,direction);
+    return !g.level.sliders.some(t=>t.row===b.row&&t.column===column)&&!g.plants.some(p=>p.hp>0&&p.row===b.row&&(p.column===column&&p.action==='food'||p.column===b.column&&g.props.plants[p.kind].CannotBePushedByFootballMech))&&![...g.future.holonuts.values()].some(s=>s.shield>0&&s.column===column);
+  }
+  push(b:IceageBattle['blocks'][number],direction:number){
+    const column=b.column+direction,g=this.g,next=this.blocks.find(n=>n.hp>0&&n.row===b.row&&n.column===column);
+    if(next)this.push(next,direction);
+    for(const p of g.plants)if(p.hp>0&&p.row===b.row){if(p.column===column)p.hp=0;else if(p.column===b.column)p.column=column;}
+    b.column=column;if(b.zombie)b.zombie.x=cellX(column);
+  }
   tick(dt:number){const g=this.g;
     for(const w of this.winds){while(w.step<9&&g.time>=w.at+.15*(w.step+2)){const col=w.left?w.step:8-w.step;w.step++;const plants=g.plants.filter(p=>p.hp>0&&p.row===w.row&&p.column===col);if(!plants.length||plants.some(p=>g.props.plants[p.kind].ImmuneToIceblock))continue;const block=this.blocks.find(b=>b.row===w.row&&b.column===col&&b.hp>0);if(block){block.hp=Math.min(600,block.hp+300);continue;}const key=w.row+':'+col,cold=(this.cold.get(key)??0)+2;if(cold>2){this.freeze(w.row,col);this.cold.delete(key);}else this.cold.set(key,cold);}}
     this.winds=this.winds.filter(w=>g.time-w.at<3);
