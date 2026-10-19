@@ -265,6 +265,7 @@ export class FutureBattle {
   private mechRig(z:Zombie){return z.kind==='football_mech'?'footballMech':z.kind==='future_gargantuar'?'futureGargantuar':z.kind==='disco_mech'?'discoMech':'mechCone';}
   private killDancers(z:Zombie){for(const id of z.future!.summoned!) {const dancer=this.#game.zombies.find(d=>d.id===id);if(dancer)dancer.hp=0;}z.future!.summoned=[];}
   emp(z:Zombie,seconds:number){
+    this.#game.beach.surfers.emp(z,seconds);
     if(!['football_mech','future_gargantuar','disco_mech','mech_cone'].includes(z.kind))return;
     // MechZombieProps supplies EMPStunTimeScale=1 when the prefab does not override it.
     const g=this.#game,s=z.future!,until=g.time+seconds*(g.props.zombies[z.kind].EMPStunTimeScale??1);

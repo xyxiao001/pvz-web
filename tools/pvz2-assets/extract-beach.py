@@ -1,4 +1,4 @@
-"""Export Big Wave Beach 1–35 from the pinned Cocos build."""
+"""Export Big Wave Beach 1–40 from the pinned Cocos build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -19,7 +19,7 @@ def props(path,names):
     objs=e.read('json/Objects/'+path).objects[0]['json']['objects']
     return {n:next(o['objdata'] for o in objs if n in o.get('aliases',[])) for n in names}
 paths={'lilypad':'plants/LilyPadPLANT','tanglekelp':'plants/TangleKelpPLANT','beach':'zombies/BeachBasicZOMBIE','beachFemale':'zombies/BeachFemaleZOMBIE','beachFlag':'zombies/BeachFlagZOMBIE','beachImp':'zombies/BeachImpZOMBIE'}
-paths.update({'homingthistle':'plants/HomingThistlePLANT','beachFisher':'zombies/BeachFisherZOMBIE','bowlingbulb':'plants/BowlingBulbPLANT','beachSurfer':'zombies/BeachSurferZOMBIE','beachOctopus':'zombies/BeachOctopusZOMBIE','beachSnorkel':'zombies/BeachSnorkelZOMBIE','beachGargantuar':'zombies/BeachGargantuarZOMBIE'})
+paths.update({'homingthistle':'plants/HomingThistlePLANT','beachFisher':'zombies/BeachFisherZOMBIE','bowlingbulb':'plants/BowlingBulbPLANT','beachSurfer':'zombies/BeachSurferZOMBIE','beachSurferVeteran':'zombies/BeachSurferVeteranZOMBIE','beachOctopus':'zombies/BeachOctopusZOMBIE','beachSnorkel':'zombies/BeachSnorkelZOMBIE','beachGargantuar':'zombies/BeachGargantuarZOMBIE'})
 for suffix,prefab in [('1','1'),('2','2'),('3','3'),('_explode','Food')]:paths['tool_projectile_bowlingbulb'+suffix]='plants/BowlingSpawner'+prefab+'PLANT'
 paths.update({'missiletoe':'plants/MissileToePLANT','seashroom':'plants/SeaShroomPLANT','boss':'zombies/BeachZombossMechZOMBIE'})
 actors={n:rig(p) for n,p in paths.items()}
@@ -28,6 +28,8 @@ rigs.update({n:rig(p) for n,p in {'bowling0':'projectiles/Bowling0PRJ','bowling1
 kelp=next(o for o in walk(e.read(paths['tanglekelp']).objects) if 'kelphands' in o);rigs['kelpHands']=rig(kelp['kelphands']['asset'])
 surfer=next(o for o in walk(e.read(paths['beachSurfer']).objects) if 'bdBreakPar' in o)
 rigs.update({'surfboard':rig('tombstones/SurfboardTOMB'),'surfboardBreak':rig(surfer['bdBreakPar']['asset']),'surfboardThrow':rig(surfer['bdSpawnerPar']['asset'])})
+veteran=next(o for o in walk(e.read(paths['beachSurferVeteran']).objects) if 'bdBreakPar' in o)
+rigs.update({'surfboardVeteran':rig('tombstones/SurfboardVeteranTOMB'),'surfboardBreakVeteran':rig(veteran['bdBreakPar']['asset']),'surfboardThrowVeteran':rig(veteran['bdSpawnerPar']['asset'])})
 rigs.update({'octopus':rig('tombstones/OctopusTOMB'),'octopusShot':rig('projectiles/OctopusPRJ')})
 rigs.update({'thistle':rig('projectiles/Thistle0PRJ'),'thistleFood':rig('projectiles/ThistleFoodPRJ'),'fisherHook':rig('projectiles/FisherHookPRJ')})
 rigs['fisherWire']={**actors['beachFisher'],'armature':'wire','animation':'idle'}
@@ -61,7 +63,7 @@ file=e.OUT/'rigs'/actors['boss']['rig']/'skeleton.json';data=json.loads(file.rea
 for obj in walk(data):
     if obj.get('action')=='Nope':del obj['action']
 c.write_json(file,data)
-properties={'plants':props('PlantProps',['missiletoe','seashroom','homingthistle','lilypad','tanglekelp','bowlingbulb',*[n for n in paths if n.startswith('tool_')]]),'zombies':props('ZombieProps',['zombossmech_beach','beach_armor4','beach_fem_armor4','beach','beach_armor1','beach_armor2','beach_fem','beach_fem_armor1','beach_fem_armor2','beach_flag','beach_imp','beach_snorkel','beach_gargantuar','beach_surfer','beach_octopus','beach_fisherman']),'armors':props('ArmorProps',['beach_armor4','beach_armor1','beach_armor2']),'projectiles':props('ProjectileProps',['missiletoe','seashroom_spore','bowling0','bowling1','bowling2','bowling_pf','homing_thistle','homing_thistle_pf']),'plantAnimations':{}}
+properties={'plants':props('PlantProps',['missiletoe','seashroom','homingthistle','lilypad','tanglekelp','bowlingbulb',*[n for n in paths if n.startswith('tool_')]]),'zombies':props('ZombieProps',['zombossmech_beach','beach_armor4','beach_fem_armor4','beach','beach_armor1','beach_armor2','beach_fem','beach_fem_armor1','beach_fem_armor2','beach_flag','beach_imp','beach_snorkel','beach_gargantuar','beach_surfer','beach_surfer_veteran','beach_octopus','beach_fisherman']),'armors':props('ArmorProps',['beach_armor4','beach_armor1','beach_armor2']),'projectiles':props('ProjectileProps',['missiletoe','seashroom_spore','bowling0','bowling1','bowling2','bowling_pf','homing_thistle','homing_thistle_pf']),'plantAnimations':{}}
 for name,description in {**actors,**rigs}.items():
     sk=json.loads((e.OUT/'rigs'/description['rig']/'skeleton.json').read_text());arm=next(a for a in sk['armature'] if a['name']==description['armature']);timelines={}
     for animation in arm['animation']:
@@ -71,7 +73,7 @@ for name,description in {**actors,**rigs}.items():
             frame+=f.get('duration',1)
         timelines[animation['name']]={'duration':animation.get('duration',1)/arm['frameRate'],'events':events}
     properties['plantAnimations'][name]=timelines
-for day in range(1,36):
+for day in range(1,41):
     source=e.read(f'levels/beach{day}').objects[0]['json']
     # The final-wave octopus event mistakenly repeats the wave-16 alias upstream.
     # Restore its referenced wave-18 name; retain both events and all spawn values.
@@ -88,7 +90,7 @@ def sound(name,value):
     for ref in refs:
         clip=e.read(ref['asset']);ext=clip.objects[0]['_native'];target=e.OUT/'audio'/(ref['asset']+ext);target.parent.mkdir(exist_ok=True)
         target.write_bytes(c.native(ref['asset'],ext.lstrip('.')));sounds[name].append(str(target.relative_to(c.OUT)))
-for name,path in {**paths,'missiletoeProjectile':'projectiles/MissileToeArrow0PRJ','seashroomProjectile':'projectiles/SeaSpore0PRJ','beachShark':bossco['sharkPF']['asset'],'octopus':'tombstones/OctopusTOMB','octopusShot':'projectiles/OctopusPRJ','surfboard':'tombstones/SurfboardTOMB'}.items():
+for name,path in {**paths,'missiletoeProjectile':'projectiles/MissileToeArrow0PRJ','seashroomProjectile':'projectiles/SeaSpore0PRJ','beachShark':bossco['sharkPF']['asset'],'octopus':'tombstones/OctopusTOMB','octopusShot':'projectiles/OctopusPRJ','surfboard':'tombstones/SurfboardTOMB','surfboardVeteran':'tombstones/SurfboardVeteranTOMB'}.items():
     for obj in walk(e.read(path).objects):
         for key,value in obj.items():
             if key.lower().endswith(('sound','sounds')) and value:sound(name+'/'+key,value)
@@ -96,7 +98,7 @@ for name,path in {**paths,'missiletoeProjectile':'projectiles/MissileToeArrow0PR
             for key,value in obj['soundRes'].items():
                 if key!='type':sound(name+'/'+key,value)
 npc=e.read('b697cdfd-e783-4f80-abbe-ac197db6cf97');narratives={}
-for name in ['BEACH_INTRO_ZOMBOSS','BEACH_OUTRO_ZOMBOSS','BEACH_33_INTRO','BEACH_INTRO_FIRSTLEVEL','BEACH_INTRO_TIDES','BEACH_INTRO_CHOMPER','BEACH_INTRO_BOWLING','BEACH_INTRO_GARGANTUAR_ALT','BEACH_INTRO_GUACODILE','BEACH_OUTRO_DANGER_ROOM_KEY','BEACH_INTRO_HOMINGTHISTLE','BEACH_INTRO_BANANA']:
+for name in ['BEACH_38_INTRO','BEACH_INTRO_ZOMBOSS','BEACH_OUTRO_ZOMBOSS','BEACH_33_INTRO','BEACH_INTRO_FIRSTLEVEL','BEACH_INTRO_TIDES','BEACH_INTRO_CHOMPER','BEACH_INTRO_BOWLING','BEACH_INTRO_GARGANTUAR_ALT','BEACH_INTRO_GUACODILE','BEACH_OUTRO_DANGER_ROOM_KEY','BEACH_INTRO_HOMINGTHISTLE','BEACH_INTRO_BANANA']:
     flow=next(o['objdata']['Flow'] for o in e.read('json/Objects/NarrativeList').objects[0]['json']['objects'] if name in o.get('aliases',[]))
     for step in flow:
         if 'Lines' in step:
@@ -112,4 +114,4 @@ c.write_json(e.OUT/'octopus.json',props('TombstoneProps',['planttarget_squid'])[
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{'note_beach':e.sprite(c.decode_uuid(c.config['uuids'][c.path_index['note/beach/spriteFrame']]))}})
 c.write_json(c.ROOT/'apps/pvz2/beach-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Big Wave Beach 1–35')
+print('Exported Big Wave Beach 1–40')

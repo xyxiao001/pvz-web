@@ -37,7 +37,7 @@ export const isCamel=(kind:ZombieKind)=>kind.startsWith('camel_');
 export const isMatchCamel=(kind:ZombieKind)=>kind.endsWith('_touch');
 export interface SpecialZombie {action:'walk'|'smash'|'throw'|'bone';at:number;elapsed:number;fired:boolean;next:number;imp:boolean;torch:boolean}
 export interface CamelCard {face:number;state:'back'|'face'|'match';at:number;removeAt:number}
-export interface Grave {kind?:string;spawnAt?:number;id:number;row:number;column:number;hp:number;stage:number}
+export interface Grave {veteran?:boolean;kind?:string;spawnAt?:number;id:number;row:number;column:number;hp:number;stage:number}
 export interface Pickup {id:number;kind:'food'|'sprout';x:number;y:number;age:number}
 export interface Missile {id:number;projectile?:string;kind:'cabbage'|'boomerang'|'snow'|'bone'|'saw'|'parsnip';row:number;x:number;y:number;startX:number;startY:number;targetX:number;targetY:number;targetId:number;age:number;duration:number;damage:number;powered:boolean;returning:boolean;hits:number[];dx:number;dy:number}
 export type PowerKind='fire'|'snow'|'toss'|'zap'|'cherry';
@@ -411,7 +411,7 @@ export class Game {
     this.pending=[];
     for(const action of actions){
       if(action.mode==='tide'){this.beach.change(action.tide!);continue;}
-      if(action.mode==='conveyor'){this.conveyorPlants=this.conveyorPlants.filter(p=>!action.remove!.includes(p.PlantType));this.conveyorPlants.push(...action.add!);continue;}
+      if(action.mode==='conveyor'){if(action.remove)this.conveyorPlants=this.conveyorPlants.filter(p=>!action.remove!.includes(p.PlantType));this.conveyorPlants.push(...action.add!);continue;}
       if(action.mode==='graves'){
         const cells=action.positions!.filter(c=>!this.graves.some(g=>g.row===c.row&&g.column===c.column));
         for(let i=0;i<action.graveCount!&&cells.length;i++){const cell=cells.splice(Math.floor(this.random()*cells.length),1)[0];this.graves.push({...cell,kind:action.graveTypes![i],spawnAt:this.time,id:++this.id,hp:this.props.grave.Toughness,stage:0});this.effect('graveSpawn',cellX(cell.column),rowY(cell.row));}
@@ -1072,9 +1072,11 @@ export class Game {
     this.future.settleNuts();this.darkFinale.settle();
     for(const p of this.plants)if(p.hp<=0&&this.westFinale.handles(p.kind))this.westFinale.removed(p);
     this.plantsLost+=this.plants.filter(p=>p.hp<=0&&!p.transformed).length;
+    const protectedPlantDied=this.plants.some(p=>p.endangered&&p.hp<=0);
     this.plants = this.plants.filter(p => p.hp > 0);
     this.checkChallenges();
-    if(this.level.mustProtect>0&&this.plants.filter(p=>p.endangered).length<this.level.mustProtect&&this.phase==='playing'){this.lossReason='protected';this.phase='lost';this.events.push({type:'lose'});}
+    // Beach 40 keeps the source count of 5 for 3 plants; native protection checks on death.
+    if((this.level.world!=='beach'||this.level.day!==40||protectedPlantDied)&&this.level.mustProtect>0&&this.plants.filter(p=>p.endangered).length<this.level.mustProtect&&this.phase==='playing'){this.lossReason='protected';this.phase='lost';this.events.push({type:'lose'});}
     const absorbed=new Set<number>();
     for (const sun of this.suns) {
       sun.age+=dt;
