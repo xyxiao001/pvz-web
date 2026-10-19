@@ -13,10 +13,10 @@ import {cellX} from '../src/game/level';
 import {DARK_LEVELS} from '../src/game/worlds/dark';
 import {battleActors,battleEffects} from '../src/rendering/resource-plan';
 function empty(){const g=create(25);g['nextWave']=Infinity;g.graves=[];g.dark.potions=[];return g;}
-test('Dark 21–25 source modes and pending malformed challenge remain explicit',()=>{
+test('Dark 21–25 source modes and challenge limits',()=>{
  assert.deepEqual([21,23,24,25].map(d=>level(d).waves.length),[12,12,12,16]);
  assert.deepEqual(level(23).preset,['sunflower','scaredyshroom','iceburg','magnetshroom','gravebuster']);
- assert.equal(DARK_LEVELS.dark24.mode,'conveyor');assert.equal(DARK_LEVELS.dark22,undefined);assert.throws(()=>level(22),TypeError);
+ assert.equal(DARK_LEVELS.dark24.mode,'conveyor');assert.equal(DARK_LEVELS.dark22.mode,'seedbank');assert.equal(level(22).maxPlantsLost,5);assert.equal(level(22).waves.length,15);
  assert.equal(props.armors.dark_armor4.Toughness,2200);assert.equal(props.zombies.dark_wizard_veteran.Toughness,630);
  assert.ok(battleActors(level(25),[]).includes('darkWizardVeteran'));
  for(const effect of ['wizardSheep','wizardHit','wizardLink','scaredyShot','scaredyFood'])assert.ok(battleEffects(level(25),['scaredyshroom']).includes(effect));

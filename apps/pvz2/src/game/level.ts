@@ -94,7 +94,9 @@ export function readLevel(source: SourceLevel): Level {
   const protection=source.objects.find(o=>o.objclass==='ProtectThePlantChallengeProperties');
   const challenge=modules.flatMap(m=>byName.get(reference(m))?.objclass==='StarChallengeModuleProperties'?[byName.get(reference(m))!]:[])[0];
   // Pirate 8 references the shared SaveMowers objective but has no mower module.
-  const activeChallenges=challenge?(challenge.objdata.Challenges as string[][])[0].flatMap(name=>name==='RTID(SaveMowers@LevelModules)'?[]:[byName.get(reference(name))!]):[];
+  // Dark 22's pinned source omits BeatTheLevel; ZombiesDeadWinCon still supplies victory.
+  const missingDark22Win=definition.StageModule==='RTID(DarkStage@LevelModules)'&&definition.LevelNumber===22&&!byName.has('BeatTheLevel');
+  const activeChallenges=challenge?(challenge.objdata.Challenges as string[][])[0].flatMap(name=>name==='RTID(SaveMowers@LevelModules)'||missingDark22Win&&name==='RTID(BeatTheLevel@CurrentLevel)'?[]:[byName.get(reference(name))!]):[];
   const mold=activeChallenges.find(o=>o.objclass==='MoldColonyChallengeProps');
   const limit=activeChallenges.find(o=>o.objclass==='StarChallengeSimultaneousPlantsProps');
   const killChallenge=activeChallenges.find(o=>o.objclass==='StarChallengeKillZombiesInTimeProps');
