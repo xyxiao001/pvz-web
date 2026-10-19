@@ -9,6 +9,7 @@ import {BeachBattle,beachArmor} from './beach';
 import {DarkFinalePlants} from './dark-finale-plants';
 import {DarkMemory} from './dark-memory';
 import {DarkPlants} from './dark-plants';
+import {IceageBoss} from './iceage-boss';
 import {BeachBoss} from './beach-boss';
 import {DarkBoss} from './dark-boss';
 import {DarkBattle,darkArmor,type DarkZombie} from './dark';
@@ -153,7 +154,7 @@ export class Game {
     if(level.world==='egypt'&&level.day===2&&tutorial)this.addPlant('peashooter',2,2);
     this.dark.initLevel();this.iceage.init();
     this.conveyorPlants=level.conveyor?level.conveyor.InitialPlantList.map(p=>({...p})):[];
-    if(level.boss)this.boss=level.boss.kind.startsWith('zombossmech_beach')?new BeachBoss(this):level.boss.kind.startsWith('zombossmech_dark')?new DarkBoss(this):level.boss.kind.startsWith('zombossmech_future')?new FutureBoss(this):level.boss.kind.startsWith('zombossmech_cowboy')?new CowboyBoss(this):level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
+    if(level.boss)this.boss=level.boss.kind==='zombossmech_iceage'?new IceageBoss(this):level.boss.kind.startsWith('zombossmech_beach')?new BeachBoss(this):level.boss.kind.startsWith('zombossmech_dark')?new DarkBoss(this):level.boss.kind.startsWith('zombossmech_future')?new FutureBoss(this):level.boss.kind.startsWith('zombossmech_cowboy')?new CowboyBoss(this):level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
     if(level.cannon){this.nextWave=4+RULES.normalWaveEntrance;level.cannon.RowHasCannon.forEach((has,row)=>{if(has)this.addPlant('coconutcannon',row,1);});}
   }
 
@@ -280,7 +281,7 @@ export class Game {
     if (!plant || plant.leap?.pushed || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['goldleaf','hotpotato','powerplant','powerplant_alpha','powerplant_beta','empea','blover','gravebuster','imitater','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
     if(!boost){this.food--;this.future.link(plant);} plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
-    if(plant.kind==='pepperpult'||plant.kind==='stunion'||plant.kind==='firepeashooter')this.iceageCombat.food(plant);
+    if(plant.kind==='primalpeashooter'||plant.kind==='pepperpult'||plant.kind==='stunion'||plant.kind==='firepeashooter')this.iceageCombat.food(plant);
     if(this.beachFinale.handles(plant.kind))this.beachFinale.food(plant);
     if(plant.kind==='splitpea'||plant.kind==='chilibean')this.cowboy.food(plant);
     if(plant.kind==='homingthistle')this.beach.thistles.food(plant);
@@ -332,7 +333,7 @@ export class Game {
       if(p.burst>props.PlantfoodPeaCount){p.action='idle';p.animation='Idle';p.nextAction=this.time+props.ShootInterval;}
       return;
     }
-    if(p.action==='idle'&&this.time>=p.nextAction&&this.zombies.some(z=>z.hp>0&&!swinging(z,this.time)&&Math.abs(z.row-p.row)<=1&&z.x>x-15)){
+    if(p.action==='idle'&&this.time>=p.nextAction&&(this.zombies.some(z=>z.hp>0&&!swinging(z,this.time)&&Math.abs(z.row-p.row)<=1&&z.x>x-15)||this.iceage.blocks.some(b=>b.glacier&&b.hp>0&&Math.abs(b.row-p.row)<=1&&cellX(b.column)>x))){
       p.action='shoot';p.animation=p.row===0?'Shoot110':p.row===4?'Shoot011':'Shoot111';p.actionAt=this.time;p.eventIndex=0;p.nextAction=this.time+props.ShootInterval+this.random()*props.ShootIntervalAdditional;
     }
     if(p.action!=='shoot')return;
@@ -929,6 +930,7 @@ export class Game {
       if(this.iceage.blocked(p))continue;
       if(p.sheep!==undefined){p.actionAt+=dt;p.nextAction+=dt;p.nextBurst+=dt;continue;}
       if(p.kind==='pepperpult'){this.iceageCombat.tickPlant(p);continue;}
+      if(p.kind==='primalpeashooter'){this.iceageCombat.primal(p);continue;}
       if(p.kind==='firepeashooter'){this.iceageCombat.firePeashooter(p);continue;}
       if(p.kind==='stunion'){this.iceageCombat.stunion(p);continue;}
       if(this.beachFinale.handles(p.kind)){this.beachFinale.tickPlant(p,dt);continue;}
@@ -1024,7 +1026,7 @@ export class Game {
       const oldX = pea.x; pea.x += dt * (pea.vector?pea.vector.vx:pea.powered ? pea.speed! : 360);
       if(pea.vector){const v=pea.vector;pea.y+=v.vy*dt+.5*v.ay*dt*dt;v.vy+=v.ay*dt;if(v.stopY!==undefined&&(v.ay>0?v.vy>=0:v.vy<=0)){pea.y=v.stopY;v.vy=0;v.ay=0;delete v.stopY;}}
       if(this.iceage.hit(pea.row,oldX,pea.x,pea.damage)){pea.x=1300;continue;}
-      const target = this.zombies.filter(z => z.hp > 0 && !this.beach.diving(z) && (pea.vector?Math.abs(rowY(z.row)-40-pea.y)<35:this.inLane(z,pea.row)) && z.x - 18 >= Math.min(oldX,pea.x) - 12 && z.x - 18 <= Math.max(oldX,pea.x) + 12).sort((a, b) => a.x - b.x)[0];
+      const target = this.zombies.filter(z => z.hp > 0 && !this.beach.diving(z) && (pea.vector?(z===this.boss?.zombie&&this.level.world==='iceage'?[1,2,3].some(row=>Math.abs(rowY(row)-40-pea.y)<35):Math.abs(rowY(z.row)-40-pea.y)<35):this.inLane(z,pea.row)) && z.x - 18 >= Math.min(oldX,pea.x) - 12 && z.x - 18 <= Math.max(oldX,pea.x) + 12).sort((a, b) => a.x - b.x)[0];
       const grave=this.graves.filter(g=>g.hp>0&&(pea.vector?Math.abs(rowY(g.row)-40-pea.y)<35:g.row===pea.row)&&cellX(g.column)-25>=oldX-12&&cellX(g.column)-25<=pea.x+12).sort((a,b)=>a.column-b.column)[0];
       if(grave&&(!target||cellX(grave.column)<target.x)){grave.hp-=pea.damage;this.effect('hit',pea.x,pea.y);pea.x=1300;}
       else if (target) { if(!this.beach.surfers.blockShot(target,pea.damage,oldX))this.damage(target, pea.damage); this.effect('hit', pea.x, pea.y); pea.x = 1300; }

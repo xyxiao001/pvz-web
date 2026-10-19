@@ -19,8 +19,8 @@ async function clean(){if(battle){await battle.dispose();battle=undefined;}if(sc
 function button(label:string,action:()=>Promise<void>|void){const b=document.createElement('button');b.textContent=label;b.onclick=async()=>{try{await action();}catch(e){status.textContent=String(e);throw e;}};controls.append(b);}
 function draw(){scene!.sync(game!,0);scene!.render();status.textContent=`第${game!.level.day}关${game!.boosts.size?"（花园强化）":""} / ${game!.time.toFixed(1)}s / ${game!.phase} / ${game!.wave}波 / ${game!.zombies.length}僵尸`;}
 button('世界地图',async()=>{await clean();worldHost.hidden=false;await shell.init();});
-for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28])button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`iceage${day}`],progress);await battle.enter();});
-for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28])button(`场景${day}`,async()=>{
+for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33])button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`iceage${day}`],progress);await battle.enter();});
+for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33])button(`场景${day}`,async()=>{
  await clean();sceneHost.hidden=false;scene=new Scene();const config=BATTLE_LEVELS[`iceage${day}`],level=readLevel(await json<SourceLevel>(config.source));
  const groups=await Promise.all(['levels','campaign','pirate','cowboy','future','dark','beach','iceage'].map(name=>json<Properties>(name+'/properties.json'))),flag=await json<Properties['zombies']['mummy_flag']>('battle/flag.json');
  const props=groups.reduce((a,b)=>({...a,...b,plants:{...a.plants,...b.plants},zombies:{...a.zombies,...b.zombies},armors:{...a.armors,...b.armors},projectiles:{...a.projectiles,...b.projectiles},plantAnimations:{...a.plantAnimations,...b.plantAnimations}}));props.zombies.mummy_flag=flag;
@@ -46,3 +46,7 @@ button('洋葱大招',()=>{game!.plants=[];game!.addPlant('stunion',2,3);for(con
 button('火焰豌豆射击',()=>{game!.plants=[];game!.zombies=[];game!.iceage.blocks=[];game!.addPlant('firepeashooter',2,2);game!.addPlant('wallnut',1,2);game!.iceage.freeze(1,2);game!.spawnZombie('iceage_armor2',2,cellX(6));draw();});
 button('火焰豌豆大招',()=>{game!.food=1;game!.plantFood(2,2);draw();});
 button('鼬鼠出笼',()=>{const z=game!.spawnZombie('iceage_weaselhoarder',2,cellX(7));game!.damage(z,45);draw();});
+
+button('原始豌豆与砖甲',()=>{game!.addPlant('primalpeashooter',2,2);game!.spawnZombie('iceage_armor4',2,cellX(6));draw();});
+button('原始豌豆大招',()=>{game!.food=1;game!.plantFood(2,2);draw();});
+button('僵王战植物',()=>{for(const row of [0,1,2,3,4]){game!.addPlant('firepeashooter',row,1);game!.addPlant('pepperpult',row,0);}draw();});

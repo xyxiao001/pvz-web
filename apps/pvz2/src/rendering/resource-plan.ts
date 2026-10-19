@@ -22,7 +22,8 @@ export function battleActors(level:Level,plants:readonly PlantKind[]){
   if(names.has('pirateCaptain'))names.add('pirateParrot');
   if(names.has('barrelroller'))names.add('pirateBarrel');
   if(['barrelroller','pirateGargantuar','impCannon'].some(n=>names.has(n)))names.add('pirateImp');
-  if(level.boss?.kind.startsWith('zombossmech_pirate'))for(const name of ['boss','pirate','pirateCaptain','pirateParrot','pirateGargantuar','pirateImp','barrelroller','pirateBarrel'])names.add(name);
+  if(level.boss?.kind==='zombossmech_iceage')for(const name of ['boss','iceage','iceageImp','iceageHunter','iceageWeasel','iceageDodo'])names.add(name);
+  else if(level.boss?.kind.startsWith('zombossmech_pirate'))for(const name of ['boss','pirate','pirateCaptain','pirateParrot','pirateGargantuar','pirateImp','barrelroller','pirateBarrel'])names.add(name);
   else if(level.boss?.kind.startsWith('zombossmech_cowboy'))for(const name of ['boss','cowboy','prospector','piano','poncho','cowboyGargantuar','cowboyImp','chickenFarmer','chicken','chickenPumpkin'])names.add(name);
   else if(level.boss?.kind.startsWith('zombossmech_future'))for(const name of ['boss','future','futureJetpack','futureProtector','futureShield','futureImp','futureGargantuar','footballMech'])names.add(name);
   else if(level.boss?.kind.startsWith('zombossmech_dark'))for(const name of ['boss','dark','darkImp','darkGargantuar','darkJester','darkWizard','dragonImp'])names.add(name);
@@ -55,6 +56,7 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   if(level.potions)for(const n of ['potionSpeed','potionToughness'])names.add(n);
   if(level.sunBomb)for(const n of ['sunbomb','sunbombRay','sunbombBlast'])names.add(n);
   if(level.rails)for(const name of ['rail','cart'])names.add(name);
+  if(level.waves.flat().includes('iceage_armor4'))names.add('iceageBricks');
   if(level.waves.flat().some(z=>z==='beach_armor4'||z==='beach_fem_armor4'))names.add('beachBricks');
   if(level.corral)for(const name of ['fenceHere','fenceThere'])names.add(name);
   if(level.world==='west')for(const name of ['cowboyLawn','mower','cowboyCone','cowboyBucket','rail','cart','prospectorSmoke','prospectorTail','ponchoBreak','plateDrop','cowboyHat'])names.add(name);
@@ -70,7 +72,7 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   if(actors.has('beachOctopus'))for(const name of ['octopus','octopusShot'])names.add(name);
   if(level.waves.flat().includes('cowboy_armor4')||level.boss?.kind==='zombossmech_cowboy2')names.add('cowboyBricks');
   if((level.waves.flat().includes('future_armor4')||level.boss?.kind==='zombossmech_future2'))names.add('futureBricks');
-  const plantEffects:Partial<Record<PlantKind,string[]>>={
+  const plantEffects:Partial<Record<PlantKind,string[]>>={primalpeashooter:['primalPea'],
     firepeashooter:['firePea','firePeaHit','plantHeat','jalapenoFire'],stunion:['stunionSpawn','stunionPush','chiliStun'],pepperpult:['pepper','pepper_pf','plantHeat'],moonflower:['moonShield'],seashooter:['seaPea'],goldleaf:['goldtile'],ghostpepper:['ghost','ghostFog'],coldsnapdragon:['coldBreath','coldFood'],
     missiletoe:['missiletoeShot','missiletoeHit','missiletoeTarget'],seashroom:['seashroom_spore','seashroom_sporeHit'],homingthistle:['thistle','thistleFood'],tanglekelp:['kelpHands'],guacodile:['guacShot','guacRunner'],jackolantern:['jackFire','jackFood'],scaredyshroom:['scaredyShot','scaredyFood'],peanut:['peanutShot'],sunbean:['sunbeanBlast'],fumeshroom:['fumeShot','fumeFood','fumeHit'],applemortar:['appleShot','appleFood','appleHit','appleFoodHit'],electricblueberry:['blueberryCloud'],pinkstarfruit:['pinkShot','pinkFood','pinkHit','pinkFoodHit'],redstinger:['redShot','redWeak','redHit','redRay'],powerplant:['tile_epsilon','tile_epsilonFlash','tile_epsilonDot'],starfruit:['starShot','starFood','starHit','starFoodHit'],holonut:['infinutShield'],powerplant_alpha:['tile_alpha','tile_alphaFlash','tile_alphaDot'],powerplant_beta:['tile_beta','tile_betaFlash','tile_betaDot'],citron:['citronShot','citronFood','citronHit','citronFoodHit','citronToss','citronLightning'],empea:['empBlast','empEffect'],laser_bean:['laserBeam','laserDirt'],shadowshroom:['shadowExpl'],hurrikale:['windUpper','windLower'],puffshroom:['puffshroom_spore','puffshroom_sporeHit'],banana:['bananaShot','bananaHit','bananaTarget'],electriccurrant:['currantLine','currantCenter','currantHit'],
     electricpeashooter:['electricpea','electricpea_pf','electricpea_small','electricFoot','electricLink','electricHit','electricBigHit','electricSmallHit'],magnetshroom:['cowboyBucket','plateDrop'],magnifyinggrass:['magnifying_grass','grassHit','grassFrom','grassTo','grassAbsorb','grassRay'],wintermelon:['winter_melon','winter_melon_pf'],chilibean:['chiliFart','chiliStun'],splitpea:['megaPea'],xshot:['rotobaga','rotobagaFood'],chardguard:['chardHand'],dandelion:['dandelionShot','dandelionFood','dandelionExplosion','dandelionFoodExplosion','dandelionThrow'],jalapeno:['jalapenoFire'],lightningreed:['reedCloud','reedHit','reedLink'],escaperoot:['grapeshot','escapeGrapeExplosion','cherryExplosion'],spikerock:['rockFood'],spikeweed:['spikeFood'],snapdragon:['snapFire','snapFood','snapBall'],coconutcannon:['coconut','coconutHit','coconutFood','coconutFoodHit'],iceburg:['iceTrap'],iceweed:['iceSaw','iceTrap'],snowdrop:['snowdrop','snowdrop_freeze','iceTrap'],
@@ -80,7 +82,8 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   for(const plant of plants)for(const effect of plantEffects[plant]??[])names.add(effect);
   if(actors.has('futureGargantuar'))for(const name of ['gargEye','gargHit','gargRay'])names.add(name);
   if(actors.has('discoMech'))names.add('dirtSpawn');
-  if(level.boss?.kind.startsWith('zombossmech_pirate'))for(const name of ['bossEscape','bossPortal','zombossicon','dirtSpawn'])names.add(name);
+  if(level.boss?.kind==='zombossmech_iceage')for(const name of ['bossEscape','zombossicon','bossTarget','glacierUp','glacierMid','glacierDown','glacierBlock','iceberg','icebergHit','dirtSpawn'])names.add(name);
+  else if(level.boss?.kind.startsWith('zombossmech_pirate'))for(const name of ['bossEscape','bossPortal','zombossicon','dirtSpawn'])names.add(name);
   else if(level.boss?.kind.startsWith('zombossmech_future')||level.boss?.kind.startsWith('zombossmech_cowboy'))for(const name of ['bossMissile','bossMissileImpact','bossTarget','bossEscape','bossPortal','zombossicon','dirtSpawn'])names.add(name);
   else if(level.boss?.kind.startsWith('zombossmech_dark'))for(const name of ['bossMissile','bossEscape','jalapenoFire','dragonFire','dragonIntroFire','dragonShade','zombossicon','dirtSpawn'])names.add(name);
   else if(level.boss?.kind.startsWith('zombossmech_beach'))for(const name of ['bossEscape','beachShark','bossDive','bossCut','bossSuction','zombossicon','dirtSpawn'])names.add(name);

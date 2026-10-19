@@ -26,7 +26,7 @@ export class PirateFinalePlants {
   private targets(p:Plant){return this.#game.zombies.filter(z=>z.hp>0&&!z.leap&&!swinging(z,this.#game.time)&&Math.abs(z.row-p.row)<=1&&z.x>=cellX(p.column)-20);}
   private directions(p:Plant){
     const result:{x:number;y:number}[]=[];
-    for(const z of this.#game.zombies.filter(z=>z.hp>0&&!z.leap&&!swinging(z,this.#game.time))){
+    for(const z of [...this.#game.zombies.filter(z=>z.hp>0&&!z.leap&&!swinging(z,this.#game.time)).flatMap(z=>z===this.#game.boss?.zombie&&this.#game.level.world==='iceage'?[1,2,3].map(row=>({x:z.x,row})):[z]),...this.#game.iceage.blocks.filter(b=>b.glacier&&b.hp>0).map(b=>({x:cellX(b.column),row:b.row}))]){
       const dx=(z.x-cellX(p.column))/BOARD.cellWidth,dy=z.row-p.row;
       if(Math.abs(Math.abs(dx)-Math.abs(dy))>.65)continue;
       for(const x of dx===0?[-1,1]:[Math.sign(dx)])for(const y of dy===0?[-1,1]:[Math.sign(dy)])if(!result.some(d=>d.x===x&&d.y===y))result.push({x,y});
@@ -111,10 +111,12 @@ export class PirateFinalePlants {
       p.age+=dt;
       if(p.impactAt!==undefined){const t=Math.min(1,p.age/p.impactAt);p.x=p.targetX!+160*(1-t);p.y=p.targetY-650*(1-t);}
       else {p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.kind==='dandelion'&&p.vy){const next=p.vy-Math.sign(p.vy)*(4.5**2/2)*BOARD.cellHeight*dt;p.vy=Math.sign(next)!==Math.sign(p.vy)?0:next;if(!p.vy)p.y=p.targetY;}}
-      const hit=p.impactAt!==undefined?p.age>=p.impactAt:g.zombies.some(z=>z.hp>0&&!z.leap&&Math.abs(z.x-p.x)<30&&Math.abs(rowY(z.row)-45-p.y)<40);
+      const glacier=p.kind==='rotobaga'?g.iceage.blocks.find(b=>b.glacier&&b.hp>0&&Math.abs(cellX(b.column)-p.x)<30&&Math.abs(rowY(b.row)-45-p.y)<40):undefined;
+      const zombieHit=(z:Zombie)=>z.hp>0&&!z.leap&&Math.abs(z.x-p.x)<30&&(z===g.boss?.zombie&&g.level.world==='iceage'?[1,2,3].some(row=>Math.abs(rowY(row)-45-p.y)<40):Math.abs(rowY(z.row)-45-p.y)<40);
+      const hit=p.impactAt!==undefined?p.age>=p.impactAt:glacier||g.zombies.some(zombieHit);
       if(!hit)continue;
       const prop=g.props.projectiles[p.kind==='rotobaga'?(p.food?'rotobaga_pf':'rotobaga'):(p.food?'dandelion_pf':'dandelion')];
-      if(p.kind==='rotobaga'){const z=g.zombies.find(z=>z.hp>0&&!z.leap&&Math.abs(z.x-p.x)<30&&Math.abs(rowY(z.row)-45-p.y)<40)!;g.damage(z,prop.Damage);}
+      if(p.kind==='rotobaga'){if(glacier)glacier.hp-=prop.Damage;else g.damage(g.zombies.find(zombieHit)!,prop.Damage);}
       else {for(const z of g.zombies)if(z.hp>0&&g.inLane(z,p.row)&&Math.abs(z.x-p.x)<BOARD.cellWidth)g.damage(z,prop.Damage,'potato');this.visual(p.food?'dandelionFoodExplosion':'dandelionExplosion','Play',p.x,rowY(p.row)-30);}
       p.age=100;
     }

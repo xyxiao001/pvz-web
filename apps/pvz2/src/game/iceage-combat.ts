@@ -3,6 +3,7 @@ import type {Game,Plant,Zombie} from './model';
 
 export class IceageCombat {
   weaselThrowers:{row:number;x:number;reversed:boolean;left:number;cooldown:number}[]=[];
+  primalPeas:{id:number;row:number;x:number;y:number;kind:'pea_primal'|'pea_primal_kb'|'pea_primal_pf'}[]=[];
   firePeas:{id:number;row:number;x:number;y:number}[]=[];
   fireHits:{id:number;x:number;y:number;at:number}[]=[];
   troglobites=new Map<number,{at:number;elapsed:number;event:number;pushing:boolean}>();
@@ -15,15 +16,16 @@ export class IceageCombat {
   constructor(private g:Game){}
   init(p:Plant){if(p.kind==='stunion')p.animation='Idle';if(p.kind==='pepperpult'||p.kind==='firepeashooter'){this.heat.set(p.id,this.g.time+this.g.props.plants[p.kind].WarmingRadius!.PulseInitialDelay);p.animation='Idle';}}
   spawn(z:Zombie){if(z.kind==='iceage_weaselhoarder')z.weasel={hidden:true,exploding:false,at:0,elapsed:0,event:0};if(z.kind==='iceage_troglobite'){const g=this.g,prop=g.props.zombies[z.kind],column=Math.floor((z.x-BOARD.left)/BOARD.cellWidth);for(let i=0;i<prop.NumberOfIceblocksToSpawnWith;i++){const col=column+i;if(!g.iceage.blocks.some(b=>b.hp>0&&b.row===z.row&&b.column===col)){const imp=g.spawnZombie(prop.ImpTypes[Math.floor(g.random()*prop.ImpTypes.length)],z.row,cellX(col));g.iceage.freeze(z.row,col,imp);}}z.x=cellX(column+prop.NumberOfIceblocksToSpawnWith+1);this.troglobites.set(z.id,{at:0,elapsed:0,event:0,pushing:false});}if(z.kind==='iceage_dodo')z.dodo={animation:'Walk',at:0,elapsed:0,event:0,flying:false,remaining:0,column:Math.floor((z.x-BOARD.left)/BOARD.cellWidth)};if(z.kind==='iceage_hunter'){const g=this.g,p=g.props.zombies.iceage_hunter;this.hunters.set(z.id,{at:0,next:g.time+p.TimeBeforeFirst+g.random()*p.TimeBeforeFirstAddtional,left:p.SnowballsPerBarrage,event:0,throwing:false});}}
-  food(p:Plant){p.animation=p.kind==='firepeashooter'?'FoodStart':'Food';if(p.kind==='firepeashooter')this.heat.set(p.id,this.g.time+this.g.props.plants.firepeashooter.WarmingRadiusPlantfood!.PulseInitialDelay);p.actionAt=this.g.time;p.eventIndex=0;}
+  food(p:Plant){if(p.kind==='primalpeashooter')p.burst=0;p.animation=p.kind==='firepeashooter'?'FoodStart':'Food';if(p.kind==='firepeashooter')this.heat.set(p.id,this.g.time+this.g.props.plants.firepeashooter.WarmingRadiusPlantfood!.PulseInitialDelay);p.actionAt=this.g.time;p.eventIndex=0;}
   cold(row:number,column:number,amount:number){const g=this.g,plants=g.plants.filter(p=>p.hp>0&&p.row===row&&p.column===column);if(!plants.length||plants.some(p=>p.action==='food'||g.props.plants[p.kind].ImmuneToIceblock))return;const key=row+':'+column,ice=g.iceage.blocks.find(b=>b.hp>0&&b.row===row&&b.column===column);if(ice){ice.hp=Math.min(600,ice.hp+150*amount);return;}const level=(g.iceage.cold.get(key)??0)+amount;if(level>2){g.iceage.freeze(row,column);g.iceage.cold.delete(key);}else g.iceage.cold.set(key,level);}
   private lob(p:Plant,row:number,x:number,food:boolean){this.peppers.push({id:this.g.nextEntityId(),row,fromX:cellX(p.column),fromY:rowY(p.row)-80,x:cellX(p.column),y:rowY(p.row)-80,toX:x,toY:rowY(row)-25,at:this.g.time,food});}
   tickPlant(p:Plant){const g=this.g,prop=g.props.plants.pepperpult;
-    if(p.action==='idle'&&g.time>=p.nextAction&&g.zombies.some(z=>z.hp>0&&z.row===p.row&&z.x>=cellX(p.column))){p.action='shoot';p.animation='Lob';p.actionAt=g.time;p.eventIndex=0;p.nextAction=g.time+prop.ThrowInterval+g.random()*prop.ThrowIntervalAdditional;}
+    const targets=()=>[...g.zombies.filter(z=>z.hp>0&&g.inLane(z,p.row)).map(z=>({row:p.row,x:z.x})),...g.iceage.blocks.filter(b=>b.hp>0&&b.glacier&&b.row===p.row).map(b=>({row:b.row,x:cellX(b.column)}))].filter(t=>t.x>=cellX(p.column)).sort((a,b)=>a.x-b.x);
+    if(p.action==='idle'&&g.time>=p.nextAction&&targets().length){p.action='shoot';p.animation='Lob';p.actionAt=g.time;p.eventIndex=0;p.nextAction=g.time+prop.ThrowInterval+g.random()*prop.ThrowIntervalAdditional;}
     if(p.action==='idle')return;
     const timeline=g.props.plantAnimations.pepperpult[p.animation!];
     while(p.eventIndex!<timeline.events.length&&g.time-p.actionAt>=timeline.events[p.eventIndex!].at){const e=timeline.events[p.eventIndex!++].name;
-      if(e==='Lob'){const target=g.zombies.filter(z=>z.hp>0&&z.row===p.row&&z.x>=cellX(p.column)).sort((a,b)=>a.x-b.x)[0];if(target)this.lob(p,target.row,target.x,false);}
+      if(e==='Lob'){const target=targets()[0];if(target)this.lob(p,target.row,target.x,false);}
       if(e.startsWith('foodLob')){const [lo,hi]=e==='foodLobL'?[-1,3]:e==='foodLobR'?[5,9]:[2,6],targets=g.zombies.filter(z=>z.hp>0&&z.x>=cellX(lo)&&z.x<=cellX(hi));for(let i=0;i<3;i++){const z=targets.splice(Math.floor(g.random()*targets.length),1)[0];this.lob(p,z?z.row:Math.floor(g.random()*5),z?z.x:cellX(Math.max(0,lo)+Math.floor(g.random()*(Math.min(8,hi)-Math.max(0,lo)+1))),true);}}
       if(['LobSound','reload','foodSound'].includes(e))g.beach.sounds.push('pepperpult/'+({LobSound:'lobSound',reload:'reload',foodSound:'foodSound'}[e]));
     }
@@ -60,13 +62,13 @@ export class IceageCombat {
     return false;
   }
   stunion(p:Plant){
-    const g=this.g,prop=g.props.plants.stunion,x=cellX(p.column),detect=()=>g.zombies.some(z=>z.hp>0&&z.row===p.row&&z.x>=x-BOARD.cellWidth/2&&z.x<=x+(prop.DetectDistance+.5)*BOARD.cellWidth&&g.time>=z.frozenUntil&&g.time>=(z.stunnedUntil??0));
+    const g=this.g,prop=g.props.plants.stunion,x=cellX(p.column),detect=()=>g.zombies.some(z=>z.hp>0&&g.inLane(z,p.row)&&z.x>=x-BOARD.cellWidth/2&&z.x<=x+(prop.DetectDistance+.5)*BOARD.cellWidth&&g.time>=z.frozenUntil&&g.time>=(z.stunnedUntil??0));
     if(p.action==='idle'&&detect()){p.action='shoot';p.animation='Attack';p.actionAt=g.time;p.eventIndex=0;}
     if(p.action==='idle')return;
     const timeline=g.props.plantAnimations.stunion[p.animation!],stun=(z:Zombie,duration:number)=>{z.stunnedUntil=g.time+duration;z.west??={at:0,elapsed:0};z.west.chiliUntil=z.stunnedUntil;};
     while(p.eventIndex!<timeline.events.length&&g.time-p.actionAt>=timeline.events[p.eventIndex!].at){const e=timeline.events[p.eventIndex!++].name;
       if(e==='judge'){if(!detect()){p.action='idle';p.animation='Idle';return;}g.beach.sounds.push('stunion/attack');}
-      if(e==='attack')for(const z of g.zombies)if(z.hp>0&&z.row===p.row&&z.x>=x-BOARD.cellWidth/2&&z.x<=x+(prop.StunDistance+.5)*BOARD.cellWidth)stun(z,prop.StunDuration);
+      if(e==='attack')for(const z of g.zombies)if(z.hp>0&&g.inLane(z,p.row)&&z.x>=x-BOARD.cellWidth/2&&z.x<=x+(prop.StunDistance+.5)*BOARD.cellWidth)stun(z,prop.StunDuration);
       if(e==='foodStart'){this.stunionGas.set(p.id,g.time);for(let row=Math.max(0,p.row-1);row<=Math.min(4,p.row+1);row++)for(const name of ['stunionSpawn','stunionPush'])g.iceage.effects.push({id:g.nextEntityId(),name,animation:'Play',row,column:p.column,at:g.time});}
       if(e==='foodLeap')g.beach.sounds.push('stunion/foodInhale');if(e==='foodSound')g.beach.sounds.push('stunion/foodShoot');if(e==='fade')g.beach.sounds.push('stunion/fade');
       if(e==='foodEnd'){this.stunionGas.delete(p.id);p.action='idle';p.animation='Idle';return;}
@@ -108,13 +110,13 @@ export class IceageCombat {
     if(p.animation==='Food'){
       while(g.time>=p.nextBurst&&p.nextBurst<=p.actionAt+prop.PlantfoodDuration){
         const columns=Math.min(8,p.column+Math.floor((p.nextBurst-p.actionAt)*18));
-        for(const z of g.zombies)if(z.hp>0&&z.row===p.row&&z.x>=x-BOARD.cellWidth/2&&(columns===8||z.x<=cellX(columns)+BOARD.cellWidth/2)){g.damage(z,prop.PlantfoodDamagePerHit);z.frozenUntil=0;z.chilledUntil=0;}
+        for(const z of g.zombies)if(z.hp>0&&g.inLane(z,p.row)&&z.x>=x-BOARD.cellWidth/2&&(columns===8||z.x<=cellX(columns)+BOARD.cellWidth/2)){g.damage(z,prop.PlantfoodDamagePerHit);z.frozenUntil=0;z.chilledUntil=0;}
         for(const b of [...g.iceage.blocks,...g.graves])if(b.row===p.row&&b.column>=p.column&&b.column<=columns)b.hp-=prop.PlantfoodDamagePerHit;
         p.nextBurst+=prop.PlantfoodDamageInterval;
       }
       if(g.time-p.actionAt>=prop.PlantfoodDuration){p.animation='Idle';p.action='idle';g.beach.sounds.push('firepeashooter/foodEndSounds');this.heat.set(p.id,g.time+prop.WarmingRadius!.PulseInitialDelay);}return;
     }
-    if(p.action==='idle'&&g.time>=p.nextAction&&(g.zombies.some(z=>z.hp>0&&z.row===p.row&&z.x>=x&&!g.beach.diving(z))||[...g.iceage.blocks,...g.graves].some(b=>b.hp>0&&b.row===p.row&&cellX(b.column)>x))){p.action='shoot';p.animation='Shoot';p.actionAt=g.time;p.eventIndex=0;p.nextAction=g.time+prop.ShootInterval+g.random()*prop.ShootIntervalAdditional;}
+    if(p.action==='idle'&&g.time>=p.nextAction&&(g.zombies.some(z=>z.hp>0&&g.inLane(z,p.row)&&z.x>=x&&!g.beach.diving(z))||[...g.iceage.blocks,...g.graves].some(b=>b.hp>0&&b.row===p.row&&cellX(b.column)>x))){p.action='shoot';p.animation='Shoot';p.actionAt=g.time;p.eventIndex=0;p.nextAction=g.time+prop.ShootInterval+g.random()*prop.ShootIntervalAdditional;}
     if(p.action==='idle')return;
     const timeline=g.props.plantAnimations.firepeashooter[p.animation!];
     while(p.eventIndex!<timeline.events.length&&g.time-p.actionAt>=timeline.events[p.eventIndex!].at){const e=timeline.events[p.eventIndex!++].name;
@@ -125,11 +127,34 @@ export class IceageCombat {
     }
     if(g.time-p.actionAt>=timeline.duration){p.action='idle';p.animation='Idle';}
   }
+  primal(p:Plant){
+    const g=this.g,prop=g.props.plants.primalpeashooter;
+    if(p.action==='idle'&&g.time>=p.nextAction&&(g.zombies.some(z=>z.hp>0&&g.inLane(z,p.row)&&z.x>=cellX(p.column))||g.iceage.blocks.some(b=>b.hp>0&&b.row===p.row&&b.column>p.column))){p.action='shoot';p.animation='Shoot';p.actionAt=g.time;p.eventIndex=0;p.nextAction=g.time+prop.ShootInterval+g.random()*prop.ShootIntervalAdditional;}
+    if(p.action==='idle')return;
+    const timeline=g.props.plantAnimations.primalpeashooter[p.animation!];
+    while(p.eventIndex!<timeline.events.length&&g.time-p.actionAt>=timeline.events[p.eventIndex!].at){const event=timeline.events[p.eventIndex!++].name;
+      if(event==='Shoot'||event==='shootFood'){
+        const kind=event==='shootFood'?'pea_primal_pf':g.random()<prop.KnockbackChance?'pea_primal_kb':'pea_primal';
+        this.primalPeas.push({id:g.nextEntityId(),row:p.row,x:cellX(p.column)+35,y:rowY(p.row)-48,kind});
+        g.beach.sounds.push('primalpeashooter/'+(event==='shootFood'?'foodShootSound':'shootSound'));if(event==='shootFood')p.burst++;
+      }
+    }
+    if(g.time-p.actionAt>=timeline.duration){if(p.action==='food'&&p.burst<prop.PlantfoodPeaCount){p.actionAt+=timeline.duration;p.eventIndex=0;}else {p.action='idle';p.animation='Idle';}}
+  }
   tick(dt:number){const g=this.g;
+    for(const b of this.primalPeas){const old=b.x;b.x+=8*BOARD.cellWidth*dt;const prop=g.props.projectiles[b.kind];
+      if(g.iceage.hit(b.row,old,b.x,prop.Damage)){b.x=1300;continue;}
+      const target=g.zombies.filter(z=>z.hp>0&&g.inLane(z,b.row)&&!g.beach.diving(z)&&z.x>=old-25&&z.x<=b.x+25).sort((a,c)=>a.x-c.x)[0];
+      if(!target)continue;
+      const x=target.x,targets=b.kind==='pea_primal_pf'?g.zombies.filter(z=>z.hp>0&&g.inLane(z,b.row)&&Math.abs(z.x-x)<=BOARD.cellWidth):[target];
+      for(const z of targets){g.damage(z,prop.Damage);if(z!==g.boss?.zombie){z.stunnedUntil=g.time+prop.StunDuration;if(b.kind!=='pea_primal'&&!g.props.zombies[z.kind].CannotBeKnockedBackByProjectiles)z.leap={fromX:z.x,fromY:rowY(z.row),toX:z.x+prop.KnockbackDistance*BOARD.cellWidth,toRow:z.row,at:g.time,duration:.5};}}
+      b.x=1300;
+    }
+    this.primalPeas=this.primalPeas.filter(b=>b.x<1200);
     this.tickWeasels(dt);
     for(const b of this.firePeas){const old=b.x;b.x+=360*dt;const damage=g.props.projectiles.pea_flame_yellow.Damage*g.props.projectiles.pea_flame_yellow.DamageScale;
       let hit=g.iceage.hit(b.row,old,b.x,damage);
-      if(!hit){const z=g.zombies.filter(z=>z.hp>0&&z.row===b.row&&!g.beach.diving(z)&&z.x-18>=old-12&&z.x-18<=b.x+12).sort((a,c)=>a.x-c.x)[0],grave=g.graves.find(gr=>gr.hp>0&&gr.row===b.row&&cellX(gr.column)-25>=old-12&&cellX(gr.column)-25<=b.x+12);
+      if(!hit){const z=g.zombies.filter(z=>z.hp>0&&g.inLane(z,b.row)&&!g.beach.diving(z)&&z.x-18>=old-12&&z.x-18<=b.x+12).sort((a,c)=>a.x-c.x)[0],grave=g.graves.find(gr=>gr.hp>0&&gr.row===b.row&&cellX(gr.column)-25>=old-12&&cellX(gr.column)-25<=b.x+12);
         if(grave&&(!z||cellX(grave.column)<z.x)){grave.hp-=damage;hit=true;}else if(z){g.damage(z,damage);z.frozenUntil=0;z.chilledUntil=0;hit=true;}}
       if(hit){this.fireHits.push({id:g.nextEntityId(),x:b.x,y:b.y,at:g.time});g.beach.sounds.push('firePea/PopSound');b.x=1300;}
     }

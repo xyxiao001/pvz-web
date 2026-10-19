@@ -1,6 +1,7 @@
 import {iceageArmor} from '../game/iceage';
 import {beachArmor} from '../game/beach';
 import { applyCostume } from '../shell/costumes';
+import {IceageBoss} from '../game/iceage-boss';
 import {BeachBoss} from '../game/beach-boss';
 import {DarkBoss} from '../game/dark-boss';
 import {darkArmor,graveArt} from '../game/dark';
@@ -23,7 +24,7 @@ import { isCamel, isMatchCamel, type DeathCause, Game, Plant, Zombie, ZombieDeat
 
 type RigName = PlantKind | 'iceageWeaselHoarder'|'iceageWeasel'|'iceageTroglobite'|'iceageDodo'|'iceageGargantuar'|'iceageHunter'|'iceageImp'|'iceage'|'iceageFlag'| 'beachFisher'|'beachOctopus'|'beachSurfer'|'beachSurferVeteran'|'beachSnorkel'|'beachGargantuar'|'beach'|'beachFemale'|'beachFlag'|'beachImp'| 'darkKingVeteran'| 'darkWizardVeteran'| 'darkKing'|'dragonImp'| 'darkWizard'| 'darkGargantuar'| 'dark'|'darkFlag'|'darkImp'|'darkJester'| 'jetpackVeteran'|'footballMech'|'futureGargantuar'|'discoMech'|'discoJetpack'|'future'|'futureFlag'|'futureJetpack'|'futureProtector'|'futureShield'|'futureImp'|'mechCone'| 'blackBull'|'bull'|'cowboyGargantuar'|'cowboyImp'|'chickenFarmer'|'chicken'|'chickenPumpkin'| 'cowboy'|'cowboyFlag'|'prospector'|'poncho'|'piano'| 'pirateCaptain'|'pirateParrot'| 'barrelroller'|'pirateBarrel'|'pirateGargantuar'|'pirateImp'|'impCannon'| 'pirate'|'pirateFlag'|'swashbuckler'|'seagull'|'pelican'| 'boss' | 'torchlight' | 'pharaohWeak' | 'mummy' | 'ra' | 'camel' | 'camelTouch' | 'gargantuar' | 'imp' | 'explorer' | 'tombraiser' | 'pharaoh' | 'pharaohInner';
 const RIGS: Record<RigName, { armature: string; idle: string; scale: number }> = {
-  firepeashooter:{armature:'FirePeashooter',idle:'Idle',scale:.55},iceageWeaselHoarder:{armature:'WeaselHorder',idle:'Walk_Hidden',scale:.51},iceageWeasel:{armature:'Weasel',idle:'Walk',scale:.51},
+  primalpeashooter:{armature:'PrimalPeashooter',idle:'Idle',scale:.55},firepeashooter:{armature:'FirePeashooter',idle:'Idle',scale:.55},iceageWeaselHoarder:{armature:'WeaselHorder',idle:'Walk_Hidden',scale:.51},iceageWeasel:{armature:'Weasel',idle:'Walk',scale:.51},
   stunion:{armature:'Stunion',idle:'Idle',scale:.55},iceageTroglobite:{armature:'TroglobiteZombie',idle:'Walk',scale:.51},
   iceageDodo:{armature:'Dodo',idle:'Walk',scale:.51},iceageGargantuar:{armature:'Gargantuar',idle:'Walk',scale:.51},
   pepperpult:{armature:'PepperPult',idle:'Idle',scale:.55},iceageHunter:{armature:'Hunter',idle:'Walk',scale:.51},iceageImp:{armature:'Imp',idle:'Walk',scale:.51},
@@ -252,6 +253,9 @@ export class Scene {
     }
     if(name==='boss'&&this.art.campaign.actors.boss.group==='dark'){
       Object.assign(events.boss!,{eyeBlopSound:'eyeblopSound',roarSound:'roarSounds',introSkySound:'introSkySounds',shade:'introFlyShadeSounds',introLand:'worldZombossMechStabSounds',introFireSound:'introFireSounds',introRoarSound:'introRoarSounds',deathRoarSound:'deathRoarSounds',fireSteadySound:'fireSteadySounds',fireShootSound:'fireShootSounds',fireEndSound:'fireEndSounds',stunStartSound:'magnetStartSounds',stunEndSound:'magnetEndSounds',rushStart:'rushStartSounds',rushEndSound:'rushEndSounds'});
+    }
+    if(name==='boss'&&this.art.campaign.actors.boss.group==='iceage'){
+      events.boss={introSound:'introSounds',introRoarSound:'introRoarSounds',windBreathe:'windRoarSounds',summonReady:'tubeSummonExtendSounds',tubeExpand:'tubeSteelExtendSounds',summonStart:'summonStartHitSounds',summonEnd:'summonEndSaySounds',steelReturn:'tubeSteelReturnSounds',tubeSummonReturn:'tubeSummonReturnSounds',stunStartSound:'worldZombossStunStartSound',stunEndSound:'stunEndSounds',prjCreate:'prjCreateSounds',shootStartSound:'shootRoarSounds',shootSound:'shootBounceSounds',deathFallSound:'worldZombossMechDeathFallSounds',escape_trigger:'worldZombossEscapeTriggerSound'};
     }
     if(name==='boss'&&this.art.campaign.actors.boss.group==='beach'){
       events.boss={splashSound:'splashSounds',hitSound:'hitSounds',mouthMoveSound:'mouthMoveSounds',mouthMoveSmallSound:'mouthMoveSmallSounds',fanAppearSound:'fanAppearSound',igniteSound:'igniteSound',rushStartSound:'rushStartSounds',fanHideSound:'fanHideSound',rushEndSound:'rushEndSounds',introDiveSound:'introDiveSound',introAppearSound:'introAppearSound',coughSound:'coughSounds',deathRoarSound:'deathSharkSaySounds',teethFallSound:'teethFallSounds',diveSound:'diveSounds',appearSound:'appearSounds',cutSound:'cutSounds',summonSound:'summonSharkSaySounds',coughStartSound:'coughStartSounds',stunStartSound:'stunStartSharkSaySound',stunEndSound:'worldZombossStunEndSound',deathFallSound:'worldZombossMechDeathFallSounds',escape_trigger:'worldZombossEscapeTriggerSound'};
@@ -609,7 +613,8 @@ export class Scene {
     for(const w of game.iceage.winds)if(game.time>=w.at){const rig=object(`frost-${w.id}`,'frostWind',w.left?'left':'right',cellX(4),rowY(w.row),.5);rig.animation.lastAnimationState!.playTimes=1;}
     for(const [key,cold] of game.iceage.cold){const [row,column]=key.split(':').map(Number);object(`ice-prepare-${key}`,'icePrepare','Idle'+(cold-1),cellX(column),rowY(row),.5);}
     for(const [i,t] of game.level.sliders.entries()){const name=t.up?'sliderUp':'sliderDown';for(const suffix of ['','Back']){const rig=object(`slider-${i}-${suffix}`,name+suffix,'Idle',cellX(t.column),rowY(t.row),.5);rig.zIndex=suffix?-71:-70;}}
-    for(const b of game.iceage.blocks){const name=b.zombie?'iceZombie':'icePlant';for(const suffix of ['Back','']){const rig=object(`ice-${b.id}-${suffix}`,name+suffix,'Idle',cellX(b.column),rowY(b.row),.5);rig.zIndex=suffix?-50:rowY(b.row)+5;for(const slot of rig.armature.getSlots())if(slot.name==='MAIN')slot.displayIndex=Math.min(3,Math.floor((600-b.hp)/150));}}
+    for(const b of game.iceage.blocks){if(b.glacier){const rig=object(`glacier-${b.id}`,'glacierBlock','Idle',cellX(b.column),rowY(b.row),.45);for(const slot of rig.armature.getSlots()){const match=/BP([1-5])/.exec(slot.name);if(match)slot.displayIndex=b.hp<600*(6-Number(match[1]))/5?0:-1;}continue;}const name=b.zombie?'iceZombie':'icePlant';for(const suffix of ['Back','']){const rig=object(`ice-${b.id}-${suffix}`,name+suffix,'Idle',cellX(b.column),rowY(b.row),.5);rig.zIndex=suffix?-50:rowY(b.row)+5;for(const slot of rig.armature.getSlots())if(slot.name==='MAIN')slot.displayIndex=Math.min(3,Math.floor((600-b.hp)/150));}}
+    for(const b of game.iceageCombat.primalPeas)object(`primal-${b.id}`,'primalPea','Idle',b.x,b.y,b.kind==='pea_primal_pf'?.75:.5);
     for(const b of game.iceageCombat.firePeas)object(`fire-pea-${b.id}`,'firePea','Idle',b.x,b.y,.5);
     for(const e of game.iceageCombat.fireHits)object(`fire-hit-${e.id}`,'firePeaHit','Play',e.x,e.y,.5).animation.lastAnimationState!.playTimes=1;
     for(const p of game.plants)if(p.kind==='firepeashooter'&&p.animation==='Food')for(let c=p.column+1;c<=Math.min(8,p.column+Math.floor((game.time-p.actionAt)*18));c++){const fire=object(`fire-food-${p.id}-${c}`,'jalapenoFire','Idle',cellX(c),rowY(p.row),.24*BOARD.cellWidth/68);fire.scale.y=.24*10/20*BOARD.cellHeight/80.77;}
@@ -713,6 +718,15 @@ export class Scene {
     for(const sap of game.sap){const rig=object(`sap-${sap.id}`,'sapTile','Idle',cellX(sap.column),rowY(sap.row)-40,.35);rig.zIndex=rowY(sap.row)-3;}
     if(game.boss){
       if(game.boss.animation==='Summonning'||game.boss.animation==='SummonStart')object('boss-portal','bossPortal','Idle',game.boss.zombie.x-38.184,game.boss.y-44.147,.5);
+      if(game.boss instanceof IceageBoss){
+        const boss=game.boss;
+        if(!boss.defeated){
+          object('glacier-up','glacierUp','Idle',boss.zombie.x,boss.y,.51).zIndex=-40;
+          object('glacier-down','glacierDown','Idle',boss.zombie.x,boss.y,.51).zIndex=rowY(4)+10;
+          if(boss.shield>0){const rig=object('glacier-mid-'+boss.shieldAt,'glacierMid',game.time-boss.shieldAt<.9?'Spawn':'Idle',boss.zombie.x,boss.y,.51);rig.zIndex=boss.y+10;for(const slot of rig.armature.getSlots()){const match=/BP([1-5])/.exec(slot.name);if(match)slot.displayIndex=boss.shield<game.props.zombies.zombossmech_iceage.GlacierToughness*(6-Number(match[1]))/5?0:-1;}}
+        }
+        for(const m of boss.icebergs){if(m.age<1.5){object(`iceberg-${m.id}`,'iceberg','idle',cellX(m.column),rowY(m.row)-600*(1-m.age/1.5),.5).zIndex=1100;object(`ice-locator-${m.id}`,'bossTarget','Idle',cellX(m.column),rowY(m.row),.2);}else object(`ice-impact-${m.id}`,'icebergHit','Play',cellX(m.column),rowY(m.row),.5).animation.lastAnimationState!.playTimes=1;}
+      }
       if(game.boss instanceof BeachBoss){
         for(const s of game.boss.sharks){const rig=object(`beach-shark-${s.id}`,'beachShark',s.animation,cellX(s.column),rowY(s.row),.5);rig.animation.timeScale=s.target&&s.animation!=='Kill'?3:1;}
         for(const c of game.boss.cuts){const rig=object(`beach-cut-${c.id}`,'bossCut','Pop',cellX(c.column),rowY(c.row),.5);rig.animation.lastAnimationState!.playTimes=1;}

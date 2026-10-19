@@ -2,9 +2,9 @@ import {BOARD,cellX,rowY,type ZombieKind} from './level';
 import type {Game,Plant,Zombie} from './model';
 import ice from '../../public/assets/iceage/ice.json';
 import {isFlying} from './pirate';
-export const iceageArmor=(kind:ZombieKind)=>kind==='iceage_armor3'?'iceage_armor3':kind==='iceage_armor1'?'iceage_armor1':kind==='iceage_armor2'?'iceage_armor2':null;
+export const iceageArmor=(kind:ZombieKind)=>kind==='iceage_armor4'?'iceage_armor4':kind==='iceage_armor3'?'iceage_armor3':kind==='iceage_armor1'?'iceage_armor1':kind==='iceage_armor2'?'iceage_armor2':null;
 export class IceageBattle {
-  blocks:{id:number;row:number;column:number;hp:number;zombie?:Zombie;meltAt?:number}[]=[];
+  blocks:{id:number;row:number;column:number;hp:number;glacier?:boolean;release?:(ZombieKind|'')[];zombie?:Zombie;meltAt?:number}[]=[];
   cold=new Map<string,number>();
   winds:{id:number;row:number;left:boolean;at:number;step:number}[]=[];
   slides=new Map<number,{from:number;to:number;at:number;column:number}>();
@@ -44,7 +44,7 @@ export class IceageBattle {
     for(const w of this.winds){while(w.step<9&&g.time>=w.at+.15*(w.step+2)){const col=w.left?w.step:8-w.step;w.step++;const plants=g.plants.filter(p=>p.hp>0&&p.row===w.row&&p.column===col);if(!plants.length||plants.some(p=>g.props.plants[p.kind].ImmuneToIceblock))continue;const block=this.blocks.find(b=>b.row===w.row&&b.column===col&&b.hp>0);if(block){block.hp=Math.min(600,block.hp+300);continue;}const key=w.row+':'+col,cold=(this.cold.get(key)??0)+2;if(cold>2){this.freeze(w.row,col);this.cold.delete(key);}else this.cold.set(key,cold);}}
     this.winds=this.winds.filter(w=>g.time-w.at<3);
     for(const b of this.blocks)if(b.meltAt!==undefined&&g.time>=b.meltAt)b.hp=0;
-    for(const b of this.blocks)if(b.hp<=0)this.effects.push({id:g.nextEntityId(),name:'iceBreak',animation:'Play4',row:b.row,column:b.column,at:g.time});
+    for(const b of this.blocks)if(b.hp<=0){this.effects.push({id:g.nextEntityId(),name:'iceBreak',animation:'Play4',row:b.row,column:b.column,at:g.time});if(b.release?.length&&g.boss!.zombie.hp>0){const kind=b.release[Math.floor(g.random()*b.release.length)];if(kind)g.spawnZombie(kind,b.row,cellX(b.column),'ground');}}
     this.blocks=this.blocks.filter(b=>b.hp>0);
     this.effects=this.effects.filter(e=>g.time-e.at<g.props.plantAnimations[e.name][e.animation].duration);
     for(const p of g.plants)if(this.blocked(p)&&p.kind!=='hotpotato'){p.actionAt+=dt;p.nextAction+=dt;p.nextBurst+=dt;}
