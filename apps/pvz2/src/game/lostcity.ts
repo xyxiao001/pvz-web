@@ -1,8 +1,11 @@
-import type {Game,Zombie,Plant} from './model';
+import type {Game,Zombie,Plant,Grave} from './model';
 import {BOARD,cellX,rowY,type ZombieKind} from './level';
 import native from '../../public/assets/lostcity/properties.json';
 export const lostcityArmor=(kind:ZombieKind)=>kind==='lostcity_armor1'||kind==='lostcity_bug_armor1'?'lostcity_armor1':kind==='lostcity_armor2'||kind==='lostcity_bug_armor2'?'lostcity_armor2':null;
 export class LostCityBattle {
+ tenting=new Set<number>();
+ porterDrops=new Map<number,{z:Zombie;animation:string;at:number;event:number}>();
+ tents=new Map<number,number>();
  torches=new Map<number,boolean>();
  shovels=new Map<number,{animation:string;at:number;elapsed:number;event:number;held:boolean}>();
  blocks=new Map<number,number>();
@@ -10,7 +13,7 @@ export class LostCityBattle {
  constructor(private g:Game){}
  initPlant(p:Plant){if(p.kind==='akee')p.animation='Idle';}
  food(p:Plant){p.animation='Food';p.action='food';p.actionAt=this.g.time;p.eventIndex=0;}
- private targets(row:number,x:number,hits:number[]){return this.g.zombies.filter(z=>z.hp>0&&z.row===row&&z.x>=x&&!hits.includes(z.id)).sort((a,b)=>a.x-b.x);}
+ private targets(row:number,x:number,hits:number[]){return [...this.g.zombies.filter(z=>z.hp>0).map(z=>({id:z.id,row:z.row,x:z.x})),...this.g.graves.filter(t=>t.hp>0&&(t.kind==='tent'||t.kind==='backpack')).map(t=>({id:t.id,row:t.row,x:cellX(t.column)}))].filter(z=>z.row===row&&z.x>=x&&!hits.includes(z.id)).sort((a,b)=>a.x-b.x);}
  private lob(p:Plant,row:number,food:boolean){const z=this.targets(row,cellX(p.column)-15,[])[0];if(!z)return;const x=cellX(p.column),y=rowY(p.row)-70;this.shots.push({id:this.g.nextEntityId(),row,x,y,fromX:x,fromY:y,target:z.id,toX:z.x,toY:rowY(row)-45,at:this.g.time,duration:Math.max(.65,Math.abs(z.x-x)/450),food,hits:[],dead:false});}
  plant(p:Plant){
   const g=this.g,prop=g.props.plants.akee;
@@ -30,11 +33,12 @@ export class LostCityBattle {
  tickShots(){
   const g=this.g;
   for(const s of this.shots){
-   const z=g.zombies.find(z=>z.id===s.target&&z.hp>0);if(z){s.toX=z.x;s.toY=rowY(z.row)-45;}
+   const z=g.zombies.find(z=>z.id===s.target&&z.hp>0),tomb=g.graves.find(t=>t.id===s.target&&t.hp>0);if(tomb){s.toX=cellX(tomb.column);s.toY=rowY(tomb.row)-45;}if(z){s.toX=z.x;s.toY=rowY(z.row)-45;}
    const t=Math.min(1,(g.time-s.at)/s.duration);s.x=s.fromX+(s.toX-s.fromX)*t;s.y=s.fromY+(s.toY-s.fromY)*t-110*4*t*(1-t);
    if(t<1)continue;
    if(z&&this.blockShot(z,true,1)){s.dead=true;continue;}
    if(z){g.damage(z,g.props.projectiles[s.food?'akee_pf':'akee'].Damage);s.hits.push(z.id);g.effects.push({id:g.nextEntityId(),kind:'hit',x:s.x,y:s.y,age:0});g.beach.sounds.push((s.food?'akeeFood':'akeeShot')+'/PopSound');}
+   if(tomb){tomb.hp-=g.props.projectiles[s.food?'akee_pf':'akee'].Damage;s.hits.push(tomb.id);}
    const next=this.targets(s.row,s.x+1,s.hits)[0],max=native.projectiles[s.food?'akee_pf':'akee'].MaxHitCount.Max;
    if(!next||s.hits.length>=max){s.dead=true;continue;}
    s.fromX=s.x;s.fromY=s.y;s.target=next.id;s.toX=next.x;s.toY=rowY(next.row)-45;s.at=g.time;s.duration=Math.max(.25,Math.abs(next.x-s.x)/450);
@@ -67,6 +71,43 @@ export class LostCityBattle {
   }
   if(s.elapsed>=timeline.duration)play(s.held?'Walk_Shovel':'Walk');return true;
  }
+
+ porter(z:Zombie){
+  if(z.kind!=='lostcity_impporter'||z.eating)return false;const g=this.g;
+  const tile=g.beachFinale.tiles.find(t=>t.row===z.row&&Math.abs(z.x-cellX(t.column))<20&&!g.graves.some(tomb=>tomb.hp>0&&tomb.row===t.row&&tomb.column===t.column));
+  if(!tile)return false;
+  this.tenting.add(z.id);z.hp=0;return true;
+ }
+ die(z:Zombie){
+  if(z.kind!=='lostcity_impporter'||['water','swallow','potato','blow','toss'].includes(z.deathCause))return;
+  this.porterDrops.set(z.id,{z,animation:this.tenting.has(z.id)?'Tent':'Death',at:this.g.time,event:0});
+ }
+ private placeTomb(z:Zombie,kind:'tent'|'backpack'){
+  const g=this.g,column=Math.floor((z.x-BOARD.left)/BOARD.cellWidth);
+  if(column<0||column>=9||g.graves.some(t=>t.hp>0&&t.row===z.row&&t.column===column))return;
+  for(const p of g.plants)if(p.row===z.row&&p.column===column){p.hp=0;p.armor=0;}
+  const tomb:Grave={id:g.nextEntityId(),row:z.row,column,kind,hp:native.tombs[kind].Toughness,stage:0,spawnAt:g.time};g.graves.push(tomb);
+  if(kind==='tent')this.tents.set(tomb.id,g.time+native.tombs.tent.SummonInterval.Min+g.random()*(native.tombs.tent.SummonInterval.Max-native.tombs.tent.SummonInterval.Min));
+ }
+ tickTents(){
+  const g=this.g;
+  for(const [id,d] of this.porterDrops){
+   const timeline=g.props.plantAnimations.lostPorter[d.animation];
+   while(d.event<timeline.events.length&&g.time-d.at>=timeline.events[d.event].at){const event=timeline.events[d.event++].name;
+    if(event==='tent')this.placeTomb(d.z,'tent');if(event==='place'){this.placeTomb(d.z,'backpack');g.beach.sounds.push('lostPorter/placeSounds');}
+    if(event==='throw')g.beach.sounds.push('lostPorter/throwSounds','lostPorter/throwSaySounds');
+   }
+   if(g.time-d.at>=timeline.duration)this.porterDrops.delete(id);
+  }
+  for(const [id,next] of this.tents){
+   const t=g.graves.find(t=>t.id===id&&t.hp>0);if(!t){this.tents.delete(id);continue;}
+   if(g.time<next)continue;
+   const props=native.tombs.tent;let roll=g.random()*props.SummonnedZombies.reduce((sum,z)=>sum+z.Weight,0);
+   for(const item of props.SummonnedZombies){roll-=item.Weight;if(roll<0){const z=g.spawnZombie(item.Type as ZombieKind,t.row,cellX(t.column));z.tentSpawnAt=g.time;z.landUntil=g.time+g.props.plantAnimations.lostcity.Spawn.events.find(e=>e.name==='switchingFalse')!.at;break;}}
+   this.tents.set(id,g.time+props.SummonInterval.Min+g.random()*(props.SummonInterval.Max-props.SummonInterval.Min));
+  }
+ }
+ damageTomb(t:Grave){const kind=t.kind as 'tent'|'backpack';t.stage=t.hp<=0?5:5-Math.floor(t.hp/native.tombs[kind].Toughness*5);if(t.hp<=0)this.g.beach.sounds.push('lostTent/breakSounds');}
 
  damageBug(z:Zombie,amount:number){
   const b=z.bug;if(!b||b.hp<=0)return false;

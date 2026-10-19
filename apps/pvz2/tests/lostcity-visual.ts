@@ -19,8 +19,8 @@ async function clean(){if(battle){await battle.dispose();battle=undefined;}if(sc
 function button(label:string,action:()=>Promise<void>|void){const b=document.createElement('button');b.textContent=label;b.onclick=async()=>{try{await action();}catch(e){status.textContent=String(e);throw e;}};controls.append(b);}
 function draw(){scene!.sync(game!,0);scene!.render();status.textContent=`第${game!.level.day}关${game!.boosts.size?"（花园强化）":""} / ${game!.time.toFixed(1)}s / ${game!.phase} / ${game!.wave}波 / ${game!.zombies.length}僵尸`;}
 button('世界地图',async()=>{await clean();worldHost.hidden=false;await shell.init();});
-for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13])button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`lostcity${day}`],progress);await battle.enter();});
-for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13])button(`场景${day}`,async()=>{
+for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18])button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`lostcity${day}`],progress);await battle.enter();});
+for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18])button(`场景${day}`,async()=>{
  await clean();sceneHost.hidden=false;scene=new Scene();const config=BATTLE_LEVELS[`lostcity${day}`],level=readLevel(await json<SourceLevel>(config.source));
  const groups=await Promise.all(['levels','campaign','pirate','cowboy','future','dark','beach','iceage','lostcity'].map(name=>json<Properties>(name+'/properties.json'))),flag=await json<Properties['zombies']['mummy_flag']>('battle/flag.json');
  const props=groups.reduce((a,b)=>({...a,...b,plants:{...a.plants,...b.plants},zombies:{...a.zombies,...b.zombies},armors:{...a.armors,...b.armors},projectiles:{...a.projectiles,...b.projectiles},plantAnimations:{...a.plantAnimations,...b.plantAnimations}}));props.zombies.mummy_flag=flag;
@@ -42,3 +42,8 @@ button('击落飞虫',()=>{for(const z of game!.zombies)if(z.bug)game!.damage(z,
 button('火把巨人',()=>{game!.addPlant('endurian',2,4);game!.spawnZombie('lostcity_gargantuar',2,cellX(4)+60);draw();});
 button('巨人投掷',()=>{for(const z of game!.zombies)if(z.kind==='lostcity_gargantuar')game!.damage(z,1900);draw();});
 button('熄灭火把',()=>{for(const z of game!.zombies)if(z.kind==='lostcity_gargantuar')game!.chill(z,5);draw();});
+
+button('搬运工搭帐篷',()=>{const tile=game!.level.goldTiles[0];game!.spawnZombie('lostcity_impporter',tile.row,cellX(tile.column));draw();});
+button('搬运工掉背包',()=>{const z=game!.spawnZombie('lostcity_impporter',2,cellX(5));game!.damage(z,400);draw();});
+button('阿开木攻击帐篷',()=>{const tile=game!.level.goldTiles[0];game!.addPlant('akee',tile.row,0);draw();});
+button('摧毁帐篷背包',()=>{for(const t of game!.graves)if(t.kind==='tent'||t.kind==='backpack')t.hp=0;draw();});
