@@ -4,7 +4,7 @@ import {isFlying} from './pirate';
 
 interface State {stage:number;growAt:number;life:number;foodUntil:number;empowered:boolean;nextHit:number;shotAt:number}
 interface Visual {id:number;name:string;animation:string;x:number;y:number;at:number;duration:number}
-interface Shot {id:number;kind:'banana'|'puffshroom_spore';x:number;y:number;row:number;column:number;age:number;distance:number}
+interface Shot {id:number;kind:'banana'|'missiletoe'|'puffshroom_spore'|'seashroom_spore';x:number;y:number;row:number;column:number;age:number;distance:number}
 interface Line {row:number;column:number;direction:0|1|2;damage:number;food:boolean}
 export class WesternFinale {
   #game:Game;
@@ -22,17 +22,18 @@ export class WesternFinale {
   private dyingCurrants:{row:number;column:number;at:number;fired:boolean}[]=[];
   private nextLoop=0;
   constructor(game:Game){this.#game=game;}
-  handles(kind:PlantKind){return ['shadowshroom','stallia','hurrikale','sunshroom','puffshroom','banana','electriccurrant','hypnoshroom'].includes(kind);}
+  handles(kind:PlantKind){return ['missiletoe','seashroom','shadowshroom','stallia','hurrikale','sunshroom','puffshroom','banana','electriccurrant','hypnoshroom'].includes(kind);}
   init(p:Plant){
     const g=this.#game,props=g.props.plants[p.kind];
     this.states.set(p.id,{stage:0,growAt:g.time+props.GrowTime0_1,life:props.LifeSpan,foodUntil:0,empowered:false,nextHit:0,shotAt:0});
     this.play(p,p.kind==='sunshroom'?'Idle_Small':p.kind==='hurrikale'?'Attack':'Idle',p.kind==='hurrikale'?'shoot':'idle');
     if(p.kind==='sunshroom')p.nextAction=g.time+props.ProduceCountdownStart+g.random()*props.ProduceCountdownStartAdditional;
-    if(p.kind==='banana')p.nextAction=g.time;
+    if((p.kind==='banana'||p.kind==='missiletoe'))p.nextAction=g.time;
     if(p.kind==='hurrikale')this.sounds.push('hurrikale/prePushSound');
   }
   private play(p:Plant,animation:string,action:Plant['action']='idle'){p.animation=animation;p.action=action;p.actionAt=this.#game.time;p.eventIndex=0;}
-  private idle(p:Plant){const s=this.states.get(p.id)!;return p.kind==='sunshroom'?['Idle_Small','Idle_Mid','Idle'][s.stage]:p.kind==='hypnoshroom'&&s.empowered||p.kind==='electriccurrant'&&s.empowered?'Idle_Food':p.kind==='banana'&&this.#game.time<p.nextAction?'IdleSad':'Idle';}
+  private swimming(p:Plant){return this.#game.beach.water(p.column)&&!this.#game.beach.support(p.row,p.column);}
+  private idle(p:Plant){const s=this.states.get(p.id)!;return p.kind==='seashroom'&&!this.swimming(p)?'Idle_Sad':p.kind==='sunshroom'?['Idle_Small','Idle_Mid','Idle'][s.stage]:p.kind==='hypnoshroom'&&s.empowered||p.kind==='electriccurrant'&&s.empowered?'Idle_Food':(p.kind==='banana'||p.kind==='missiletoe')&&this.#game.time<p.nextAction?'IdleSad':'Idle';}
   foodable(p:Plant){return p.kind!=='hurrikale'&&!(['hypnoshroom','electriccurrant'].includes(p.kind)&&this.states.get(p.id)!.empowered)&&!(p.kind==='electriccurrant'&&p.animation?.startsWith('Attack'));}
   food(p:Plant){
     const g=this.#game,s=this.states.get(p.id)!;
@@ -43,18 +44,18 @@ export class WesternFinale {
     }
     if(p.kind==='hypnoshroom'){s.empowered=true;this.sounds.push('hypnoshroom/foodSound');}
     if(p.kind==='electriccurrant'){s.empowered=true;s.foodUntil=g.time+g.props.plants.electriccurrant.PlantfoodDuration;}
-    if(p.kind==='banana'){this.selected=null;this.sounds.push('banana/foodStartSounds','banana/foodSaySounds');}
-    if(p.kind==='puffshroom'){
-      this.sounds.push('puffshroom/foodStartSounds');
-      for(const q of g.plants.filter(q=>q.hp>0&&q.kind==='puffshroom')){
-        const state=this.states.get(q.id)!;state.life=g.props.plants.puffshroom.LifeSpan;
+    if((p.kind==='banana'||p.kind==='missiletoe')){this.selected=null;this.sounds.push(p.kind+'/foodStartSounds',p.kind+'/foodSaySounds');}
+    if((p.kind==='puffshroom'||p.kind==='seashroom')){
+      this.sounds.push(p.kind+'/foodStartSounds');
+      for(const q of g.plants.filter(q=>q.hp>0&&q.kind===p.kind)){
+        const state=this.states.get(q.id)!;state.life=g.props.plants[p.kind].LifeSpan;
         if(q!==p&&q.action==='food')continue;
         state.shotAt=g.time+Math.hypot(q.row-p.row,q.column-p.column)/8+.05;this.play(q,'FoodStart','food');q.burst=0;
       }
     }
   }
   select(row:number,column:number){
-    const g=this.#game,p=g.plants.find(p=>p.kind==='banana'&&p.hp>0&&p.row===row&&p.column===column&&p.action==='idle'&&g.time>=p.nextAction);
+    const g=this.#game,p=g.plants.find(p=>(p.kind==='banana'||p.kind==='missiletoe')&&p.hp>0&&p.row===row&&p.column===column&&p.action==='idle'&&g.time>=p.nextAction);
     if(!p||g.phase!=='playing'||g.preparing)return false;
     if(this.selected!==null)this.cancel();this.selected=p.id;this.play(p,'TakeAim','shoot');return true;
   }
@@ -62,9 +63,9 @@ export class WesternFinale {
   fire(row:number,column:number){
     const g=this.#game,p=g.plants.find(p=>p.id===this.selected&&p.hp>0);
     if(!p||g.phase!=='playing'||g.preparing||row<0||row>=5||column<0||column>=9)return false;
-    this.selected=null;this.play(p,'Launch','shoot');p.nextAction=g.time+g.props.plants.banana.RestTime;this.banana(row,column);this.sounds.push('banana/shootSounds','banana/shootSaySounds');return true;
+    this.selected=null;this.play(p,'Launch','shoot');p.nextAction=g.time+g.props.plants[p.kind].RestTime;this.banana(p.kind as 'banana'|'missiletoe',row,column);this.sounds.push(p.kind+'/shootSounds',p.kind+'/shootSaySounds');return true;
   }
-  private banana(row:number,column:number){this.shots.push({id:++this.serial,kind:'banana',row,column,x:cellX(column),y:rowY(row)-550,age:0,distance:0});}
+  private banana(kind:'banana'|'missiletoe',row:number,column:number){this.shots.push({id:++this.serial,kind,row,column,x:cellX(column),y:rowY(row)-550,age:0,distance:0});}
   private visual(name:string,animation:string,x:number,y:number){this.visuals.push({id:++this.serial,name,animation,x,y,at:this.#game.time,duration:this.#game.props.plantAnimations[name][animation].duration});}
   private poisonDamage(z:Zombie,damage:number){const g=this.#game;if(z===g.boss?.zombie)g.damage(z,damage);else {z.hp-=damage;g.cowboy.damaged(z);}}
   private poison(z:Zombie){const g=this.#game,p=g.props.plants.shadowshroom;z.poison={until:g.time+p.PoisonDuration,dps:p.PoisonDPS};}
@@ -88,7 +89,7 @@ export class WesternFinale {
     if(!a)return false;
     z.eating=true;g.damage(a,g.props.zombies[z.kind].EatDPS*dt*(g.time<z.chilledUntil?.5:1));return true;
   }
-  private puff(p:Plant){this.shots.push({id:++this.serial,kind:'puffshroom_spore',x:cellX(p.column)+18,y:rowY(p.row)-22,row:p.row,column:p.column,age:0,distance:0});}
+  private puff(p:Plant){this.shots.push({id:++this.serial,kind:p.kind==='seashroom'?'seashroom_spore':'puffshroom_spore',x:cellX(p.column)+18,y:rowY(p.row)-22,row:p.row,column:p.column,age:0,distance:0});}
   tickPlant(p:Plant,dt:number){
     if(p.hp<=0)return;
     const g=this.#game,s=this.states.get(p.id)!,props=g.props.plants[p.kind];p.age+=dt;
@@ -97,11 +98,12 @@ export class WesternFinale {
       if(s.stage<2&&g.time>=s.growAt){s.stage++;s.growAt=g.time+props.GrowTime1_2;this.play(p,'Grow','grow');this.sounds.push('sunshroom/growSound');}
       else if(g.time>=p.nextAction){this.play(p,['Produce_Small','Produce_Mid','Produce'][s.stage],'produce');p.nextAction=g.time+props.ProduceInterval+g.random()*props.ProduceIntervalAdditional;this.sounds.push('sunshroom/produceSound');}
     }
-    if(p.kind==='puffshroom'){
-      if(p.action!=='food')s.life-=dt;
-      if(s.life<=0&&p.animation!=='Fade'){this.play(p,'Fade','explode');this.sounds.push('puffshroom/fadeSounds');}
+    if((p.kind==='puffshroom'||p.kind==='seashroom')){
+      if(p.action!=='food')s.life-=dt*(p.kind==='seashroom'&&this.swimming(p)?props.FadeSpeedMultInWater:1);
+      if(s.life<=0&&p.animation!=='Fade'){this.play(p,'Fade','explode');this.sounds.push(p.kind+'/fadeSounds');}
+      if(p.action==='idle')p.animation=this.idle(p);
       if(p.action==='idle'&&g.time>=p.nextAction&&targets.some(z=>z.x>=cellX(p.column)-20&&z.x<=cellX(p.column)+3.5*BOARD.cellWidth)){
-        this.play(p,'Shoot','shoot');p.nextAction=g.time+props.ShootInterval+g.random()*props.ShootIntervalAdditional;
+        this.play(p,p.kind==='seashroom'&&!this.swimming(p)?'Shoot_Sad':'Shoot','shoot');p.nextAction=g.time+props.ShootInterval+g.random()*props.ShootIntervalAdditional;
       }
       if(p.action==='food'&&p.animation!=='FoodEnd'&&g.time>=s.shotAt){
         if(p.animation==='FoodStart')this.play(p,'Fooding','food');
@@ -116,15 +118,15 @@ export class WesternFinale {
       if(p.action==='idle'&&!s.empowered){if(near.length&&p.animation==='Idle')this.play(p,'AttackStart','shoot');else if(!near.length&&p.animation==='AttackLoop')this.play(p,'AttackEnd','shoot');}
       if(near.length&&(s.empowered||p.animation==='AttackLoop')&&g.time>=s.nextHit){for(const z of near)g.damage(z,s.empowered?props.DamagePlantfood:props.Damage,'electric');s.nextHit=g.time+props.DirectDamageInterval;}
     }
-    if(p.kind==='banana'&&p.action==='idle'&&p.animation==='IdleSad'&&g.time>=p.nextAction){this.play(p,'GetReady','grow');this.sounds.push('banana/wakeSounds');}
+    if((p.kind==='banana'||p.kind==='missiletoe')&&p.action==='idle'&&p.animation==='IdleSad'&&g.time>=p.nextAction){this.play(p,'GetReady','grow');this.sounds.push(p.kind+'/wakeSounds');}
     if(p.action==='idle'||p.animation==='Fooding')return;
     const timeline=g.props.plantAnimations[p.kind][p.animation!],elapsed=g.time-p.actionAt;
     while(p.eventIndex!<timeline.events.length&&elapsed>=timeline.events[p.eventIndex!].at){
       const event=timeline.events[p.eventIndex!++].name;
       if(p.kind==='sunshroom'&&event==='foodEnd'){p.nextAction=g.time+props.ProduceCountdownStart+g.random()*props.ProduceCountdownStartAdditional;this.play(p,this.idle(p));return;}
       if(p.kind==='sunshroom'&&(event==='Produce'||event==='ProduceFood'))for(let i=0;i<(event==='ProduceFood'?props.PlantfoodTime:1);i++)g.dropSun(cellX(p.column),rowY(p.row)-65,props.SunValueList[s.stage],'plant');
-      if(p.kind==='puffshroom'&&event==='Shoot')this.puff(p);
-      if(p.kind==='puffshroom'&&event==='ShootSound')this.sounds.push('puffshroom/shootSound');
+      if((p.kind==='puffshroom'||p.kind==='seashroom')&&event==='Shoot')this.puff(p);
+      if((p.kind==='puffshroom'||p.kind==='seashroom')&&event==='ShootSound')this.sounds.push(p.kind+'/shootSound');
       if(p.kind==='shadowshroom'){
         if(event==='foodSound')this.sounds.push('shadowshroom/foodExplodeSounds');
         if(event==='playPar')this.visual('shadowExpl','Play',cellX(p.column),rowY(p.row));
@@ -135,18 +137,18 @@ export class WesternFinale {
         if(event==='explode')this.sounds.push('stallia/explodeSound');if(event==='foodExplodeStart')this.sounds.push('stallia/foodSound');
       }
       if(p.kind==='hurrikale'&&event==='push'){this.winds.push({row:p.row,until:g.time+props.PushDuration});for(const n of ['windUpper','windLower'])this.visual(n,'Play',cellX(p.column),rowY(p.row));this.sounds.push('hurrikale/pushSound');}
-      if(p.kind==='banana'&&event==='drop'){
+      if((p.kind==='banana'||p.kind==='missiletoe')&&event==='drop'){
         const choices=g.zombies.filter(z=>z.hp>0&&z.x>=BOARD.left&&z.x<cellX(9)),z=choices[Math.floor(g.random()*choices.length)];
-        this.banana(z?z.row:Math.floor(g.random()*5),z?Math.max(0,Math.min(8,Math.floor((z.x-BOARD.left)/BOARD.cellWidth))):Math.floor(g.random()*9));this.sounds.push('banana/shootSounds');
+        this.banana(p.kind as 'banana'|'missiletoe',z?z.row:Math.floor(g.random()*5),z?Math.max(0,Math.min(8,Math.floor((z.x-BOARD.left)/BOARD.cellWidth))):Math.floor(g.random()*9));this.sounds.push(p.kind+'/shootSounds');
       }
       if(p.kind==='electriccurrant'&&['shootStart','shoot','spark','sparkSay','attackStartSay','foodStartSay'].includes(event))this.sounds.push('electriccurrant/'+event);
       if(event==='die'){p.hp=0;return;}
     }
     if(elapsed<timeline.duration)return;
     if(p.kind==='sunshroom'&&p.animation==='Grow'&&p.action==='food'){this.play(p,'Food','food');this.sounds.push('sunshroom/foodSound');return;}
-    if(p.kind==='puffshroom'&&p.animation==='FoodStart')return;
-    if(p.kind==='banana'&&p.action==='food')p.nextAction=g.time+props.RestTime;
-    if(p.kind==='banana'&&p.animation==='TakeAim'){this.play(p,'Steady');return;}
+    if((p.kind==='puffshroom'||p.kind==='seashroom')&&p.animation==='FoodStart')return;
+    if((p.kind==='banana'||p.kind==='missiletoe')&&p.action==='food')p.nextAction=g.time+props.RestTime;
+    if((p.kind==='banana'||p.kind==='missiletoe')&&p.animation==='TakeAim'){this.play(p,'Steady');return;}
     if(p.kind==='electriccurrant'&&p.animation==='AttackStart'){this.play(p,'AttackLoop');return;}
     if(p.kind==='electriccurrant'&&p.action==='food'){this.play(p,'Idle_Food','food');return;}
     this.play(p,this.idle(p));
@@ -176,17 +178,18 @@ export class WesternFinale {
     this.currents();
     for(const shot of this.shots){
       shot.age+=dt;
-      if(shot.kind==='banana'){
+      if(shot.kind==='banana'||shot.kind==='missiletoe'){
         shot.y=rowY(shot.row)-Math.max(0,(1000-12*60*shot.age)*.51);
         if(shot.age>=1000/(12*60)){
-          const damage=g.props.projectiles.banana.SplashDamage[0];
+          const damage=g.props.projectiles[shot.kind].SplashDamage[0];
           for(const z of g.zombies)if(z.hp>0&&g.inLane(z,shot.row)&&Math.abs(z.x-shot.x)<damage.Range.w/2*BOARD.cellWidth+20)g.damage(z,damage.Damage!,'potato');
-          this.visual('bananaHit','Play',shot.x,rowY(shot.row));this.sounds.push('banana/impact');shot.age=99;
+          if(shot.kind==='missiletoe'){const ice=g.props.projectiles.missiletoe.SplashDamage[1];for(const z of g.zombies)if(z.hp>0&&Math.abs(z.row-shot.row)<ice.Range.h/2&&Math.abs(z.x-shot.x)<ice.Range.w/2*BOARD.cellWidth+20){g.freeze(z,ice.FreezeDuration!);g.chill(z,ice.ChillDuration!);}}
+          this.visual(shot.kind+'Hit','Play',shot.x,rowY(shot.row));this.sounds.push(shot.kind==='banana'?'banana/impact':'missiletoeProjectile/PopSound');shot.age=99;
         }
       }else{
         const old=shot.x;shot.x+=3.33*BOARD.cellWidth*dt;shot.distance+=shot.x-old;
         const target=g.zombies.filter(z=>z.hp>0&&g.inLane(z,shot.row)&&z.x>=old-20&&z.x<=shot.x+20).sort((a,b)=>a.x-b.x)[0];
-        if(target){g.damage(target,g.props.projectiles.puffshroom_spore.Damage);this.visual('puffshroom_sporeHit','Play',shot.x,shot.y);this.sounds.push('puffshroom_spore/impact');shot.age=99;}
+        if(target){g.damage(target,g.props.projectiles[shot.kind].Damage);this.visual(shot.kind+'Hit','Play',shot.x,shot.y);this.sounds.push(shot.kind==='seashroom_spore'?'seashroomProjectile/PopSound':'puffshroom_spore/impact');shot.age=99;}
         if(shot.distance>=4*BOARD.cellWidth)shot.age=99;
       }
     }
