@@ -1,8 +1,37 @@
 import type {Game,Zombie,Plant,Grave} from './model';
 import {BOARD,cellX,rowY,type ZombieKind} from './level';
+import {isFlying,swinging} from './pirate';
 import native from '../../public/assets/lostcity/properties.json';
 export const lostcityArmor=(kind:ZombieKind)=>kind==='lostcity_armor1'||kind==='lostcity_bug_armor1'?'lostcity_armor1':kind==='lostcity_armor2'||kind==='lostcity_bug_armor2'?'lostcity_armor2':null;
 export class LostCityBattle {
+ trapCooldown=new Map<number,number>();
+ flames:{id:number;row:number;at:number;until:number}[]=[];
+ boulders:{id:number;x:number;y:number;at:number}[]=[];
+ tickTraps(dt:number){const g=this.g;
+  for(const [i,t] of g.level.trapTiles.entries()){
+   const next=this.trapCooldown.get(i);if(next!==undefined&&g.time<next)continue;
+   const plant=g.plants.some(p=>p.hp>0&&!p.leap&&p.row===t.row&&p.column===t.column)&&!g.plants.some(p=>p.hp>0&&p.row===t.row&&p.column===t.column&&p.kind==='floawerPot');
+   const zombie=g.zombies.some(z=>z.hp>0&&!isFlying(z)&&!z.leap&&!swinging(z,g.time)&&z.row===t.row&&Math.abs(z.x-cellX(t.column))<25);
+   const tomb=g.graves.some(v=>v.hp>0&&v.row===t.row&&v.column===t.column);
+   if(!plant&&!zombie&&!tomb)continue;
+   this.trapCooldown.set(i,g.time+t.delay);g.beach.sounds.push((t.group==='flame'?'trapFlame':'trapBoulder')+'/triggerSounds');
+   if(t.group==='flame'){this.flames.push({id:g.nextEntityId(),row:t.row,at:g.time,until:g.time+native.tiles.flame_spreader_trap.FlameDuration});g.beach.sounds.push('trapFlame/fireStartSounds');}
+   else {this.boulders.push({id:g.nextEntityId(),x:cellX(t.column)+native.tiles.boulder_trap_falling_forward.BoulderXOffset*BOARD.cellWidth,y:BOARD.top-160,at:g.time});g.beach.sounds.push('boulder/rollStartSounds');}
+  }
+  for(const f of this.flames){if(g.time>=f.until)continue;
+   for(const z of g.zombies)if(z.hp>0&&z.row===f.row&&!isFlying(z)&&!z.leap&&!swinging(z,g.time)){z.hp-=native.tiles.flame_spreader_trap.FlameDPS*dt;z.deathCause='potato';}
+   for(const p of g.plants)if(p.hp>0&&p.row===f.row&&!p.leap){p.hp=0;p.armor=0;}
+   for(const t of g.graves)if(t.hp>0&&t.row===f.row)t.hp-=native.tiles.flame_spreader_trap.FlameDPS*dt;
+  }
+  for(const f of this.flames)if(g.time>=f.until)g.beach.sounds.push('trapFlame/fireEndSounds');this.flames=this.flames.filter(f=>g.time<f.until);
+  for(const b of this.boulders){const elapsed=g.time-b.at;b.y=elapsed<.75?BOARD.top-160+160*(elapsed/.75)**2:BOARD.top+(elapsed-.75)*120;
+   if(elapsed<.75)continue;
+   for(const z of g.zombies)if(z.hp>0&&!swinging(z,g.time)&&Math.abs(z.x-b.x)<55&&Math.abs(rowY(z.row)-b.y)<55){z.hp=0;z.armor=0;z.deathCause='mower';}
+   for(const p of g.plants)if(p.hp>0&&Math.abs(cellX(p.column)-b.x)<55&&Math.abs(rowY(p.row)-b.y)<55){p.hp=0;p.armor=0;}
+   for(const t of g.graves)if(t.hp>0&&Math.abs(cellX(t.column)-b.x)<55&&Math.abs(rowY(t.row)-b.y)<55)t.hp=0;
+  }
+  this.boulders=this.boulders.filter(b=>b.y<BOARD.top+6*BOARD.cellHeight);
+ }
  tenting=new Set<number>();
  porterDrops=new Map<number,{z:Zombie;animation:string;at:number;event:number}>();
  tents=new Map<number,number>();
@@ -130,7 +159,7 @@ export class LostCityBattle {
   b.animation=b.risen?'Walk_Bug_Risen':'Walk_Bug';return false;
  }
 
- spawn(z:Zombie){if(z.kind==='lostcity_gargantuar')this.torches.set(z.id,true);if(z.kind.startsWith('lostcity_bug'))z.bug={hp:this.g.props.zombies[z.kind].BugToughness,animation:'Walk_Bug',at:this.g.time,risen:false,flying:true};if(z.kind==='lostcity_excavator')this.shovels.set(z.id,{animation:'Walk_Shovel',at:this.g.time,elapsed:0,event:0,held:true});if(z.kind==='lostcity_lostpilot')z.pilot={animation:z.entry==='parachute'?'Arrive':'Walk',at:this.g.time,event:0,hanging:z.entry==='parachute',left:this.g.props.zombies[z.kind].HangingNoEatTimeUntilDrop,fallTime:0};}
+ spawn(z:Zombie){if(z.kind==='lostcity_relichunter'){const g=this.g,prop=g.props.zombies[z.kind],timeline=g.props.plantAnimations.lostRelic,back=timeline.SwingBack.events.find(e=>e.name==='swingJudge')!.at;z.x=cellX(prop.LandingColumns[Math.floor(g.random()*prop.LandingColumns.length)]);z.swing={at:g.time,judge:g.time+back,end:g.time+back+timeline.SwingSuccess.events.find(e=>e.name==='switchingFalse')!.at,failure:false};}if(z.kind==='lostcity_gargantuar')this.torches.set(z.id,true);if(z.kind.startsWith('lostcity_bug'))z.bug={hp:this.g.props.zombies[z.kind].BugToughness,animation:'Walk_Bug',at:this.g.time,risen:false,flying:true};if(z.kind==='lostcity_excavator')this.shovels.set(z.id,{animation:'Walk_Shovel',at:this.g.time,elapsed:0,event:0,held:true});if(z.kind==='lostcity_lostpilot')z.pilot={animation:z.entry==='parachute'?'Arrive':'Walk',at:this.g.time,event:0,hanging:z.entry==='parachute',left:this.g.props.zombies[z.kind].HangingNoEatTimeUntilDrop,fallTime:0};}
  tick(z:Zombie,dt:number){
   const s=z.pilot;if(!s)return false;const g=this.g;
   const play=(name:string)=>{s.animation=name;s.at=g.time;s.event=0;};

@@ -3,6 +3,7 @@ import type {OctopusState} from './beach-octopus';
 import type {SurferState} from './beach-surfer';
 import {isBowlingTool} from './beach-bowling';
 import {IceageCombat} from './iceage-combat';
+import {ToadstoolBattle} from './toadstool';
 import {LostCityBattle,lostcityArmor} from './lostcity';
 import {ExpeditionPlants} from './expedition-plants';
 import {IceageBattle,iceageArmor} from './iceage';
@@ -161,6 +162,7 @@ export class Game {
   }
 
   lostcity=new LostCityBattle(this);
+  toadstool=new ToadstoolBattle(this);
   expedition=new ExpeditionPlants(this);
   boosts=new Set<PlantKind>();
   usedBoosts=new Set<PlantKind>();
@@ -209,7 +211,7 @@ export class Game {
     this.plants.push({ id: ++this.id, kind, row, column, hp: p.Toughness, armor: 0, age: 0, nextAction,
       action: 'idle', actionAt: this.time, fired: false, burst: 0, nextBurst: 0 });
     const plant=this.plants.at(-1)!;
-    this.lostcity.initPlant(plant);this.expedition.init(this.plants.at(-1)!);this.iceageCombat.init(plant);
+    if(plant.kind==='toadstool')this.toadstool.init(plant);this.lostcity.initPlant(plant);this.expedition.init(this.plants.at(-1)!);this.iceageCombat.init(plant);
     if(kind==='hotpotato')this.iceage.hot(plant);
     if(this.beachFinale.handles(kind))this.beachFinale.init(plant);
     if(kind==='homingthistle')this.beach.thistles.init(plant);
@@ -285,6 +287,7 @@ export class Game {
     if (!plant || plant.leap?.pushed || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['goldleaf','hotpotato','powerplant','powerplant_alpha','powerplant_beta','empea','blover','gravebuster','imitater','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
     if(!boost){this.food--;this.future.link(plant);} plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
+    if(plant.kind==='toadstool')this.toadstool.food(plant);
     if(plant.kind==='akee')this.lostcity.food(plant);
     if(plant.kind==='lavaguava'||plant.kind==='gatling')this.expedition.food(plant);
     if(plant.kind==='endurian'||plant.kind==='primalpeashooter'||plant.kind==='pepperpult'||plant.kind==='stunion'||plant.kind==='firepeashooter')this.iceageCombat.food(plant);
@@ -909,7 +912,7 @@ export class Game {
     this.pending = this.pending.filter(s => s.at > this.time);
 
     if(this.corralWaiting)return;
-    this.lostcity.tickTents();this.lostcity.tickShots();this.expedition.tick(dt);this.iceageCombat.tick(dt);this.iceage.tick(dt);this.beachFinale.tick(dt);this.beach.tick(dt);this.darkFinale.tick(dt);this.darkMemory.tick();this.dark.tick(dt);this.darkPlants.tick(dt);
+    this.lostcity.tickTraps(dt);this.lostcity.tickTents();this.lostcity.tickShots();this.expedition.tick(dt);this.iceageCombat.tick(dt);this.iceage.tick(dt);this.beachFinale.tick(dt);this.beach.tick(dt);this.darkFinale.tick(dt);this.darkMemory.tick();this.dark.tick(dt);this.darkPlants.tick(dt);
     this.cowboy.tick(dt);
     for(const z of [...this.zombies,...this.westFinale.allies]){
       if(z.entry==='storm'&&this.time-z.entryAt<=1)z.x=z.entryX+(1070-z.entryX)*(1-(this.time-z.entryAt));
@@ -938,6 +941,7 @@ export class Game {
       if(p.kind==='hotpotato'){this.iceage.tickHot(p);continue;}
       if(this.iceage.blocked(p))continue;
       if(p.sheep!==undefined){p.actionAt+=dt;p.nextAction+=dt;p.nextBurst+=dt;continue;}
+      if(p.kind==='toadstool'){this.toadstool.tick(p,dt);continue;}
       if(p.kind==='akee'){this.lostcity.plant(p);continue;}
       if(p.kind==='lavaguava'||p.kind==='gatling'){this.expedition.plant(p,dt);continue;}
       if(p.kind==='pepperpult'){this.iceageCombat.tickPlant(p);continue;}
