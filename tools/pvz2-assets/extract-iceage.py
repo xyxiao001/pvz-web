@@ -1,4 +1,4 @@
-"""Export Frostbite Caves 1–33 from the pinned Cocos build."""
+"""Export Frostbite Caves 1–38 from the pinned Cocos build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -18,14 +18,14 @@ def rig(path):
 def props(path,names):
     objs=e.read('json/Objects/'+path).objects[0]['json']['objects']
     return {n:next(o['objdata'] for o in objs if n in o.get('aliases',[])) for n in names}
-paths={'boss':'zombies/IceageZombossMechZOMBIE','primalpeashooter':'plants/PrimalPeaPLANT','firepeashooter':'plants/FirePeashooterPLANT','iceageWeaselHoarder':'zombies/IceageWeaselHoarderZOMBIE','iceageWeasel':'zombies/IceageWeaselZOMBIE','stunion':'plants/StunionPLANT','iceageTroglobite':'zombies/IceageTroglobiteZOMBIE','iceageDodo':'zombies/IceageDodoRiderZOMBIE','iceageGargantuar':'zombies/IceageGargantuarZOMBIE','iceage':'zombies/IceageBasicZOMBIE','iceageFlag':'zombies/IceageFlagZOMBIE','hotpotato':'plants/HotPotatoPLANT','pepperpult':'plants/PepperPultPLANT','iceageHunter':'zombies/IceageHunterZOMBIE','iceageImp':'zombies/IceageImpZOMBIE'}
+paths={'endurian':'plants/EndurianPLANT','iceageHunterVeteran':'zombies/IceageHunterVeteranZOMBIE','iceageTroglobiteVeteran':'zombies/IceageTroglobiteVeteranZOMBIE','boss':'zombies/IceageZombossMechZOMBIE','primalpeashooter':'plants/PrimalPeaPLANT','firepeashooter':'plants/FirePeashooterPLANT','iceageWeaselHoarder':'zombies/IceageWeaselHoarderZOMBIE','iceageWeasel':'zombies/IceageWeaselZOMBIE','stunion':'plants/StunionPLANT','iceageTroglobite':'zombies/IceageTroglobiteZOMBIE','iceageDodo':'zombies/IceageDodoRiderZOMBIE','iceageGargantuar':'zombies/IceageGargantuarZOMBIE','iceage':'zombies/IceageBasicZOMBIE','iceageFlag':'zombies/IceageFlagZOMBIE','hotpotato':'plants/HotPotatoPLANT','pepperpult':'plants/PepperPultPLANT','iceageHunter':'zombies/IceageHunterZOMBIE','iceageImp':'zombies/IceageImpZOMBIE'}
 actors={n:rig(p) for n,p in paths.items()}
 rigpaths={'primalPea':'projectiles/PeaPrimal0PRJ','iceageBricks':'armors/IceageBricksARMOR','glacierBlock':'tombstones/GlacierBlockTOMB','glacierUp':'966741e4-536d-4bc1-8020-d27d1cce31e8','glacierMid':'6fa32ed1-4d7e-4942-b297-6ef100de491f','glacierDown':'a607af94-8ef4-4264-ae52-7d185728ae73','iceberg':'projectiles/IceageZombossIcebergPRJ','icebergHit':'906176ea-53a2-4fc9-b754-5198365c6e21','bossTarget':'3de34f19-79ff-4f83-8b2d-9a5307e3662c','firePea':'projectiles/PeaFireYellowPRJ','firePeaHit':'31649f81-baf2-467c-bc14-1cebe50d6dd8','stunionSpawn':'3e4abe48-d707-4dea-af5e-f27cb9b20086','stunionPush':'cef1f4d4-583e-4780-ba8b-14c8d86ee137','pepper':'projectiles/Pepper0PRJ','pepper_pf':'projectiles/PepperFoodPRJ','hunterSnowball':'projectiles/HunterSnowballPRJ','iceageHelmet':'armors/IceageHelmetARMOR','plantHeat':'59769182-6623-445b-9854-436c819b1d5b','snowstorm':'e3665cb0-62c9-435f-83d8-8efd6f3ff54e','frostWind':'fd7ee129-9b50-4adb-8916-186f9fbca1e4','icePrepare':'b70e9172-16cb-44be-9b8d-8913365cfffe','iceageLawn':'lawns/IceageLAWN','mower':'projectiles/IceageMowerPRJ','iceageCone':'armors/IceageConeARMOR','iceageBucket':'armors/IceageBucketARMOR','sliderUp':'tiles/SliderUpTILE','sliderDown':'tiles/SliderDownTILE','icePlant':'tombstones/IceblockPlantTOMB','iceZombie':'tombstones/IceblockZombieTOMB','icePlantBack':'e065093b-8af4-4590-9569-5135edd1dd0a','iceZombieBack':'7dfb7272-28ae-4d65-ae22-bf8d32b7d6a9','iceBreak':'0949e4ef-695a-4992-8860-e51883cecc87','hotVapour':'bcd8c21f-8aa5-495d-8f79-00ec51e398ca','hotPuddle':'4e5c6a43-15d4-469a-b7cc-f9c48b2f083f'}
 for name in ['Up','Down']:
     co=next(x for x in walk(e.read('tiles/Slider'+name+'TILE').objects) if 'BG' in x)
     rigpaths['slider'+name+'Back']=co['BG']['asset']
 rigs={n:rig(p) for n,p in rigpaths.items()}
-properties={'plants':props('PlantProps',['primalpeashooter','hotpotato','pepperpult','stunion','firepeashooter']),'zombies':props('ZombieProps',['zombossmech_iceage','iceage_armor4','iceage_weaselhoarder','iceage_weasel','iceage_troglobite','iceage_dodo','iceage_gargantuar','iceage','iceage_armor1','iceage_armor2','iceage_flag','iceage_hunter','iceage_imp','iceage_armor3']),'armors':props('ArmorProps',['iceage_armor1','iceage_armor2','iceage_armor3','iceage_armor4']),'projectiles':props('ProjectileProps',['pea_primal','pea_primal_kb','pea_primal_pf','zomboss_missile_iceage','pea_flame_yellow','pepper','pepper_pf','hunter_snowball']),'plantAnimations':{}}
+properties={'plants':props('PlantProps',['endurian','primalpeashooter','hotpotato','pepperpult','stunion','firepeashooter']),'zombies':props('ZombieProps',['iceage_hunter_veteran','iceage_troglobite_veteran','zombossmech_iceage','iceage_armor4','iceage_weaselhoarder','iceage_weasel','iceage_troglobite','iceage_dodo','iceage_gargantuar','iceage','iceage_armor1','iceage_armor2','iceage_flag','iceage_hunter','iceage_imp','iceage_armor3']),'armors':props('ArmorProps',['iceage_armor1','iceage_armor2','iceage_armor3','iceage_armor4']),'projectiles':props('ProjectileProps',['pea_primal','pea_primal_kb','pea_primal_pf','zomboss_missile_iceage','pea_flame_yellow','pepper','pepper_pf','hunter_snowball']),'plantAnimations':{}}
 # Omitted hunter fields use IceageHunterZombie's native class defaults.
 properties['zombies']['iceage_hunter'].update({'NearAttackRange':1,'TimeBeforeFirst':7,'TimeBeforeFirstAddtional':2,'TimeBetweenBarrages':9,'TimeBetweenBarragesAddtional':3})
 # Dodo flight distance uses the native class defaults.
@@ -39,7 +39,7 @@ for name,description in {**actors,**rigs}.items():
             frame+=f.get('duration',1)
         timelines[animation['name']]={'duration':animation.get('duration',1)/arm['frameRate'],'events':events}
     properties['plantAnimations'][name]=timelines
-for day in range(1,34):c.write_json(e.OUT/f'iceage{day}.source.json',e.read(f'levels/iceage{day}').objects[0]['json'])
+for day in range(1,39):c.write_json(e.OUT/f'iceage{day}.source.json',e.read(f'levels/iceage{day}').objects[0]['json'])
 lawn=e.read('lawns/IceageLAWN');co=next(x for x in walk(lawn.objects) if x.get('type')=='dragonBones.ArmatureDisplay')
 at=e.read(co['_dragonAtlasAsset']['asset']);atlas=json.loads(at.objects[0]['_atlasJson']);rect=next(x for x in atlas['SubTexture'] if x['name']=='Lawn')
 pixels=Image.open(io.BytesIO(c.native(at.data[1][at.rec[5][0]],'png')))
@@ -75,4 +75,4 @@ c.write_json(e.OUT/'ice.json',props('TombstoneProps',['planttarget_iceblock','zo
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{'note-iceage':e.sprite(c.decode_uuid(c.config['uuids'][c.path_index['note/iceage/spriteFrame']]))}})
 c.write_json(c.ROOT/'apps/pvz2/iceage-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Frostbite Caves 1–33')
+print('Exported Frostbite Caves 1–38')

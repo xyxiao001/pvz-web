@@ -176,7 +176,7 @@ export class Game {
     const pot=this.plants.find(p=>p.row===row&&p.column===column&&p.kind==='floawerPot');
     const existing=this.plants.find(p=>p.row===row&&p.column===column&&(kind==='lilypad'?p.kind==='lilypad':kind==='floawerPot'?p.kind==='floawerPot':p.kind!=='floawerPot'&&p.kind!=='lilypad'));
     if(pot&&this.darkPlants.states.get(pot.id)!.moving)return false;
-    const repairing=kind==='bowlingbulb'&&existing?.kind==='bowlingbulb'&&this.beach.bowling.states.get(existing.id)!.loaded.some(loaded=>!loaded)||kind==='peanut'&&existing?.kind==='peanut'&&existing.hp<p.Toughness*.75||kind==='redstinger'&&existing?.kind==='redstinger'&&column>=6&&existing.hp<p.Toughness*.75||kind==='holonut'&&existing?.kind==='holonut'&&(existing.hidden||existing.hp<=p.Toughness*2/3)||this.wallnutFirstAid&&(kind==='wallnut'||kind==='tallnut')&&existing?.kind===kind&&existing.hp<=p.Toughness*(kind==='tallnut'?2/3:.75)||kind==='spikerock'&&existing?.kind==='spikerock'&&existing.spikes!<p.MaxSpike||kind==='chardguard'&&existing?.kind==='chardguard'&&existing.leaves!<p.MaxBounceTime;
+    const repairing=kind==='endurian'&&existing?.kind==='endurian'&&existing.hp<p.Toughness*.75||kind==='bowlingbulb'&&existing?.kind==='bowlingbulb'&&this.beach.bowling.states.get(existing.id)!.loaded.some(loaded=>!loaded)||kind==='peanut'&&existing?.kind==='peanut'&&existing.hp<p.Toughness*.75||kind==='redstinger'&&existing?.kind==='redstinger'&&column>=6&&existing.hp<p.Toughness*.75||kind==='holonut'&&existing?.kind==='holonut'&&(existing.hidden||existing.hp<=p.Toughness*2/3)||this.wallnutFirstAid&&(kind==='wallnut'||kind==='tallnut')&&existing?.kind===kind&&existing.hp<=p.Toughness*(kind==='tallnut'?2/3:.75)||kind==='spikerock'&&existing?.kind==='spikerock'&&existing.spikes!<p.MaxSpike||kind==='chardguard'&&existing?.kind==='chardguard'&&existing.leaves!<p.MaxBounceTime;
     const stacking=kind==='peapod'&&existing?.kind==='peapod'&&existing.heads!<5;
     if(seaCell(this.level.planks,row,column)||!this.cowboy.canPlant(row,column)||this.dark.blocks(row,column)||!this.dark.canPlant(kind,row,column)||existing?.sheep!==undefined)return false;
     if(!this.iceage.canPlant(kind,row,column))return false;
@@ -190,7 +190,7 @@ export class Game {
       || (placementKind==='gravebuster'?!this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0):this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0)) || existing&&!tilePlant&&!stacking&&!repairing) return false;
     if(packet){if(this.level.corral)this.corralWaiting=false;this.conveyor.splice(this.conveyor.indexOf(packet),1);if(!this.level.corral)this.nextCard=Math.min(this.nextCard,this.time+this.conveyorDelay());}
     else {const cost=this.seedCost(kind);this.sun -= cost; this.sunSpent+=cost;this.cooldowns[kind] = this.preparing?0:this.seedCooldown(kind);}
-    if(repairing){if(kind==='bowlingbulb')this.beach.bowling.replant(existing);else if(kind==='holonut')this.future.recoverNut(existing);else if(kind==='peanut'||kind==='redstinger'||kind==='wallnut'||kind==='tallnut')existing.hp=p.Toughness;else if(kind==='chardguard'){existing.leaves=p.MaxBounceTime;existing.hp=p.Toughness;}else existing.spikes=p.MaxSpike;}else if(stacking){existing.heads!++;existing.hp=p.Toughness;}else this.addPlant(kind, row, column);
+    if(repairing){if(kind==='bowlingbulb')this.beach.bowling.replant(existing);else if(kind==='holonut')this.future.recoverNut(existing);else if(kind==='endurian'||kind==='peanut'||kind==='redstinger'||kind==='wallnut'||kind==='tallnut')existing.hp=p.Toughness;else if(kind==='chardguard'){existing.leaves=p.MaxBounceTime;existing.hp=p.Toughness;}else existing.spikes=p.MaxSpike;}else if(stacking){existing.heads!++;existing.hp=p.Toughness;}else this.addPlant(kind, row, column);
     if(packet?.forceBoosted)this.plantFood(row,column,true);
     else if(this.boosts.has(kind)&&!this.preparing){this.usedBoosts.add(kind);if(kind==='imitater')this.plants.at(-1)!.boosted=true;else this.plantFood(row,column,true);}
     this.checkChallenges();
@@ -273,7 +273,7 @@ export class Game {
     if(plant?.sheep!==undefined)return false;
     if(plant&&this.westFinale.handles(plant.kind)&&!this.westFinale.foodable(plant))return false;
     if(plant&&this.darkPlants.handles(plant.kind)&&!this.darkPlants.foodable(plant))return false;
-    if(plant?.kind==='peanut'&&plant.armor===this.props.plants.peanut.ArmorToughness)return false;
+    if((plant?.kind==='endurian'||plant?.kind==='peanut')&&plant.armor===this.props.plants[plant.kind].ArmorToughness)return false;
     if(plant?.kind==='sunbean'&&this.dark.beanFood.has(plant.id))return false;
     if(plant?.kind==='holonut'&&!this.future.nutFoodable(plant))return false;
     if(plant?.kind==='tallnut'&&plant.armor>0)return false;
@@ -281,7 +281,7 @@ export class Game {
     if (!plant || plant.leap?.pushed || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['goldleaf','hotpotato','powerplant','powerplant_alpha','powerplant_beta','empea','blover','gravebuster','imitater','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
     if(!boost){this.food--;this.future.link(plant);} plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
-    if(plant.kind==='primalpeashooter'||plant.kind==='pepperpult'||plant.kind==='stunion'||plant.kind==='firepeashooter')this.iceageCombat.food(plant);
+    if(plant.kind==='endurian'||plant.kind==='primalpeashooter'||plant.kind==='pepperpult'||plant.kind==='stunion'||plant.kind==='firepeashooter')this.iceageCombat.food(plant);
     if(this.beachFinale.handles(plant.kind))this.beachFinale.food(plant);
     if(plant.kind==='splitpea'||plant.kind==='chilibean')this.cowboy.food(plant);
     if(plant.kind==='homingthistle')this.beach.thistles.food(plant);
@@ -483,7 +483,7 @@ export class Game {
   }
 
   freeze(z:Zombie,duration:number) {
-    if(z.kind==='iceage_dodo'||z.kind==='iceage_gargantuar'||z.kind==='iceage_troglobite'||z.kind==='iceage_weaselhoarder'||z.kind==='iceage_weasel'){this.chill(z,duration);return;}
+    if(z.kind==='iceage_hunter_veteran'||z.kind==='iceage_troglobite_veteran'||z.kind==='iceage_dodo'||z.kind==='iceage_gargantuar'||z.kind==='iceage_troglobite'||z.kind==='iceage_weaselhoarder'||z.kind==='iceage_weasel'){this.chill(z,duration);return;}
     if(this.boss?.zombie===z){this.boss.freeze();return;}
     for(const member of this.zombies)if(member.id===z.id||isCamel(z.kind)&&member.team===z.team){member.frozenUntil=this.time+duration;this.cowboy.cold(member);const special=this.specialZombies.get(member.id);if(special)special.torch=false;}
   }
@@ -932,6 +932,7 @@ export class Game {
       if(p.kind==='pepperpult'){this.iceageCombat.tickPlant(p);continue;}
       if(p.kind==='primalpeashooter'){this.iceageCombat.primal(p);continue;}
       if(p.kind==='firepeashooter'){this.iceageCombat.firePeashooter(p);continue;}
+      if(p.kind==='endurian'){this.iceageCombat.endurian(p);continue;}
       if(p.kind==='stunion'){this.iceageCombat.stunion(p);continue;}
       if(this.beachFinale.handles(p.kind)){this.beachFinale.tickPlant(p,dt);continue;}
       if(p.kind==='homingthistle'){this.beach.thistles.tickPlant(p);continue;}
@@ -1101,7 +1102,7 @@ export class Game {
     this.plants = this.plants.filter(p => p.hp > 0);
     this.checkChallenges();
     // Beach 40 keeps the source count of 5 for 3 plants; native protection checks on death.
-    if((this.level.world!=='beach'||this.level.day!==40||protectedPlantDied)&&this.level.mustProtect>0&&this.plants.filter(p=>p.endangered).length<this.level.mustProtect&&this.phase==='playing'){this.lossReason='protected';this.phase='lost';this.events.push({type:'lose'});}
+    if(((this.level.world!=='beach'||this.level.day!==40)&&(this.level.world!=='iceage'||this.level.day!==37)||protectedPlantDied)&&this.level.mustProtect>0&&this.plants.filter(p=>p.endangered).length<this.level.mustProtect&&this.phase==='playing'){this.lossReason='protected';this.phase='lost';this.events.push({type:'lose'});}
     const absorbed=new Set<number>();
     for (const sun of this.suns) {
       sun.age+=dt;
