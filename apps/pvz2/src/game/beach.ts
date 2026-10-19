@@ -1,12 +1,16 @@
 import {BOARD,cellX,type PlantKind,type ZombieKind} from './level';
 import type {Game,Plant,Zombie} from './model';
 import tags from '../../public/assets/beach/plant-tags.json';
+import {BeachThistles} from './beach-thistle';
+import {BeachFishers} from './beach-fisher';
 import {BeachOctopuses} from './beach-octopus';
 import {BeachSurfers} from './beach-surfer';
 import {BeachBowling} from './beach-bowling';
 import {isFlying} from './pirate';
 export const beachArmor=(kind:ZombieKind)=>kind==='beach_armor1'||kind==='beach_fem_armor1'?'beach_armor1':kind==='beach_armor2'||kind==='beach_fem_armor2'?'beach_armor2':null;
 export class BeachBattle {
+  readonly thistles:BeachThistles;
+  readonly fishers:BeachFishers;
   readonly bowling:BeachBowling;
   readonly surfers:BeachSurfers;
   readonly octopuses:BeachOctopuses;
@@ -14,7 +18,7 @@ export class BeachBattle {
   private from=9;private target=9;private changedAt=-Infinity;
   hands:{id:number;zombie:Zombie;at:number;hit:boolean}[]=[];
   sounds:string[]=[];
-  constructor(private readonly g:Game){this.bowling=new BeachBowling(g);this.surfers=new BeachSurfers(g);this.octopuses=new BeachOctopuses(g);}
+  constructor(private readonly g:Game){this.thistles=new BeachThistles(g);this.fishers=new BeachFishers(g);this.bowling=new BeachBowling(g);this.surfers=new BeachSurfers(g);this.octopuses=new BeachOctopuses(g);}
   init(){this.position=this.g.level.tide!.start;this.target=this.position;}
   change(position:number){this.from=this.position;this.target=position;this.changedAt=this.g.time;}
   water(column:number){return this.g.level.tide!==null&&column>=Math.ceil(this.position);}
@@ -24,6 +28,7 @@ export class BeachBattle {
   support(row:number,column:number){return this.g.plants.find(p=>p.hp>0&&p.row===row&&p.column===column&&(p.kind==='lilypad'||p.kind==='floawerPot'));}
   occupant(p:Plant){return this.g.plants.find(q=>q.hp>0&&q.id!==p.id&&q.row===p.row&&q.column===p.column);}
   canPlant(kind:PlantKind,row:number,column:number){
+    if(this.g.zombies.some(z=>z.hp>0&&z.fisher&&z.row===row&&column===8)&&!this.g.props.zombies.beach_fisherman.PlantablePlants.includes(kind))return false;
     if(this.g.level.bowlingLine!==null&&column>=this.g.level.bowlingLine)return false;
     if(!this.g.level.tide)return kind!=='lilypad'&&kind!=='tanglekelp';
     const support=this.support(row,column),plantTags=(tags as Record<string,string[]>)[kind];
@@ -61,7 +66,7 @@ export class BeachBattle {
     if(g.time-p.actionAt>=timeline.duration&&p.hp>0)this.play(p,'Idle','idle');
   }
   tick(dt:number){
-    this.bowling.tick(dt);this.surfers.tick();this.octopuses.tick();
+    this.thistles.tick(dt);this.bowling.tick(dt);this.surfers.tick();this.octopuses.tick();
     const g=this.g;
     if(g.level.tide){const t=Math.min(1,(g.time-this.changedAt)/3),e=t<.5?4*t*t*t:1-(-2*t+2)**3/2;this.position=this.from+(this.target-this.from)*e;
       for(const p of g.plants)if(p.hp>0&&p.action!=='food'&&p.kind!=='lilypad'&&!this.canPlant(p.kind,p.row,p.column))p.hp=0;

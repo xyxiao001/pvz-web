@@ -1,4 +1,4 @@
-"""Export Big Wave Beach 1–20 from the pinned Cocos build."""
+"""Export Big Wave Beach 1–25 from the pinned Cocos build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -19,7 +19,7 @@ def props(path,names):
     objs=e.read('json/Objects/'+path).objects[0]['json']['objects']
     return {n:next(o['objdata'] for o in objs if n in o.get('aliases',[])) for n in names}
 paths={'lilypad':'plants/LilyPadPLANT','tanglekelp':'plants/TangleKelpPLANT','beach':'zombies/BeachBasicZOMBIE','beachFemale':'zombies/BeachFemaleZOMBIE','beachFlag':'zombies/BeachFlagZOMBIE','beachImp':'zombies/BeachImpZOMBIE'}
-paths.update({'bowlingbulb':'plants/BowlingBulbPLANT','beachSurfer':'zombies/BeachSurferZOMBIE','beachOctopus':'zombies/BeachOctopusZOMBIE','beachSnorkel':'zombies/BeachSnorkelZOMBIE','beachGargantuar':'zombies/BeachGargantuarZOMBIE'})
+paths.update({'homingthistle':'plants/HomingThistlePLANT','beachFisher':'zombies/BeachFisherZOMBIE','bowlingbulb':'plants/BowlingBulbPLANT','beachSurfer':'zombies/BeachSurferZOMBIE','beachOctopus':'zombies/BeachOctopusZOMBIE','beachSnorkel':'zombies/BeachSnorkelZOMBIE','beachGargantuar':'zombies/BeachGargantuarZOMBIE'})
 for suffix,prefab in [('1','1'),('2','2'),('3','3'),('_explode','Food')]:paths['tool_projectile_bowlingbulb'+suffix]='plants/BowlingSpawner'+prefab+'PLANT'
 actors={n:rig(p) for n,p in paths.items()}
 rigs={n:rig(p) for n,p in {'beachLawn':'lawns/BeachLAWN','mower':'projectiles/BeachMowerPRJ','beachCone':'armors/BeachConeARMOR','beachBucket':'armors/BeachBucketARMOR','tide':'49827fe8-1df8-422b-9d8d-47f286d0a319','tideLine':'07cfb36b-3301-4faa-a82f-9f0f7bf63368','tideSign':'f1a88de5-d4a9-4b50-bd1e-d4d11fc17681'}.items()}
@@ -28,7 +28,9 @@ kelp=next(o for o in walk(e.read(paths['tanglekelp']).objects) if 'kelphands' in
 surfer=next(o for o in walk(e.read(paths['beachSurfer']).objects) if 'bdBreakPar' in o)
 rigs.update({'surfboard':rig('tombstones/SurfboardTOMB'),'surfboardBreak':rig(surfer['bdBreakPar']['asset']),'surfboardThrow':rig(surfer['bdSpawnerPar']['asset'])})
 rigs.update({'octopus':rig('tombstones/OctopusTOMB'),'octopusShot':rig('projectiles/OctopusPRJ')})
-properties={'plants':props('PlantProps',['lilypad','tanglekelp','bowlingbulb',*[n for n in paths if n.startswith('tool_')]]),'zombies':props('ZombieProps',['beach','beach_armor1','beach_armor2','beach_fem','beach_fem_armor1','beach_fem_armor2','beach_flag','beach_imp','beach_snorkel','beach_gargantuar','beach_surfer','beach_octopus']),'armors':props('ArmorProps',['beach_armor1','beach_armor2']),'projectiles':props('ProjectileProps',['bowling0','bowling1','bowling2','bowling_pf']),'plantAnimations':{}}
+rigs.update({'thistle':rig('projectiles/Thistle0PRJ'),'thistleFood':rig('projectiles/ThistleFoodPRJ'),'fisherHook':rig('projectiles/FisherHookPRJ')})
+rigs['fisherWire']={**actors['beachFisher'],'armature':'wire','animation':'idle'}
+properties={'plants':props('PlantProps',['homingthistle','lilypad','tanglekelp','bowlingbulb',*[n for n in paths if n.startswith('tool_')]]),'zombies':props('ZombieProps',['beach','beach_armor1','beach_armor2','beach_fem','beach_fem_armor1','beach_fem_armor2','beach_flag','beach_imp','beach_snorkel','beach_gargantuar','beach_surfer','beach_octopus','beach_fisherman']),'armors':props('ArmorProps',['beach_armor1','beach_armor2']),'projectiles':props('ProjectileProps',['bowling0','bowling1','bowling2','bowling_pf','homing_thistle','homing_thistle_pf']),'plantAnimations':{}}
 for name,description in {**actors,**rigs}.items():
     sk=json.loads((e.OUT/'rigs'/description['rig']/'skeleton.json').read_text());arm=next(a for a in sk['armature'] if a['name']==description['armature']);timelines={}
     for animation in arm['animation']:
@@ -38,7 +40,7 @@ for name,description in {**actors,**rigs}.items():
             frame+=f.get('duration',1)
         timelines[animation['name']]={'duration':animation.get('duration',1)/arm['frameRate'],'events':events}
     properties['plantAnimations'][name]=timelines
-for day in range(1,21):c.write_json(e.OUT/f'beach{day}.source.json',e.read(f'levels/beach{day}').objects[0]['json'])
+for day in range(1,26):c.write_json(e.OUT/f'beach{day}.source.json',e.read(f'levels/beach{day}').objects[0]['json'])
 lawn=e.read('lawns/BeachLAWN');co=next(x for x in walk(lawn.objects) if x.get('type')=='dragonBones.ArmatureDisplay')
 at=e.read(co['_dragonAtlasAsset']['asset']);atlas=json.loads(at.objects[0]['_atlasJson']);rect=next(x for x in atlas['SubTexture'] if x['name']=='Lawn')
 pixels=Image.open(io.BytesIO(c.native(at.data[1][at.rec[5][0]],'png')))
@@ -57,7 +59,7 @@ for name,path in {**paths,'octopus':'tombstones/OctopusTOMB','octopusShot':'proj
             for key,value in obj['soundRes'].items():
                 if key!='type':sound(name+'/'+key,value)
 npc=e.read('b697cdfd-e783-4f80-abbe-ac197db6cf97');narratives={}
-for name in ['BEACH_INTRO_FIRSTLEVEL','BEACH_INTRO_TIDES','BEACH_INTRO_CHOMPER','BEACH_INTRO_BOWLING','BEACH_INTRO_GARGANTUAR_ALT','BEACH_INTRO_GUACODILE','BEACH_OUTRO_DANGER_ROOM_KEY']:
+for name in ['BEACH_INTRO_FIRSTLEVEL','BEACH_INTRO_TIDES','BEACH_INTRO_CHOMPER','BEACH_INTRO_BOWLING','BEACH_INTRO_GARGANTUAR_ALT','BEACH_INTRO_GUACODILE','BEACH_OUTRO_DANGER_ROOM_KEY','BEACH_INTRO_HOMINGTHISTLE','BEACH_INTRO_BANANA']:
     flow=next(o['objdata']['Flow'] for o in e.read('json/Objects/NarrativeList').objects[0]['json']['objects'] if name in o.get('aliases',[]))
     for step in flow:
         if 'Lines' in step:
@@ -73,4 +75,4 @@ c.write_json(e.OUT/'octopus.json',props('TombstoneProps',['planttarget_squid'])[
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{'note_beach':e.sprite(c.decode_uuid(c.config['uuids'][c.path_index['note/beach/spriteFrame']]))}})
 c.write_json(c.ROOT/'apps/pvz2/beach-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Big Wave Beach 1–20')
+print('Exported Big Wave Beach 1–25')
