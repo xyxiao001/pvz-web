@@ -54,7 +54,7 @@ export class BeachBoss extends EgyptBoss {
   }
   private summonColumn(){
     const g=this.game,props=this.action!.summonProps,remaining=this.stages.slice(this.stage+1).reduce((n,s)=>n+s.HitPoints,0);
-    let points=props.pointMin+(1-(this.zombie.hp-remaining)/this.current.HitPoints)*(props.pointMax-props.pointMin),food=g.random()<.3;
+    let points=props.pointMin+(1-(this.zombie.hp-remaining)/this.current.HitPoints)*(props.pointMax-props.pointMin),food=g.random()<(g.level.day===42?props.plantfoodchance!:.3);
     let choices=props.zombieList.filter(k=>g.props.zombies[k].WavePointCost<=points);
     while(choices.length){const kind=choices[Math.floor(g.random()*choices.length)],z=g.spawnZombie(kind,Math.floor(g.random()*5),cellX(5),'ground');if(food){z.food=true;food=false;}points-=g.props.zombies[kind].WavePointCost;choices=choices.filter(k=>g.props.zombies[k].WavePointCost<=points);}
   }

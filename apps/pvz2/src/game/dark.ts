@@ -178,7 +178,7 @@ export class DarkBattle {
       }else {
         p.x-=8*BOARD.cellWidth*dt;
         if(p.friendly){const z=g.zombies.find(z=>z.hp>0&&z!==p.owner&&Math.abs(z.x-p.x)<25&&Math.abs(rowY(z.row)-45-p.y)<40);if(z){g.damage(z,p.damage);p.x=-200;}}
-        else {const plant=g.plants.filter(t=>t.hp>0&&!t.hidden&&t.action!=='food'&&Math.abs(cellX(t.column)-p.x)<25&&Math.abs(rowY(t.row)-45-p.y)<40).sort((a,b)=>b.column-a.column)[0];if(plant){const armor=Math.min(plant.armor,p.damage);plant.armor-=armor;plant.hp-=(p.damage-armor)*g.future.plantDamageScale(plant);p.x=-200;}}
+        else {const plant=g.plants.filter(t=>t.hp>0&&!t.hidden&&t.action!=='food'&&Math.abs(cellX(t.column)-p.x)<25&&Math.abs(rowY(t.row)-45-p.y)<40).sort((a,b)=>b.column-a.column)[0];if(plant){if(g.beachFinale.reflect(plant,p.damage)){p.x=-200;continue;}const armor=Math.min(plant.armor,p.damage);plant.armor-=armor;plant.hp-=(p.damage-armor)*g.future.plantDamageScale(plant);p.x=-200;}}
       }
     }
     this.reflected=this.reflected.filter(p=>p.x>BOARD.left-100);
