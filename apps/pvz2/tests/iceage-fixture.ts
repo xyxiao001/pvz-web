@@ -5,7 +5,7 @@ import {Game} from '../src/game/model';
 import {readLevel,rowY,type Properties,type SourceLevel} from '../src/game/level';
 const read=<T>(p:string):T=>JSON.parse(readFileSync(new URL('../public/assets/iceage/'+p,import.meta.url),'utf8'));
 const extra=read<Properties>('properties.json');
-export const props:Properties={...beach,plants:{...beach.plants,...extra.plants},zombies:{...beach.zombies,...extra.zombies},armors:{...beach.armors,...extra.armors},plantAnimations:{...beach.plantAnimations,...extra.plantAnimations}};
+export const props:Properties={...beach,plants:{...beach.plants,...extra.plants},zombies:{...beach.zombies,...extra.zombies},armors:{...beach.armors,...extra.armors},projectiles:{...beach.projectiles,...extra.projectiles},plantAnimations:{...beach.plantAnimations,...extra.plantAnimations}};
 export const level=(day:number)=>readLevel(read<SourceLevel>(`iceage${day}.source.json`));
 export const create=(day:number)=>new Game(level(day),props,timing,z=>({x:z.x,y:rowY(z.row)-95}),1234,false);
 export {tick};

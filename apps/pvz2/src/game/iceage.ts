@@ -2,7 +2,7 @@ import {BOARD,cellX,rowY,type ZombieKind} from './level';
 import type {Game,Plant,Zombie} from './model';
 import ice from '../../public/assets/iceage/ice.json';
 import {isFlying} from './pirate';
-export const iceageArmor=(kind:ZombieKind)=>kind==='iceage_armor1'?'iceage_armor1':kind==='iceage_armor2'?'iceage_armor2':null;
+export const iceageArmor=(kind:ZombieKind)=>kind==='iceage_armor3'?'iceage_armor3':kind==='iceage_armor1'?'iceage_armor1':kind==='iceage_armor2'?'iceage_armor2':null;
 export class IceageBattle {
   blocks:{id:number;row:number;column:number;hp:number;zombie?:Zombie;meltAt?:number}[]=[];
   cold=new Map<string,number>();
