@@ -9,6 +9,7 @@ import { assetUrl, json } from '../assets/load';
 import { NAVIGATION_KEY, LEVEL_ROUTES, initialNavigation, islandStates, type Navigation } from './navigation';
 import { ProgressStore, completionEvents } from './progression';
 import type { Catalog, Island, World, WorldMap, ProgressionArt } from './types';
+import type { CostumePlant } from './costumes';
 import type { StoreCatalog, StoreCategory } from './store';
 import type { MapRenderer } from './renderer';
 
@@ -136,7 +137,7 @@ export class WorldShell {
       this.map = await json<WorldMap>(`shell/maps/${world.id}.json`); this.navigation.world = world.id;
       this.$('.world-labels').innerHTML = '';
       const states = islandStates(this.map,this.completed(),this.progress.rewardNodes(this.map.id),this.progress.temporaryUnlock);
-      this.$('.map-level-targets').innerHTML = this.map.islands.filter(n=>n.kind===0).map(n=>`<button class="level-target" data-level-node="${n.node}" aria-label="${world.name} 第 ${n.name} 关 · ${states.get(n.node)==='finished'?'已完成':states.get(n.node)==='open'?'可进入':'未解锁'}${n.levels.some(id=>LEVEL_ROUTES[id])?'':' · 尚未接入'}"></button>`).join('');
+      this.$('.map-level-targets').innerHTML = this.map.islands.filter(n=>n.kind===0||n.kind===2).map(n=>`<button class="level-target" data-level-node="${n.node}" aria-label="${world.name} ${n.kind===2?'装扮礼物':`第 ${n.name} 关`} · ${n.kind===2?(this.progress.rewardNodes(world.id).has(n.node)?'已领取':states.get(n.node)==='locked'?'未解锁':'可领取'):states.get(n.node)==='finished'?'已完成':states.get(n.node)==='open'?'可进入':'未解锁'}${n.kind===2||n.levels.some(id=>LEVEL_ROUTES[id])?'':' · 尚未接入'}"></button>`).join('');
       for (const button of this.host.querySelectorAll<HTMLButtonElement>('[data-level-node]')) button.onclick = () => { void this.selectLevel(this.map!.islands.find(n=>n.node===Number(button.dataset.levelNode))!); };
       const camera = Object.hasOwn(this.navigation.cameras,world.id) ? this.navigation.cameras[world.id] : 0;
       const pending = this.progress.pending();
@@ -160,7 +161,7 @@ export class WorldShell {
         for (const button of this.host.querySelectorAll<HTMLElement>('[data-level-node]')) {
           const island = this.map.islands.find(n=>n.node===Number(button.dataset.levelNode))!;
           const state = finalStates.get(island.node);
-          button.setAttribute('aria-label',`${world.name} 第 ${island.name} 关 · ${state==='finished'?'已完成':state==='open'?'可进入':'未解锁'}${island.levels.some(id=>LEVEL_ROUTES[id])?'':' · 尚未接入'}`);
+          button.setAttribute('aria-label',`${world.name} ${island.kind===2?'装扮礼物':`第 ${island.name} 关`} · ${island.kind===2?(this.progress.rewardNodes(world.id).has(island.node)?'已领取':state==='locked'?'未解锁':'可领取'):state==='finished'?'已完成':state==='open'?'可进入':'未解锁'}${island.kind===2||island.levels.some(id=>LEVEL_ROUTES[id])?'':' · 尚未接入'}`);
         }
       }
     } catch (error) {
@@ -192,10 +193,25 @@ export class WorldShell {
     const id=island.levels.find(id=>LEVEL_ROUTES[id]);
     // WorldMap.ts ignores locked nodes; there is no native locked-level window.
     if (state === 'locked') return;
+    if(island.kind===2){await this.openGift(island);return;}
     if (id) {
       this.save(); this.renderer.stop(); if(this.musicPlay) await this.musicPlay; this.music.pause(); this.musicPlay=null; this.host.hidden=true; await this.play(id, this.progress); return;
     }
     this.modal(`${this.currentWorld.name} · 第 ${island.name} 关`, `<p>此关卡尚未接入。</p><button class="native-button close-dialog">返回地图</button>`);
+  }
+  private async openGift(island:Island) {
+    this.busy=true;
+    try {
+      const plants=await json<CostumePlant[]>('shell/costumes.json');
+      const claimed=this.progress.rewardNodes(this.map!.id).has(island.node);
+      const reward=this.progress.openGift(this.map!.id,island.node,plants);
+      if(!reward){this.modal('装扮礼物','<p>当前拥有植物的装扮已集齐。礼物已保留，获得新植物后再来领取。</p><button class="native-button close-dialog">返回地图</button>');return;}
+      if(!claimed)this.renderer.openGift(island.node);
+      this.$(`[data-level-node="${island.node}"]`).setAttribute('aria-label',`${this.currentWorld.name} 装扮礼物 · 已领取`);
+      const plant=plants.find(p=>p.id===reward.id)!;
+      const image=await this.renderer.costumeImage(plant,reward.costume);
+      this.modal(claimed?'已领取装扮':'获得植物装扮',`<img class="costume-reward" src="${image}" alt="${plant.name}装扮"><p>${plant.name} · 装扮 ${reward.costume+1}</p><p>${claimed?'这份礼物已经领取。':'已自动穿戴，进入关卡即可看到。'}</p><button class="native-button close-dialog">返回地图</button>`);
+    } finally { this.busy=false; }
   }
   private async openFeature(feature:Feature){
     this.loading(true);this.renderer.stop();if(this.musicPlay)await this.musicPlay;this.music.pause();this.musicPlay=null;

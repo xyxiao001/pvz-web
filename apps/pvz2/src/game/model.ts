@@ -72,6 +72,7 @@ export class Game {
   sunSpent=0;
   time = 0;
   sun: number = RULES.startingSun;
+  autoCollectSun = false;
   food: number = RULES.startingFood;
   wave = 0;
   kills = 0;
@@ -1056,6 +1057,7 @@ export class Game {
       else {if(sun.bomb)this.future.defuse(sun);sun.groundAge+=dt;}
     }
     this.suns = this.suns.filter(s => !absorbed.has(s.id)&&s.groundAge<7.5);
+    if(this.autoCollectSun)for(const sun of this.suns)if(sun.groundAge>0&&!sun.bomb)this.collect(sun.id);
     for(const p of this.pickups)p.age+=dt;
     for (const effect of this.effects) effect.age += dt;
     this.effects = this.effects.filter(e => e.age < .65);

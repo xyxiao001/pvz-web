@@ -221,3 +221,14 @@ test('last stand preparation does not spend or activate a garden boost',()=>{
  const game=create();game.preparing=true;game.sun=1000;game.boosts.add('peashooter');
  assert.equal(game.plant('peashooter',0,0),true);assert.equal(game.plants[0].action,'idle');assert.equal(game.usedBoosts.size,0);
 });
+
+test('automatic sun collection waits for landing, collects once, and pauses with combat',()=>{
+ const game=create();game.autoCollectSun=true;
+ game.dropSun(400,250,25,'plant');const id=game.suns[0].id,before=game.sun;
+ game.tick(1/60);assert.equal(game.sun,before);assert.equal(game.suns.length,1);
+ game.phase='paused';tick(game,3);assert.equal(game.sun,before);assert.equal(game.suns.length,1);
+ game.phase='playing';tick(game,1.5);assert.equal(game.sun,before+25);assert.equal(game.suns.length,0);
+ game.collect(id);assert.equal(game.sun,before+25);
+ game.autoCollectSun=false;game.dropSun(400,250,50,'plant');tick(game,1.5);assert.equal(game.suns.filter(s=>s.from==='plant').length,1);
+ game.autoCollectSun=true;game.tick(1/60);assert.equal(game.sun,before+75);
+});

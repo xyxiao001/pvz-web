@@ -1,4 +1,5 @@
 import { rewardPlantArt } from './reward-art';
+import { applyCostume, type CostumePlant } from './costumes';
 import { reportError } from '../errors';
 import { textureScope } from '../assets/textures';
 import 'pixi.js/prepare';
@@ -86,7 +87,7 @@ export class MapRenderer {
         const index = Math.round((px - 512 + this.carousel) / 264);
         if (index >= 0 && index < this.catalog.worlds.length && py > 100 && py < 570) this.onWorld(index);
       } else {
-        const island = this.map!.islands.filter(n => n.kind === 0).find(n => Math.abs(px - (512 + n.x - this.camera)) < 32 && Math.abs(py - (320 + n.y - 18)) < 44);
+        const island = this.map!.islands.filter(n => n.kind === 0 || n.kind === 2).find(n => Math.abs(px - (512 + n.x - this.camera)) < 32 && Math.abs(py - (320 + n.y - (n.kind===2?40:18))) < (n.kind===2?60:44));
         if (island) this.onIsland(island);
       }
     });
@@ -200,6 +201,17 @@ export class MapRenderer {
     PixiFactory.advanceTime(0);await previews.dispose();
     return images;
   }
+  async costumeImage(plant:CostumePlant,costume:number) {
+    const textures=textureScope(),factory=new PixiFactory(null,false),base=plant.path+'/';
+    const [skeleton,atlas,texture]=await Promise.all([json<object>(base+'skeleton.json'),json<object>(base+'atlas.json'),textures.load(assetUrl(base+'texture.webp'))]);
+    factory.parseDragonBonesData(skeleton,plant.kind);factory.parseTextureAtlasData(atlas,texture,plant.kind);
+    const rig=factory.buildArmatureDisplay(plant.armature,plant.kind)!;
+    if(plant.animation)rig.animation.play(plant.animation,0);
+    rig.armature.advanceTime(.001);applyCostume(rig.armature.getSlots(),costume);
+    const image=(this.app.renderer.extract.canvas({target:rig,resolution:2}) as HTMLCanvasElement).toDataURL('image/webp');
+    rig.dispose();factory.clear(false);PixiFactory.advanceTime(0);await textures.dispose();return image;
+  }
+  openGift(node:number) { this.animateIsland(node,'reward','Unlock','Finished'); }
   async showChooser(index: number,unlocked:ReadonlySet<string>) {
     this.stop(); this.clear(); this.toolbar.children.forEach((child,i) => { child.visible = this.catalog.toolbar[i].owner === 14; }); this.mode = 'chooser'; this.map = null; this.velocity = 0;
     const selected = this.catalog.chooser.filter(d => d.kind === 'rig');
@@ -271,7 +283,7 @@ export class MapRenderer {
       }
       if (island.kind === 3) for (const style of this.catalog.nodes.upgrade) dynamic.push({ ...style, x: island.x, y: island.y, sx: .4, sy: .4, parallax: 1, animation: this.catalog.upgrades[island.upgrade] });
       if (island.kind === 2 || island.kind === 4) for (const style of this.catalog.nodes[island.kind === 2 ? 'giftbox' : 'epicPortal']) {
-        if (style.kind === 'rig') dynamic.push({ ...style, x: island.x + style.x, y: island.y + style.y, sx: .4, sy: .4, parallax: 1, animation: island.kind === 2 ? (state === 'finished' ? 'Finished' : 'Idle') : (state === 'finished' ? 'Idle' : 'Idle_Locked') });
+        if (style.kind === 'rig') dynamic.push({ ...style, island:island.node,role:'reward', x: island.x + style.x, y: island.y + style.y, sx: .4, sy: .4, parallax: 1, animation: island.kind === 2 ? (rewards.has(island.node) ? 'Finished' : 'Idle') : (state === 'finished' ? 'Idle' : 'Idle_Locked') });
       }
     }
     this.draws = [...map.draws.filter(d => !['DeltaArrow', 'BtnPurpleBigUp'].includes(d.name)), ...paths, ...dynamic];

@@ -1,3 +1,4 @@
+import { applyCostume } from '../shell/costumes';
 import {DarkBoss} from '../game/dark-boss';
 import {darkArmor,graveArt} from '../game/dark';
 import {FutureBoss} from '../game/future-boss';
@@ -58,6 +59,7 @@ interface Actor { rootGrown?:boolean;rootCharged?:boolean; captured?:boolean;cap
 interface Fragment {rig:PixiArmatureDisplay;x:number;y:number;ground:number;vx:number;vy:number;spin:number;age:number;landed:number}
 
 export class Scene {
+  costumes:Record<string,number> = {};
   private textures=textureScope();
   readonly app = new Application();
   readonly art = new BattleArt();
@@ -185,7 +187,8 @@ export class Scene {
     const rig = this.rig(kind);
     rig.animation.play(kind === 'potatomine' ? 'Idle' : RIGS[kind].idle, 0);
     rig.armature.advanceTime(.01);
-    if(['scaredyshroom','fumeshroom','starfruit','electricpeashooter','magnetshroom','magnifyinggrass','shadowshroom','stallia','hurrikale','sunshroom','puffshroom','banana','electriccurrant','hypnoshroom'].includes(kind))for(const slot of rig.armature.getSlots())if(slot.name.startsWith('COS'))slot.displayIndex=-1;
+    if(Object.hasOwn(this.costumes,kind))applyCostume(rig.armature.getSlots(),this.costumes[kind]);
+    if(!Object.hasOwn(this.costumes,kind)&&['scaredyshroom','fumeshroom','starfruit','electricpeashooter','magnetshroom','magnifyinggrass','shadowshroom','stallia','hurrikale','sunshroom','puffshroom','banana','electriccurrant','hypnoshroom'].includes(kind))for(const slot of rig.armature.getSlots())if(slot.name.startsWith('COS'))slot.displayIndex=-1;
     const canvas = this.app.renderer.extract.canvas({ target: rig, resolution: 2 });
     const url = (canvas as HTMLCanvasElement).toDataURL('image/png');
     rig.dispose(); PixiFactory.advanceTime(0);
@@ -363,12 +366,13 @@ export class Scene {
     }
 
     for(const [id,actor] of this.actors){
+      if(Object.hasOwn(this.costumes,actor.kind))applyCostume(actor.rig.armature.getSlots(),this.costumes[actor.kind]);
       const state=game.specialZombies.get(id);
       if(actor.kind==='puffshroom'&&!actor.death){const p=game.plants.find(p=>p.id===id)!,life=game.westFinale.states.get(id)!.life;actor.rig.armature.getSlot('head')!.displayIndex=life>40?0:life>20?1:2;actor.root.alpha=p.action!=='food'&&life<10&&life>0&&Math.floor(4*life)%4===1?100/255:1;}
       if(actor.kind==='chomper'&&!actor.death){const count=game.darkPlants.states.get(id)!.chews.length;for(const slot of actor.rig.armature.getSlots()){if(['ARM1','ARM1_','HAND1','HAND1_'].includes(slot.name))slot.displayIndex=count>=1?0:-1;if(['ARM2','ARM2_','HAND2','HAND2_'].includes(slot.name))slot.displayIndex=count>=2?0:-1;}}
       for(const slot of actor.rig.armature.getSlots()){
         if(actor.kind==='laser_bean'&&slot.name.endsWith('_FS')&&slot.childArmature&&slot.childArmature.animation.lastAnimationName!=='Floor')slot.childArmature.animation.play('Floor',0);
-        if((game.darkPlants.handles(actor.kind as PlantKind)||actor.kind==='fumeshroom'||game.future.handles(actor.kind as PlantKind)||game.western.handles(actor.kind as PlantKind)||game.westFinale.handles(actor.kind as PlantKind))&&slot.name.startsWith('COS'))slot.displayIndex=-1;
+        if(!Object.hasOwn(this.costumes,actor.kind)&&(game.darkPlants.handles(actor.kind as PlantKind)||actor.kind==='fumeshroom'||game.future.handles(actor.kind as PlantKind)||game.western.handles(actor.kind as PlantKind)||game.westFinale.handles(actor.kind as PlantKind))&&slot.name.startsWith('COS'))slot.displayIndex=-1;
         if(actor.kind==='bull'||actor.kind==='blackBull'){const z=game.zombies.find(z=>z.id===id)??game.deaths.find(d=>d.zombie.id===id)?.zombie;if(z){if(slot.name.includes('_IMP')&&!z.west!.imp)slot.displayIndex=-1;if(slot.name.includes('_bp1'))slot.displayIndex=z.hp<=game.props.zombies[z.kind].Toughness*2/3&&z.hp>game.props.zombies[z.kind].Toughness/3?0:-1;if(slot.name.includes('_bp2'))slot.displayIndex=z.hp<=game.props.zombies[z.kind].Toughness/3?0:-1;}}
         if((actor.kind==='darkGargantuar'||actor.kind==='cowboyGargantuar')&&[...game.zombies,...game.westFinale.allies].find(z=>z.id===id)?.west?.imp===false&&slot.name.includes('_IMP'))slot.displayIndex=-1;
         if(actor.kind==='chickenFarmer'&&slot.name.includes('_CHICK')&&[...game.zombies,...game.westFinale.allies].find(z=>z.id===id)?.west?.chickens===false)slot.displayIndex=-1;
@@ -789,6 +793,7 @@ export class Scene {
   }
   previewTick(dt: number) {
     this.clock.advanceTime(dt);this.art.clock.advanceTime(dt);
+    for(const actor of this.actors.values())if(Object.hasOwn(this.costumes,actor.kind))applyCostume(actor.rig.armature.getSlots(),this.costumes[actor.kind]);
     for(const actor of this.actors.values())if(actor.armor){const bone=actor.rig.armature.getBone('armorSOCKET')!;bone.updateGlobalTransform();actor.armor.position.set(bone.global.x*.51,bone.global.y*.51);actor.armor.rotation=bone.global.rotation;}
   }
   private applyCamera() {

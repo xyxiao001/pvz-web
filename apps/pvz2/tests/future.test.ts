@@ -84,3 +84,12 @@ test('Future map reward displays have exported native idle animations',()=>{
   assert.ok(sk.armature.find((a:{name:string})=>a.name===draw.armature).animation.some((a:{name:string})=>a.name===draw.animation));
  }}
 });
+
+
+test('automatic collection waits for sun bombs to land and defuse',()=>{
+ const game=create(4);game.autoCollectSun=true;game.dropSun(400,250,50,'sky');
+ const sun=game.suns[0],before=game.sun;sun.targetY=260;
+ game.tick(1/60);assert.equal(game.sun,before);assert.ok(game.suns[0].bomb);
+ tick(game,.5);assert.equal(game.sun,before+50);assert.equal(game.suns.length,0);
+ assert.ok(!game.future.sounds.includes('sunbomb/explodeSound'));
+});

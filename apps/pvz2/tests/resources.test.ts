@@ -44,3 +44,13 @@ test('Pirate boss summons preload dirt and every registered plant has a native c
  const animations=skeleton.armature.find((a:{name:string})=>a.name==='plants').animation.map((a:{name:string})=>a.name);
  for(const kind of PLANT_KINDS)assert.ok(animations.includes(seedCardAnimation(kind)),kind);
 });
+
+test('every intro and outro character is included in its battle resource plan',()=>{
+ const base=read('battle/catalog.json'),campaign=read('campaign/catalog.json');
+ for(const config of Object.values(BATTLE_LEVELS)){
+  const narratives=Object.assign({},campaign.narratives,...(config.bundles??[]).map(bundle=>read(`${bundle}/catalog.json`).narratives));
+  const names=new Set([...Object.keys(base.rigs),...battleEffects(readLevel(read(config.source)),config.plants.map(p=>p.kind))]);
+  const lines=config.assets==='intro'?base.intro:[config.narrative,config.outro].filter(Boolean).flatMap(key=>narratives[key!]);
+  for(const line of lines)assert.ok(names.has(line.Character),`${config.id}: ${line.Character}`);
+ }
+});

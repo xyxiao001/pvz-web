@@ -1,5 +1,6 @@
 import { GARDEN_KEY, type GardenData } from '../outer/garden';
 import { LocalStore } from './store';
+import { availableCostumes, type CostumePlant, type CostumeReward } from './costumes';
 import { islandStates } from './navigation';
 import type { Island, WorldMap } from './types';
 
@@ -7,7 +8,7 @@ const completionKey = (level: string) => `pvz2-web:${level}-complete`;
 const REWARDS_KEY = 'pvz2-web:map-rewards';
 const PENDING_KEY = 'pvz2-web:pending-map-completion';
 const FREE_PLAY_KEY = 'pvz2-web:free-play';
-export interface MapReward { world: string; node: number; kind: 'plant' | 'upgrade'; id: number }
+export type MapReward = { world: string; node: number; kind: 'plant' | 'upgrade'; id: number } | CostumeReward;
 export interface PendingCompletion { world: string; level: string }
 export class ProgressStore {
   get temporaryUnlock() { return this.storage.getItem(FREE_PLAY_KEY) === '1'; }
@@ -23,6 +24,18 @@ export class ProgressStore {
     return saved === null ? [] : JSON.parse(saved);
   }
   rewardNodes(world: string) { return new Set(this.rewards().filter(r => r.world === world).map(r => r.node)); }
+  costumeRewards() { return this.rewards().filter((r):r is CostumeReward=>r.kind==='costume'); }
+  equippedCostumes() { return Object.fromEntries(this.costumeRewards().map(r=>[r.plant,r.costume])); }
+  openGift(world:string,node:number,plants:readonly CostumePlant[],random=Math.random) {
+    const rewards=this.rewards(),claimed=this.costumeRewards().find(r=>r.world===world&&r.node===node);
+    if(claimed)return claimed;
+    const available=availableCostumes(plants,this.ownedPlants(),this.costumeRewards());
+    if(!available.length)return null;
+    const {plant,costume}=available[Math.floor(random()*available.length)];
+    const reward:CostumeReward={world,node,kind:'costume',id:plant.id,plant:plant.kind,costume};
+    this.storage.setItem(REWARDS_KEY,JSON.stringify([...rewards,reward]));
+    return reward;
+  }
   shop() { return new LocalStore(this.storage); }
   ownedPlants() { return new Set([0, 1, 2, 3, ...this.shop().read().plants, ...this.rewards().filter(r => r.kind === 'plant').map(r => r.id)]); }
   ownedUpgrades() { return new Set([...this.shop().read().upgrades, ...this.rewards().filter(r => r.kind === 'upgrade').map(r => r.id)]); }

@@ -44,6 +44,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     <div id="hud" hidden>
       <div class="sun-counter"><img alt="阳光"><b id="sun-count">50</b></div>
       <div class="seed-bank">${Array.from({length:seedSlots},(_,i)=>`<button class="seed" data-slot="${i}" aria-label="空卡槽" disabled><img alt=""><span class="seed-price"></span><span class="seed-cooldown"></span></button>`).join('')}</div>
+      <button id="auto-sun" class="battle-button" aria-label="自动收集阳光" aria-pressed="true">自动阳光：开</button>
       <button id="speed" class="battle-icon" aria-label="切换二倍速" aria-pressed="false"></button>
       <button id="pause" class="battle-icon" aria-label="暂停游戏"></button>
       <button id="shovel" class="battle-icon" aria-label="使用铲子"><img alt="铲子"></button>
@@ -69,6 +70,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   </section><div class="battle-caption"><span>${title}</span><span>${levelConfig.mode==='cannon'?'点击椰子加农炮开火 · 连击获得更多分数':levelConfig.mode==='match'?'翻开骆驼牌 · 配对相同图案':levelConfig.mode==='powerups'?'选择道具 · 按住或拖动攻击':levelConfig.mode==='conveyor'?'点击传送带植物 · 点击地块种植':`1–${seedSlots} 选卡 · 点击阳光收集`} · 空格暂停</span></div>`;
 
   let scene: Scene, properties: Properties, source: SourceLevel, game: Game;
+  let autoCollectSun = true;
   let selected: PlantKind | 'shovel' | 'food' | null = null;
   let screen: 'menu'|'loading'|'npc-enter'|'narrative'|'npc-exit'|'survey'|'returning'|'choosing'|'countdown'|'playing'|'pause'|'ending'|'result' = 'menu';
   let deck: PlantKind[] = [];
@@ -114,7 +116,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       const [{ Scene },props,level,flag,campaign] = await Promise.all([import('./rendering/scene'),json<Properties>('levels/properties.json'),json<SourceLevel>(levelConfig.source),json<ZombieProperties>('battle/flag.json'),levelConfig.assets==='campaign'?json<Properties>('campaign/properties.json'):Promise.resolve(null)]);
       if(campaign){Object.assign(props.plants,campaign.plants);Object.assign(props.zombies,campaign.zombies);Object.assign(props.armors,campaign.armors);Object.assign(props,{grave:campaign.grave,projectiles:campaign.projectiles,powerups:campaign.powerups,plantAnimations:campaign.plantAnimations});}
       for(const bundle of levelConfig.bundles??[]){const extra=await json<Properties>(`${bundle}/properties.json`);for(const key of ['plants','zombies','armors','projectiles','plantAnimations'] as const)Object.assign(props[key],extra[key]);}
-      properties=props; properties.zombies.mummy_flag=flag; source=level; scene=new Scene();
+      properties=props; properties.zombies.mummy_flag=flag; source=level; scene=new Scene();scene.costumes=progress.equippedCostumes();
       const parsed=readLevel(source);
       cardOrder=[...new Set([...cardOrder,...(parsed.chooserPlants??[])])].filter(kind=>!parsed.blacklist.includes(kind));
       const actorPlants=[...new Set([...(parsed.preset??(parsed.conveyor?parsed.conveyor.InitialPlantList.map(p=>p.PlantType):parsed.match||parsed.powerups||parsed.cannon?[]:cardOrder)),...parsed.actions.flat().flatMap(a=>a.add?.map(p=>p.PlantType)??[]),...parsed.initialPlants.map(p=>p.kind),...parsed.protectedPlants.map(p=>p.kind),...(parsed.cannon?['coconutcannon' as const]:[])])];
@@ -170,6 +172,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     settleBoosts();
     bossMusicStage=-1;
     game=new Game(readLevel(source),properties,scene.timing,zombie=>scene.absorptionTarget(zombie),Date.now()>>>0,!progress.isComplete(levelConfig.id));
+    game.autoCollectSun=autoCollectSun;
     game.boosts=new Set(Object.entries(progress.gardenBoosts()).filter(([,count])=>count>0).map(([kind])=>kind as PlantKind));
     for(const kind of cardOrder){const card=$(`[data-choose="${kind}"]`),boosted=game.boosts.has(kind);card.classList.toggle('boosted',boosted);card.setAttribute('aria-label',`选择${plantLabels[kind]}${boosted?'（爆发）':''}`);}
     game.plantfoodRefresh=bonuses.plantfoodRefresh;game.wallnutFirstAid=bonuses.wallnutFirstAid;game.foodLimit=bonuses.foodLimit;game.shovelRefund=bonuses.shovelRefund;game.manualMowers=bonuses.manualMowers;
@@ -379,6 +382,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   $('#narrative').onclick=nextNarrative;
   $('#laststand-start').onclick=()=>{game.startLastStand();screen='countdown';host.dataset.screen=screen;countdown=0;$('#laststand-start').hidden=true;$('#battle-announcement').hidden=false;$('#battle-announcement').textContent='准备…';sound('readySetPlant');};
   $('#pause').onclick=pause;$('#start').onclick=prepareStart;$('#ready-back').onclick=menu;
+  $('#auto-sun').onclick=()=>{autoCollectSun=!autoCollectSun;game.autoCollectSun=autoCollectSun;$('#auto-sun').setAttribute('aria-pressed',String(autoCollectSun));$('#auto-sun').textContent=`自动阳光：${autoCollectSun?'开':'关'}`;};
   $('#speed').onclick=()=>{if(screen==='playing'){speed=speed===1?2:1;$('#speed').setAttribute('aria-pressed',String(speed===2));}};
   $('#shovel').onclick=()=>{if(screen==='playing'){selected=selected==='shovel'?null:'shovel';updateHud();}};
   for(let i=0;i<seedSlots;i++)$(`[data-slot="${i}"]`).onclick=()=>{
