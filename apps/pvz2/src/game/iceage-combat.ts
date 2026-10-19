@@ -9,7 +9,7 @@ export class IceageCombat {
   chilled=new Map<string,number>();
   constructor(private g:Game){}
   init(p:Plant){if(p.kind==='pepperpult'){this.heat.set(p.id,this.g.time+this.g.props.plants.pepperpult.WarmingRadius!.PulseInitialDelay);p.animation='Idle';}}
-  spawn(z:Zombie){if(z.kind==='iceage_hunter'){const g=this.g,p=g.props.zombies.iceage_hunter;this.hunters.set(z.id,{at:0,next:g.time+p.TimeBeforeFirst+g.random()*p.TimeBeforeFirstAddtional,left:p.SnowballsPerBarrage,event:0,throwing:false});}}
+  spawn(z:Zombie){if(z.kind==='iceage_dodo')z.dodo={animation:'Walk',at:0,elapsed:0,event:0,flying:false,remaining:0,column:Math.floor((z.x-BOARD.left)/BOARD.cellWidth)};if(z.kind==='iceage_hunter'){const g=this.g,p=g.props.zombies.iceage_hunter;this.hunters.set(z.id,{at:0,next:g.time+p.TimeBeforeFirst+g.random()*p.TimeBeforeFirstAddtional,left:p.SnowballsPerBarrage,event:0,throwing:false});}}
   food(p:Plant){p.animation='Food';p.actionAt=this.g.time;p.eventIndex=0;}
   cold(row:number,column:number,amount:number){const g=this.g,plants=g.plants.filter(p=>p.hp>0&&p.row===row&&p.column===column);if(!plants.length||plants.some(p=>p.action==='food'||g.props.plants[p.kind].ImmuneToIceblock))return;const key=row+':'+column,ice=g.iceage.blocks.find(b=>b.hp>0&&b.row===row&&b.column===column);if(ice){ice.hp=Math.min(600,ice.hp+150*amount);return;}const level=(g.iceage.cold.get(key)??0)+amount;if(level>2){g.iceage.freeze(row,column);g.iceage.cold.delete(key);}else g.iceage.cold.set(key,level);}
   private lob(p:Plant,row:number,x:number,food:boolean){this.peppers.push({id:this.g.nextEntityId(),row,fromX:cellX(p.column),fromY:rowY(p.row)-80,x:cellX(p.column),y:rowY(p.row)-80,toX:x,toY:rowY(row)-25,at:this.g.time,food});}
@@ -36,6 +36,23 @@ export class IceageCombat {
       if(e==='judgeSwitching'){if(s.left&&target()){s.at=g.time;s.event=0;}else s.throwing=false;break;}
     }
     return s.throwing;
+  }
+  dodo(z:Zombie,dt:number){
+    const s=z.dodo;if(!s)return false;const g=this.g,prop=g.props.zombies.iceage_dodo;
+    const start=(animation:string)=>{s.animation=animation;s.at=g.time;s.elapsed=0;s.event=0;z.eating=false;};
+    if(s.animation==='FlyStart'||s.animation==='FlyEnd'){
+      s.elapsed+=dt*(g.time<z.chilledUntil?.5:1);
+      const timeline=g.props.plantAnimations.iceageDodo[s.animation];
+      while(s.event<timeline.events.length&&s.elapsed>=timeline.events[s.event].at){const e=timeline.events[s.event++].name;if(e==='fly')s.flying=true;if(e==='leapEnd')s.flying=false;if(e==='switchingFalse'){start(s.flying?'FlyLoop':'Walk');break;}}
+      return true;
+    }
+    const column=Math.floor((z.x-BOARD.left)/BOARD.cellWidth);if(column!==s.column){s.remaining--;s.column=column;}
+    const ahead=(col:number)=>{const distance=(z.x-cellX(col))*(z.reversed?-1:1);return distance>=-BOARD.cellWidth/2&&distance<=BOARD.cellWidth*1.5;};
+    const obstacle=g.level.sliders.some(t=>t.row===z.row&&ahead(t.column))||g.plants.some(p=>p.hp>0&&p.row===z.row&&ahead(p.column)&&prop.PlantsToFlyOver.includes(p.kind));
+    const shield=[...g.future.holonuts.values()].some(sh=>sh.shield>0&&ahead(sh.column));
+    if(s.flying&&(!obstacle||shield||s.remaining<=0)){start('FlyEnd');return true;}
+    if(!s.flying&&obstacle&&!shield){s.remaining=prop.SquaresToFlyOver+1+Math.ceil(prop.SquaresToFlyOverAdditional*g.random());start('FlyStart');return true;}
+    return false;
   }
   tick(dt:number){const g=this.g;
     for(const p of g.plants){const warm=g.props.plants[p.kind].WarmingRadius;if(!warm||p.kind!=='pepperpult'||p.hp<=0)continue;if(g.time>=this.heat.get(p.id)!){let hit=false;for(const b of g.iceage.blocks)if(b.hp>0&&Math.abs(b.row-p.row)<=1&&Math.abs(b.column-p.column)<=1){b.hp-=warm.GridItemDamage;hit=true;}for(const [key,value] of g.iceage.cold){const [row,col]=key.split(':').map(Number);if(Math.abs(row-p.row)<=1&&Math.abs(col-p.column)<=1){if(value===1)g.iceage.cold.delete(key);else g.iceage.cold.set(key,value-1);hit=true;}}for(const z of g.zombies)if(z.kind==='iceage_armor3'&&z.armor>0&&Math.abs(z.row-p.row)<=1&&Math.abs(z.x-cellX(p.column))<=1.5*BOARD.cellWidth){z.armor=0;hit=true;}if(hit){this.heat.set(p.id,g.time+warm.PulseCooldown);g.iceage.effects.push({id:g.nextEntityId(),name:'plantHeat',animation:'Play',row:p.row,column:p.column,at:g.time});}}}

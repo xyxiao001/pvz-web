@@ -21,7 +21,7 @@ export class IceageBattle {
   hit(row:number,from:number,to:number,damage:number){const b=this.blocks.filter(b=>b.hp>0&&b.row===row&&cellX(b.column)>=from-25&&cellX(b.column)<=to+25).sort((a,b)=>a.column-b.column)[0];if(!b)return false;b.hp-=damage;return true;}
   tickZombie(z:Zombie){const g=this.g;if(this.blocks.some(b=>b.hp>0&&b.zombie===z))return true;
     const slide=this.slides.get(z.id);if(slide){if(g.time-slide.at<.75)return true;z.row=slide.to;this.slides.delete(z.id);}
-    if(isFlying(z)||z.leap)return false;
+    if(g.props.zombies[z.kind].CannotBePushedBySliders||isFlying(z)||z.leap)return false;
     for(const [i,s] of g.level.sliders.entries())if(z.row===s.row&&Math.abs(z.x-cellX(s.column))<25&&!this.passed.get(z.id)?.has(i)){
       const to=z.row+(s.up?-1:1);if(to<0||to>=5)continue;const passed=this.passed.get(z.id)??new Set<number>();passed.add(i);this.passed.set(z.id,passed);this.slides.set(z.id,{from:z.row,to,at:g.time,column:s.column});return true;
     }
