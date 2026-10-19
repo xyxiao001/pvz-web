@@ -1,4 +1,4 @@
-"""Export Lost City 1–8 from the pinned Cocos build."""
+"""Export Lost City 1–13 from the pinned Cocos build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -18,11 +18,11 @@ def rig(path):
 def props(path,names):
     objs=e.read('json/Objects/'+path).objects[0]['json']['objects']
     return {n:next(o['objdata'] for o in objs if n in o.get('aliases',[])) for n in names}
-paths={'akee':'plants/AKEEPLANT','lostExcavator':'zombies/LostcityExcavatorZOMBIE','lostJane':'zombies/LostcityJaneZOMBIE','lostImp':'zombies/LostcityImpZOMBIE','lostcity':'zombies/LostcityBasicZOMBIE','lostcityFlag':'zombies/LostcityFlagZOMBIE','lostPilot':'zombies/LostcityLostPilotZOMBIE'}
+paths={'lostGargantuar':'zombies/LostcityGargantuarZOMBIE','akee':'plants/AKEEPLANT','lostExcavator':'zombies/LostcityExcavatorZOMBIE','lostJane':'zombies/LostcityJaneZOMBIE','lostImp':'zombies/LostcityImpZOMBIE','lostcity':'zombies/LostcityBasicZOMBIE','lostcityFlag':'zombies/LostcityFlagZOMBIE','lostPilot':'zombies/LostcityLostPilotZOMBIE'}
 actors={n:rig(p) for n,p in paths.items()}
 rigpaths={'akeeShot':'projectiles/AKEEPRJ','akeeFood':'projectiles/AKEEFoodPRJ','shovelDrop':'78e304ad-6f07-45a7-97ed-8512ba2c563d','lostcityLawn':'lawns/LostCityLAWN','lostcityNightLawn':'lawns/LostCityNightLAWN','mower':'projectiles/LostcityMowerPRJ','lostcityCone':'armors/LostcityConeARMOR','lostcityBucket':'armors/LostcityBucketARMOR'}
 rigs={n:rig(p) for n,p in rigpaths.items()}
-properties={'plants':props('PlantProps',['akee']),'zombies':props('ZombieProps',['lostcity_excavator','lostcity_jane','lostcity_imp','lostcity','lostcity_armor1','lostcity_armor2','lostcity_flag','lostcity_lostpilot']),'armors':props('ArmorProps',['lostcity_armor1','lostcity_armor2']),'projectiles':props('ProjectileProps',['akee','akee_pf']),'plantAnimations':{}}
+properties={'plants':props('PlantProps',['akee']),'zombies':props('ZombieProps',['lostcity_bug','lostcity_bug_armor1','lostcity_bug_armor2','lostcity_gargantuar','lostcity_excavator','lostcity_jane','lostcity_imp','lostcity','lostcity_armor1','lostcity_armor2','lostcity_flag','lostcity_lostpilot']),'armors':props('ArmorProps',['lostcity_armor1','lostcity_armor2']),'projectiles':props('ProjectileProps',['akee','akee_pf']),'plantAnimations':{}}
 for name,description in {**actors,**rigs}.items():
     sk=json.loads((e.OUT/'rigs'/description['rig']/'skeleton.json').read_text());arm=next(a for a in sk['armature'] if a['name']==description['armature']);timelines={}
     for animation in arm['animation']:
@@ -32,7 +32,7 @@ for name,description in {**actors,**rigs}.items():
             frame+=f.get('duration',1)
         timelines[animation['name']]={'duration':animation.get('duration',1)/arm['frameRate'],'events':events}
     properties['plantAnimations'][name]=timelines
-for day in range(1,9):c.write_json(e.OUT/f'lostcity{day}.source.json',e.read(f'levels/lostcity{day}').objects[0]['json'])
+for day in range(1,14):c.write_json(e.OUT/f'lostcity{day}.source.json',e.read(f'levels/lostcity{day}').objects[0]['json'])
 for name,path in [('lawn','lawns/LostCityLAWN'),('lawn-night','lawns/LostCityNightLAWN')]:
     co=next(x for x in walk(e.read(path).objects) if x.get('type')=='dragonBones.ArmatureDisplay')
     at=e.read(co['_dragonAtlasAsset']['asset']);atlas=json.loads(at.objects[0]['_atlasJson']);rect=next(x for x in atlas['SubTexture'] if x['name']==('LawnNight' if name=='lawn-night' else 'Lawn'))
@@ -66,4 +66,4 @@ for name,path in [('music','P1_LP_Lostcity'),('minigame','MG_Lostcity'),('ultima
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{}})
 c.write_json(c.ROOT/'apps/pvz2/lostcity-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Lost City 1–8')
+print('Exported Lost City 1–13')

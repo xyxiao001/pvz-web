@@ -4,7 +4,7 @@ import type {Game,Plant,Zombie} from './model';
 export const seaCell=(planks:readonly number[]|null,row:number,column:number)=>planks!==null&&column>=5&&!planks.includes(row);
 export const pirateArmor=(kind:ZombieKind)=>kind==='pirate_armor4'?'pirate_armor4':kind==='pirate_armor1'?'pirate_armor1':kind==='pirate_armor2'?'pirate_armor2':null;
 export const zombieY=(z:Zombie)=>z.parrot?.y??z.route?.y??z.west?.lane?.y??rowY(z.row);
-export const isFlying=(z:Zombie)=>!!z.pilot?.hanging||!!z.dodo?.flying||(z.kind==='future_jetpack_veteran'||z.kind==='future_jetpack'||z.kind==='future_jetpack_disco')||z.kind==='seagull'||z.kind==='pelican'||z.kind==='pirate_captain_parrot';
+export const isFlying=(z:Zombie)=>!!z.bug?.flying||!!z.pilot?.hanging||!!z.dodo?.flying||(z.kind==='future_jetpack_veteran'||z.kind==='future_jetpack'||z.kind==='future_jetpack_disco')||z.kind==='seagull'||z.kind==='pelican'||z.kind==='pirate_captain_parrot';
 export const swinging=(z:Zombie,time:number)=>!!z.swing&&time<z.swing.end;
 
 export interface CannonShot {id:number;x:number;y:number;row:number;age:number;food?:boolean;explodeAt?:number}
@@ -223,7 +223,7 @@ export class PirateBattle {
         if(event==='attack'||event==='foodAttack'){
           const food=event==='foodAttack';
           if(food)this.effects.push({id:++this.serial,kind:'snapFood',x:x+2*BOARD.cellWidth,y:rowY(p.row),at:g.time,damage:props.DamagePlantfood,hits:[]});
-          for(const z of g.zombies)if(!food&&z.hp>0&&!swinging(z,g.time)&&Math.abs(zombieY(z)-rowY(p.row))<BOARD.cellHeight*1.5&&z.x>=x-.5*BOARD.cellWidth&&z.x<=x+2.5*BOARD.cellWidth){g.damage(z,props.Damage/2);z.frozenUntil=0;z.chilledUntil=0;}
+          for(const z of g.zombies)if(!food&&z.hp>0&&!swinging(z,g.time)&&Math.abs(zombieY(z)-rowY(p.row))<BOARD.cellHeight*1.5&&z.x>=x-.5*BOARD.cellWidth&&z.x<=x+2.5*BOARD.cellWidth){g.damage(z,props.Damage/2);z.frozenUntil=0;z.chilledUntil=0;if(z.kind==='lostcity_gargantuar')g.lostcity.torches.set(z.id,true);}
         }
       }else if(event==='Shoot'||event==='foodShoot')this.shots.push({id:++this.serial,x:x+38,y:rowY(p.row)-44,row:p.row,age:0,food:event==='foodShoot'});
       else if(event==='foodEnd')p.action='grow';
@@ -235,7 +235,7 @@ export class PirateBattle {
     const g=this.#game;
     for(const effect of this.effects)if(effect.kind==='snapFood'&&g.time-effect.at>=this.eventTime('snapFood','Play','burn')){
       if(!effect.burning){effect.burning=true;for(const r of [-1,0,1])for(const c of [-1,0,1]){const y=effect.y+r*BOARD.cellHeight;if(y>=rowY(0)&&y<=rowY(4))this.effects.push({id:++this.serial,kind:'snapBall',x:effect.x+c*BOARD.cellWidth,y,at:g.time});}}
-      for(const z of g.zombies)if(z.hp>0&&!effect.hits!.includes(z.id)&&Math.abs(z.x-effect.x)<1.5*BOARD.cellWidth&&Math.abs(zombieY(z)-effect.y)<1.5*BOARD.cellHeight){g.damage(z,effect.damage!);effect.hits!.push(z.id);z.frozenUntil=0;z.chilledUntil=0;}}
+      for(const z of g.zombies)if(z.hp>0&&!effect.hits!.includes(z.id)&&Math.abs(z.x-effect.x)<1.5*BOARD.cellWidth&&Math.abs(zombieY(z)-effect.y)<1.5*BOARD.cellHeight){g.damage(z,effect.damage!);effect.hits!.push(z.id);z.frozenUntil=0;z.chilledUntil=0;if(z.kind==='lostcity_gargantuar')g.lostcity.torches.set(z.id,true);}}
     for(const shot of this.shots){
       const old=shot.x;shot.x+=(shot.food?6:17)*60*.5*dt;shot.age+=dt;
       if(shot.food){
