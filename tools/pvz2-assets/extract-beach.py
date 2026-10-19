@@ -1,4 +1,4 @@
-"""Export Big Wave Beach 1–10 from the pinned Cocos build."""
+"""Export Big Wave Beach 1–15 from the pinned Cocos build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -19,13 +19,15 @@ def props(path,names):
     objs=e.read('json/Objects/'+path).objects[0]['json']['objects']
     return {n:next(o['objdata'] for o in objs if n in o.get('aliases',[])) for n in names}
 paths={'lilypad':'plants/LilyPadPLANT','tanglekelp':'plants/TangleKelpPLANT','beach':'zombies/BeachBasicZOMBIE','beachFemale':'zombies/BeachFemaleZOMBIE','beachFlag':'zombies/BeachFlagZOMBIE','beachImp':'zombies/BeachImpZOMBIE'}
-paths.update({'bowlingbulb':'plants/BowlingBulbPLANT','beachSnorkel':'zombies/BeachSnorkelZOMBIE','beachGargantuar':'zombies/BeachGargantuarZOMBIE'})
+paths.update({'bowlingbulb':'plants/BowlingBulbPLANT','beachSurfer':'zombies/BeachSurferZOMBIE','beachSnorkel':'zombies/BeachSnorkelZOMBIE','beachGargantuar':'zombies/BeachGargantuarZOMBIE'})
 for suffix,prefab in [('1','1'),('2','2'),('3','3'),('_explode','Food')]:paths['tool_projectile_bowlingbulb'+suffix]='plants/BowlingSpawner'+prefab+'PLANT'
 actors={n:rig(p) for n,p in paths.items()}
 rigs={n:rig(p) for n,p in {'beachLawn':'lawns/BeachLAWN','mower':'projectiles/BeachMowerPRJ','beachCone':'armors/BeachConeARMOR','beachBucket':'armors/BeachBucketARMOR','tide':'49827fe8-1df8-422b-9d8d-47f286d0a319','tideLine':'07cfb36b-3301-4faa-a82f-9f0f7bf63368','tideSign':'f1a88de5-d4a9-4b50-bd1e-d4d11fc17681'}.items()}
 rigs.update({n:rig(p) for n,p in {'bowling0':'projectiles/Bowling0PRJ','bowling1':'projectiles/Bowling1PRJ','bowling2':'projectiles/Bowling2PRJ','bowling_pf':'projectiles/BowlingFoodPRJ','bowlingLine':'20497fce-3f85-464e-8c0b-b4db1cd820b8','bowlingSign':'aa9336ab-5d4f-4d64-914b-4e8086ad332b'}.items()})
 kelp=next(o for o in walk(e.read(paths['tanglekelp']).objects) if 'kelphands' in o);rigs['kelpHands']=rig(kelp['kelphands']['asset'])
-properties={'plants':props('PlantProps',['lilypad','tanglekelp','bowlingbulb',*[n for n in paths if n.startswith('tool_')]]),'zombies':props('ZombieProps',['beach','beach_armor1','beach_armor2','beach_fem','beach_fem_armor1','beach_fem_armor2','beach_flag','beach_imp','beach_snorkel','beach_gargantuar']),'armors':props('ArmorProps',['beach_armor1','beach_armor2']),'projectiles':props('ProjectileProps',['bowling0','bowling1','bowling2','bowling_pf']),'plantAnimations':{}}
+surfer=next(o for o in walk(e.read(paths['beachSurfer']).objects) if 'bdBreakPar' in o)
+rigs.update({'surfboard':rig('tombstones/SurfboardTOMB'),'surfboardBreak':rig(surfer['bdBreakPar']['asset']),'surfboardThrow':rig(surfer['bdSpawnerPar']['asset'])})
+properties={'plants':props('PlantProps',['lilypad','tanglekelp','bowlingbulb',*[n for n in paths if n.startswith('tool_')]]),'zombies':props('ZombieProps',['beach','beach_armor1','beach_armor2','beach_fem','beach_fem_armor1','beach_fem_armor2','beach_flag','beach_imp','beach_snorkel','beach_gargantuar','beach_surfer']),'armors':props('ArmorProps',['beach_armor1','beach_armor2']),'projectiles':props('ProjectileProps',['bowling0','bowling1','bowling2','bowling_pf']),'plantAnimations':{}}
 for name,description in {**actors,**rigs}.items():
     sk=json.loads((e.OUT/'rigs'/description['rig']/'skeleton.json').read_text());arm=next(a for a in sk['armature'] if a['name']==description['armature']);timelines={}
     for animation in arm['animation']:
@@ -35,7 +37,7 @@ for name,description in {**actors,**rigs}.items():
             frame+=f.get('duration',1)
         timelines[animation['name']]={'duration':animation.get('duration',1)/arm['frameRate'],'events':events}
     properties['plantAnimations'][name]=timelines
-for day in range(1,11):c.write_json(e.OUT/f'beach{day}.source.json',e.read(f'levels/beach{day}').objects[0]['json'])
+for day in range(1,16):c.write_json(e.OUT/f'beach{day}.source.json',e.read(f'levels/beach{day}').objects[0]['json'])
 lawn=e.read('lawns/BeachLAWN');co=next(x for x in walk(lawn.objects) if x.get('type')=='dragonBones.ArmatureDisplay')
 at=e.read(co['_dragonAtlasAsset']['asset']);atlas=json.loads(at.objects[0]['_atlasJson']);rect=next(x for x in atlas['SubTexture'] if x['name']=='Lawn')
 pixels=Image.open(io.BytesIO(c.native(at.data[1][at.rec[5][0]],'png')))
@@ -46,7 +48,7 @@ def sound(name,value):
     for ref in refs:
         clip=e.read(ref['asset']);ext=clip.objects[0]['_native'];target=e.OUT/'audio'/(ref['asset']+ext);target.parent.mkdir(exist_ok=True)
         target.write_bytes(c.native(ref['asset'],ext.lstrip('.')));sounds[name].append(str(target.relative_to(c.OUT)))
-for name,path in paths.items():
+for name,path in {**paths,'surfboard':'tombstones/SurfboardTOMB'}.items():
     for obj in walk(e.read(path).objects):
         for key,value in obj.items():
             if key.lower().endswith(('sound','sounds')) and value:sound(name+'/'+key,value)
@@ -67,6 +69,6 @@ for name,path in [('music','P1_LP_Beach'),('minigame','MG_Beach'),('ultimate','U
     (e.OUT/(name+'.mp3')).write_bytes(c.native(c.config['uuids'][c.path_index['music/inGame/beach/'+path]],'mp3'))
 c.write_json(e.OUT/'plant-tags.json',{f['CODENAME']:f['TAGS'] for f in e.read('03000899-5d49-4cef-a2b6-3b1b17f96c65').objects[0]['json']['PLANTS']})
 c.write_json(e.OUT/'properties.json',properties)
-c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{}})
+c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{'note_beach':e.sprite(c.decode_uuid(c.config['uuids'][c.path_index['note/beach/spriteFrame']]))}})
 c.write_json(c.ROOT/'apps/pvz2/beach-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Big Wave Beach 1–10')
+print('Exported Big Wave Beach 1–15')

@@ -1,16 +1,18 @@
 import {BOARD,cellX,type PlantKind,type ZombieKind} from './level';
 import type {Game,Plant,Zombie} from './model';
 import tags from '../../public/assets/beach/plant-tags.json';
+import {BeachSurfers} from './beach-surfer';
 import {BeachBowling} from './beach-bowling';
 import {isFlying} from './pirate';
 export const beachArmor=(kind:ZombieKind)=>kind==='beach_armor1'||kind==='beach_fem_armor1'?'beach_armor1':kind==='beach_armor2'||kind==='beach_fem_armor2'?'beach_armor2':null;
 export class BeachBattle {
   readonly bowling:BeachBowling;
+  readonly surfers:BeachSurfers;
   position=9;
   private from=9;private target=9;private changedAt=-Infinity;
   hands:{id:number;zombie:Zombie;at:number;hit:boolean}[]=[];
   sounds:string[]=[];
-  constructor(private readonly g:Game){this.bowling=new BeachBowling(g);}
+  constructor(private readonly g:Game){this.bowling=new BeachBowling(g);this.surfers=new BeachSurfers(g);}
   init(){this.position=this.g.level.tide!.start;this.target=this.position;}
   change(position:number){this.from=this.position;this.target=position;this.changedAt=this.g.time;}
   water(column:number){return this.g.level.tide!==null&&column>=Math.ceil(this.position);}
@@ -57,7 +59,7 @@ export class BeachBattle {
     if(g.time-p.actionAt>=timeline.duration&&p.hp>0)this.play(p,'Idle','idle');
   }
   tick(dt:number){
-    this.bowling.tick(dt);
+    this.bowling.tick(dt);this.surfers.tick();
     const g=this.g;
     if(g.level.tide){const t=Math.min(1,(g.time-this.changedAt)/3),e=t<.5?4*t*t*t:1-(-2*t+2)**3/2;this.position=this.from+(this.target-this.from)*e;
       for(const p of g.plants)if(p.hp>0&&p.action!=='food'&&p.kind!=='lilypad'&&!this.canPlant(p.kind,p.row,p.column))p.hp=0;
