@@ -44,6 +44,7 @@ export class WesternPlants {
     this.shots.push({id:++this.serial,kind,x,y,vx,vy,age:0,nextShock:0,contacts:[],damage:armor?this.#game.props.plants.magnetshroom.PlantfoodThrowDamage:this.#game.props.projectiles[kind].Damage,armor,dead:false});
   }
   private metal(z:Zombie):Metal|null {
+    if(z.armor>0&&(z.kind==='kongfu_armor2'||z.kind==='kongfu_armor3')){const max=this.#game.props.armors[z.kind].Toughness;return {name:z.kind==='kongfu_armor3'?'kongfuHelmet':'kongfuBucket',animation:`Broken${z.armor>max*2/3?0:z.armor>max/3?1:2}`};}
     if(z.west?.plate){const fraction=z.west.plate/this.#game.props.zombies[z.kind].ShieldToughness;return {name:'plateDrop',animation:`Broken${fraction>2/3?0:fraction>1/3?1:2}`};}
     if(z.armor>0&&(z.knighted||z.kind==='cowboy_armor2'||z.kind==='dark_armor2'||z.kind==='dark_armor3')){
       const max=this.#game.props.armors[z.knighted||z.kind==='dark_armor3'?'dark_armor3':z.kind==='dark_armor2'?'dark_armor2':'cowboy_armor2'].Toughness;

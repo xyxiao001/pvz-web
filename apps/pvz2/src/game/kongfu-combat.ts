@@ -10,7 +10,7 @@ export class KongfuCombat {
  reflected:{id:number;x:number;y:number;vx:number;damage:number;name:'pea'|'boomerang';powered:boolean}[]=[];
  constructor(protected g:Game){}
  initCombat(){for(const t of this.g.level.bronzeStatues){const z=this.g.spawnZombie('kongfu_bronze_statue',t.GridY,cellX(t.GridX)),s=z.kongfu!;s.duration=t.LifeSpan.Min+this.g.random()*(t.LifeSpan.Max-t.LifeSpan.Min);s.life=s.duration;s.awakens=t.ZombiesToSpawn[Math.floor(this.g.random()*t.ZombiesToSpawn.length)];}this.tnt=this.g.level.tnt?this.g.level.tnt.SpawnData.map(t=>({row:t.GridY,column:t.GridX,length:t.WireLength,speed:t.Speed,lit:false,explodeAt:null})):[];}
- spawn(z:Zombie){if(!['kongfu_torch','kongfu_hammer','kongfu_rocket_imp','kongfu_bomb','kongfu_drink','kongfu_gong','kongfu_bronze_statue','kongfu_bronze_strong'].includes(z.kind))return;const flying=z.kind==='kongfu_rocket_imp'&&(z.entry==='walk'||z.entry==='raid');z.kongfu={animation:flying?'Walk_Fly':'Walk',at:this.g.time,elapsed:0,torch:z.kind==='kongfu_torch',flying,rocket:z.kind==='kongfu_rocket_imp',event:0};if(z.kind==='kongfu_bomb'){z.kongfu.bomb=true;z.kongfu.ignited=true;}if(z.kind==='kongfu_gong'){const t=native.zombies.kongfu_gong.TimeBeforeSummon;z.kongfu.next=t.Min+this.g.random()*(t.Max-t.Min);}if(z.kind==='kongfu_bronze_statue')z.kongfu.animation='Idle0';if(flying){z.entry='walk';this.g.beach.sounds.push('kongfuRocket/launchSounds');}}
+ spawn(z:Zombie){if(!['kongfu_chi','kongfu_torch','kongfu_hammer','kongfu_rocket_imp','kongfu_bomb','kongfu_drink','kongfu_gong','kongfu_bronze_statue','kongfu_bronze_strong'].includes(z.kind))return;const flying=z.kind==='kongfu_rocket_imp'&&(z.entry==='walk'||z.entry==='raid');z.kongfu={animation:flying?'Walk_Fly':'Walk',at:this.g.time,elapsed:0,torch:z.kind==='kongfu_torch',flying,rocket:z.kind==='kongfu_rocket_imp',event:0};if(z.kind==='kongfu_chi')z.kongfu.next=native.zombies.kongfu_chi.ChiIntervalStart;if(z.kind==='kongfu_bomb'){z.kongfu.bomb=true;z.kongfu.ignited=true;}if(z.kind==='kongfu_gong'){const t=native.zombies.kongfu_gong.TimeBeforeSummon;z.kongfu.next=t.Min+this.g.random()*(t.Max-t.Min);}if(z.kind==='kongfu_bronze_statue')z.kongfu.animation='Idle0';if(flying){z.entry='walk';this.g.beach.sounds.push('kongfuRocket/launchSounds');}}
  private change(z:Zombie,animation:string){Object.assign(z.kongfu!,{animation,at:this.g.time,elapsed:0,event:0});}
  cold(z:Zombie){if(!z.kongfu)return;z.kongfu.torch=false;z.kongfu.ignited=false;if(z.kongfu.flying)this.land(z,false);}
  heat(z:Zombie){if(z.kind==='kongfu_bomb'&&z.kongfu!.bomb)z.kongfu!.ignited=true;if(z.kind==='kongfu_torch')z.kongfu!.torch=true;if(z.kind==='kongfu_rocket_imp'&&z.kongfu!.rocket&&!z.kongfu!.flying&&z.kongfu!.animation!=='Flee'){this.change(z,'Flee');this.g.beach.sounds.push('kongfuRocket/scream0Sounds');}}
@@ -47,6 +47,14 @@ export class KongfuCombat {
  }
  private roster(z:Zombie){const g=this.g,s=z.kongfu!;
   if(z.kind==='kongfu_bronze_statue')return true;
+  if(z.kind==='kongfu_chi'){
+   if(z.reversed&&s.animation==='Absorb')this.change(z,'Walk');
+   if(!z.reversed&&s.animation==='Walk'&&!z.eating&&z.x>cellX(2)&&z.x<cellX(9)&&g.plants.some(p=>p.hp>0&&!p.hidden&&p.row===z.row&&cellX(p.column)<z.x&&!['bambooshoot','iceburg','spikeweed','spikerock'].includes(p.kind))&&s.elapsed>=s.next!){this.change(z,'Absorb');g.beach.sounds.push('kongfuChi/chargeSound');}
+   if(s.animation==='Absorb'){const timeline=native.plantAnimations.kongfuChi.Absorb;
+    if(s.event===0&&s.elapsed>=timeline.events.find(e=>e.name==='absorb')!.at){s.event=1;g.kongfu.turnip.chi(z);g.beach.sounds.push('kongfuChi/chiSound');}
+    if(s.elapsed>=timeline.duration){this.change(z,'Walk');s.next=native.zombies.kongfu_chi.ChiInterval;}z.eating=false;return true;
+   }
+  }
   const target=()=>g.plants.find(p=>p.hp>0&&!p.hidden&&p.sheep===undefined&&p.row===z.row&&!['bambooshoot','iceburg','spikeweed','spikerock','iceweed','goldleaf','lilypad','floawerPot'].includes(p.kind)&&Math.abs(cellX(p.column)-z.x)<50);
   if(z.kind==='kongfu_bomb'){
    if(s.bomb&&z.hp<=native.zombies.kongfu_bomb.Toughness*.5){s.bomb=false;s.ignited=false;}
