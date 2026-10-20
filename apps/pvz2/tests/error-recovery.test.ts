@@ -9,7 +9,7 @@ import type {Catalog,ProgressionArt,WorldMap} from '../src/shell/types';
 const read=<T>(path:string):T=>JSON.parse(readFileSync(new URL('../public/assets/'+path,import.meta.url),'utf8'));
 const art=read<ProgressionArt>('shell/progression.json'),catalog=read<Catalog>('shell/catalog.json');
 test('All reward plants in the migrated worlds have native map art',()=>{
- for(const world of ['egypt','pirate','cowboy','future','dark'])for(const island of read<WorldMap>(`shell/maps/${world}.json`).islands.filter(i=>i.kind===1))assert.ok(art.plants[island.plant]?.length,`${world}: ${island.plant}`);
+ for(const world of ['egypt','pirate','cowboy','future','dark','kongfu'])for(const island of read<WorldMap>(`shell/maps/${world}.json`).islands.filter(i=>i.kind===1))assert.ok(art.plants[island.plant]?.length,`${world}: ${island.plant}`);
 });
 test('Pirate first clear and saved reward can both render the kernel-pult',()=>{
  const map=read<WorldMap>('shell/maps/pirate.json'),data=new Map<string,string>();
@@ -24,6 +24,18 @@ test('Missing reward presentation reports its plant and retains the native card'
  const island=read<WorldMap>('shell/maps/pirate.json').islands.find(i=>i.kind===1&&i.plant===30)!,errors:Error[]=[];
  const draws=rewardPlantArt(island,{...art,plants:{}},catalog,e=>errors.push(e));
  assert.equal(errors.length,1);assert.match(errors[0].message,/plant=30/);assert.ok(draws.some(d=>d.animation===catalog.plantCards[30].animation));
+});
+test('Kongfu first clear and restored rewards render native plants without reporting missing art',()=>{
+ const map=read<WorldMap>('shell/maps/kongfu.json'),data=new Map<string,string>();
+ const storage={getItem:(k:string)=>data.get(k)??null,setItem:(k:string,v:string)=>{data.set(k,v);},removeItem:(k:string)=>{data.delete(k);}};
+ const progress=new ProgressStore(storage);progress.finish('kongfu','kongfu1');
+ const event=completionEvents(map,'kongfu1',progress.completed(map),progress.rewardNodes('kongfu')).find(e=>e.action==='reward')!,island=map.islands.find(i=>i.node===event.node)!;
+ assert.equal(island.node,27);assert.equal(island.plant,156);
+ const draws=rewardPlantArt(island,art,catalog,()=>assert.fail('missing Kongfu reward art'));
+ assert.ok(draws.some(d=>d.kind==='rig'&&d.armature==='FireGourd'));
+ progress.award('kongfu',island);progress.finishPresentation();const restored=new ProgressStore(storage);
+ assert.ok(restored.rewardNodes('kongfu').has(27));assert.deepEqual(rewardPlantArt(island,art,catalog,()=>assert.fail()),draws);
+ for(const reward of map.islands.filter(i=>i.kind===1))assert.ok(rewardPlantArt(reward,art,catalog,()=>assert.fail(`missing plant ${reward.plant}`)).some(d=>d.kind==='rig'));
 });
 test('Interrupted audio settles without reporting; other failures are reported without blocking',async()=>{
  const reports:unknown[]=[];

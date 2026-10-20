@@ -13,7 +13,7 @@ plants = {}
 # Derive native DIS names from the pinned feature table rather than a partial hand list.
 features = {p['ID']: p for p in e.read('json/Features/PlantFeatures').objects[0]['json']['PLANTS']}
 reward_ids = set()
-for world in ['egypt', 'pirate', 'cowboy', 'future', 'dark']:
+for world in ['egypt', 'pirate', 'cowboy', 'future', 'dark', 'kongfu']:
     world_map = json.loads((c.OUT / f'shell/maps/{world}.json').read_text())
     reward_ids.update(i['plant'] for i in world_map['islands'] if i['kind'] == 1)
 for plant in sorted(reward_ids):

@@ -141,7 +141,7 @@ export class Scene {
     this.app.canvas.setAttribute('aria-label', `${config.worldName}战场，五行九列。选择植物后点击地块种植。`);
     this.app.stage.eventMode = 'none';
     this.app.stage.addChild(this.world,this.conveyorLayer);
-    if(config.world!=='pirate'&&config.world!=='cowboy'&&config.world!=='future'&&config.world!=='dark'&&config.world!=='beach'){const lawn=new Sprite(await this.textures.load(assetUrl(config.presentation.lawn)));lawn.width=1974;lawn.height=768;lawn.position.set(-340,-40);this.world.addChild(lawn);}
+    if(config.world!=='pirate'&&config.world!=='cowboy'&&config.world!=='future'&&config.world!=='dark'&&config.world!=='beach'&&config.world!=='kongfu'){const lawn=new Sprite(await this.textures.load(assetUrl(config.presentation.lawn)));lawn.width=1974;lawn.height=768;lawn.position.set(-340,-40);this.world.addChild(lawn);}
     this.world.addChild(this.highlight,this.actorLayer);
     this.actorLayer.sortableChildren = true;
     const actorNames=battleActors(level,plantActors) as RigName[];
