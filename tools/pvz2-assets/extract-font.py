@@ -13,7 +13,7 @@ font=e.read('86615cb2-9939-4358-b8e2-ec2d020efeea').objects[0]
 data=c.download('docs/assets/resources/native/86/86615cb2-9939-4358-b8e2-ec2d020efeea/'+font['_native'])
 text=''.join(chr(i) for i in range(32,127))
 for path in (c.ROOT/'apps/pvz2/src').rglob('*.ts'):text+=path.read_text()
-for group in ['shell','battle','campaign','pirate','cowboy','future','dark','beach','iceage','lostcity']:text+=json.dumps(json.loads((c.OUT/group/'catalog.json').read_text()),ensure_ascii=False)
+for group in ['shell','battle','campaign','pirate','cowboy','future','dark','beach','iceage','lostcity','kongfu']:text+=json.dumps(json.loads((c.OUT/group/'catalog.json').read_text()),ensure_ascii=False)
 text+=json.dumps(json.loads((c.OUT/'shell/store.json').read_text()),ensure_ascii=False)
 options=subset.Options();options.flavor='woff2'
 font=TTFont(io.BytesIO(data),recalcTimestamp=False);subsetter=subset.Subsetter(options=options);subsetter.populate(text=text);subsetter.subset(font);font.flavor='woff2'

@@ -5,7 +5,7 @@ import {Game} from '../src/game/model';
 import {readLevel,rowY,type Properties} from '../src/game/level';
 export const read=(path:string)=>JSON.parse(readFileSync(new URL('../public/assets/'+path,import.meta.url),'utf8'));
 const extra=read('kongfu/properties.json');
-export const props:Properties={...cityProps,zombies:{...cityProps.zombies,...extra.zombies},armors:{...cityProps.armors,...extra.armors},plantAnimations:{...cityProps.plantAnimations,...extra.plantAnimations}};
+export const props:Properties={...cityProps,plants:{...cityProps.plants,...extra.plants},zombies:{...cityProps.zombies,...extra.zombies},armors:{...cityProps.armors,...extra.armors},plantAnimations:{...cityProps.plantAnimations,...extra.plantAnimations}};
 export const level=(day:number)=>readLevel(read(`kongfu/kongfu${day}.source.json`));
 export const create=(day:number)=>new Game(level(day),props,timing,z=>({x:z.x,y:rowY(z.row)-95}),1234,false);
 export const tick=(g:Game,seconds:number)=>{for(let i=0;i<seconds*60;i++)g.tick(1/60);};
