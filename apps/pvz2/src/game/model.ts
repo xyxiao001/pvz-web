@@ -186,10 +186,10 @@ export class Game {
     if(tilePlant&&(this.level.powerTiles.some(t=>t.row===row&&t.column===column)||this.plants.some(p=>p.row===row&&p.column===column&&(p.endangered||p.kind==='powerplant'||p.kind==='powerplant_alpha'||p.kind==='powerplant_beta'))))return false;
     const placementKind=kind==='imitater'?this.imitateKind:kind;
     const pot=this.plants.find(p=>p.row===row&&p.column===column&&p.kind==='floawerPot');
-    const existing=this.plants.find(p=>p.row===row&&p.column===column&&(kind==='lilypad'?p.kind==='lilypad':kind==='floawerPot'?p.kind==='floawerPot':p.kind!=='floawerPot'&&p.kind!=='lilypad'));
+    const existing=this.plants.find(p=>p.row===row&&p.column===column&&(kind==='lilypad'?p.kind==='lilypad':kind==='floawerPot'?p.kind==='floawerPot':p.kind!=='floawerPot'&&p.kind!=='lilypad'&&p.kind!=='bamboobusket'));
     if(pot&&this.darkPlants.states.get(pot.id)!.moving)return false;
     if(!this.kongfu.abbots.canPlant(kind,row,column))return false;
-    const repairing=kind==='lychee'&&existing?.kind==='lychee'&&existing.hp<p.Toughness*5/6||kind==='turnip'&&existing?.kind==='turnip'&&existing.hp<=p.Toughness*2/3||kind==='endurian'&&existing?.kind==='endurian'&&existing.hp<p.Toughness*.75||kind==='bowlingbulb'&&existing?.kind==='bowlingbulb'&&this.beach.bowling.states.get(existing.id)!.loaded.some(loaded=>!loaded)||kind==='peanut'&&existing?.kind==='peanut'&&existing.hp<p.Toughness*.75||kind==='redstinger'&&existing?.kind==='redstinger'&&column>=6&&existing.hp<p.Toughness*.75||kind==='holonut'&&existing?.kind==='holonut'&&(existing.hidden||existing.hp<=p.Toughness*2/3)||this.wallnutFirstAid&&(kind==='wallnut'||kind==='tallnut')&&existing?.kind===kind&&existing.hp<=p.Toughness*(kind==='tallnut'?2/3:.75)||kind==='spikerock'&&existing?.kind==='spikerock'&&existing.spikes!<p.MaxSpike||kind==='chardguard'&&existing?.kind==='chardguard'&&existing.leaves!<p.MaxBounceTime;
+    const repairing=kind==='bamboozle'&&existing?.kind==='bamboozle'&&this.kongfu.bamboozle.needsReload(existing)||kind==='lychee'&&existing?.kind==='lychee'&&existing.hp<p.Toughness*5/6||kind==='turnip'&&existing?.kind==='turnip'&&existing.hp<=p.Toughness*2/3||kind==='endurian'&&existing?.kind==='endurian'&&existing.hp<p.Toughness*.75||kind==='bowlingbulb'&&existing?.kind==='bowlingbulb'&&this.beach.bowling.states.get(existing.id)!.loaded.some(loaded=>!loaded)||kind==='peanut'&&existing?.kind==='peanut'&&existing.hp<p.Toughness*.75||kind==='redstinger'&&existing?.kind==='redstinger'&&column>=6&&existing.hp<p.Toughness*.75||kind==='holonut'&&existing?.kind==='holonut'&&(existing.hidden||existing.hp<=p.Toughness*2/3)||this.wallnutFirstAid&&(kind==='wallnut'||kind==='tallnut')&&existing?.kind===kind&&existing.hp<=p.Toughness*(kind==='tallnut'?2/3:.75)||kind==='spikerock'&&existing?.kind==='spikerock'&&existing.spikes!<p.MaxSpike||kind==='chardguard'&&existing?.kind==='chardguard'&&existing.leaves!<p.MaxBounceTime;
     const stacking=kind==='peapod'&&existing?.kind==='peapod'&&existing.heads!<5;
     if(seaCell(this.level.planks,row,column)||!this.cowboy.canPlant(row,column)||this.dark.blocks(row,column)||!this.dark.canPlant(kind,row,column)||existing?.sheep!==undefined)return false;
     if(this.lostcity.cracks.some(c=>c.row===row&&c.column===column&&this.time<c.until))return false;
@@ -204,7 +204,7 @@ export class Game {
       || (placementKind==='gravebuster'?!this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0&&g.kind!=='tent'&&g.kind!=='backpack'&&!isRack(g.kind)):this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0)) || existing&&!tilePlant&&!stacking&&!repairing) return false;
     if(packet){if(this.level.corral)this.corralWaiting=false;this.conveyor.splice(this.conveyor.indexOf(packet),1);if(!this.level.corral)this.nextCard=Math.min(this.nextCard,this.time+this.conveyorDelay());}
     else {const cost=this.seedCost(kind);this.sun -= cost; this.sunSpent+=cost;this.cooldowns[kind] = this.preparing?0:this.seedCooldown(kind);}
-    if(repairing){if(kind==='lychee')this.kongfu.lychee.repair(existing);else if(kind==='bowlingbulb')this.beach.bowling.replant(existing);else if(kind==='holonut')this.future.recoverNut(existing);else if(kind==='turnip'||kind==='endurian'||kind==='peanut'||kind==='redstinger'||kind==='wallnut'||kind==='tallnut')existing.hp=p.Toughness;else if(kind==='chardguard'){existing.leaves=p.MaxBounceTime;existing.hp=p.Toughness;}else existing.spikes=p.MaxSpike;}else if(stacking){existing.heads!++;existing.hp=p.Toughness;}else this.addPlant(kind, row, column);
+    if(repairing){if(kind==='bamboozle')this.kongfu.bamboozle.repair(existing);else if(kind==='lychee')this.kongfu.lychee.repair(existing);else if(kind==='bowlingbulb')this.beach.bowling.replant(existing);else if(kind==='holonut')this.future.recoverNut(existing);else if(kind==='turnip'||kind==='endurian'||kind==='peanut'||kind==='redstinger'||kind==='wallnut'||kind==='tallnut')existing.hp=p.Toughness;else if(kind==='chardguard'){existing.leaves=p.MaxBounceTime;existing.hp=p.Toughness;}else existing.spikes=p.MaxSpike;}else if(stacking){existing.heads!++;existing.hp=p.Toughness;}else this.addPlant(kind, row, column);
     if(packet?.forceBoosted)this.plantFood(row,column,true);
     else if(this.boosts.has(kind)&&!this.preparing){this.usedBoosts.add(kind);if(kind==='imitater')this.plants.at(-1)!.boosted=true;else this.plantFood(row,column,true);}
     this.checkChallenges();
@@ -284,7 +284,7 @@ export class Game {
     this.food--;this.cooldowns[kind]=0;return true;
   }
   plantFood(row: number, column: number, boost=false): boolean {
-    const plant = this.plants.filter(p => p.row === row && p.column === column && p.hp>0).sort((a,b)=>Number(a.kind==='floawerPot'||a.kind==='lilypad')-Number(b.kind==='floawerPot'||b.kind==='lilypad'))[0];
+    const plant = this.plants.filter(p => p.row === row && p.column === column && p.hp>0&&p.kind!=='bamboobusket').sort((a,b)=>Number(a.kind==='floawerPot'||a.kind==='lilypad')-Number(b.kind==='floawerPot'||b.kind==='lilypad'))[0];
     if(plant?.sheep!==undefined)return false;
     if(plant&&this.westFinale.handles(plant.kind)&&!this.westFinale.foodable(plant))return false;
     if(plant&&this.darkPlants.handles(plant.kind)&&!this.darkPlants.foodable(plant))return false;
@@ -323,6 +323,7 @@ export class Game {
     if(plant.kind==='threepeater'){plant.burst=0;plant.nextBurst=this.time+.01;}
     if(plant.kind==='peapod'||plant.kind==='parsnip'){plant.animation='FoodStart';plant.eventIndex=0;plant.burst=plant.kind==='peapod'?5:this.props.plants.parsnip.PlantfoodSummonCount;}
     if(plant.kind==='peach')this.kongfu.peach.food(plant);
+    if(plant.kind==='bamboozle')this.kongfu.bamboozle.food(plant);
     if(plant.kind==='solarsage')this.kongfu.sage.food(plant);
     if(plant.kind==='lychee')this.kongfu.lychee.food(plant);
     if(plant.kind==='turnip')this.kongfu.turnip.food(plant);
@@ -901,7 +902,7 @@ export class Game {
   startLastStand(){this.preparing=false;}
   private checkChallenges(){
     if(this.phase!=='playing')return;
-    const reason=this.level.maxPlantsLost!==null&&this.plantsLost>this.level.maxPlantsLost?'plantsLost':this.level.maxPlants!==null&&this.plants.length>this.level.maxPlants?'plants':this.level.maxSun!==null&&this.sunSpent>this.level.maxSun?'sun':null;
+    const reason=this.level.maxPlantsLost!==null&&this.plantsLost>this.level.maxPlantsLost?'plantsLost':this.level.maxPlants!==null&&this.plants.filter(p=>p.kind!=='bamboobusket').length>this.level.maxPlants?'plants':this.level.maxSun!==null&&this.sunSpent>this.level.maxSun?'sun':null;
     if(reason){this.lossReason=reason;this.phase='lost';this.events.push({type:'lose'});}
   }
   tick(dt: number) {
@@ -972,6 +973,7 @@ export class Game {
       if(this.level.world==='kongfu'&&p.leap?.pushed){if(this.time-p.leap.at<(p.leap.duration??.5))continue;delete p.leap;}
       if(p.kind==='powerlily'){if(this.time-p.actionAt>=this.props.plantAnimations.powerlily.Attack.events.find(e=>e.name==='produce')!.at){this.pickups.push({id:this.nextEntityId(),kind:'food',x:cellX(p.column),y:rowY(p.row)-45,age:0});p.hp=0;}continue;}
       if(p.kind==='peach'){this.kongfu.peach.tick(p,dt);continue;}
+      if(p.kind==='bamboozle'||p.kind==='bamboobusket'){this.kongfu.bamboozle.plant(p);continue;}
       if(p.kind==='solarsage'){this.kongfu.sage.plant(p);continue;}
       if(p.kind==='lychee'){this.kongfu.lychee.tick(p);continue;}
       if(p.kind==='turnip'){this.kongfu.turnip.tick(p,dt);continue;}
@@ -1107,7 +1109,7 @@ export class Game {
       if(this.beach.fishers.tickZombie(z,statusDt)||this.beach.octopuses.tickZombie(z,statusDt)||this.beach.surfers.tickZombie(z,statusDt)||this.future.tickZombie(z,statusDt)||this.cowboy.tickZombie(z,statusDt)||this.pirate.tickZombie(z,dt)||this.tickSpecialZombie(z,dt))continue;
       if(this.beachFinale.block(z,statusDt)||this.westFinale.blockEnemy(z,statusDt)||this.dark.movement(z)===0)continue;
       if(this.dark.eatPotion(z))continue;
-      const target = this.plants.filter(p => !z.dodo?.flying && (!(z.bug&&z.bug.hp>0)||p.kind==='tallnut') && p.hp > 0 && p.kind!=='bambooshoot'&&p.kind!=='lavaguava'&&p.kind!=='stunion'&&p.kind!=='ghostpepper'&&p.kind!=='goldleaf'&&p.kind!=='hotpotato'&&p.kind!=='tanglekelp' && (p.kind!=='lilypad'||!this.beach.occupant(p)) && p.sheep===undefined && (p.kind!=='floawerPot'||!this.darkPlants.occupant(p)) && !p.leap?.pushed && !((p.kind==='chilibean'||p.kind==='turnip')&&p.leap) && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='empea'&&p.kind!=='blover'&&p.kind!=='hurrikale'&&p.kind!=='stallia'&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='cherry_bomb'&&p.kind!=='jalapeno'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column)[0];
+      const target = this.plants.filter(p => !z.dodo?.flying && (!(z.bug&&z.bug.hp>0)||p.kind==='tallnut') && p.hp > 0 && p.kind!=='bambooshoot'&&p.kind!=='lavaguava'&&p.kind!=='stunion'&&p.kind!=='ghostpepper'&&p.kind!=='goldleaf'&&p.kind!=='hotpotato'&&p.kind!=='tanglekelp' && (p.kind!=='lilypad'||!this.beach.occupant(p)) && p.sheep===undefined && (p.kind!=='floawerPot'||!this.darkPlants.occupant(p)) && !p.leap?.pushed && !((p.kind==='chilibean'||p.kind==='turnip')&&p.leap) && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='empea'&&p.kind!=='blover'&&p.kind!=='hurrikale'&&p.kind!=='stallia'&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='cherry_bomb'&&p.kind!=='jalapeno'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column||Number(b.kind==='bamboobusket')-Number(a.kind==='bamboobusket'))[0];
       z.eating = !!target;
       if(target&&this.kongfu.peach.protected(target)){}
       else if(target&&(z.kongfu?.torch||(z.kind==='explorer'||z.kind==='explorer_veteran')&&this.specialZombies.get(z.id)!.torch)){target.hp=0;target.armor=0;}
@@ -1153,7 +1155,7 @@ export class Game {
     this.zombies = this.zombies.filter(z => z===this.boss?.zombie||z.weasel?.exploding||z.hp > 0&&!(z.reversed&&!z.parrot&&z.x>1070));
     this.future.settleNuts();this.darkFinale.settle();
     for(const p of this.plants)if(p.hp<=0&&this.westFinale.handles(p.kind))this.westFinale.removed(p);
-    this.plantsLost+=this.plants.filter(p=>p.hp<=0&&!p.transformed).length;
+    this.plantsLost+=this.plants.filter(p=>p.hp<=0&&!p.transformed&&p.kind!=='bamboobusket').length;
     const protectedPlantDied=this.plants.some(p=>p.endangered&&p.hp<=0);
     this.plants = this.plants.filter(p => p.hp > 0);
     this.checkChallenges();

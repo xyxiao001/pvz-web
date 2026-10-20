@@ -2,15 +2,17 @@ import {BOARD,cellX,rowY,type ZombieKind} from './level';
 import type {Game,Plant,Zombie} from './model';
 import native from '../../public/assets/kongfu/properties.json';
 export interface KongfuZombie {animation:string;at:number;elapsed:number;running?:boolean;torch:boolean;flying:boolean;rocket:boolean;bomb?:boolean;ignited?:boolean;drunk?:boolean;enraged?:boolean;next?:number;count?:number;event?:number;life?:number;duration?:number;awakens?:ZombieKind}
-export const isRack=(kind?:string)=>kind!==undefined&&['kongfu_rack_blade','kongfu_rack_nunchaku','kongfu_rack_torch','kongfu_rack_hammer','kongfu_rack_bomb','kongfu_rack_flag','kongfu_rack_helmet'].includes(kind);
+export const isRack=(kind?:string)=>kind!==undefined&&['kongfu_rack_blade','kongfu_rack_nunchaku','kongfu_rack_torch','kongfu_rack_hammer','kongfu_rack_bomb','kongfu_rack_flag','kongfu_rack_helmet','kongfu_rack_fan'].includes(kind);
 export const rackHP=(kind:string)=>native.tombs[kind as keyof typeof native.tombs].Toughness;
-export const rackDisplay=(kind:string)=>({kongfu_rack_blade:1,kongfu_rack_nunchaku:4,kongfu_rack_torch:0,kongfu_rack_bomb:2,kongfu_rack_flag:3,kongfu_rack_hammer:5,kongfu_rack_helmet:6})[kind]!;
+export const rackDisplay=(kind:string)=>({kongfu_rack_blade:1,kongfu_rack_nunchaku:4,kongfu_rack_torch:0,kongfu_rack_bomb:2,kongfu_rack_flag:3,kongfu_rack_hammer:5,kongfu_rack_helmet:6,kongfu_rack_fan:7})[kind]!;
 export class KongfuCombat {
+ private summons:{at:number;kind:ZombieKind;reversed:boolean}[]=[];
  tnt:{row:number;column:number;length:number;speed:number;lit:boolean;explodeAt:number|null}[]=[];
  reflected:{id:number;x:number;y:number;vx:number;damage:number;name:'pea'|'boomerang';powered:boolean}[]=[];
  constructor(protected g:Game){}
  initCombat(){for(const t of this.g.level.bronzeStatues){const z=this.g.spawnZombie('kongfu_bronze_statue',t.GridY,cellX(t.GridX)),s=z.kongfu!;s.duration=t.LifeSpan.Min+this.g.random()*(t.LifeSpan.Max-t.LifeSpan.Min);s.life=s.duration;s.awakens=t.ZombiesToSpawn[Math.floor(this.g.random()*t.ZombiesToSpawn.length)];}this.tnt=this.g.level.tnt?this.g.level.tnt.SpawnData.map(t=>({row:t.GridY,column:t.GridX,length:t.WireLength,speed:t.Speed,lit:false,explodeAt:null})):[];}
- spawn(z:Zombie){this.g.kongfu.abbots.spawn(z);if(!['monk_drink','kongfu_bronze_hook','monk_blade','monk_nunchaku','monk_torch','monk_imp','kongfu_chi','kongfu_torch','kongfu_hammer','kongfu_rocket_imp','kongfu_bomb','kongfu_drink','kongfu_gong','kongfu_bronze_statue','kongfu_bronze_strong'].includes(z.kind))return;const flying=z.kind==='kongfu_rocket_imp'&&(z.entry==='walk'||z.entry==='raid');z.kongfu={animation:flying?'Walk_Fly':'Walk',at:this.g.time,elapsed:0,torch:z.kind==='kongfu_torch'||z.kind==='monk_torch',flying,rocket:z.kind==='kongfu_rocket_imp',event:0};if(z.kind==='monk_imp'){const t=native.zombies.monk_imp.TimeBeforeFirst;z.kongfu.next=t.Min+this.g.random()*(t.Max-t.Min);}
+ spawn(z:Zombie){this.g.kongfu.abbots.spawn(z);if(!['kongfu_bronze_chi','monk_drink','kongfu_bronze_hook','monk_blade','monk_nunchaku','monk_torch','monk_imp','kongfu_chi','kongfu_torch','kongfu_hammer','kongfu_rocket_imp','kongfu_bomb','kongfu_drink','kongfu_gong','kongfu_bronze_statue','kongfu_bronze_strong'].includes(z.kind))return;const flying=z.kind==='kongfu_rocket_imp'&&(z.entry==='walk'||z.entry==='raid');z.kongfu={animation:flying?'Walk_Fly':'Walk',at:this.g.time,elapsed:0,torch:z.kind==='kongfu_torch'||z.kind==='monk_torch',flying,rocket:z.kind==='kongfu_rocket_imp',event:0};if(z.kind==='monk_imp'){const t=native.zombies.monk_imp.TimeBeforeFirst;z.kongfu.next=t.Min+this.g.random()*(t.Max-t.Min);}
+  if(z.kind==='kongfu_bronze_chi'){const t=native.zombies.kongfu_bronze_chi.TimeBeforeSkills;z.kongfu.next=t.Min+this.g.random()*(t.Max-t.Min);z.kongfu.count=Math.round(this.g.random());}
   if(z.kind==='kongfu_bronze_hook'){const t=native.zombies.kongfu_bronze_hook.LeapInterval;z.kongfu!.next=t.Min+this.g.random()*(t.Max-t.Min);}
   if(z.kind==='kongfu_chi')z.kongfu.next=native.zombies.kongfu_chi.ChiIntervalStart;if(z.kind==='kongfu_bomb'){z.kongfu.bomb=true;z.kongfu.ignited=true;}if(z.kind==='kongfu_gong'){const t=native.zombies.kongfu_gong.TimeBeforeSummon;z.kongfu.next=t.Min+this.g.random()*(t.Max-t.Min);}if(z.kind==='kongfu_bronze_statue')z.kongfu.animation='Idle0';if(flying){z.entry='walk';this.g.beach.sounds.push('kongfuRocket/launchSounds');}}
  private change(z:Zombie,animation:string){Object.assign(z.kongfu!,{animation,at:this.g.time,elapsed:0,event:0});}
@@ -20,10 +22,10 @@ export class KongfuCombat {
  speed(z:Zombie){return z.kongfu?.drunk?native.zombies.kongfu_drink.DrunkWalkingSpeedScale:z.kongfu?.enraged?native.zombies.kongfu_bronze_strong.EnragedWalkingSpeedScale:1;}
  damageScale(z:Zombie){if(z.kind==='abbot_imp'&&z.kongfu!.animation==='ShieldLoop')return native.zombies.abbot_imp.ShieldingDamageScale;return z.kongfu?.drunk?native.zombies.kongfu_drink.DrunkDamageMult:z.kongfu?.animation==='Drink'?native.zombies.kongfu_drink.DrinkingDamageMult:1;}
  animation(z:Zombie){if(z.kind==='monk_torch'&&z.eating)return z.kongfu!.torch?'Eat_Fire':'Eat';if(z.kind==='kongfu_drink'&&z.kongfu?.drunk&&z.kongfu.animation==='Walk')return z.eating?'Eat_Drunk':'Walk_Drunk';return z.kongfu&&z.kongfu.animation!=='Walk'?z.kongfu.animation:null;}
- zombie(z:Zombie,dt:number){const g=this.g;if(z.kind.startsWith('abbot'))return g.kongfu.abbots.zombie(z,dt);
+ zombie(z:Zombie,dt:number){const g=this.g;if(g.kongfu.abbots.carried(z))return true;if(z.kind.startsWith('abbot'))return g.kongfu.abbots.zombie(z,dt);
   if(['monk','monk_armor1','monk_armor2','monk_armor3','kongfu','kongfu_armor1','kongfu_armor2','kongfu_armor3'].includes(z.kind)){
    const monk=z.kind.startsWith('monk'),helmet=(z.kind==='kongfu_armor3'||z.kind==='monk_armor3')&&z.armor>native.armors.kongfu_armor3.Toughness/3;
-   const rack=g.graves.find(t=>t.hp>0&&isRack(t.kind)&&(!monk||!['kongfu_rack_bomb','kongfu_rack_hammer'].includes(t.kind!))&&(monk||!['kongfu_rack_blade','kongfu_rack_nunchaku'].includes(t.kind!))&&t.row===z.row&&Math.abs(cellX(t.column)-z.x)<50&&!helmet&&(t.kind==='kongfu_rack_helmet'||z.armor<=0&&z.hp>g.props.zombies[z.kind].Toughness*.5));
+   const rack=g.graves.find(t=>t.hp>0&&isRack(t.kind)&&t.kind!=='kongfu_rack_fan'&&(!monk||!['kongfu_rack_bomb','kongfu_rack_hammer'].includes(t.kind!))&&(monk||!['kongfu_rack_blade','kongfu_rack_nunchaku'].includes(t.kind!))&&t.row===z.row&&Math.abs(cellX(t.column)-z.x)<50&&!helmet&&(t.kind==='kongfu_rack_helmet'||z.armor<=0&&z.hp>g.props.zombies[z.kind].Toughness*.5));
    if(rack){rack.hp=0;if(rack.kind==='kongfu_rack_helmet'){z.kind=monk?'monk_armor3':'kongfu_armor3';z.armor=native.armors.kongfu_armor3.Toughness;}
     else {const weapons:Record<string,ZombieKind>=monk?{kongfu_rack_torch:'monk_torch',kongfu_rack_blade:'monk_blade',kongfu_rack_nunchaku:'monk_nunchaku',kongfu_rack_flag:'monk_flag'}:{kongfu_rack_torch:'kongfu_torch',kongfu_rack_hammer:'kongfu_hammer',kongfu_rack_bomb:'kongfu_bomb',kongfu_rack_flag:'kongfu_flag'};z.kind=weapons[rack.kind!];z.hp=g.props.zombies[z.kind].Toughness;this.spawn(z);
      if(z.kind==='kongfu_flag'||z.kind==='monk_flag')for(let i=0;i<3;i++)g.spawnZombie((monk?['monk','monk_armor1','monk_armor2'] as const:['kongfu','kongfu_armor1','kongfu_armor2'] as const)[Math.floor(g.random()*3)],Math.floor(g.random()*5),cellX(10));
@@ -31,7 +33,7 @@ export class KongfuCombat {
    }
   }
   const s=z.kongfu;if(!s)return false;const step=dt*(g.time<z.chilledUntil?.5:1);s.elapsed+=s.flying?dt:step*(s.enraged&&s.animation==='Smash'?native.zombies.kongfu_bronze_strong.EnragedSmashingSpeedScale:1);
-  if(this.roster(z)||this.monk(z,step))return true;
+  if(this.roster(z,step)||this.monk(z,step))return true;
   if(z.kind==='kongfu_hammer'||z.kind==='monk_nunchaku'){
    const timeline=z.kind==='monk_nunchaku'?native.plantAnimations.monkNunchaku:native.plantAnimations.kongfuHammer,prop=native.zombies[z.kind];
    if(s.animation==='RotateStart'&&s.elapsed>=timeline.RotateStart.events[0].at)this.change(z,'RotateLoop');
@@ -48,7 +50,7 @@ export class KongfuCombat {
   return false;
  }
  private monk(z:Zombie,dt:number){const g=this.g,s=z.kongfu!,direction=z.reversed?-1:1;
-  const target=()=>g.plants.filter(p=>p.hp>0&&!p.hidden&&p.sheep===undefined&&!p.leap&&p.row===z.row&&!['bambooshoot','iceburg','spikeweed','spikerock','iceweed','goldleaf','lilypad','floawerPot'].includes(p.kind)&&Math.abs(cellX(p.column)-z.x)<55).sort((a,b)=>direction*(b.column-a.column))[0];
+  const target=()=>g.plants.filter(p=>p.hp>0&&!p.hidden&&p.sheep===undefined&&!p.leap&&p.row===z.row&&!['bambooshoot','iceburg','spikeweed','spikerock','iceweed','goldleaf','lilypad','floawerPot'].includes(p.kind)&&Math.abs(cellX(p.column)-z.x)<55).sort((a,b)=>direction*(b.column-a.column)||Number(b.kind==='bamboobusket')-Number(a.kind==='bamboobusket'))[0];
   if(z.kind==='monk_torch'&&s.torch){const p=target();if(p){z.eating=true;const amount=g.kongfu.peach.protected(p)?0:native.zombies.monk_torch.FireDPS*dt,armor=Math.min(p.armor,amount);p.armor-=armor;p.hp-=(amount-armor)*g.future.plantDamageScale(p);return true;}return false;}
   if(z.kind==='monk_blade'||z.kind==='monk_nunchaku'){
    const blade=z.kind==='monk_blade',action=blade?'Attack':'Throw',timeline=blade?native.plantAnimations.monkBlade.Attack:native.plantAnimations.monkNunchaku.Throw;
@@ -94,7 +96,7 @@ export class KongfuCombat {
   }
   return false;
  }
- private roster(z:Zombie){const g=this.g,s=z.kongfu!;
+ private roster(z:Zombie,dt:number){const g=this.g,s=z.kongfu!;
   if(z.kind==='kongfu_bronze_statue')return true;
   if(z.kind==='kongfu_chi'){
    if(z.reversed&&s.animation==='Absorb')this.change(z,'Walk');
@@ -104,7 +106,7 @@ export class KongfuCombat {
     if(s.elapsed>=timeline.duration){this.change(z,'Walk');s.next=native.zombies.kongfu_chi.ChiInterval;}z.eating=false;return true;
    }
   }
-  const target=()=>g.plants.find(p=>p.hp>0&&!p.hidden&&p.sheep===undefined&&p.row===z.row&&!['bambooshoot','iceburg','spikeweed','spikerock','iceweed','goldleaf','lilypad','floawerPot'].includes(p.kind)&&Math.abs(cellX(p.column)-z.x)<50);
+  const target=()=>[...g.plants].sort((a,b)=>Number(b.kind==='bamboobusket')-Number(a.kind==='bamboobusket')).find(p=>p.hp>0&&!p.hidden&&p.sheep===undefined&&p.row===z.row&&!['bambooshoot','iceburg','spikeweed','spikerock','iceweed','goldleaf','lilypad','floawerPot'].includes(p.kind)&&Math.abs(cellX(p.column)-z.x)<50);
   if(z.kind==='kongfu_bomb'){
    if(s.bomb&&z.hp<=native.zombies.kongfu_bomb.Toughness*.5){s.bomb=false;s.ignited=false;}
    if(s.animation==='Walk'&&s.bomb&&s.ignited&&target()){this.change(z,'Explode');g.beach.sounds.push('kongfuBomb/surpriseSounds');}
@@ -133,6 +135,24 @@ export class KongfuCombat {
      if(e==='hit'){const p=target();if(p&&p.action!=='food'&&p.action!=='explode'&&!g.kongfu.peach.protected(p)){const damage=native.zombies.monk_drink.HitDamage,armor=Math.min(p.armor,damage);p.armor-=armor;p.hp-=(damage-armor)*g.future.plantDamageScale(p);}}
     }
     if(s.elapsed>=timeline.events.find(e=>e.name==='switchingFalse')!.at)this.change(z,'Walk');z.eating=false;return true;
+   }
+  }
+  if(z.kind==='kongfu_bronze_chi'){
+   const prop=native.zombies.kongfu_bronze_chi,anims=g.props.plantAnimations.kongfuBronzeChi;
+   if(s.animation==='Walk'){
+    if(z.x<cellX(9))s.next!-=dt;
+    if(s.next!<=0){this.change(z,!z.reversed&&s.count&&g.plants.some(p=>p.hp>0&&p.row===z.row&&cellX(p.column)<z.x)?'Pull':'Summon');s.count=1-s.count!;const t=prop.TimeBetweenSkills;s.next=t.Min+g.random()*(t.Max-t.Min);}
+    else if(target())this.change(z,'Smash');
+   }
+   if(s.animation!=='Walk'){
+    const a=anims[s.animation];
+    while(s.event!<a.events.length&&s.elapsed>=a.events[s.event!].at){const e=a.events[s.event!++].name;
+     if(e==='pull')g.kongfu.turnip.chi(z);
+     if(e==='summon'){const pool=[...prop.ZombiesToSummon];for(let i=pool.length-1;i>0;i--){const j=Math.floor(g.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}for(const kind of pool.slice(0,prop.SummonCount))this.summons.push({at:g.time+g.random()*prop.SummonTime,kind:kind as ZombieKind,reversed:!!z.reversed});}
+     if(e==='smash'){const p=target();if(p&&p.action!=='food'&&!g.kongfu.peach.protected(p)){const armor=Math.min(p.armor,prop.SmashDamage);p.armor-=armor;p.hp-=(prop.SmashDamage-armor)*g.future.plantDamageScale(p);}}
+     const sounds:Record<string,string>={say:'saySounds',pullSound:'pullReadySounds',pull:'pullSounds',swing:'swingSounds',smash:'smashSounds'};if(sounds[e])g.beach.sounds.push('kongfuBronzeChi/'+sounds[e]);
+    }
+    if(s.elapsed>=a.duration)this.change(z,'Walk');z.eating=false;return true;
    }
   }
   if(z.kind==='kongfu_bronze_hook'){
@@ -187,6 +207,8 @@ export class KongfuCombat {
  burningAt(p:Plant,width=BOARD.cellWidth/4){return this.tnt.some(t=>t.lit&&t.row===p.row&&Math.abs(this.tip(t)-cellX(p.column))<width);}
  extinguish(p:Plant,all=false){for(const t of this.tnt)if(all||t.row===p.row&&Math.abs(this.tip(t)-cellX(p.column))<BOARD.cellWidth/2)t.lit=false;}
  tickCombat(dt:number){const g=this.g;
+  for(const summon of this.summons)if(g.time>=summon.at){const range=native.zombies.kongfu_bronze_chi.SummonColumn,column=range.Min+g.random()*(range.Max-range.Min),z=g.spawnZombie(summon.kind,Math.floor(g.random()*5),cellX(summon.reversed?8-column:column),'ground');z.reversed=summon.reversed;}
+  this.summons=this.summons.filter(s=>s.at>g.time);
   for(const z of g.zombies)if(z.kind==='kongfu_bronze_statue'&&z.hp>0){const s=z.kongfu!;s.life!-=dt;
    if(s.life!<=0){const fraction=z.hp/native.zombies.kongfu_bronze_statue.Toughness;z.kind=s.awakens!;z.hp=g.props.zombies[z.kind].Toughness*fraction;this.spawn(z);this.change(z,'Spawn');}
    else {const animation='Idle'+Math.min(4,Math.floor(5*(1-s.life!/s.duration!)));if(s.animation!==animation)this.change(z,animation);}
