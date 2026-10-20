@@ -95,7 +95,7 @@ export class FutureBattle {
     if(elapsed>=timeline.duration&&animation!=='Blowing')this.play(p,'Idle');
   }
   readonly redStates=new Map<number,{rate:number;rayUntil:number}>();
-  plantDamageScale(p:Plant){if(this.#game.kongfu.peach.protected(p))return 0;return p.kind==='redstinger'?this.#game.props.plants.redstinger[(['DamageScale0','DamageScale1','DamageScale2'] as const)[Math.floor(p.column/3)]]:1;}
+  plantDamageScale(p:Plant){if(this.#game.kongfu.peach.protected(p))return 0;return p.kind==='lychee'?this.#game.kongfu.lychee.scale(p):p.kind==='redstinger'?this.#game.props.plants.redstinger[(['DamageScale0','DamageScale1','DamageScale2'] as const)[Math.floor(p.column/3)]]:1;}
   private redIdle(p:Plant){return p.column<3?'Idle':p.column<6?'Idle_Scared':`Idle_Hide_${Math.max(0,3-Math.floor(p.hp/(this.#game.props.plants.redstinger.Toughness/4)))}`;}
   private pinkDetect(p:Plant){
     const targets=this.starTargets(),x=cellX(p.column),y=rowY(p.row)-33;

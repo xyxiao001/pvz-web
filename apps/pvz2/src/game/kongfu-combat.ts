@@ -110,7 +110,7 @@ export class KongfuCombat {
    if(s.animation==='Walk'&&s.bomb&&s.ignited&&target()){this.change(z,'Explode');g.beach.sounds.push('kongfuBomb/surpriseSounds');}
    if(s.animation==='Explode'){
     if(s.event===0&&s.elapsed>=native.plantAnimations.kongfuBomb.Explode.events.find(e=>e.name==='explode')!.at){s.event=1;if(s.bomb&&s.ignited){
-     for(const p of g.plants)if(p.hp>0&&Math.abs(p.row-z.row)<=1&&Math.abs(cellX(p.column)-z.x)<BOARD.cellWidth*(p.row===z.row?3.125:2)/2){const amount=g.kongfu.peach.protected(p)?0:native.zombies.kongfu_bomb.ExplodeDamageToPlants,armor=Math.min(p.armor,amount);p.armor-=armor;p.hp-=amount-armor;}
+     for(const p of g.plants)if(p.hp>0&&Math.abs(p.row-z.row)<=1&&Math.abs(cellX(p.column)-z.x)<BOARD.cellWidth*(p.row===z.row?3.125:2)/2){const amount=g.kongfu.peach.protected(p)?0:native.zombies.kongfu_bomb.ExplodeDamageToPlants,armor=Math.min(p.armor,amount);p.armor-=armor;p.hp-=(amount-armor)*(p.kind==='lychee'?g.kongfu.lychee.scale(p):1);}
      for(const other of g.zombies)if(other!==z&&other.hp>0&&!!other.reversed!==!!z.reversed&&Math.abs(other.row-z.row)<=1&&Math.abs(other.x-z.x)<BOARD.cellWidth*(other.row===z.row?3.125:2)/2)g.damage(other,native.zombies.kongfu_bomb.ExplodeDamageToZombies);
      s.bomb=false;g.effects.push({id:g.nextEntityId(),kind:'explode',x:z.x,y:rowY(z.row),age:0});g.damage(z,native.zombies.kongfu_bomb.ExplodeDamageToZombies,'potato');
     }}
@@ -146,7 +146,7 @@ export class KongfuCombat {
       const counts=Array.from({length:5},(_,row)=>g.plants.filter(p=>p.hp>0&&p.row===row).length),rows=counts.flatMap((n,row)=>n===Math.min(...counts)?[row]:[]);z.row=rows[Math.floor(g.random()*rows.length)];this.change(z,'LeapEnd');return true;
      }
      if(e==='land')s.flying=false;
-     if(e==='smash'||e==='land_smash'){const targets=e==='smash'?[target()]:g.plants.filter(p=>p.hp>0&&p.row===z.row&&Math.abs(cellX(p.column)-z.x)<BOARD.cellWidth/2);for(const p of targets)if(p&&p.action!=='food'&&p.action!=='explode'&&!g.kongfu.peach.protected(p)){const armor=Math.min(p.armor,prop.SmashDamage);p.armor-=armor;p.hp-=prop.SmashDamage-armor;}}
+     if(e==='smash'||e==='land_smash'){const targets=e==='smash'?[target()]:g.plants.filter(p=>p.hp>0&&p.row===z.row&&Math.abs(cellX(p.column)-z.x)<BOARD.cellWidth/2);for(const p of targets)if(p&&p.action!=='food'&&p.action!=='explode'&&!g.kongfu.peach.protected(p)){const armor=Math.min(p.armor,prop.SmashDamage);p.armor-=armor;p.hp-=(prop.SmashDamage-armor)*(p.kind==='lychee'?g.kongfu.lychee.scale(p):1);}}
      const sounds:Record<string,string>={roar:'roarSounds',leap:'leapSounds',land:'roarSounds',smash:'smashSounds',land_smash:'hookSmashBaseSounds',hit:'groundHitSounds',grab:'grabSounds',swing:'swingSounds',untie:'untieSounds',hook_arrive:'hookArriveSounds',hook_hit:'hookHitSounds'};if(sounds[e])g.beach.sounds.push('kongfuHook/'+sounds[e]);
     }
     if(s.elapsed>=a.duration){this.change(z,'Walk');const t=prop.LeapInterval;s.next=t.Min+g.random()*(t.Max-t.Min);}z.eating=false;return true;
@@ -168,7 +168,7 @@ export class KongfuCombat {
     const a=anims[s.animation as 'Spawn'|'Enrage'|'Smash'];
     while(s.event!<a.events.length&&s.elapsed>=a.events[s.event!].at){const e=a.events[s.event!++].name;
      if(e==='enrage')s.enraged=true;
-     if(e==='smash'){const p=target();if(p&&!g.kongfu.peach.protected(p)){const armor=Math.min(p.armor,prop.SmashDamage);p.armor-=armor;p.hp-=prop.SmashDamage-armor;}}
+     if(e==='smash'){const p=target();if(p&&!g.kongfu.peach.protected(p)){const armor=Math.min(p.armor,prop.SmashDamage);p.armor-=armor;p.hp-=(prop.SmashDamage-armor)*(p.kind==='lychee'?g.kongfu.lychee.scale(p):1);}}
      if(e==='roar')g.beach.sounds.push('kongfuStrong/roarSounds');
     }
     if(s.elapsed>=a.duration)this.change(z,'Walk');z.eating=false;return true;
