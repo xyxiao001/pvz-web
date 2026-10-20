@@ -25,9 +25,9 @@ export class KongfuCombat {
  zombie(z:Zombie,dt:number){const g=this.g;if(g.kongfu.abbots.carried(z))return true;if(z.kind.startsWith('abbot'))return g.kongfu.abbots.zombie(z,dt);
   if(['monk','monk_armor1','monk_armor2','monk_armor3','kongfu','kongfu_armor1','kongfu_armor2','kongfu_armor3'].includes(z.kind)){
    const monk=z.kind.startsWith('monk'),helmet=(z.kind==='kongfu_armor3'||z.kind==='monk_armor3')&&z.armor>native.armors.kongfu_armor3.Toughness/3;
-   const rack=g.graves.find(t=>t.hp>0&&isRack(t.kind)&&!['kongfu_rack_fan','kongfu_rack_3section_staff'].includes(t.kind!)&&(!monk||!['kongfu_rack_bomb','kongfu_rack_hammer'].includes(t.kind!))&&(monk||!['kongfu_rack_blade','kongfu_rack_nunchaku'].includes(t.kind!))&&t.row===z.row&&Math.abs(cellX(t.column)-z.x)<50&&!helmet&&(t.kind==='kongfu_rack_helmet'||z.armor<=0&&z.hp>g.props.zombies[z.kind].Toughness*.5));
+   const rack=g.graves.find(t=>t.hp>0&&isRack(t.kind)&&!['kongfu_rack_fan','kongfu_rack_3section_staff'].includes(t.kind!)&&(!monk||!['kongfu_rack_bomb','kongfu_rack_hammer'].includes(t.kind!))&&(monk||!['kongfu_rack_blade','kongfu_rack_nunchaku'].includes(t.kind!))&&t.row===z.row&&Math.abs(cellX(t.column)-z.x)<50&&!helmet&&(t.kind==='kongfu_rack_helmet'||z.hp>g.props.zombies[z.kind].Toughness*.5));
    if(rack){rack.hp=0;if(rack.kind==='kongfu_rack_helmet'){z.kind=monk?'monk_armor3':'kongfu_armor3';z.armor=native.armors.kongfu_armor3.Toughness;}
-    else {const weapons:Record<string,ZombieKind>=monk?{kongfu_rack_torch:'monk_torch',kongfu_rack_blade:'monk_blade',kongfu_rack_nunchaku:'monk_nunchaku',kongfu_rack_flag:'monk_flag'}:{kongfu_rack_torch:'kongfu_torch',kongfu_rack_hammer:'kongfu_hammer',kongfu_rack_bomb:'kongfu_bomb',kongfu_rack_flag:'kongfu_flag'};z.kind=weapons[rack.kind!];z.hp=g.props.zombies[z.kind].Toughness;this.spawn(z);
+    else {const weapons:Record<string,ZombieKind>=monk?{kongfu_rack_torch:'monk_torch',kongfu_rack_blade:'monk_blade',kongfu_rack_nunchaku:'monk_nunchaku',kongfu_rack_flag:'monk_flag'}:{kongfu_rack_torch:'kongfu_torch',kongfu_rack_hammer:'kongfu_hammer',kongfu_rack_bomb:'kongfu_bomb',kongfu_rack_flag:'kongfu_flag'};z.kind=weapons[rack.kind!];z.hp=g.props.zombies[z.kind].Toughness;z.armor=0;this.spawn(z);
      if(z.kind==='kongfu_flag'||z.kind==='monk_flag')for(let i=0;i<3;i++)g.spawnZombie((monk?['monk','monk_armor1','monk_armor2'] as const:['kongfu','kongfu_armor1','kongfu_armor2'] as const)[Math.floor(g.random()*3)],Math.floor(g.random()*5),cellX(10));
     }
    }
@@ -232,5 +232,6 @@ export class KongfuCombat {
     if(t.length<=0){t.length=0;t.explodeAt=g.time;}
    }else {const z=g.zombies.find(z=>z.hp>0&&z.kongfu?.torch&&z.row===t.row&&z.x-30<=this.tip(t)&&z.x>=cellX(t.column));if(z){t.length=Math.min(t.length,(z.x-30-cellX(t.column))/BOARD.cellWidth);t.lit=true;z.kongfu!.torch=false;g.beach.sounds.push('kongfuTNT/igniteSounds');}}
   }
+  this.tnt=this.tnt.filter(t=>t.explodeAt===null||g.time-t.explodeAt<native.plantAnimations.kongfuTNT.Explode.duration);
  }
 }

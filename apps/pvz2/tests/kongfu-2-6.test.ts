@@ -21,8 +21,8 @@ for(const day of [2,3,4,5,6])test(`Kongfu ${day}: controlled-damage settlement a
  for(const name of battleActors(l,plants)){const spec=actors[name],sk=read(spec?`${spec.group}/rigs/${spec.rig}/skeleton.json`:`actors/${name}/skeleton.json`);assert.ok(spec?sk.armature.some((a:{name:string})=>a.name===spec.armature):sk.armature.length,name);}
  for(const name of battleEffects(l,plants))assert.ok(rigs[name],name);
 });
-test('racks require bare head and remaining arm; transform, fire and cold',()=>{
- const g=create(2),rack=g.graves[0];assert.equal(rack.hp,800);const z=g.spawnZombie('kongfu_armor1',rack.row,cellX(rack.column));tick(g,.1);assert.equal(z.kind,'kongfu_armor1');z.armor=0;tick(g,.1);assert.equal(z.kind,'kongfu_torch');assert.equal(g.graves.length,0);
+test('conehead picks up torch, replaces its armor, burns plants and can be extinguished',()=>{
+ const g=create(2),rack=g.graves[0];assert.equal(rack.hp,800);const z=g.spawnZombie('kongfu_armor1',rack.row,cellX(rack.column));tick(g,.1);assert.equal(z.kind,'kongfu_torch');assert.equal(z.armor,0);assert.equal(g.graves.length,0);
  g.addPlant('wallnut',z.row,rack.column);tick(g,.1);assert.equal(g.plants.length,0);
  g.chill(z,5);assert.equal(z.kongfu!.torch,false);g.kongfu.heat(z);assert.equal(z.kongfu!.torch,true);
 });

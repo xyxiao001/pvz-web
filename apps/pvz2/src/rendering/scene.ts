@@ -411,7 +411,7 @@ export class Scene {
       if(z.kind==='kongfu_bomb')for(const slot of actor.rig.armature.getSlots()){if(slot.name.includes('SPK'))slot.displayIndex=z.kongfu!.ignited?0:-1;if(slot.name.includes('BOMB'))slot.displayIndex=z.kongfu!.bomb?0:-1;}
       if((actor.kind==='kongfu'||actor.kind==='monk'||actor.kind==='abbot'))actor.rig.armature.getSlot('HELMET_THERE_HEAD')!.displayIndex=(z.kind==='kongfu_armor3'||z.kind==='monk_armor3'||z.kind==='abbot_armor3')&&z.armor>game.props.armors.kongfu_armor3.Toughness/3?0:-1;
       if(z.kind==='kongfu_bronze_strong')for(const slot of actor.rig.armature.getSlots())if(slot.name.includes('_BP'))slot.displayIndex=z.hp<game.props.zombies[z.kind].Toughness/2?1:0;
-      if(z.kind==='kongfu_torch'||z.kind==='monk_torch')for(const slot of actor.rig.armature.getSlots())if(slot.name.includes('FIRE'))slot.displayIndex=z.kongfu!.torch?0:-1;
+      if(z.kind==='kongfu_torch'||z.kind==='monk_torch'||z.kind==='abbot_torch')for(const slot of actor.rig.armature.getSlots())if(slot.name.includes('FIRE'))slot.displayIndex=z.kongfu!.torch?0:-1;
       if(z.kind==='kongfu_rocket_imp')actor.rig.armature.getSlot('BODY')!.displayIndex=z.kongfu!.rocket?1:0;
       if(actor.plank){const card=game.camelCards.get(z.id)!;
         if(actor.plankState!==card.state||actor.plankAt!==card.at){actor.plank.animation.play(card.state==='back'?'FlipBack':card.state==='face'?'FlipFace':'Match',1);actor.plankState=card.state;actor.plankAt=card.at;}

@@ -20,8 +20,8 @@ export class KongfuAbbots {
  zombie(z:Zombie,dt:number){const g=this.g;
   if(['abbot','abbot_armor1','abbot_armor2','abbot_armor3'].includes(z.kind)){
    const helmet=z.kind==='abbot_armor3'&&z.armor>native.armors.kongfu_armor3.Toughness/3;
-   const rack=g.graves.find(t=>t.hp>0&&['kongfu_rack_helmet','kongfu_rack_torch','kongfu_rack_flag','kongfu_rack_fan','kongfu_rack_3section_staff'].includes(t.kind!)&&t.row===z.row&&Math.abs(cellX(t.column)-z.x)<50&&!helmet&&(t.kind==='kongfu_rack_helmet'||z.armor<=0&&z.hp>g.props.zombies[z.kind].Toughness*.5));
-   if(rack){rack.hp=0;if(rack.kind==='kongfu_rack_helmet'){z.kind='abbot_armor3';z.armor=native.armors.kongfu_armor3.Toughness;}else{z.kind=rack.kind==='kongfu_rack_3section_staff'?'abbot_3section_staff':rack.kind==='kongfu_rack_fan'?'abbot_fan':rack.kind==='kongfu_rack_torch'?'abbot_torch':'abbot_flag';z.hp=g.props.zombies[z.kind].Toughness;this.spawn(z);if(z.kind==='abbot_flag')for(let i=0;i<3;i++)g.spawnZombie((['abbot','abbot_armor1','abbot_armor2'] as const)[Math.floor(g.random()*3)],Math.floor(g.random()*5),cellX(10));}}
+   const rack=g.graves.find(t=>t.hp>0&&['kongfu_rack_helmet','kongfu_rack_torch','kongfu_rack_flag','kongfu_rack_fan','kongfu_rack_3section_staff'].includes(t.kind!)&&t.row===z.row&&Math.abs(cellX(t.column)-z.x)<50&&!helmet&&(t.kind==='kongfu_rack_helmet'||z.hp>g.props.zombies[z.kind].Toughness*.5));
+   if(rack){rack.hp=0;if(rack.kind==='kongfu_rack_helmet'){z.kind='abbot_armor3';z.armor=native.armors.kongfu_armor3.Toughness;}else{z.kind=rack.kind==='kongfu_rack_3section_staff'?'abbot_3section_staff':rack.kind==='kongfu_rack_fan'?'abbot_fan':rack.kind==='kongfu_rack_torch'?'abbot_torch':'abbot_flag';z.hp=g.props.zombies[z.kind].Toughness;z.armor=0;this.spawn(z);if(z.kind==='abbot_flag')for(let i=0;i<3;i++)g.spawnZombie((['abbot','abbot_armor1','abbot_armor2'] as const)[Math.floor(g.random()*3)],Math.floor(g.random()*5),cellX(10));}}
   }
   if(z.kind==='abbot_3section_staff')return g.kongfu.staff.zombie(z,dt);
   const s=z.kongfu;if(!s)return false;s.elapsed+=dt*(g.time<z.chilledUntil?.5:1);
