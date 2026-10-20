@@ -195,7 +195,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     for (let i=0;i<seedSlots;i++) {
       const button=$<HTMLButtonElement>(`[data-slot="${i}"]`),kind=deck[i];
       const refresh=!!kind&&selected==='food'&&game.plantfoodRefresh&&!game.preparing&&game.food>0&&game.cooldowns[kind]>0;
-      button.disabled=screen==='choosing'?!kind:!kind||!refresh&&(game.sun<game.seedCost(kind)||!game.preparing&&game.cooldowns[kind]>0);
+      button.disabled=screen==='choosing'?!kind||!!game.level.chooserPlants?.includes(kind):!kind||!refresh&&(game.sun<game.seedCost(kind)||!game.preparing&&game.cooldowns[kind]>0);
       button.classList.toggle('food-refresh',refresh);
       button.classList.toggle('empty',!kind);button.classList.toggle('selected',selected===kind);
       button.setAttribute('aria-label',kind?`${screen==='choosing'?'移除':'选择'}${plantLabels[kind]}`:'空卡槽');
@@ -204,7 +204,11 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       const cooldown=button.querySelector<HTMLElement>('.seed-cooldown')!;
       cooldown.style.height=kind&&screen!=='choosing'?`${game.cooldowns[kind]/game.seedCooldown(kind)*100}%`:'0';
     }
-    for(const kind of cardOrder) $(`[data-choose="${kind}"]`).setAttribute('aria-pressed',String(deck.includes(kind)));
+    for(const kind of cardOrder) {
+      const button=$<HTMLButtonElement>(`[data-choose="${kind}"]`);
+      button.setAttribute('aria-pressed',String(deck.includes(kind)));
+      button.disabled=!!game.level.chooserPlants?.includes(kind);
+    }
     $<HTMLButtonElement>('#start').disabled=deck.length===0;
   }
   function chooseSeeds() {

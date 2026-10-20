@@ -1,7 +1,7 @@
 import { GARDEN_KEY, type GardenData } from '../outer/garden';
 import { LocalStore } from './store';
 import { availableCostumes, type CostumePlant, type CostumeReward } from './costumes';
-import { islandStates } from './navigation';
+import { islandStates, isWorldMigrated } from './navigation';
 import type { Island, WorldMap } from './types';
 
 const completionKey = (level: string) => `pvz2-web:${level}-complete`;
@@ -57,7 +57,7 @@ export class ProgressStore {
     const saved=this.storage.getItem('pvz2-web:campaign-rewards');return saved===null?[]:JSON.parse(saved);
   }
   unlockedWorlds():string[]{const saved=this.storage.getItem('pvz2-web:unlocked-worlds');return saved===null?[]:JSON.parse(saved);}
-  worldUnlocked(world:string){return this.temporaryUnlock||world==='egypt'||this.unlockedWorlds().includes(world);}
+  worldUnlocked(world:string){return isWorldMigrated(world)&&(this.temporaryUnlock||world==='egypt'||this.unlockedWorlds().includes(world));}
   unlockWorld(world:string){if(this.worldUnlocked(world)||this.worldKeys()<1)return false;this.storage.setItem('pvz2-web:unlocked-worlds',JSON.stringify([...this.unlockedWorlds(),world]));return true;}
   worldKeys(){return this.campaignRewards().filter(r=>r.type==='worldtrophy'&&r.id==='worldkey').reduce((n,r)=>n+r.count,0)-this.unlockedWorlds().length;}
   finish(world: string, level: string, sprouts=0) {

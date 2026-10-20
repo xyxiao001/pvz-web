@@ -3,6 +3,8 @@ import type { Island, WorldMap } from './types';
 
 export const NAVIGATION_KEY = 'pvz2-web:world-navigation';
 export const LEVEL_ROUTES: Readonly<Record<string,string>> = Object.fromEntries(Object.keys(BATTLE_LEVELS).map(id=>[id,id]));
+const migratedWorlds = new Set(Object.values(BATTLE_LEVELS).map(level=>level.world));
+export const isWorldMigrated = (world: string) => migratedWorlds.has(world);
 export interface Navigation { world: string | null; chooser: number; cameras: Record<string, number> }
 export const initialNavigation = (): Navigation => ({ world: null, chooser: 0, cameras: {} });
 
@@ -11,7 +13,7 @@ export const initialNavigation = (): Navigation => ({ world: null, chooser: 0, c
 export function islandStates(map: WorldMap, completed: ReadonlySet<string>, rewards: ReadonlySet<number> = new Set(), temporaryUnlock = false) {
   const states = new Map<number, 'locked' | 'open' | 'finished'>();
   for (const island of map.islands) states.set(island.node, (island.kind === 0 ? island.levels.some(id => completed.has(id)) : rewards.has(island.node)) ? 'finished'
-    : (map.id === 'egypt'||map.id==='pirate'||map.id==='future'||map.id==='dark'||map.id==='beach') && island.levels.some(id => map.startingLevels.includes(id)) ? 'open' : 'locked');
+    : island.levels.some(id => LEVEL_ROUTES[id] && map.startingLevels.includes(id)) ? 'open' : 'locked');
   const propagated = new Set<number>();
   const advance = (island: Island) => {
     if (propagated.has(island.node)) return;
@@ -26,7 +28,7 @@ export function islandStates(map: WorldMap, completed: ReadonlySet<string>, rewa
     }
   };
   for (const island of map.islands) if (states.get(island.node) === 'finished') advance(island);
-  if (temporaryUnlock) for (const island of map.islands) if (island.kind === 0 && states.get(island.node) === 'locked') states.set(island.node, 'open');
+  if (temporaryUnlock) for (const island of map.islands) if (island.kind === 0 && island.levels.some(id=>LEVEL_ROUTES[id]) && states.get(island.node) === 'locked') states.set(island.node, 'open');
   return states;
 }
 export function bounds(map: WorldMap) {

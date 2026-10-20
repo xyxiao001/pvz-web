@@ -6,7 +6,7 @@ import 'pixi.js/prepare';
 import { Application, Assets, Container, Sprite, Texture, Text, ColorMatrixFilter, Rectangle } from 'pixi.js';
 import { PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
 import { assetUrl, json, loadInBatches } from '../assets/load';
-import { clampCamera, islandStates } from './navigation';
+import { clampCamera, islandStates, isWorldMigrated } from './navigation';
 import { WorldScrollGesture } from './world-scroll';
 import type { CampaignCatalog } from '../rendering/battle-art';
 import type { StoreCatalog, Wallet } from './store';
@@ -72,6 +72,9 @@ export class MapRenderer {
       this.app.canvas.setPointerCapture(event.pointerId);
     });
     this.app.canvas.addEventListener('pointermove', event => {
+      const px=x(event),py=(event.clientY-this.app.canvas.getBoundingClientRect().top)/this.scale;
+      const index=Math.round((px-512+this.carousel)/264);
+      this.app.canvas.title=this.mode==='chooser'&&py>100&&py<570&&index>=0&&index<this.catalog.worlds.length&&!isWorldMigrated(this.catalog.worlds[index].id)?'尚未迁移':'';
       if (!this.pointer || this.pointer.id !== event.pointerId) return;
       const next = x(event), delta = next - this.pointer.x;
       if (Math.abs(next - this.pointer.origin) > 6) this.pointer.moved = true;

@@ -141,7 +141,7 @@ export class Scene {
     this.app.canvas.setAttribute('aria-label', `${config.worldName}战场，五行九列。选择植物后点击地块种植。`);
     this.app.stage.eventMode = 'none';
     this.app.stage.addChild(this.world,this.conveyorLayer);
-    if(config.world!=='pirate'&&config.world!=='cowboy'&&config.world!=='future'&&config.world!=='dark'&&config.world!=='beach'&&config.world!=='kongfu'){const lawn=new Sprite(await this.textures.load(assetUrl(config.presentation.lawn)));lawn.width=1974;lawn.height=768;lawn.position.set(-340,-40);this.world.addChild(lawn);}
+    if(config.world==='egypt'){const lawn=new Sprite(await this.textures.load(assetUrl(config.presentation.lawn)));lawn.width=1974;lawn.height=768;lawn.position.set(-340,-40);this.world.addChild(lawn);}
     this.world.addChild(this.highlight,this.actorLayer);
     this.actorLayer.sortableChildren = true;
     const actorNames=battleActors(level,plantActors) as RigName[];
@@ -650,9 +650,10 @@ export class Scene {
       return rig;
     };
     if(game.level.tide){const x=BOARD.left+game.beach.position*BOARD.cellWidth;this.beachWater.clear().rect(x,BOARD.top,Math.max(0,1200-x),BOARD.rows*BOARD.cellHeight).fill({color:0x29b9ce,alpha:.55});this.beachEdge!.position.set(x,rowY(2)-35);}
-    for(const [i,t] of game.kongfu.tiles.entries())if(t.deadAt===null||game.time-t.deadAt<game.props.plantAnimations.taichi.Die_Lit.duration){const rig=object(`taichi-${i}`,'taichi',t.deadAt!==null?'Die_Lit':t.lit?'Idle_Lit':'Idle',cellX(t.column),rowY(t.row),.5);rig.zIndex=-80;rig.animation.timeScale=t.deadAt!==null?1:t.lit?t.rate:1;}
+    // Native Tile locks to the cell centre and scales by the prefab's validSize; rowY is the plant footpoint.
+    for(const [i,t] of game.kongfu.tiles.entries())if(t.deadAt===null||game.time-t.deadAt<game.props.plantAnimations.taichi.Die_Lit.duration){const rig=object(`taichi-${i}`,'taichi',t.deadAt!==null?'Die_Lit':t.lit?'Idle_Lit':'Idle',cellX(t.column),rowY(t.row)-31,1);rig.scale.set(BOARD.cellWidth/168,BOARD.cellHeight/192);rig.zIndex=-80;rig.animation.timeScale=t.deadAt!==null?1:t.lit?t.rate:1;}
     for(const p of game.plants)if(p.kind==='firegourd'&&p.hp>0&&p.sheep===undefined){const s=game.kongfu.gourds.get(p.id)!;if(s.flame){const rig=object(`gourd-fire-${p.id}`,'gourdFire','Idle',cellX(p.column)+30,rowY(p.row)-45,.5);rig.scale.x=s.distance*BOARD.cellWidth/300;}}
-    for(const [i,t] of game.level.trapTiles.entries()){const rig=object(`trap-${i}`,t.group==='thunder'?'trapThunder':t.group==='flame'?'trapFlame':'trapBoulder',game.time<(game.lostcity.trapCooldown.get(i)??0)?'Idle_Down':'Idle',cellX(t.column),rowY(t.row),.5);rig.zIndex=-80;}
+    for(const [i,t] of game.level.trapTiles.entries()){const rig=object(`trap-${i}`,t.group==='thunder'?'trapThunder':t.group==='flame'?'trapFlame':'trapBoulder',game.time<(game.lostcity.trapCooldown.get(i)??0)?'Idle_Down':'Idle',cellX(t.column),rowY(t.row)-31,1);rig.scale.set(BOARD.cellWidth/172,BOARD.cellHeight/200);rig.zIndex=-80;}
     for(const f of game.lostcity.flames)for(let c=0;c<9;c++){const rig=object(`trap-fire-${f.id}-${c}`,'jalapenoFire','Idle',cellX(c),rowY(f.row),.24*BOARD.cellWidth/68);rig.tint=0x70ff80;}
     for(const b of game.lostcity.boulders)object(`boulder-${b.id}`,'boulder','idle',b.x,b.y,.5);
     for(const p of game.plants){const tongue=game.toadstool.states.get(p.id)?.tongue;if(tongue){const x=cellX(p.column)+20,y=rowY(p.row)-30,rig=object(`toad-tongue-${p.id}`,'toadTongue','Play'+Math.min(10,Math.round(Math.hypot(tongue.x-x,tongue.y-y)/BOARD.cellWidth)),x,y,.55);rig.rotation=Math.atan2(tongue.y-y,tongue.x-x);}}
@@ -667,14 +668,14 @@ export class Scene {
     for(const s of game.iceageCombat.peppers){const rig=object(`pepper-shot-${s.id}`,s.food?'pepper_pf':'pepper','Idle',s.x,s.y,.55);rig.rotation=(game.time-s.at)*3;rig.zIndex=1000;}
     for(const w of game.iceage.winds)if(game.time>=w.at){const rig=object(`frost-${w.id}`,'frostWind',w.left?'left':'right',cellX(4),rowY(w.row),.5);rig.animation.lastAnimationState!.playTimes=1;}
     for(const [key,cold] of game.iceage.cold){const [row,column]=key.split(':').map(Number);object(`ice-prepare-${key}`,'icePrepare','Idle'+(cold-1),cellX(column),rowY(row),.5);}
-    for(const [i,t] of game.level.sliders.entries()){const name=t.up?'sliderUp':'sliderDown';for(const suffix of ['','Back']){const rig=object(`slider-${i}-${suffix}`,name+suffix,'Idle',cellX(t.column),rowY(t.row),.5);rig.zIndex=suffix?-71:-70;}}
+    for(const [i,t] of game.level.sliders.entries()){const name=t.up?'sliderUp':'sliderDown';for(const suffix of ['','Back']){const rig=object(`slider-${i}-${suffix}`,name+suffix,'Idle',cellX(t.column),rowY(t.row)-31,1);rig.scale.set(BOARD.cellWidth/150,BOARD.cellHeight/172);rig.zIndex=suffix?-71:-70;}}
     for(const b of game.iceage.blocks){if(b.glacier){const rig=object(`glacier-${b.id}`,'glacierBlock','Idle',cellX(b.column),rowY(b.row),.45);for(const slot of rig.armature.getSlots()){const match=/BP([1-5])/.exec(slot.name);if(match)slot.displayIndex=b.hp<600*(6-Number(match[1]))/5?0:-1;}continue;}const name=b.zombie?'iceZombie':'icePlant';for(const suffix of ['Back','']){const rig=object(`ice-${b.id}-${suffix}`,name+suffix,'Idle',cellX(b.column),rowY(b.row),.5);rig.zIndex=suffix?-50:rowY(b.row)+5;for(const slot of rig.armature.getSlots())if(slot.name==='MAIN')slot.displayIndex=Math.min(3,Math.floor((600-b.hp)/150));}}
     for(const b of game.iceageCombat.primalPeas)object(`primal-${b.id}`,'primalPea','Idle',b.x,b.y,b.kind==='pea_primal_pf'?.75:.5);
     for(const b of game.iceageCombat.firePeas)object(`fire-pea-${b.id}`,'firePea','Idle',b.x,b.y,.5);
     for(const e of game.iceageCombat.fireHits)object(`fire-hit-${e.id}`,'firePeaHit','Play',e.x,e.y,.5).animation.lastAnimationState!.playTimes=1;
     for(const p of game.plants)if(p.kind==='firepeashooter'&&p.animation==='Food')for(let c=p.column+1;c<=Math.min(8,p.column+Math.floor((game.time-p.actionAt)*18));c++){const fire=object(`fire-food-${p.id}-${c}`,'jalapenoFire','Idle',cellX(c),rowY(p.row),.24*BOARD.cellWidth/68);fire.scale.y=.24*10/20*BOARD.cellHeight/80.77;}
     for(const e of game.iceage.effects)object(`ice-effect-${e.id}`,e.name,e.animation,cellX(e.column),rowY(e.row),.5);
-    for(const t of game.beachFinale.tiles){const lit=game.plants.some(p=>p.hp>0&&p.kind!=='goldleaf'&&p.row===t.row&&p.column===t.column);const rig=object(`gold-${t.row}-${t.column}`,'goldtile',game.time-t.at<.17?'Produce':lit?'Idle_Lit':'Idle_Unlit',cellX(t.column),rowY(t.row),.5);rig.zIndex=-80;}
+    for(const t of game.beachFinale.tiles){const lit=game.plants.some(p=>p.hp>0&&p.kind!=='goldleaf'&&p.row===t.row&&p.column===t.column);const rig=object(`gold-${t.row}-${t.column}`,'goldtile',game.time-t.at<.17?'Produce':lit?'Idle_Lit':'Idle_Unlit',cellX(t.column),rowY(t.row)-31,1);rig.scale.set(BOARD.cellWidth/172,BOARD.cellHeight/200);rig.zIndex=-80;}
     for(const v of game.beachFinale.visuals)object(`beach-final-${v.id}`,v.name,v.animation,v.x,v.y,.55);
     for(const s of game.beachFinale.shields)object(`moon-shield-${s.id}`,'moonShield','Idle',cellX(s.column),rowY(s.row),.5);
     for(const s of game.beachFinale.shots){const rig=object(`sea-shot-${s.id}`,s.sea?'seaPea':'pea','Idle',s.x,s.y,.55);rig.rotation=Math.atan2(s.dy,s.dx);}

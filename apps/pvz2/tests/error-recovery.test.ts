@@ -5,11 +5,12 @@ import {playAudio} from '../src/audio';
 import {errorDetails} from '../src/errors';
 import {rewardPlantArt} from '../src/shell/reward-art';
 import {ProgressStore,completionEvents} from '../src/shell/progression';
+import {isWorldMigrated} from '../src/shell/navigation';
 import type {Catalog,ProgressionArt,WorldMap} from '../src/shell/types';
 const read=<T>(path:string):T=>JSON.parse(readFileSync(new URL('../public/assets/'+path,import.meta.url),'utf8'));
 const art=read<ProgressionArt>('shell/progression.json'),catalog=read<Catalog>('shell/catalog.json');
 test('All reward plants in the migrated worlds have native map art',()=>{
- for(const world of ['egypt','pirate','cowboy','future','dark','kongfu'])for(const island of read<WorldMap>(`shell/maps/${world}.json`).islands.filter(i=>i.kind===1))assert.ok(art.plants[island.plant]?.length,`${world}: ${island.plant}`);
+ for(const {id:world} of catalog.worlds.filter(w=>isWorldMigrated(w.id)))for(const island of read<WorldMap>(`shell/maps/${world}.json`).islands.filter(i=>i.kind===1))assert.ok(art.plants[island.plant]?.length,`${world}: ${island.plant}`);
 });
 test('Pirate first clear and saved reward can both render the kernel-pult',()=>{
  const map=read<WorldMap>('shell/maps/pirate.json'),data=new Map<string,string>();

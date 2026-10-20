@@ -6,7 +6,7 @@ import type { OuterFeatures, Feature } from '../outer/controller';
 import { Tickets } from '../outer/tickets';
 import { readAudio, saveAudio, audioControls, updateVolumeControl } from '../audio';
 import { assetUrl, json } from '../assets/load';
-import { NAVIGATION_KEY, LEVEL_ROUTES, initialNavigation, islandStates, type Navigation } from './navigation';
+import { NAVIGATION_KEY, LEVEL_ROUTES, initialNavigation, islandStates, isWorldMigrated, type Navigation } from './navigation';
 import { ProgressStore, completionEvents } from './progression';
 import type { Catalog, Island, World, WorldMap, ProgressionArt } from './types';
 import type { CostumePlant } from './costumes';
@@ -107,7 +107,7 @@ export class WorldShell {
       this.navigation.chooser = index; this.renderer.selectWorld(index); this.save(); return;
     }
     const world = this.catalog.worlds[index];
-    if (!world.enterable) return;
+    if (!world.enterable || !isWorldMigrated(world.id)) return;
     if (this.progress.worldUnlocked(world.id)) await this.openWorld(world);
     else await this.worldDescription(world);
   }
@@ -123,7 +123,7 @@ export class WorldShell {
     const empty = this.catalog.chooser.find(d => d.name === 'Difficulty_Empty')!;
     const filled = this.catalog.chooser.find(d => d.name === 'Difficulty_Filled')!;
     this.$('.world-labels').innerHTML = this.catalog.worlds.map((world,index) => `<div class="world-label" data-world-label="${index}"><b>${world.enterable ? world.name : ''}</b>${world.enterable ? `<div class="world-difficulty" aria-label="难度 ${world.difficulty} / 5" style="--empty:url('${assetUrl(empty.image!)}');--filled:url('${assetUrl(filled.image!)}')"><i style="width:${world.difficulty*20}%"></i></div>` : ''}</div>`).join('');
-    this.$('.map-level-targets').innerHTML = this.catalog.worlds.map((world,index) => `<button class="world-target" data-world-target="${index}" aria-label="${world.enterable ? '选择' : ''}${world.name}"></button>`).join('');
+    this.$('.map-level-targets').innerHTML = this.catalog.worlds.map((world,index) => `<button class="world-target" data-world-target="${index}" aria-label="${world.enterable ? '选择' : ''}${world.name}"${!isWorldMigrated(world.id)?' aria-disabled="true" title="尚未迁移"':''}></button>`).join('');
     for (const button of this.host.querySelectorAll<HTMLButtonElement>('[data-world-target]')) button.onclick = () => { void this.choose(Number(button.dataset.worldTarget)); };
 
     this.renderer.setWorldKeys(this.progress.worldKeys());
@@ -132,6 +132,7 @@ export class WorldShell {
     this.save(); this.loading(false);
   }
   private async openWorld(world: World) {
+    if (!isWorldMigrated(world.id)) { await this.showChooser(); return; }
     this.loading(true); this.closeModal(); this.host.dataset.view = 'map'; this.currentWorld = world; this.cameraLayout = NaN;
     try {
       this.map = await json<WorldMap>(`shell/maps/${world.id}.json`); this.navigation.world = world.id;
@@ -270,7 +271,7 @@ export class WorldShell {
     this.loading(true);
     const art=await this.renderer.worldDetails(world.id);
     this.loading(false);
-    if(world.id==='pirate'||world.id==='cowboy'||world.id==='future'||world.id==='dark'||world.id==='beach'){
+    if(isWorldMigrated(world.id)){
       this.modal(world.name,`<p>${world.description}</p><img class="world-banner" src="${art.background}" alt="${world.name}"><button class="native-button" data-unlock ${this.progress.worldKeys()<1?'disabled':''}>世界钥匙 × 1 · 解锁</button><div class="world-plant-cards">${art.cards.map(image=>`<img src="${image}" alt="本世界植物卡片">`).join('')}</div>`);
       this.$('.native-window').classList.add('world-description');this.$('[data-unlock]').onclick=()=>{if(this.progress.unlockWorld(world.id))void this.openWorld(world);};return;
     }
