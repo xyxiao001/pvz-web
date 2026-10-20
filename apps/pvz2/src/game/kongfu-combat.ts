@@ -2,9 +2,9 @@ import {BOARD,cellX,rowY,type ZombieKind} from './level';
 import type {Game,Plant,Zombie} from './model';
 import native from '../../public/assets/kongfu/properties.json';
 export interface KongfuZombie {animation:string;at:number;elapsed:number;running?:boolean;torch:boolean;flying:boolean;rocket:boolean;bomb?:boolean;ignited?:boolean;drunk?:boolean;enraged?:boolean;next?:number;count?:number;event?:number;life?:number;duration?:number;awakens?:ZombieKind}
-export const isRack=(kind?:string)=>kind!==undefined&&['kongfu_rack_blade','kongfu_rack_nunchaku','kongfu_rack_torch','kongfu_rack_hammer','kongfu_rack_bomb','kongfu_rack_flag','kongfu_rack_helmet','kongfu_rack_fan'].includes(kind);
+export const isRack=(kind?:string)=>kind!==undefined&&['kongfu_rack_blade','kongfu_rack_nunchaku','kongfu_rack_torch','kongfu_rack_hammer','kongfu_rack_bomb','kongfu_rack_flag','kongfu_rack_helmet','kongfu_rack_fan','kongfu_rack_3section_staff'].includes(kind);
 export const rackHP=(kind:string)=>native.tombs[kind as keyof typeof native.tombs].Toughness;
-export const rackDisplay=(kind:string)=>({kongfu_rack_blade:1,kongfu_rack_nunchaku:4,kongfu_rack_torch:0,kongfu_rack_bomb:2,kongfu_rack_flag:3,kongfu_rack_hammer:5,kongfu_rack_helmet:6,kongfu_rack_fan:7})[kind]!;
+export const rackDisplay=(kind:string)=>({kongfu_rack_blade:1,kongfu_rack_nunchaku:4,kongfu_rack_torch:0,kongfu_rack_bomb:2,kongfu_rack_flag:3,kongfu_rack_hammer:5,kongfu_rack_helmet:6,kongfu_rack_fan:7,kongfu_rack_3section_staff:8})[kind]!;
 export class KongfuCombat {
  private summons:{at:number;kind:ZombieKind;reversed:boolean}[]=[];
  tnt:{row:number;column:number;length:number;speed:number;lit:boolean;explodeAt:number|null}[]=[];
@@ -25,7 +25,7 @@ export class KongfuCombat {
  zombie(z:Zombie,dt:number){const g=this.g;if(g.kongfu.abbots.carried(z))return true;if(z.kind.startsWith('abbot'))return g.kongfu.abbots.zombie(z,dt);
   if(['monk','monk_armor1','monk_armor2','monk_armor3','kongfu','kongfu_armor1','kongfu_armor2','kongfu_armor3'].includes(z.kind)){
    const monk=z.kind.startsWith('monk'),helmet=(z.kind==='kongfu_armor3'||z.kind==='monk_armor3')&&z.armor>native.armors.kongfu_armor3.Toughness/3;
-   const rack=g.graves.find(t=>t.hp>0&&isRack(t.kind)&&t.kind!=='kongfu_rack_fan'&&(!monk||!['kongfu_rack_bomb','kongfu_rack_hammer'].includes(t.kind!))&&(monk||!['kongfu_rack_blade','kongfu_rack_nunchaku'].includes(t.kind!))&&t.row===z.row&&Math.abs(cellX(t.column)-z.x)<50&&!helmet&&(t.kind==='kongfu_rack_helmet'||z.armor<=0&&z.hp>g.props.zombies[z.kind].Toughness*.5));
+   const rack=g.graves.find(t=>t.hp>0&&isRack(t.kind)&&!['kongfu_rack_fan','kongfu_rack_3section_staff'].includes(t.kind!)&&(!monk||!['kongfu_rack_bomb','kongfu_rack_hammer'].includes(t.kind!))&&(monk||!['kongfu_rack_blade','kongfu_rack_nunchaku'].includes(t.kind!))&&t.row===z.row&&Math.abs(cellX(t.column)-z.x)<50&&!helmet&&(t.kind==='kongfu_rack_helmet'||z.armor<=0&&z.hp>g.props.zombies[z.kind].Toughness*.5));
    if(rack){rack.hp=0;if(rack.kind==='kongfu_rack_helmet'){z.kind=monk?'monk_armor3':'kongfu_armor3';z.armor=native.armors.kongfu_armor3.Toughness;}
     else {const weapons:Record<string,ZombieKind>=monk?{kongfu_rack_torch:'monk_torch',kongfu_rack_blade:'monk_blade',kongfu_rack_nunchaku:'monk_nunchaku',kongfu_rack_flag:'monk_flag'}:{kongfu_rack_torch:'kongfu_torch',kongfu_rack_hammer:'kongfu_hammer',kongfu_rack_bomb:'kongfu_bomb',kongfu_rack_flag:'kongfu_flag'};z.kind=weapons[rack.kind!];z.hp=g.props.zombies[z.kind].Toughness;this.spawn(z);
      if(z.kind==='kongfu_flag'||z.kind==='monk_flag')for(let i=0;i<3;i++)g.spawnZombie((monk?['monk','monk_armor1','monk_armor2'] as const:['kongfu','kongfu_armor1','kongfu_armor2'] as const)[Math.floor(g.random()*3)],Math.floor(g.random()*5),cellX(10));

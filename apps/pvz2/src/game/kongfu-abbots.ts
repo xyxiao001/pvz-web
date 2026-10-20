@@ -7,8 +7,9 @@ export class KongfuAbbots {
  private shields=new Map<number,{x:number;done:boolean;left:number}>();
  constructor(private g:Game){}
  private change(z:Zombie,animation:string){Object.assign(z.kongfu!,{animation,at:this.g.time,elapsed:0,event:0});}
- spawn(z:Zombie){if(!['abbot_fan','abbot_torch','abbot_chi','abbot_imp'].includes(z.kind))return;
+ spawn(z:Zombie){if(!['abbot_3section_staff','abbot_fan','abbot_torch','abbot_chi','abbot_imp'].includes(z.kind))return;
   z.kongfu={animation:'Walk',at:this.g.time,elapsed:0,event:0,torch:z.kind==='abbot_torch',flying:false,rocket:false};
+  if(z.kind==='abbot_3section_staff')this.g.kongfu.staff.spawn(z);
   if(z.kind==='abbot_fan'){const t=native.zombies.abbot_fan.TimeBeforeFirst;z.kongfu.next=t.Min+this.g.random()*(t.Max-t.Min);}
   if(z.kind==='abbot_chi'){z.x=cellX(8);z.entry='walk';z.kongfu.next=native.zombies.abbot_chi.TimeBeforeFirst;this.change(z,'Spawn');}
   if(z.kind==='abbot_imp'){const p=native.zombies.abbot_imp;this.shields.set(z.id,{x:cellX(p.ShieldColumn.Min+this.g.random()*(p.ShieldColumn.Max-p.ShieldColumn.Min)),done:false,left:p.ShieldDuration.Min+this.g.random()*(p.ShieldDuration.Max-p.ShieldDuration.Min)});if(z.entry==='ground'){z.leap={fromX:cellX(10),fromY:rowY(z.row)-180,toX:z.x,toRow:z.row,at:this.g.time,duration:.8};z.entry='walk';this.change(z,'Fly');this.g.beach.sounds.push('abbotImp/leapSounds');}}
@@ -19,9 +20,10 @@ export class KongfuAbbots {
  zombie(z:Zombie,dt:number){const g=this.g;
   if(['abbot','abbot_armor1','abbot_armor2','abbot_armor3'].includes(z.kind)){
    const helmet=z.kind==='abbot_armor3'&&z.armor>native.armors.kongfu_armor3.Toughness/3;
-   const rack=g.graves.find(t=>t.hp>0&&['kongfu_rack_helmet','kongfu_rack_torch','kongfu_rack_flag','kongfu_rack_fan'].includes(t.kind!)&&t.row===z.row&&Math.abs(cellX(t.column)-z.x)<50&&!helmet&&(t.kind==='kongfu_rack_helmet'||z.armor<=0&&z.hp>g.props.zombies[z.kind].Toughness*.5));
-   if(rack){rack.hp=0;if(rack.kind==='kongfu_rack_helmet'){z.kind='abbot_armor3';z.armor=native.armors.kongfu_armor3.Toughness;}else{z.kind=rack.kind==='kongfu_rack_fan'?'abbot_fan':rack.kind==='kongfu_rack_torch'?'abbot_torch':'abbot_flag';z.hp=g.props.zombies[z.kind].Toughness;this.spawn(z);if(z.kind==='abbot_flag')for(let i=0;i<3;i++)g.spawnZombie((['abbot','abbot_armor1','abbot_armor2'] as const)[Math.floor(g.random()*3)],Math.floor(g.random()*5),cellX(10));}}
+   const rack=g.graves.find(t=>t.hp>0&&['kongfu_rack_helmet','kongfu_rack_torch','kongfu_rack_flag','kongfu_rack_fan','kongfu_rack_3section_staff'].includes(t.kind!)&&t.row===z.row&&Math.abs(cellX(t.column)-z.x)<50&&!helmet&&(t.kind==='kongfu_rack_helmet'||z.armor<=0&&z.hp>g.props.zombies[z.kind].Toughness*.5));
+   if(rack){rack.hp=0;if(rack.kind==='kongfu_rack_helmet'){z.kind='abbot_armor3';z.armor=native.armors.kongfu_armor3.Toughness;}else{z.kind=rack.kind==='kongfu_rack_3section_staff'?'abbot_3section_staff':rack.kind==='kongfu_rack_fan'?'abbot_fan':rack.kind==='kongfu_rack_torch'?'abbot_torch':'abbot_flag';z.hp=g.props.zombies[z.kind].Toughness;this.spawn(z);if(z.kind==='abbot_flag')for(let i=0;i<3;i++)g.spawnZombie((['abbot','abbot_armor1','abbot_armor2'] as const)[Math.floor(g.random()*3)],Math.floor(g.random()*5),cellX(10));}}
   }
+  if(z.kind==='abbot_3section_staff')return g.kongfu.staff.zombie(z,dt);
   const s=z.kongfu;if(!s)return false;s.elapsed+=dt*(g.time<z.chilledUntil?.5:1);
   if(z.kind==='abbot_fan'){
    const p=native.zombies.abbot_fan,direction=z.reversed?1:-1,distance=Math.min(p.StormMaxDistance*BOARD.cellWidth,(cellX(z.reversed?8-p.StormMinColumn:p.StormMinColumn)-z.x)*direction);

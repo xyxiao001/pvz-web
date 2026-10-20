@@ -120,7 +120,7 @@ export class Game {
   iceweedSpikes=new Map<number,number>();
   conveyor:{id:number;kind:PlantKind;lane:number;position:number;forceBoosted?:boolean}[]=[];
   conveyorPlants:ConveyorPlant[]=[];
-  private conveyorDeliveryCount=new Map<PlantKind,number>();
+  private conveyorDeliveryCount=new Map<ConveyorPlant,number>();
   private conveyorDelivered=new Map<PlantKind,number>();
   private nextCard=1/60;
   private sproutDropped=false;
@@ -318,7 +318,7 @@ export class Game {
     if(this.finale.handles(plant.kind))this.finale.food(plant);
     if(plant.kind==='escaperoot')this.escape.food(plant);
     if (plant.kind === 'repeater') {plant.burst=this.props.plants.repeater.PlantfoodPeaCount;plant.nextBurst=this.time+2/plant.burst;plant.animation='Food';plant.eventIndex=0;}
-    if(['bloominghearts','kernelpult','melonpult','wintermelon','snowdrop','sapfling','celerystalker','snapdragon','spikeweed','spikerock','springbean','threepeater','coconutcannon'].includes(plant.kind)){plant.animation='Food';plant.eventIndex=0;}
+    if(['cantaloupe','bloominghearts','kernelpult','melonpult','wintermelon','snowdrop','sapfling','celerystalker','snapdragon','spikeweed','spikerock','springbean','threepeater','coconutcannon'].includes(plant.kind)){plant.animation='Food';plant.eventIndex=0;}
     if(plant.kind==='spikerock')plant.spikes=this.props.plants.spikerock.MaxSpike;
     if(plant.kind==='threepeater'){plant.burst=0;plant.nextBurst=this.time+.01;}
     if(plant.kind==='peapod'||plant.kind==='parsnip'){plant.animation='FoodStart';plant.eventIndex=0;plant.burst=plant.kind==='peapod'?5:this.props.plants.parsnip.PlantfoodSummonCount;}
@@ -536,7 +536,7 @@ export class Game {
   }
 
   private conveyorWeight(p:NonNullable<Level['conveyor']>['InitialPlantList'][number]) {
-    if(p.MaxDelivered!==undefined&&(this.conveyorDeliveryCount.get(p.PlantType)??0)>=p.MaxDelivered)return 0;
+    if(p.MaxDelivered!==undefined&&(this.conveyorDeliveryCount.get(p)??0)>=p.MaxDelivered)return 0;
     const count=this.level.powerTiles.filter(t=>'powerplant_'+t.group===p.PlantType).length+this.plants.filter(plant=>plant.kind===p.PlantType).length+this.conveyor.filter(card=>card.kind===p.PlantType).length;
     // ConveyorPlant's serialized default for either weight factor is 1.
     let weight=p.Weight;
@@ -730,13 +730,13 @@ export class Game {
     if(this.level.corral)return;
     if(!this.level.conveyor)return;
     if(this.time>=this.nextCard&&this.conveyor.length<10){
-      const choices=this.conveyorPlants.map(p=>({...p,Weight:this.conveyorWeight(p)})),total=choices.reduce((n,p)=>n+p.Weight,0);
+      const choices=this.conveyorPlants.map(p=>({plant:p,Weight:this.conveyorWeight(p)})),total=choices.reduce((n,p)=>n+p.Weight,0);
       if(total===0){this.nextCard=this.time+1/60;return;} // Native conveyor waits until a weighted card becomes available.
       let roll=this.random()*total;
-      const chosen=choices.find(p=>(roll-=p.Weight)<0)!;
+      const chosen=choices.find(p=>(roll-=p.Weight)<0)!.plant;
       const counts=[0,1].map(lane=>this.conveyor.filter(c=>c.lane===lane).length);
       this.conveyorDelivered.set(chosen.PlantType,this.time);
-      this.conveyorDeliveryCount.set(chosen.PlantType,(this.conveyorDeliveryCount.get(chosen.PlantType)??0)+1);
+      this.conveyorDeliveryCount.set(chosen,(this.conveyorDeliveryCount.get(chosen)??0)+1);
       this.conveyor.push({id:++this.id,kind:chosen.PlantType,forceBoosted:chosen.ForceBoosted,lane:counts[0]<=counts[1]?0:1,position:5});
       this.nextCard=this.time+this.conveyorDelay();
     }
@@ -753,7 +753,7 @@ export class Game {
     const startX=cellX(p.column)-10,startY=rowY(p.row)-70;
     const projectile=p.kind==='cabbagepult'?(powered?'cabbage_pf':'cabbage'):powered?this.props.plants[p.kind].CabbageTypePlantfood:p.variant?this.props.plants[p.kind].ButterType:this.props.plants[p.kind].CabbageType;
     this.missiles.push({id:++this.id,projectile,kind:'cabbage',row:p.row,x:startX,y:startY,startX,startY,targetX:x,targetY:y,targetId,
-      age:0,duration:Math.max(.65,Math.abs(x-startX)/450),damage:projectile.startsWith('sapfling')?0:this.props.projectiles[projectile].Damage,
+      age:0,duration:p.kind==='cantaloupe'?4/9:Math.max(.65,Math.abs(x-startX)/450),damage:projectile.startsWith('sapfling')?0:this.props.projectiles[projectile].Damage,
       powered,returning:false,hits:[],dx:0,dy:0});
   }
   private boomerang(p:Plant,powered:boolean,dx:number,dy:number) {
@@ -789,6 +789,15 @@ export class Game {
         if(z){m.targetX=z.x;m.targetY=rowY(z.row)-45;}
         const t=Math.min(1,m.age/m.duration);
         m.x=m.startX+(m.targetX-m.startX)*t;m.y=m.startY+(m.targetY-m.startY)*t-140*4*t*(1-t);
+        if(m.projectile==='cantaloupe'||m.projectile==='cantaloupe_pf'){
+          m.y-=this.props.plants.cantaloupe.ExtraHeightAboveTargets*t;
+          if(t===1){const splash=this.props.projectiles[m.projectile].SplashDamage[0].Damage!;
+            for(const target of this.zombies)if(target.hp>0&&Math.abs(target.x-m.targetX)<123&&Math.abs(rowY(target.row)-45-m.targetY)<147)this.damage(target,splash);
+            for(const grave of this.graves)if(grave.hp>0&&Math.abs(cellX(grave.column)-m.targetX)<123&&Math.abs(rowY(grave.row)-45-m.targetY)<147)grave.hp-=splash;
+            this.kongfu.cantaloupeSplashes.push({id:++this.id,x:m.x,y:m.y,groundY:m.targetY,age:0,powered:m.powered});
+            this.beach.sounds.push((m.powered?'cantaloupeFood':'cantaloupeShot')+'/splatSounds');removed.add(m.id);
+          }continue;
+        }
         if(t===1){
           if(z&&m.kind==='cabbage'&&this.lostcity.blockShot(z,true,1)){removed.add(m.id);continue;}
           if(m.kind==='snow'){
@@ -1008,7 +1017,7 @@ export class Game {
       if(p.kind==='snapdragon'||p.kind==='coconutcannon'||p.kind==='spikeweed'||p.kind==='spikerock'||p.kind==='springbean'){p.age+=dt;this.pirate.tickPlant(p,dt);continue;}
       const previousAge=p.age;
       p.age += dt;
-      if(['bloominghearts','repeater','kernelpult','melonpult','wintermelon','snowdrop','sapfling'].includes(p.kind)){this.tickLatePlant(p);continue;}
+      if(['cantaloupe','bloominghearts','repeater','kernelpult','melonpult','wintermelon','snowdrop','sapfling'].includes(p.kind)){this.tickLatePlant(p);continue;}
       if(['peapod','imitater','cherry_bomb','celerystalker','parsnip'].includes(p.kind)){this.tickFinalePlant(p);continue;}
       if(p.kind==='bonkchoy'){this.tickBonk(p);continue;}
       if(p.kind==='gravebuster'){

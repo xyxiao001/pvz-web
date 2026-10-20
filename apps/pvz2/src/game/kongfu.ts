@@ -1,3 +1,4 @@
+import {KongfuStaff} from './kongfu-staff';
 import {KongfuBamboozle} from './kongfu-bamboozle';
 import {KongfuSage} from './kongfu-sage';
 import {KongfuAbbots} from './kongfu-abbots';
@@ -12,6 +13,8 @@ import type {Game,Plant} from './model';
 import native from '../../public/assets/kongfu/properties.json';
 export const kongfuArmor=(kind:ZombieKind)=>(kind==='kongfu_armor3'||kind==='monk_armor3'||kind==='abbot_armor3')?'kongfu_armor3':(kind==='kongfu_armor1'||kind==='monk_armor1'||kind==='abbot_armor1')?'kongfu_armor1':(kind==='kongfu_armor2'||kind==='monk_armor2'||kind==='abbot_armor2')?'kongfu_armor2':null;
 export class KongfuBattle extends KongfuCombat {
+ staff=new KongfuStaff(this.g);
+ cantaloupeSplashes:{id:number;x:number;y:number;groundY:number;age:number;powered:boolean}[]=[];
  bamboozle=new KongfuBamboozle(this.g);
  sage=new KongfuSage(this.g);
  abbots=new KongfuAbbots(this.g);
@@ -24,7 +27,7 @@ export class KongfuBattle extends KongfuCombat {
  gourds=new Map<number,{sleep:number;charge:number;distance:number;left:number;flame:boolean;food:boolean}>();
  constructor(g:Game){super(g);}
  init(){this.initCombat();this.tiles=this.g.level.taichiTiles.map(t=>({...t,left:native.tiles.taichitile.LifeSpan,lit:false,rate:1,deadAt:null}));}
- tick(dt:number){const g=this.g;this.tickCombat(dt);this.holes.tick();this.sage.tick(dt);this.bamboozle.tick(dt);this.abbots.tick(dt);
+ tick(dt:number){const g=this.g;this.tickCombat(dt);this.holes.tick();this.sage.tick(dt);this.bamboozle.tick(dt);this.abbots.tick(dt);this.staff.tick();for(const s of this.cantaloupeSplashes)s.age+=dt;this.cantaloupeSplashes=this.cantaloupeSplashes.filter(s=>s.age<16/15);
   for(const t of this.tiles){if(t.deadAt!==null)continue;const cost=g.plants.filter(p=>p.hp>0&&p.row===t.row&&p.column===t.column).reduce((n,p)=>n+(p.kind==='bamboobusket'?0:g.props.plants[p.kind].SunCost),0);t.lit=cost>0;t.rate=Math.log(cost*native.tiles.taichitile.SunCostFactor+1);
    if(t.lit){t.left-=dt*t.rate;if(t.left<=0){t.deadAt=g.time;g.pickups.push({id:g.nextEntityId(),kind:'food',x:cellX(t.column),y:rowY(t.row)-45,age:0});g.beach.sounds.push('taichi/produceSounds');}}
   }
