@@ -2,6 +2,7 @@ import {lostcityArmor} from '../game/lostcity';
 import {iceageArmor} from '../game/iceage';
 import {beachArmor} from '../game/beach';
 import { applyCostume } from '../shell/costumes';
+import {LostCityBoss} from '../game/lostcity-boss';
 import {IceageBoss} from '../game/iceage-boss';
 import {BeachBoss} from '../game/beach-boss';
 import {DarkBoss} from '../game/dark-boss';
@@ -258,6 +259,9 @@ export class Scene {
     if(name==='boss'&&this.art.campaign.actors.boss.group==='dark'){
       Object.assign(events.boss!,{eyeBlopSound:'eyeblopSound',roarSound:'roarSounds',introSkySound:'introSkySounds',shade:'introFlyShadeSounds',introLand:'worldZombossMechStabSounds',introFireSound:'introFireSounds',introRoarSound:'introRoarSounds',deathRoarSound:'deathRoarSounds',fireSteadySound:'fireSteadySounds',fireShootSound:'fireShootSounds',fireEndSound:'fireEndSounds',stunStartSound:'magnetStartSounds',stunEndSound:'magnetEndSounds',rushStart:'rushStartSounds',rushEndSound:'rushEndSounds'});
     }
+    if(name==='boss'&&this.art.campaign.actors.boss.group==='lostcity'){
+      events.boss={flap:'flapSounds',introSound:'introSounds',introSay:'worldZombossSpawnSaySounds',balloonDeath:'balloonDeathSounds',triggerStart:'triggerSounds',triggerEnd:'triggerSounds',mouthOpen:'mouthOpenSounds',mouthClose:'mouthCloseSounds',engineBurst:'engineShootSounds',plane:'planeSounds',dropSound:'dropSounds',rushSay:'worldZombossStabSaySounds',deathFallSound:'worldZombossMechDeathFallSounds',escape_trigger:'worldZombossEscapeTriggerSound'};
+    }
     if(name==='boss'&&this.art.campaign.actors.boss.group==='iceage'){
       events.boss={introSound:'introSounds',introRoarSound:'introRoarSounds',windBreathe:'windRoarSounds',summonReady:'tubeSummonExtendSounds',tubeExpand:'tubeSteelExtendSounds',summonStart:'summonStartHitSounds',summonEnd:'summonEndSaySounds',steelReturn:'tubeSteelReturnSounds',tubeSummonReturn:'tubeSummonReturnSounds',stunStartSound:'worldZombossStunStartSound',stunEndSound:'stunEndSounds',prjCreate:'prjCreateSounds',shootStartSound:'shootRoarSounds',shootSound:'shootBounceSounds',deathFallSound:'worldZombossMechDeathFallSounds',escape_trigger:'worldZombossEscapeTriggerSound'};
     }
@@ -338,7 +342,7 @@ export class Scene {
         const boss=game.boss,actor=this.actors.get(z.id)??this.addActor(z.id,'boss');
         actor.root.position.set(z.x,boss.y-boss.height);actor.root.zIndex=boss.y+1;
         actor.rig.animation.timeScale=boss.rate;
-        this.animate(actor,boss.animation,boss.animationSerial,['Idle','Summonning','Stunning','Leaping','StunLoop','CoughLoop','MagnetLoop','RushLoop'].includes(boss.animation)?0:1);
+        this.animate(actor,boss.animation,boss.animationSerial,['Idle','SummonLoop','Summonning','Stunning','Leaping','StunLoop','CoughLoop','MagnetLoop','RushLoop'].includes(boss.animation)?0:1);
         continue;
       }
       let actor=this.actors.get(z.id);
@@ -739,7 +743,11 @@ export class Scene {
     }
     for(const sap of game.sap){const rig=object(`sap-${sap.id}`,'sapTile','Idle',cellX(sap.column),rowY(sap.row)-40,.35);rig.zIndex=rowY(sap.row)-3;}
     if(game.boss){
-      if(game.boss.animation==='Summonning'||game.boss.animation==='SummonStart')object('boss-portal','bossPortal','Idle',game.boss.zombie.x-38.184,game.boss.y-44.147,.5);
+      if(!(game.boss instanceof LostCityBoss)&&(game.boss.animation==='Summonning'||game.boss.animation==='SummonStart'))object('boss-portal','bossPortal','Idle',game.boss.zombie.x-38.184,game.boss.y-44.147,.5);
+      if(game.boss instanceof LostCityBoss){
+        for(const b of game.boss.sandbags)object(`city-bag-${b.id}`,'sandbag','idle',cellX(b.column),rowY(b.row)-180*(1-b.age/.75),.51).zIndex=1100;
+        for(const p of game.boss.planes){const rig=object(`city-plane-${p.id}`,'planeShade','PlayL',cellX(3),rowY(2),.51);rig.zIndex=1200;rig.animation.lastAnimationState!.playTimes=1;}
+      }
       if(game.boss instanceof IceageBoss){
         const boss=game.boss;
         if(!boss.defeated){

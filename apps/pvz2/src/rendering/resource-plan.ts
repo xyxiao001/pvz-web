@@ -26,7 +26,8 @@ export function battleActors(level:Level,plants:readonly PlantKind[]){
   if(names.has('pirateCaptain'))names.add('pirateParrot');
   if(names.has('barrelroller'))names.add('pirateBarrel');
   if(['barrelroller','pirateGargantuar','impCannon'].some(n=>names.has(n)))names.add('pirateImp');
-  if(level.boss?.kind.startsWith('zombossmech_iceage'))for(const name of ['boss','iceage','iceageImp','iceageHunter','iceageWeasel','iceageDodo',...(level.boss!.kind==='zombossmech_iceage2'?['iceageHunterVeteran']:[])])names.add(name);
+  if(level.boss?.kind==='zombossmech_lostcity')for(const name of ['boss','lostcity','lostJane','lostExcavator','lostPorter','lostCrystal','lostPilot'])names.add(name);
+  else if(level.boss?.kind.startsWith('zombossmech_iceage'))for(const name of ['boss','iceage','iceageImp','iceageHunter','iceageWeasel','iceageDodo',...(level.boss!.kind==='zombossmech_iceage2'?['iceageHunterVeteran']:[])])names.add(name);
   else if(level.boss?.kind.startsWith('zombossmech_pirate'))for(const name of ['boss','pirate','pirateCaptain','pirateParrot','pirateGargantuar','pirateImp','barrelroller','pirateBarrel'])names.add(name);
   else if(level.boss?.kind.startsWith('zombossmech_cowboy'))for(const name of ['boss','cowboy','prospector','piano','poncho','cowboyGargantuar','cowboyImp','chickenFarmer','chicken','chickenPumpkin'])names.add(name);
   else if(level.boss?.kind.startsWith('zombossmech_future'))for(const name of ['boss','future','futureJetpack','futureProtector','futureShield','futureImp','futureGargantuar','footballMech'])names.add(name);
@@ -47,7 +48,7 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   const names=new Set(['food']);
   if(level.bowlingLine!==null){names.add('bowlingLine');names.add('bowlingSign');}
   if(plants.some(p=>p==='bowlingbulb'||p.startsWith('tool_projectile_bowlingbulb')))for(const n of ['bowling0','bowling1','bowling2','bowling_pf'])names.add(n);
-  if(level.waves.flat().includes('lostcity_impporter'))for(const name of ['lostTent','lostBackpack'])names.add(name);
+  if(level.waves.flat().includes('lostcity_impporter')||level.boss?.kind==='zombossmech_lostcity')for(const name of ['lostTent','lostBackpack'])names.add(name);
   if(level.world==='lostcity')for(const n of ['lostcityLawn','lostcityNightLawn','lostcityCone','lostcityBucket','shovelDrop','mower','goldtile'])names.add(n);
   if(level.world==='iceage')for(const n of ['iceageHelmet','hunterSnowball','frostWind','icePrepare','iceageLawn','mower','iceageCone','iceageBucket','sliderUp','sliderDown','sliderUpBack','sliderDownBack','icePlant','iceZombie','icePlantBack','iceZombieBack','iceBreak','hotVapour','hotPuddle'])names.add(n);
   if(level.world==='beach')for(const n of ['beachLawn','mower','beachCone','beachBucket','tide','tideLine','tideSign'])names.add(n);
@@ -90,7 +91,8 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   for(const plant of plants)for(const effect of plantEffects[plant]??[])names.add(effect);
   if(actors.has('futureGargantuar'))for(const name of ['gargEye','gargHit','gargRay'])names.add(name);
   if(actors.has('discoMech'))names.add('dirtSpawn');
-  if(level.boss?.kind.startsWith('zombossmech_iceage'))for(const name of ['bossEscape','zombossicon','bossTarget','glacierUp','glacierMid','glacierDown','glacierBlock','iceberg','icebergHit','dirtSpawn'])names.add(name);
+  if(level.boss?.kind==='zombossmech_lostcity')for(const name of ['bossEscape','zombossicon','sandbag','planeShade','dirtSpawn'])names.add(name);
+  else if(level.boss?.kind.startsWith('zombossmech_iceage'))for(const name of ['bossEscape','zombossicon','bossTarget','glacierUp','glacierMid','glacierDown','glacierBlock','iceberg','icebergHit','dirtSpawn'])names.add(name);
   else if(level.boss?.kind.startsWith('zombossmech_pirate'))for(const name of ['bossEscape','bossPortal','zombossicon','dirtSpawn'])names.add(name);
   else if(level.boss?.kind.startsWith('zombossmech_future')||level.boss?.kind.startsWith('zombossmech_cowboy'))for(const name of ['bossMissile','bossMissileImpact','bossTarget','bossEscape','bossPortal','zombossicon','dirtSpawn'])names.add(name);
   else if(level.boss?.kind.startsWith('zombossmech_dark'))for(const name of ['bossMissile','bossEscape','jalapenoFire','dragonFire','dragonIntroFire','dragonShade','zombossicon','dirtSpawn'])names.add(name);

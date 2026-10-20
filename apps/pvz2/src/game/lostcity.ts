@@ -34,27 +34,31 @@ export class LostCityBattle {
  trapCooldown=new Map<number,number>();
  flames:{id:number;row:number;at:number;until:number}[]=[];
  boulders:{id:number;x:number;y:number;at:number}[]=[];
+ triggerTrap(i:number){const g=this.g,t=g.level.trapTiles[i];
+  const next=this.trapCooldown.get(i);if(next!==undefined&&g.time<next)return;
+   this.trapCooldown.set(i,g.time+t.delay);g.beach.sounds.push((t.group==='flame'?'trapFlame':'trapBoulder')+'/triggerSounds');
+   if(t.group==='flame'){this.flames.push({id:g.nextEntityId(),row:t.row,at:g.time,until:g.time+native.tiles.flame_spreader_trap.FlameDuration});g.beach.sounds.push('trapFlame/fireStartSounds');}
+   else {this.boulders.push({id:g.nextEntityId(),x:cellX(t.column)+native.tiles.boulder_trap_falling_forward.BoulderXOffset*BOARD.cellWidth,y:BOARD.top-160,at:g.time});g.beach.sounds.push('boulder/rollStartSounds');}
+ }
  tickTraps(dt:number){const g=this.g;
   this.crystalRays=this.crystalRays.filter(r=>g.time-r.at<g.props.plantAnimations.crystalRay.Play.duration);
   for(const [i,t] of g.level.trapTiles.entries()){
    const next=this.trapCooldown.get(i);if(next!==undefined&&g.time<next)continue;
    const plant=g.plants.some(p=>p.hp>0&&!p.leap&&p.row===t.row&&p.column===t.column)&&!g.plants.some(p=>p.hp>0&&p.row===t.row&&p.column===t.column&&p.kind==='floawerPot');
-   const zombie=g.zombies.some(z=>z.hp>0&&!isFlying(z)&&!z.leap&&!swinging(z,g.time)&&z.row===t.row&&Math.abs(z.x-cellX(t.column))<25);
+   const zombie=g.zombies.some(z=>z!==g.boss?.zombie&&z.hp>0&&!isFlying(z)&&!z.leap&&!swinging(z,g.time)&&z.row===t.row&&Math.abs(z.x-cellX(t.column))<25);
    const tomb=g.graves.some(v=>v.hp>0&&v.row===t.row&&v.column===t.column);
    if(!plant&&!zombie&&!tomb)continue;
-   this.trapCooldown.set(i,g.time+t.delay);g.beach.sounds.push((t.group==='flame'?'trapFlame':'trapBoulder')+'/triggerSounds');
-   if(t.group==='flame'){this.flames.push({id:g.nextEntityId(),row:t.row,at:g.time,until:g.time+native.tiles.flame_spreader_trap.FlameDuration});g.beach.sounds.push('trapFlame/fireStartSounds');}
-   else {this.boulders.push({id:g.nextEntityId(),x:cellX(t.column)+native.tiles.boulder_trap_falling_forward.BoulderXOffset*BOARD.cellWidth,y:BOARD.top-160,at:g.time});g.beach.sounds.push('boulder/rollStartSounds');}
+   this.triggerTrap(i);
   }
   for(const f of this.flames){if(g.time>=f.until)continue;
-   for(const z of g.zombies)if(z.hp>0&&z.row===f.row&&!isFlying(z)&&!z.leap&&!swinging(z,g.time)){z.hp-=native.tiles.flame_spreader_trap.FlameDPS*dt;z.deathCause='potato';}
+   for(const z of g.zombies)if(z!==g.boss?.zombie&&z.hp>0&&z.row===f.row&&!isFlying(z)&&!z.leap&&!swinging(z,g.time)){z.hp-=native.tiles.flame_spreader_trap.FlameDPS*dt;z.deathCause='potato';}
    for(const p of g.plants)if(p.hp>0&&p.row===f.row&&!p.leap){p.hp=0;p.armor=0;}
    for(const t of g.graves)if(t.hp>0&&t.row===f.row)t.hp-=native.tiles.flame_spreader_trap.FlameDPS*dt;
   }
   for(const f of this.flames)if(g.time>=f.until)g.beach.sounds.push('trapFlame/fireEndSounds');this.flames=this.flames.filter(f=>g.time<f.until);
   for(const b of this.boulders){const elapsed=g.time-b.at;b.y=elapsed<.75?BOARD.top-160+160*(elapsed/.75)**2:BOARD.top+(elapsed-.75)*120;
    if(elapsed<.75)continue;
-   for(const z of g.zombies)if(z.hp>0&&!swinging(z,g.time)&&Math.abs(z.x-b.x)<55&&Math.abs(rowY(z.row)-b.y)<55){z.hp=0;z.armor=0;z.deathCause='mower';}
+   for(const z of g.zombies)if(z!==g.boss?.zombie&&z.hp>0&&!swinging(z,g.time)&&Math.abs(z.x-b.x)<55&&Math.abs(rowY(z.row)-b.y)<55){z.hp=0;z.armor=0;z.deathCause='mower';}
    for(const p of g.plants)if(p.hp>0&&Math.abs(cellX(p.column)-b.x)<55&&Math.abs(rowY(p.row)-b.y)<55){p.hp=0;p.armor=0;}
    for(const t of g.graves)if(t.hp>0&&Math.abs(cellX(t.column)-b.x)<55&&Math.abs(rowY(t.row)-b.y)<55)t.hp=0;
   }
