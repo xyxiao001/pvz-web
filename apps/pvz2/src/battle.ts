@@ -227,7 +227,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(!deck.includes('imitater')){start();return;}
     screen='choosing';$('#hud').hidden=true;$('#seed-chooser').hidden=true;
     const choices=levelConfig.mode==='seedbank'?cardOrder:deck;
-    panel('模仿哪种植物？',`<div class="pause-actions">${choices.filter(k=>k!=='imitater').map(k=>`<button class="battle-button" data-imitate="${k}">${plantLabels[k]}</button>`).join('')}${levelConfig.mode==='seedbank'?'<button class="battle-button" data-imitate-back>返回选卡</button>':''}</div>`);
+    panel('模仿哪种植物？',`<div class="imitater-actions">${choices.filter(k=>k!=='imitater').map(k=>`<button class="battle-button" data-imitate="${k}">${plantLabels[k]}</button>`).join('')}${levelConfig.mode==='seedbank'?'<button class="battle-button" data-imitate-back>返回选卡</button>':''}</div>`);
     for(const button of host.querySelectorAll<HTMLButtonElement>('[data-imitate]'))button.onclick=()=>{game.imitateKind=button.dataset.imitate as PlantKind;start();};
     if(levelConfig.mode==='seedbank')$('[data-imitate-back]').onclick=()=>{$('#overlay').hidden=true;$('#hud').hidden=false;$('#seed-chooser').hidden=false;};
   }
@@ -366,7 +366,8 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   function pause() {
     if(screen!=='playing')return;
     game.releaseMower();pointerDown=false;game.phase='paused';screen='pause';scene.stop();music.pause();sound('pause');
-    panel('暂停',`<p>${title}</p>${audioControls(preferences)}<div class="pause-actions"><button id="exit" class="battle-button">退出地图</button><button id="restart" class="battle-button">重新开始</button><button id="resume" class="battle-button">继续</button></div>`);
+    panel('暂停',`<p class="pause-level">${title}</p>${audioControls(preferences)}<div class="pause-actions"><button id="exit" class="battle-button">退出地图</button><button id="restart" class="battle-button">重新开始</button><button id="resume" class="battle-button">继续</button></div>`);
+    $('.battle-window').classList.add('pause-window');
     $('#resume').onclick=resume;$('#restart').onclick=chooseSeeds;$('#exit').onclick=menu;bindAudio();
   }
   function resume() {game.phase='playing';screen='playing';accumulator=0;$('#overlay').hidden=true;playMusic();scene.start();}
