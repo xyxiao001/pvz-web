@@ -1,4 +1,4 @@
-"""Export Kongfu 1 from the pinned Cocos build."""
+"""Export Kongfu 1–6 from the pinned Cocos build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -18,11 +18,14 @@ def rig(path):
 def props(path,names):
     objs=e.read('json/Objects/'+path).objects[0]['json']['objects']
     return {n:next(o['objdata'] for o in objs if n in o.get('aliases',[])) for n in names}
-paths={'kongfu':'zombies/KongfuBasicZOMBIE','kongfuFlag':'zombies/KongfuFlagZOMBIE'}
+paths={'kongfu':'zombies/KongfuBasicZOMBIE','kongfuFlag':'zombies/KongfuFlagZOMBIE','kongfuTorch':'zombies/KongfuTorchZOMBIE','kongfuHammer':'zombies/KongfuHammerZOMBIE','kongfuRocket':'zombies/RocketImpZOMBIE'}
 actors={n:rig(p) for n,p in paths.items()}
-rigpaths={'kongfuLawn':'lawns/KongfuLAWN','mower':'projectiles/KongfuMowerPRJ','kongfuCone':'armors/KongfuConeARMOR','kongfuBucket':'armors/KongfuBucketARMOR','taichi':'tiles/TaichiTILE'}
+rigpaths={'kongfuLawn':'lawns/KongfuLAWN','mower':'projectiles/KongfuMowerPRJ','kongfuCone':'armors/KongfuConeARMOR','kongfuBucket':'armors/KongfuBucketARMOR','taichi':'tiles/TaichiTILE','kongfuRack':'tombstones/KongfuArmRackTOMB','kongfuTNT':'tombstones/KongfuTNTTOMB'}
 rigs={n:rig(p) for n,p in rigpaths.items()}
-properties={'plants':{},'zombies':props('ZombieProps',['kongfu','kongfu_armor1','kongfu_armor2','kongfu_flag']),'armors':props('ArmorProps',['kongfu_armor1','kongfu_armor2']),'tiles':props('TileProps',['taichitile']),'projectiles':{},'plantAnimations':{}}
+for co in walk(e.read('tombstones/KongfuTNTTOMB').objects):
+    if co.get('type')=='dragonBones.ArmatureDisplay' and co.get('_armatureName') in ['Rope','Roll','Spark']:
+        rigs['tnt'+co['_armatureName']]={'rig':e.rig(co['_dragonAsset']['asset'],co['_dragonAtlasAsset']['asset']),'armature':co['_armatureName'],'animation':co['_animationName'],'group':'kongfu'}
+properties={'plants':{},'zombies':props('ZombieProps',['kongfu','kongfu_armor1','kongfu_armor2','kongfu_flag','kongfu_torch','kongfu_hammer','kongfu_rocket_imp']),'armors':props('ArmorProps',['kongfu_armor1','kongfu_armor2']),'tombs':props('TombstoneProps',['kongfu_rack_torch','kongfu_rack_hammer']),'tiles':props('TileProps',['taichitile']),'projectiles':{},'plantAnimations':{}}
 for name,description in {**actors,**rigs}.items():
     sk=json.loads((e.OUT/'rigs'/description['rig']/'skeleton.json').read_text());arm=next(a for a in sk['armature'] if a['name']==description['armature']);timelines={}
     for animation in arm['animation']:
@@ -32,7 +35,7 @@ for name,description in {**actors,**rigs}.items():
             frame+=f.get('duration',1)
         timelines[animation['name']]={'duration':animation.get('duration',1)/arm['frameRate'],'events':events}
     properties['plantAnimations'][name]=timelines
-c.write_json(e.OUT/'kongfu1.source.json',e.read('levels/kongfu1').objects[0]['json'])
+for day in range(1,7):c.write_json(e.OUT/f'kongfu{day}.source.json',e.read(f'levels/kongfu{day}').objects[0]['json'])
 co=next(x for x in walk(e.read('lawns/KongfuLAWN').objects) if x.get('type')=='dragonBones.ArmatureDisplay')
 at=e.read(co['_dragonAtlasAsset']['asset']);atlas=json.loads(at.objects[0]['_atlasJson']);rect=next(x for x in atlas['SubTexture'] if x['name']=='mid')
 pixels=Image.open(io.BytesIO(c.native(at.data[1][at.rec[5][0]],'png')))
@@ -51,7 +54,7 @@ for name,path in {**paths,**rigpaths}.items():
             for key,value in obj['soundRes'].items():
                 if key not in ['type','volumeScale']:sound(name+'/'+key,value)
 npc=e.read('b697cdfd-e783-4f80-abbe-ac197db6cf97');narratives={}
-for name in ['KONGFU_1_INTRO']:
+for name in ['KONGFU_1_INTRO','KONGFU_2_INTRO','KONGFU_4_INTRO','KONGFU_6_INTRO']:
     flow=next(o['objdata']['Flow'] for o in e.read('json/Objects/NarrativeList').objects[0]['json']['objects'] if name in o.get('aliases',[]))
     for step in flow:
         if 'Lines' in step:
@@ -61,7 +64,8 @@ for name in ['KONGFU_1_INTRO']:
             sound(step['Voice'],npc.objects[{'crazydave':35,'winnie':39,'zombossicon':31}[step['Character']]][key])
     narratives[name]=flow
 (e.OUT/'music.mp3').write_bytes(c.native(c.config['uuids'][c.path_index['music/inGame/kongfu/P1_LP_Kongfu']],'mp3'))
+(e.OUT/'minigame.mp3').write_bytes(c.native(c.config['uuids'][c.path_index['music/inGame/kongfu/MG_Kongfu']],'mp3'))
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{}})
 c.write_json(c.ROOT/'apps/pvz2/kongfu-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Kongfu 1')
+print('Exported Kongfu 1–6')

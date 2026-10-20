@@ -375,7 +375,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       if(first&&reward.plant){$('.battle-window').classList.add('plant-reward-window');$('#result-map').textContent='领取并继续';}
       $('#result-map').onclick=()=>{progress.finish(levelConfig.world,levelConfig.id,sprouts);menu();};
     } else {
-      panel(game.lossReason==='plantsLost'?'损失的植物超过了关卡限制！':game.lossReason==='killChallenge'?'未完成限时击杀目标':game.lossReason==='sunProduced'?'未完成阳光生产目标':game.lossReason==='score'?'未达到目标分数':game.lossReason==='flowers'?'僵尸踩到了花坛！':game.lossReason==='plants'?'植物数量超过了关卡限制！':game.lossReason==='sun'?'消耗的阳光超过了关卡限制！':game.lossReason==='protected'?'需要保护的植物被吃掉了！':'僵尸吃掉了你的脑子！','<button id="again" class="battle-button">重新开始</button><button id="result-map" class="battle-button">返回地图</button>');
+      panel(game.lossReason==='tnt'?'炸药爆炸了！':game.lossReason==='plantsLost'?'损失的植物超过了关卡限制！':game.lossReason==='killChallenge'?'未完成限时击杀目标':game.lossReason==='sunProduced'?'未完成阳光生产目标':game.lossReason==='score'?'未达到目标分数':game.lossReason==='flowers'?'僵尸踩到了花坛！':game.lossReason==='plants'?'植物数量超过了关卡限制！':game.lossReason==='sun'?'消耗的阳光超过了关卡限制！':game.lossReason==='protected'?'需要保护的植物被吃掉了！':'僵尸吃掉了你的脑子！','<button id="again" class="battle-button">重新开始</button><button id="result-map" class="battle-button">返回地图</button>');
       $('#again').onclick=chooseSeeds;$('#result-map').onclick=menu;
     }
   }
