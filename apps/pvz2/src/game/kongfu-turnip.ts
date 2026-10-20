@@ -26,18 +26,19 @@ export class KongfuTurnip {
   if(p.animation!.startsWith('BlockStart')&&g.time-p.actionAt<animations[p.animation as 'BlockStart0'].duration)return;
   p.animation=(s.blocked>0?'BlockLoop':'Idle')+s.stage;
  }
- chi(z:Zombie){const g=this.g;
-  for(let column=Math.min(8,Math.floor((z.x-BOARD.left)/BOARD.cellWidth));column>=0;column--){
-   const plants=g.plants.filter(p=>p.hp>0&&p.row===z.row&&p.column===column),turnip=plants.find(p=>p.kind==='turnip');
+ chi(z:Zombie){this.chiLine(z.row,Math.min(8,Math.floor((z.x-BOARD.left)/BOARD.cellWidth)),.5);}
+ chiLine(row:number,start:number,duration:number){const g=this.g;
+  for(let column=start;column>=0;column--){
+   const plants=g.plants.filter(p=>p.hp>0&&p.row===row&&p.column===column),turnip=plants.find(p=>p.kind==='turnip');
    if(turnip){const s=this.states.get(turnip.id)!;if(s.blocked<=0&&turnip.action!=='food'){turnip.animation='BlockStart'+s.stage;turnip.actionAt=g.time;}s.blocked=3;break;}
-   if(plants.length)this.push(plants[0]);
+   if(plants.length)this.push(plants[0],duration);
   }
  }
- private push(p:Plant):boolean {const g=this.g,plants=g.plants.filter(q=>q.hp>0&&q.row===p.row&&q.column===p.column&&!['powerplant','powerplant_alpha','powerplant_beta'].includes(q.kind));
+ private push(p:Plant,duration:number):boolean {const g=this.g,plants=g.plants.filter(q=>q.hp>0&&q.row===p.row&&q.column===p.column&&!['powerplant','powerplant_alpha','powerplant_beta'].includes(q.kind));
   if(plants.some(q=>q.action==='food'||q.leap||g.props.plants[q.kind].CannotBePushedByFootballMech))return false;
   let column=p.column+1;while(column<9&&(g.level.mold.some(c=>c.row===p.row&&c.column===column)||g.graves.some(t=>t.hp>0&&t.row===p.row&&t.column===column)||g.level.boss&&column>=9-g.level.boss.reserved))column++;
   const ahead=g.plants.find(q=>q.hp>0&&q.row===p.row&&q.column===column);
-  if(column>=9||ahead&&!this.push(ahead)){for(const q of plants)q.hp=0;return true;}
-  for(const q of plants){q.leap={x:cellX(q.column),y:rowY(q.row),at:g.time,pushed:true};q.column=column;}return true;
+  if(column>=9||ahead&&!this.push(ahead,duration)){for(const q of plants)q.hp=0;return true;}
+  for(const q of plants){q.leap={x:cellX(q.column),y:rowY(q.row),at:g.time,duration,pushed:true};q.column=column;}return true;
  }
 }

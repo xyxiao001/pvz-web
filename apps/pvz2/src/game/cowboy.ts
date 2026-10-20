@@ -8,7 +8,7 @@ export interface CowboyZombie {
  chiliUntil?:number;tailAt?:number;poisonAt?:number;poisonDuration?:number;farted?:boolean;hat?:boolean;
 }
 export class CowboyBattle {
- carts:{id:number;row:number;column:number;start:number;end:number}[]=[];
+ carts:{group:number;id:number;row:number;column:number;start:number;end:number}[]=[];
  chickenThrowers:{x:number;row:number;reversed:boolean;friendly:boolean;left:number;cooldown:number}[]=[];
  selected:number|null=null;
  sounds:string[]=[];
@@ -20,17 +20,18 @@ export class CowboyBattle {
  constructor(game:Game){
   this.#game=game;
   const rails=game.level.rails;
-  if(rails)this.carts=rails.Railcarts.map((c,id)=>{const rail=rails.Rails.find(r=>r.Column===c.Column&&c.Row>=r.RowStart&&c.Row<=r.RowEnd)!;return {id,row:c.Row,column:c.Column,start:rail.RowStart,end:rail.RowEnd};});
+  let group=0;
+  if(rails)this.carts=rails.Railcarts.map((c,id)=>{const rail=rails.Rails.find(r=>r.Column===c.Column&&c.Row>=r.RowStart&&c.Row<=r.RowEnd)!;if(!c.LinksToPrev)group=id;return {group,id,row:c.Row,column:c.Column,start:rail.RowStart,end:rail.RowEnd};});
  }
  canPlant(row:number,column:number){return !this.#game.level.rails?.Rails.some(r=>r.Column===column&&row>=r.RowStart&&row<=r.RowEnd)||this.carts.some(c=>c.row===row&&c.column===column);}
  select(row:number,column:number){const cart=this.carts.find(c=>c.row===row&&c.column===column);this.selected=cart?.id??null;return !!cart;}
  move(row:number){
   const g=this.#game,cart=this.carts.find(c=>c.id===this.selected);
   if(!cart||g.phase!=='playing'||row<cart.start||row>cart.end||row===cart.row)return false;
-  const plants=g.plants.filter(p=>p.row===cart.row&&p.column===cart.column);
-  if(plants.some(p=>p.leap||p.kind==='imitater')||g.graves.some(p=>p.row===row&&p.column===cart.column)||this.carts.some(c=>c!==cart&&c.row===row&&c.column===cart.column))return false;
-  for(const plant of plants)plant.row=row;
-  cart.row=row;this.sounds.push('cart/moveSounds');return true;
+  const carts=this.carts.filter(c=>c.group===cart.group),delta=row-cart.row;
+  if(carts.some(c=>c.row+delta<c.start||c.row+delta>c.end||g.plants.some(p=>p.row===c.row&&p.column===c.column&&(p.leap||p.kind==='imitater'))||g.graves.some(p=>p.row===c.row+delta&&p.column===c.column)||this.carts.some(other=>!carts.includes(other)&&other.row===c.row+delta&&other.column===c.column)))return false;
+  for(const c of carts){for(const plant of g.plants.filter(p=>p.row===c.row&&p.column===c.column))plant.row+=delta;c.row+=delta;}
+  this.sounds.push('cart/moveSounds');return true;
  }
  spawn(z:Zombie){
   const g=this.#game,props=g.props.zombies[z.kind];

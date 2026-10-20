@@ -10,15 +10,16 @@ export class KongfuCombat {
  reflected:{id:number;x:number;y:number;vx:number;damage:number;name:'pea'|'boomerang';powered:boolean}[]=[];
  constructor(protected g:Game){}
  initCombat(){for(const t of this.g.level.bronzeStatues){const z=this.g.spawnZombie('kongfu_bronze_statue',t.GridY,cellX(t.GridX)),s=z.kongfu!;s.duration=t.LifeSpan.Min+this.g.random()*(t.LifeSpan.Max-t.LifeSpan.Min);s.life=s.duration;s.awakens=t.ZombiesToSpawn[Math.floor(this.g.random()*t.ZombiesToSpawn.length)];}this.tnt=this.g.level.tnt?this.g.level.tnt.SpawnData.map(t=>({row:t.GridY,column:t.GridX,length:t.WireLength,speed:t.Speed,lit:false,explodeAt:null})):[];}
- spawn(z:Zombie){if(!['monk_blade','monk_nunchaku','monk_torch','monk_imp','kongfu_chi','kongfu_torch','kongfu_hammer','kongfu_rocket_imp','kongfu_bomb','kongfu_drink','kongfu_gong','kongfu_bronze_statue','kongfu_bronze_strong'].includes(z.kind))return;const flying=z.kind==='kongfu_rocket_imp'&&(z.entry==='walk'||z.entry==='raid');z.kongfu={animation:flying?'Walk_Fly':'Walk',at:this.g.time,elapsed:0,torch:z.kind==='kongfu_torch'||z.kind==='monk_torch',flying,rocket:z.kind==='kongfu_rocket_imp',event:0};if(z.kind==='monk_imp'){const t=native.zombies.monk_imp.TimeBeforeFirst;z.kongfu.next=t.Min+this.g.random()*(t.Max-t.Min);}
+ spawn(z:Zombie){if(!['monk_drink','kongfu_bronze_hook','monk_blade','monk_nunchaku','monk_torch','monk_imp','kongfu_chi','kongfu_torch','kongfu_hammer','kongfu_rocket_imp','kongfu_bomb','kongfu_drink','kongfu_gong','kongfu_bronze_statue','kongfu_bronze_strong'].includes(z.kind))return;const flying=z.kind==='kongfu_rocket_imp'&&(z.entry==='walk'||z.entry==='raid');z.kongfu={animation:flying?'Walk_Fly':'Walk',at:this.g.time,elapsed:0,torch:z.kind==='kongfu_torch'||z.kind==='monk_torch',flying,rocket:z.kind==='kongfu_rocket_imp',event:0};if(z.kind==='monk_imp'){const t=native.zombies.monk_imp.TimeBeforeFirst;z.kongfu.next=t.Min+this.g.random()*(t.Max-t.Min);}
+  if(z.kind==='kongfu_bronze_hook'){const t=native.zombies.kongfu_bronze_hook.LeapInterval;z.kongfu!.next=t.Min+this.g.random()*(t.Max-t.Min);}
   if(z.kind==='kongfu_chi')z.kongfu.next=native.zombies.kongfu_chi.ChiIntervalStart;if(z.kind==='kongfu_bomb'){z.kongfu.bomb=true;z.kongfu.ignited=true;}if(z.kind==='kongfu_gong'){const t=native.zombies.kongfu_gong.TimeBeforeSummon;z.kongfu.next=t.Min+this.g.random()*(t.Max-t.Min);}if(z.kind==='kongfu_bronze_statue')z.kongfu.animation='Idle0';if(flying){z.entry='walk';this.g.beach.sounds.push('kongfuRocket/launchSounds');}}
  private change(z:Zombie,animation:string){Object.assign(z.kongfu!,{animation,at:this.g.time,elapsed:0,event:0});}
- cold(z:Zombie){if(!z.kongfu)return;z.kongfu.torch=false;z.kongfu.ignited=false;if(z.kongfu.flying){if(z.kind==='monk_imp'){z.kongfu.flying=false;this.change(z,'FloatEnd');}else this.land(z,false);}}
+ cold(z:Zombie){if(!z.kongfu)return;z.kongfu.torch=false;z.kongfu.ignited=false;if(z.kongfu.flying){if(z.kind==='monk_imp'){z.kongfu.flying=false;this.change(z,'FloatEnd');}else if(z.kind==='kongfu_rocket_imp')this.land(z,false);}}
  heat(z:Zombie){if(z.kind==='kongfu_bomb'&&z.kongfu!.bomb)z.kongfu!.ignited=true;if(z.kind==='kongfu_torch'||z.kind==='monk_torch')z.kongfu!.torch=true;if(z.kind==='kongfu_rocket_imp'&&z.kongfu!.rocket&&!z.kongfu!.flying&&z.kongfu!.animation!=='Flee'){this.change(z,'Flee');this.g.beach.sounds.push('kongfuRocket/scream0Sounds');}}
  private land(z:Zombie,throwRocket=true){z.kongfu!.flying=false;if(throwRocket)z.kongfu!.rocket=false;this.change(z,'Drop');this.g.beach.sounds.push('kongfuRocket/scream1Sounds');}
  speed(z:Zombie){return z.kongfu?.drunk?native.zombies.kongfu_drink.DrunkWalkingSpeedScale:z.kongfu?.enraged?native.zombies.kongfu_bronze_strong.EnragedWalkingSpeedScale:1;}
  damageScale(z:Zombie){return z.kongfu?.drunk?native.zombies.kongfu_drink.DrunkDamageMult:z.kongfu?.animation==='Drink'?native.zombies.kongfu_drink.DrinkingDamageMult:1;}
- animation(z:Zombie){if(z.kind==='monk_torch'&&z.eating)return z.kongfu!.torch?'Eat_Fire':'Eat';if(z.kongfu?.drunk&&z.kongfu.animation==='Walk')return z.eating?'Eat_Drunk':'Walk_Drunk';return z.kongfu&&z.kongfu.animation!=='Walk'?z.kongfu.animation:null;}
+ animation(z:Zombie){if(z.kind==='monk_torch'&&z.eating)return z.kongfu!.torch?'Eat_Fire':'Eat';if(z.kind==='kongfu_drink'&&z.kongfu?.drunk&&z.kongfu.animation==='Walk')return z.eating?'Eat_Drunk':'Walk_Drunk';return z.kongfu&&z.kongfu.animation!=='Walk'?z.kongfu.animation:null;}
  zombie(z:Zombie,dt:number){const g=this.g;
   if(['monk','monk_armor1','monk_armor2','monk_armor3','kongfu','kongfu_armor1','kongfu_armor2','kongfu_armor3'].includes(z.kind)){
    const monk=z.kind.startsWith('monk'),helmet=(z.kind==='kongfu_armor3'||z.kind==='monk_armor3')&&z.armor>native.armors.kongfu_armor3.Toughness/3;
@@ -116,11 +117,40 @@ export class KongfuCombat {
     if(s.elapsed>=native.plantAnimations.kongfuBomb.Explode.duration)this.change(z,'Walk');z.eating=false;return true;
    }
   }
-  if(z.kind==='kongfu_drink'){
-   if(!s.drunk&&s.animation==='Walk'&&z.hp<=native.zombies.kongfu_drink.Toughness*native.zombies.kongfu_drink.DrinkHealthPct)this.change(z,'Drink');
-   if(s.animation==='Drink'){for(const e of native.plantAnimations.kongfuDrink.Drink.events.slice(s.event)){
-    if(s.elapsed<e.at)break;s.event!++;if(e.name==='drink')g.beach.sounds.push('kongfuDrink/drinkSounds');if(e.name==='change')s.drunk=true;
-   }if(s.elapsed>=native.plantAnimations.kongfuDrink.Drink.duration)this.change(z,'Walk');z.eating=false;return true;}
+  if(z.kind==='kongfu_drink'||z.kind==='monk_drink'){
+   const rig=z.kind==='monk_drink'?'monkDrink':'kongfuDrink',anims=native.plantAnimations[rig],prop=native.zombies[z.kind];
+   if(!s.drunk&&s.animation==='Walk'&&z.hp<=prop.Toughness*prop.DrinkHealthPct)this.change(z,'Drink');
+   if(s.animation==='Drink'){for(const e of anims.Drink.events.slice(s.event)){
+    if(s.elapsed<e.at)break;s.event!++;if(e.name==='drink')g.beach.sounds.push(rig+'/drinkSounds');if(e.name==='change'){s.drunk=true;if(z.kind==='monk_drink')g.beach.sounds.push('monkDrink/changeSounds');}
+   }if(s.elapsed>=anims.Drink.duration)this.change(z,'Walk');z.eating=false;return true;}
+  }
+  if(z.kind==='monk_drink'){
+   if(s.animation==='Walk'&&target())this.change(z,s.drunk?'Attack2':'Attack');
+   if(s.animation==='Attack'||s.animation==='Attack2'){
+    const timeline=native.plantAnimations.monkDrink[s.animation];
+    while(s.event!<timeline.events.length&&s.elapsed>=timeline.events[s.event!].at){const e=timeline.events[s.event!++].name;
+     if(e==='throw')g.beach.sounds.push('monkDrink/throwSounds','monkDrink/throwSaySounds');
+     if(e==='hit'){const p=target();if(p&&p.action!=='food'&&p.action!=='explode'&&!g.kongfu.peach.protected(p)){const damage=native.zombies.monk_drink.HitDamage,armor=Math.min(p.armor,damage);p.armor-=armor;p.hp-=(damage-armor)*g.future.plantDamageScale(p);}}
+    }
+    if(s.elapsed>=timeline.events.find(e=>e.name==='switchingFalse')!.at)this.change(z,'Walk');z.eating=false;return true;
+   }
+  }
+  if(z.kind==='kongfu_bronze_hook'){
+   const prop=native.zombies.kongfu_bronze_hook,anims=g.props.plantAnimations.kongfuHook;
+   if(s.animation==='Walk'){if(s.elapsed>=s.next!)this.change(z,'LeapStart');else if(target())this.change(z,'Smash');}
+   if(s.animation!=='Walk'){
+    const a=anims[s.animation];
+    while(s.event!<a.events.length&&s.elapsed>=a.events[s.event!].at){const e=a.events[s.event!++].name;
+     if(e==='leap')s.flying=true;
+     if(e==='jumpEnd'){
+      const counts=Array.from({length:5},(_,row)=>g.plants.filter(p=>p.hp>0&&p.row===row).length),rows=counts.flatMap((n,row)=>n===Math.min(...counts)?[row]:[]);z.row=rows[Math.floor(g.random()*rows.length)];this.change(z,'LeapEnd');return true;
+     }
+     if(e==='land')s.flying=false;
+     if(e==='smash'||e==='land_smash'){const targets=e==='smash'?[target()]:g.plants.filter(p=>p.hp>0&&p.row===z.row&&Math.abs(cellX(p.column)-z.x)<BOARD.cellWidth/2);for(const p of targets)if(p&&p.action!=='food'&&p.action!=='explode'&&!g.kongfu.peach.protected(p)){const armor=Math.min(p.armor,prop.SmashDamage);p.armor-=armor;p.hp-=prop.SmashDamage-armor;}}
+     const sounds:Record<string,string>={roar:'roarSounds',leap:'leapSounds',land:'roarSounds',smash:'smashSounds',land_smash:'hookSmashBaseSounds',hit:'groundHitSounds',grab:'grabSounds',swing:'swingSounds',untie:'untieSounds',hook_arrive:'hookArriveSounds',hook_hit:'hookHitSounds'};if(sounds[e])g.beach.sounds.push('kongfuHook/'+sounds[e]);
+    }
+    if(s.elapsed>=a.duration){this.change(z,'Walk');const t=prop.LeapInterval;s.next=t.Min+g.random()*(t.Max-t.Min);}z.eating=false;return true;
+   }
   }
   if(z.kind==='kongfu_gong'&&z.hp>native.zombies.kongfu_gong.Toughness*.5&&z.x<cellX(9)){
    if(s.animation==='Walk'&&s.elapsed>=s.next!){const c=native.zombies.kongfu_gong.SummonCount;s.count=c.Min+Math.floor(g.random()*(c.Max-c.Min+1));this.change(z,'Gong');}

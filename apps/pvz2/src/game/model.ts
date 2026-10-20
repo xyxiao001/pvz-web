@@ -38,7 +38,7 @@ import { BOARD, cellX, rowY, PLANT_KINDS, type AnimationTiming, type Level, type
 export interface Plant {
   id: number; kind: PlantKind; row: number; column: number; hp: number; armor: number;
   age: number; nextAction: number; action: 'idle' | 'shoot' | 'produce' | 'food' | 'grow' | 'explode' | 'catch';
-  sheep?:number;leap?:{x:number;y:number;at:number;pushed?:boolean};heads?:number;imitate?:PlantKind;hidden?:boolean;retreat?:number;animation?:string;variant?:boolean;eventIndex?:number;
+  sheep?:number;leap?:{x:number;y:number;at:number;duration?:number;pushed?:boolean};heads?:number;imitate?:PlantKind;hidden?:boolean;retreat?:number;animation?:string;variant?:boolean;eventIndex?:number;
   transformed?:boolean;leaves?:number;rootGrown?:boolean;spikes?:number;boosted?:boolean; endangered?:boolean; facing?:number;heavy?:boolean;
   actionAt: number; fired: boolean; burst: number; nextBurst: number;
 }
@@ -291,7 +291,7 @@ export class Game {
     if(plant?.kind==='holonut'&&!this.future.nutFoodable(plant))return false;
     if(plant?.kind==='tallnut'&&plant.armor>0)return false;
     if(plant?.kind==='escaperoot'&&(!plant.rootGrown||plant.action!=='idle'||plant.animation!=='Idle'))return false;
-    if (!plant || plant.leap?.pushed || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['goldleaf','hotpotato','powerplant','powerplant_alpha','powerplant_beta','empea','blover','gravebuster','imitater','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
+    if (!plant || plant.leap?.pushed || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['powerlily','goldleaf','hotpotato','powerplant','powerplant_alpha','powerplant_beta','empea','blover','gravebuster','imitater','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
     if(!boost){this.food--;this.future.link(plant);} plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
     if(plant.kind==='toadstool')this.toadstool.food(plant);
@@ -448,6 +448,7 @@ export class Game {
     const actions=this.level.actions[this.wave];
     this.pending=[];
     for(const action of actions){
+      if(action.mode==='chiHole'){this.kongfu.holes.spawn(action.chiHole!);continue;}
       if(action.mode==='frost'){this.iceage.wind(action.winds!);continue;}
       if(action.mode==='tide'){this.beach.change(action.tide!);continue;}
       if(action.mode==='conveyor'){if(action.remove)this.conveyorPlants=this.conveyorPlants.filter(p=>!action.remove!.includes(p.PlantType));this.conveyorPlants.push(...action.add!);continue;}
@@ -962,7 +963,8 @@ export class Game {
       if(this.iceage.blocked(p))continue;
       if(p.sheep!==undefined){p.actionAt+=dt;p.nextAction+=dt;p.nextBurst+=dt;continue;}
       if(p.kind==='toadstool'){this.toadstool.tick(p,dt);continue;}
-      if(this.level.world==='kongfu'&&p.leap?.pushed){if(this.time-p.leap.at<.5)continue;delete p.leap;}
+      if(this.level.world==='kongfu'&&p.leap?.pushed){if(this.time-p.leap.at<(p.leap.duration??.5))continue;delete p.leap;}
+      if(p.kind==='powerlily'){if(this.time-p.actionAt>=this.props.plantAnimations.powerlily.Attack.events.find(e=>e.name==='produce')!.at){this.pickups.push({id:this.nextEntityId(),kind:'food',x:cellX(p.column),y:rowY(p.row)-45,age:0});p.hp=0;}continue;}
       if(p.kind==='peach'){this.kongfu.peach.tick(p,dt);continue;}
       if(p.kind==='turnip'){this.kongfu.turnip.tick(p,dt);continue;}
       if(p.kind==='bambooshoot'){this.kongfu.bamboo.tick(p,dt);continue;}
@@ -1166,7 +1168,7 @@ export class Game {
     this.effects = this.effects.filter(e => e.age < .65);
     if (!this.level.memory && this.wave > 0 && !this.pending.length &&!this.pendingGraveSpawns.length&& this.wave < this.level.waves.length && this.nextWave === Infinity) {
       const health = this.zombies.filter(z => this.waveIds.has(z.id)).reduce((n, z) => n + (z.kind==='pharaoh'||z.kind==='pharaoh_weak'?z.armor:z.hp), 0);
-      if (this.time >= this.waveDamageDeadline && (health <= this.waveHealth * this.threshold || this.time >= this.waveDeadline)) {
+      if (!this.kongfu.holes.suppressesWave && this.time >= this.waveDamageDeadline && (health <= this.waveHealth * this.threshold || this.time >= this.waveDeadline)) {
         this.nextWave = this.time + (this.level.corral?0:(this.wave + 1) % this.level.flagInterval === 0 ? RULES.flagWaveEntrance : RULES.normalWaveEntrance);
       }
     }
