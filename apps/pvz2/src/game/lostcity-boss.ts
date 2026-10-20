@@ -50,10 +50,12 @@ export class LostCityBoss extends EgyptBoss {
     if(name==='summonStart')this.summonLeft=.5;
     if(name==='plane')this.planes.push({id:g.nextEntityId(),at:g.time});
     if(name==='parachute'){
-      const stage=native.zombies.zombossmech_lostcity.ZombossStages[this.stage],cells=[];
+      const stage=native.zombies[g.level.boss!.kind as 'zombossmech_lostcity'|'zombossmech_lostcity2'].ZombossStages[this.stage],cells=[];
       for(let row=0;row<5;row++)for(let column=stage.ParachuteColumn.Min;column<=stage.ParachuteColumn.Max;column++)cells.push({row,column});
       const count=stage.ParachuteCount.Min+Math.floor(g.random()*(stage.ParachuteCount.Max-stage.ParachuteCount.Min+1));
-      for(let i=0;i<count;i++){const cell=cells.splice(Math.floor(g.random()*cells.length),1)[0],z=g.spawnZombie(stage.ParachuteType as ZombieKind,cell.row,cellX(cell.column),'parachute');z.pilot!.fallTime=1.5;}
+      for(let i=0;i<count;i++){const cell=cells.splice(Math.floor(g.random()*cells.length),1)[0],z=g.spawnZombie(stage.ParachuteType as ZombieKind,cell.row,cellX(cell.column),'parachute');z.pilot!.fallTime=1.5;
+        if(z.kind==='lostcity_lostpilot_veteran_for_zomboss'){const pool=native.zombies.lostcity_lostpilot_veteran_for_zomboss.ZombiesToBringWith;let roll=g.random()*pool.reduce((sum,item)=>sum+item.Weight,0);const kind=pool.find(item=>(roll-=item.Weight)<0)!.Type as ZombieKind,cargo=g.spawnZombie(kind,cell.row,cellX(cell.column));cargo.leap={fromX:cargo.x,fromY:rowY(cell.row)-700,toX:cargo.x,toRow:cell.row,at:g.time,duration:1.5};}
+      }
     }
     if(name==='drop')this.sandbags.push({id:g.nextEntityId(),row:this.zombie.row,column:8,age:0});
   }

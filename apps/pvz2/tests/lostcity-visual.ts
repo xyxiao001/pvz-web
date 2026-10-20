@@ -19,8 +19,8 @@ async function clean(){if(battle){await battle.dispose();battle=undefined;}if(sc
 function button(label:string,action:()=>Promise<void>|void){const b=document.createElement('button');b.textContent=label;b.onclick=async()=>{try{await action();}catch(e){status.textContent=String(e);throw e;}};controls.append(b);}
 function draw(){scene!.sync(game!,0);scene!.render();status.textContent=`第${game!.level.day}关${game!.boosts.size?"（花园强化）":""} / ${game!.time.toFixed(1)}s / ${game!.phase} / ${game!.wave}波 / ${game!.zombies.length}僵尸`;}
 button('世界地图',async()=>{await clean();worldHost.hidden=false;await shell.init();});
-for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38])button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`lostcity${day}`],progress);await battle.enter();});
-for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38])button(`场景${day}`,async()=>{
+for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42])button(`进入第${day}关`,async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS[`lostcity${day}`],progress);await battle.enter();});
+for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42])button(`场景${day}`,async()=>{
  await clean();sceneHost.hidden=false;scene=new Scene();const config=BATTLE_LEVELS[`lostcity${day}`],level=readLevel(await json<SourceLevel>(config.source));
  const groups=await Promise.all(['levels','campaign','pirate','cowboy','future','dark','beach','iceage','lostcity'].map(name=>json<Properties>(name+'/properties.json'))),flag=await json<Properties['zombies']['mummy_flag']>('battle/flag.json');
  const props=groups.reduce((a,b)=>({...a,...b,plants:{...a.plants,...b.plants},zombies:{...a.zombies,...b.zombies},armors:{...a.armors,...b.armors},projectiles:{...a.projectiles,...b.projectiles},plantAnimations:{...a.plantAnimations,...b.plantAnimations}}));props.zombies.mummy_flag=flag;
@@ -63,3 +63,15 @@ button('雷电机关',()=>{game!.addPlant('puffshroom',2,1);game!.spawnZombie('l
 button('盛开心花攻击',()=>{game!.addPlant('bloominghearts',1,1);game!.spawnZombie('lostcity_armor4',1,cellX(6));draw();});
 button('豆荚生长',()=>{game!.addPlant('zoybeanpod',2,1);game!.addPlant('snowpea',1,1);game!.spawnZombie('lostcity_armor4',1,cellX(6));draw();});
 button('豆荚能量豆',()=>{game!.food=1;game!.plantFood(2,1);draw();});
+
+button('火葫芦喷火',()=>{game!.addPlant('firegourd',1,1);game!.spawnZombie('lostcity_armor4',1,cellX(4));game!.kongfu.fire(1,1);draw();});
+button('火葫芦能量豆',()=>{game!.food=1;game!.plantFood(1,1);draw();});
+button('清场检查结算',()=>{game!.preparing=false;for(let i=0;i<30000&&game!.phase==='playing';i++){game!.tick(1/60);for(const z of game!.zombies)game!.damage(z,200000,'water');}draw();});
+button('进入武林1关',async()=>{await clean();battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;},BATTLE_LEVELS.kongfu1,progress);await battle.enter();});
+button('武林场景',async()=>{
+ await clean();sceneHost.hidden=false;scene=new Scene();const config=BATTLE_LEVELS.kongfu1,level=readLevel(await json<SourceLevel>(config.source));
+ const groups=await Promise.all(['levels','campaign',...config.bundles!].map(name=>json<Properties>(name+'/properties.json'))),flag=await json<Properties['zombies']['mummy_flag']>('battle/flag.json');
+ const props=groups.reduce((a,b)=>({...a,...b,plants:{...a.plants,...b.plants},zombies:{...a.zombies,...b.zombies},armors:{...a.armors,...b.armors},projectiles:{...a.projectiles,...b.projectiles},plantAnimations:{...a.plantAnimations,...b.plantAnimations}}));props.zombies.mummy_flag=flag;
+ await scene.init(sceneHost,()=>{},config,config.plants.map(p=>p.kind),level);game=new Game(level,props,scene.timing,z=>scene!.absorptionTarget(z),1234,false);scene.frameCombat();draw();
+});
+button('太极砖蓄能',()=>{game!.addPlant('firegourd',1,3);game!.spawnZombie('kongfu_armor2',1,cellX(7));game!.kongfu.fire(1,3);draw();});

@@ -231,7 +231,7 @@ export class LostCityBattle {
   b.animation=b.risen?'Walk_Bug_Risen':'Walk_Bug';return false;
  }
 
- spawn(z:Zombie){if(z.kind==='lostcity_crystalskull')this.crystals.set(z.id,{animation:'Walk',at:this.g.time,elapsed:0,event:0,charge:0,next:0});if(z.kind==='lostcity_relichunter'){const g=this.g,prop=g.props.zombies[z.kind],timeline=g.props.plantAnimations.lostRelic,back=timeline.SwingBack.events.find(e=>e.name==='swingJudge')!.at;z.x=cellX(prop.LandingColumns[Math.floor(g.random()*prop.LandingColumns.length)]);z.swing={at:g.time,judge:g.time+back,end:g.time+back+timeline.SwingSuccess.events.find(e=>e.name==='switchingFalse')!.at,failure:false};}if(z.kind==='lostcity_gargantuar')this.torches.set(z.id,true);if(z.kind.startsWith('lostcity_bug'))z.bug={hp:this.g.props.zombies[z.kind].BugToughness,animation:'Walk_Bug',at:this.g.time,risen:false,flying:true};if(z.kind==='lostcity_excavator')this.shovels.set(z.id,{animation:'Walk_Shovel',at:this.g.time,elapsed:0,event:0,held:true});if(z.kind==='lostcity_lostpilot'||z.kind==='lostcity_lostpilot_veteran')z.pilot={animation:z.entry==='parachute'?'Arrive':'Walk',at:this.g.time,event:0,hanging:z.entry==='parachute',left:this.g.props.zombies[z.kind].HangingNoEatTimeUntilDrop,fallTime:0};}
+ spawn(z:Zombie){if(z.kind==='lostcity_crystalskull')this.crystals.set(z.id,{animation:'Walk',at:this.g.time,elapsed:0,event:0,charge:0,next:0});if(z.kind==='lostcity_relichunter'){const g=this.g,prop=g.props.zombies[z.kind],timeline=g.props.plantAnimations.lostRelic,back=timeline.SwingBack.events.find(e=>e.name==='swingJudge')!.at;z.x=cellX(prop.LandingColumns[Math.floor(g.random()*prop.LandingColumns.length)]);z.swing={at:g.time,judge:g.time+back,end:g.time+back+timeline.SwingSuccess.events.find(e=>e.name==='switchingFalse')!.at,failure:false};}if(z.kind==='lostcity_gargantuar')this.torches.set(z.id,true);if(z.kind.startsWith('lostcity_bug'))z.bug={hp:this.g.props.zombies[z.kind].BugToughness,animation:'Walk_Bug',at:this.g.time,risen:false,flying:true};if(z.kind==='lostcity_excavator')this.shovels.set(z.id,{animation:'Walk_Shovel',at:this.g.time,elapsed:0,event:0,held:true});if(z.kind.startsWith('lostcity_lostpilot'))z.pilot={animation:z.entry==='parachute'?'Arrive':'Walk',at:this.g.time,event:0,hanging:z.entry==='parachute',left:this.g.props.zombies[z.kind].HangingNoEatTimeUntilDrop,fallTime:0};}
  tick(z:Zombie,dt:number){
   const s=z.pilot;if(!s)return false;const g=this.g;
   const play=(name:string)=>{s.animation=name;s.at=g.time;s.event=0;};
@@ -239,8 +239,8 @@ export class LostCityBattle {
   if(s.animation==='Idle_Hang'||s.animation==='Eat_Hang'){
    if(!z.eating)s.left-=dt;if(s.left<=0){s.hanging=false;play('Land');return true;}s.animation=z.eating?'Eat_Hang':'Idle_Hang';return false;
   }
-  const timeline=g.props.plantAnimations[z.kind==='lostcity_lostpilot_veteran'?'lostPilotVeteran':'lostPilot'][s.animation];
-  while(s.event<timeline.events.length&&g.time-s.at>=timeline.events[s.event].at){const e=timeline.events[s.event++].name;if(['arrive','drop','break'].includes(e))g.beach.sounds.push((z.kind==='lostcity_lostpilot_veteran'?'lostPilotVeteran':'lostPilot')+'/'+e+'Sounds');}
+  const timeline=g.props.plantAnimations[z.kind.startsWith('lostcity_lostpilot_veteran')?'lostPilotVeteran':'lostPilot'][s.animation];
+  while(s.event<timeline.events.length&&g.time-s.at>=timeline.events[s.event].at){const e=timeline.events[s.event++].name;if(['arrive','drop','break'].includes(e))g.beach.sounds.push((z.kind.startsWith('lostcity_lostpilot_veteran')?'lostPilotVeteran':'lostPilot')+'/'+e+'Sounds');}
   if(g.time-s.at>=Math.max(s.animation==='Arrive'?s.fallTime:0,timeline.duration))play(s.hanging?'Idle_Hang':'Walk');
   return true;
  }
