@@ -37,7 +37,7 @@ export class FutureBattle {
   hurtShield(p:Plant,damage:number){const s=this.holonuts.get(p.id)!;s.shield=Math.max(0,s.shield-damage);if(s.shield===0)for(let row=0;row<5;row++)this.visual('infinutShield','Death',cellX(p.column),rowY(row));}
   private blockShield(z:Zombie,dt:number){const p=this.shieldAt(z);if(!p)return false;z.eating=true;if(z.future)this.animateIf(z,'Eat');this.hurtShield(p,this.#game.props.zombies[z.kind].EatDPS*dt*(this.#game.time<z.chilledUntil?.5:1));return true;}
   private footballTarget(z:Zombie){return this.#game.plants.filter(p=>p.hp>0&&!p.hidden&&!p.leap&&p.action!=='explode'&&p.row===z.row&&z.x>=cellX(p.column)-22&&z.x<=cellX(p.column)+65&&!['spikeweed','spikerock','iceweed','iceburg','potatomine','blover','empea','stallia','hurrikale'].includes(p.kind)).sort((a,b)=>b.column-a.column)[0];}
-  private pushPlant(p:Plant,damage:number):boolean{
+  pushPlant(p:Plant,damage:number):boolean{
     const g=this.#game,plants=g.plants.filter(q=>q.row===p.row&&q.column===p.column&&q.hp>0&&q.kind!=='powerplant'&&q.kind!=='powerplant_alpha'&&q.kind!=='powerplant_beta');
     if(plants.some(q=>q.action==='food'||q.leap||g.props.plants[q.kind].CannotBePushedByFootballMech)){if(damage&&p.action!=='food')p.hp-=damage*this.plantDamageScale(p);return false;}
     let column=p.column-1;while(column>=0&&(g.level.mold.some(t=>t.row===p.row&&t.column===column)||g.graves.some(t=>t.row===p.row&&t.column===column)))column--;
@@ -95,7 +95,7 @@ export class FutureBattle {
     if(elapsed>=timeline.duration&&animation!=='Blowing')this.play(p,'Idle');
   }
   readonly redStates=new Map<number,{rate:number;rayUntil:number}>();
-  plantDamageScale(p:Plant){if(this.#game.kongfu.peach.protected(p))return 0;return p.kind==='lychee'?this.#game.kongfu.lychee.scale(p):p.kind==='redstinger'?this.#game.props.plants.redstinger[(['DamageScale0','DamageScale1','DamageScale2'] as const)[Math.floor(p.column/3)]]:1;}
+  plantDamageScale(p:Plant){if(this.#game.kongfu.peach.protected(p)||p.kind==='solarsage'&&p.animation==='Attack')return 0;return p.kind==='lychee'?this.#game.kongfu.lychee.scale(p):p.kind==='redstinger'?this.#game.props.plants.redstinger[(['DamageScale0','DamageScale1','DamageScale2'] as const)[Math.floor(p.column/3)]]:1;}
   private redIdle(p:Plant){return p.column<3?'Idle':p.column<6?'Idle_Scared':`Idle_Hide_${Math.max(0,3-Math.floor(p.hp/(this.#game.props.plants.redstinger.Toughness/4)))}`;}
   private pinkDetect(p:Plant){
     const targets=this.starTargets(),x=cellX(p.column),y=rowY(p.row)-33;

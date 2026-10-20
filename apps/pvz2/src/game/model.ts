@@ -14,6 +14,7 @@ import {BeachBattle,beachArmor} from './beach';
 import {DarkFinalePlants} from './dark-finale-plants';
 import {DarkMemory} from './dark-memory';
 import {DarkPlants} from './dark-plants';
+import {KongfuBladeBoss} from './kongfu-blade-boss';
 import {KongfuBoss} from './kongfu-boss';
 import {LostCityBoss} from './lostcity-boss';
 import {IceageBoss} from './iceage-boss';
@@ -161,7 +162,7 @@ export class Game {
     if(level.world==='egypt'&&level.day===2&&tutorial)this.addPlant('peashooter',2,2);
     this.dark.initLevel();this.iceage.init();for(const t of level.goldTiles)this.beachFinale.tiles.push({...t,next:0,at:-Infinity});
     this.conveyorPlants=level.conveyor?level.conveyor.InitialPlantList.map(p=>({...p})):[];
-    if(level.boss)this.boss=level.boss.kind==='kongfu_boss_explode'?new KongfuBoss(this):level.boss.kind.startsWith('zombossmech_lostcity')?new LostCityBoss(this):level.boss.kind.startsWith('zombossmech_iceage')?new IceageBoss(this):level.boss.kind.startsWith('zombossmech_beach')?new BeachBoss(this):level.boss.kind.startsWith('zombossmech_dark')?new DarkBoss(this):level.boss.kind.startsWith('zombossmech_future')?new FutureBoss(this):level.boss.kind.startsWith('zombossmech_cowboy')?new CowboyBoss(this):level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
+    if(level.boss)this.boss=level.boss.kind==='kongfu_boss_blade'?new KongfuBladeBoss(this):level.boss.kind==='kongfu_boss_explode'?new KongfuBoss(this):level.boss.kind.startsWith('zombossmech_lostcity')?new LostCityBoss(this):level.boss.kind.startsWith('zombossmech_iceage')?new IceageBoss(this):level.boss.kind.startsWith('zombossmech_beach')?new BeachBoss(this):level.boss.kind.startsWith('zombossmech_dark')?new DarkBoss(this):level.boss.kind.startsWith('zombossmech_future')?new FutureBoss(this):level.boss.kind.startsWith('zombossmech_cowboy')?new CowboyBoss(this):level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
     if(level.cannon){this.nextWave=4+RULES.normalWaveEntrance;level.cannon.RowHasCannon.forEach((has,row)=>{if(has)this.addPlant('coconutcannon',row,1);});}
   }
 
@@ -187,6 +188,7 @@ export class Game {
     const pot=this.plants.find(p=>p.row===row&&p.column===column&&p.kind==='floawerPot');
     const existing=this.plants.find(p=>p.row===row&&p.column===column&&(kind==='lilypad'?p.kind==='lilypad':kind==='floawerPot'?p.kind==='floawerPot':p.kind!=='floawerPot'&&p.kind!=='lilypad'));
     if(pot&&this.darkPlants.states.get(pot.id)!.moving)return false;
+    if(!this.kongfu.abbots.canPlant(kind,row,column))return false;
     const repairing=kind==='lychee'&&existing?.kind==='lychee'&&existing.hp<p.Toughness*5/6||kind==='turnip'&&existing?.kind==='turnip'&&existing.hp<=p.Toughness*2/3||kind==='endurian'&&existing?.kind==='endurian'&&existing.hp<p.Toughness*.75||kind==='bowlingbulb'&&existing?.kind==='bowlingbulb'&&this.beach.bowling.states.get(existing.id)!.loaded.some(loaded=>!loaded)||kind==='peanut'&&existing?.kind==='peanut'&&existing.hp<p.Toughness*.75||kind==='redstinger'&&existing?.kind==='redstinger'&&column>=6&&existing.hp<p.Toughness*.75||kind==='holonut'&&existing?.kind==='holonut'&&(existing.hidden||existing.hp<=p.Toughness*2/3)||this.wallnutFirstAid&&(kind==='wallnut'||kind==='tallnut')&&existing?.kind===kind&&existing.hp<=p.Toughness*(kind==='tallnut'?2/3:.75)||kind==='spikerock'&&existing?.kind==='spikerock'&&existing.spikes!<p.MaxSpike||kind==='chardguard'&&existing?.kind==='chardguard'&&existing.leaves!<p.MaxBounceTime;
     const stacking=kind==='peapod'&&existing?.kind==='peapod'&&existing.heads!<5;
     if(seaCell(this.level.planks,row,column)||!this.cowboy.canPlant(row,column)||this.dark.blocks(row,column)||!this.dark.canPlant(kind,row,column)||existing?.sheep!==undefined)return false;
@@ -321,6 +323,7 @@ export class Game {
     if(plant.kind==='threepeater'){plant.burst=0;plant.nextBurst=this.time+.01;}
     if(plant.kind==='peapod'||plant.kind==='parsnip'){plant.animation='FoodStart';plant.eventIndex=0;plant.burst=plant.kind==='peapod'?5:this.props.plants.parsnip.PlantfoodSummonCount;}
     if(plant.kind==='peach')this.kongfu.peach.food(plant);
+    if(plant.kind==='solarsage')this.kongfu.sage.food(plant);
     if(plant.kind==='lychee')this.kongfu.lychee.food(plant);
     if(plant.kind==='turnip')this.kongfu.turnip.food(plant);
     if(plant.kind==='bambooshoot')this.kongfu.bamboo.start(plant,true);
@@ -450,6 +453,7 @@ export class Game {
     const actions=this.level.actions[this.wave];
     this.pending=[];
     for(const action of actions){
+      if(action.mode==='qigong'){for(const q of action.qigong!)this.pending.push({kind:q.Type,row:q.Rows[Math.floor(this.random()*q.Rows.length)],x:cellX(q.Columns[Math.floor(this.random()*q.Columns.length)]),mode:'ground',at:this.time+q.Delay,food:false});continue;}
       if(action.mode==='chiHole'){this.kongfu.holes.spawn(action.chiHole!);continue;}
       if(action.mode==='frost'){this.iceage.wind(action.winds!);continue;}
       if(action.mode==='tide'){this.beach.change(action.tide!);continue;}
@@ -493,7 +497,7 @@ export class Game {
       if(action.mode==='raid')this.events.push({type:'raid'});
       if(action.mode==='storm')this.events.push({type:'storm'});
     }
-    if(!this.level.suppressFlag&&(this.wave+1)%this.level.flagInterval===0)this.pending.unshift({kind:this.level.world==='kongfu'?(this.level.day>=17?'monk_flag':'kongfu_flag'):this.level.world==='lostcity'?'lostcity_flag':this.level.world==='iceage'?'iceage_flag':this.level.world==='beach'?'beach_flag':this.level.world==='pirate'?'pirate_flag':this.level.world==='west'?'cowboy_flag':this.level.world==='dark'?'dark_flag':this.level.world==='future'?'future_flag':'mummy_flag',row:this.level.planks===null?Math.floor(this.random()*5):this.level.planks[Math.floor(this.random()*this.level.planks.length)],x:1070,mode:'walk',at:this.time,food:false});
+    if(!this.level.suppressFlag&&(this.wave+1)%this.level.flagInterval===0)this.pending.unshift({kind:this.level.world==='kongfu'?(this.level.day>=33?'abbot_flag':this.level.day>=17?'monk_flag':'kongfu_flag'):this.level.world==='lostcity'?'lostcity_flag':this.level.world==='iceage'?'iceage_flag':this.level.world==='beach'?'beach_flag':this.level.world==='pirate'?'pirate_flag':this.level.world==='west'?'cowboy_flag':this.level.world==='dark'?'dark_flag':this.level.world==='future'?'future_flag':'mummy_flag',row:this.level.planks===null?Math.floor(this.random()*5):this.level.planks[Math.floor(this.random()*this.level.planks.length)],x:1070,mode:'walk',at:this.time,food:false});
     this.wave++;this.nextWave=Infinity;this.waveIds.clear();
     this.waveDeadline=this.time+RULES.waveDelay+this.random()*RULES.waveDelayRange;
     this.waveDamageDeadline=this.time+RULES.waveDamageDelay+this.random()*RULES.waveDamageRange;
@@ -968,6 +972,7 @@ export class Game {
       if(this.level.world==='kongfu'&&p.leap?.pushed){if(this.time-p.leap.at<(p.leap.duration??.5))continue;delete p.leap;}
       if(p.kind==='powerlily'){if(this.time-p.actionAt>=this.props.plantAnimations.powerlily.Attack.events.find(e=>e.name==='produce')!.at){this.pickups.push({id:this.nextEntityId(),kind:'food',x:cellX(p.column),y:rowY(p.row)-45,age:0});p.hp=0;}continue;}
       if(p.kind==='peach'){this.kongfu.peach.tick(p,dt);continue;}
+      if(p.kind==='solarsage'){this.kongfu.sage.plant(p);continue;}
       if(p.kind==='lychee'){this.kongfu.lychee.tick(p);continue;}
       if(p.kind==='turnip'){this.kongfu.turnip.tick(p,dt);continue;}
       if(p.kind==='bambooshoot'){this.kongfu.bamboo.tick(p,dt);continue;}
