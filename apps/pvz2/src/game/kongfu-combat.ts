@@ -11,8 +11,8 @@ export class KongfuCombat {
  reflected:{id:number;x:number;y:number;vx:number;damage:number;name:'pea'|'boomerang';powered:boolean}[]=[];
  constructor(protected g:Game){}
  initCombat(){for(const t of this.g.level.bronzeStatues){const z=this.g.spawnZombie('kongfu_bronze_statue',t.GridY,cellX(t.GridX)),s=z.kongfu!;s.duration=t.LifeSpan.Min+this.g.random()*(t.LifeSpan.Max-t.LifeSpan.Min);s.life=s.duration;s.awakens=t.ZombiesToSpawn[Math.floor(this.g.random()*t.ZombiesToSpawn.length)];}this.tnt=this.g.level.tnt?this.g.level.tnt.SpawnData.map(t=>({row:t.GridY,column:t.GridX,length:t.WireLength,speed:t.Speed,lit:false,explodeAt:null})):[];}
- spawn(z:Zombie){this.g.kongfu.abbots.spawn(z);if(!['kongfu_bronze_chi','monk_drink','kongfu_bronze_hook','monk_blade','monk_nunchaku','monk_torch','monk_imp','kongfu_chi','kongfu_torch','kongfu_hammer','kongfu_rocket_imp','kongfu_bomb','kongfu_drink','kongfu_gong','kongfu_bronze_statue','kongfu_bronze_strong'].includes(z.kind))return;const flying=z.kind==='kongfu_rocket_imp'&&(z.entry==='walk'||z.entry==='raid');z.kongfu={animation:flying?'Walk_Fly':'Walk',at:this.g.time,elapsed:0,torch:z.kind==='kongfu_torch'||z.kind==='monk_torch',flying,rocket:z.kind==='kongfu_rocket_imp',event:0};if(z.kind==='monk_imp'){const t=native.zombies.monk_imp.TimeBeforeFirst;z.kongfu.next=t.Min+this.g.random()*(t.Max-t.Min);}
-  if(z.kind==='kongfu_bronze_chi'){const t=native.zombies.kongfu_bronze_chi.TimeBeforeSkills;z.kongfu.next=t.Min+this.g.random()*(t.Max-t.Min);z.kongfu.count=Math.round(this.g.random());}
+ spawn(z:Zombie){this.g.kongfu.abbots.spawn(z);if(!['kongfu_bronze_chi_without_torch','kongfu_bronze_chi','monk_drink','kongfu_bronze_hook','monk_blade','monk_nunchaku','monk_torch','monk_imp','kongfu_chi','kongfu_torch','kongfu_hammer','kongfu_rocket_imp','kongfu_bomb','kongfu_drink','kongfu_gong','kongfu_bronze_statue','kongfu_bronze_strong'].includes(z.kind))return;const flying=z.kind==='kongfu_rocket_imp'&&(z.entry==='walk'||z.entry==='raid');z.kongfu={animation:flying?'Walk_Fly':'Walk',at:this.g.time,elapsed:0,torch:z.kind==='kongfu_torch'||z.kind==='monk_torch',flying,rocket:z.kind==='kongfu_rocket_imp',event:0};if(z.kind==='monk_imp'){const t=native.zombies.monk_imp.TimeBeforeFirst;z.kongfu.next=t.Min+this.g.random()*(t.Max-t.Min);}
+  if(z.kind==='kongfu_bronze_chi'||z.kind==='kongfu_bronze_chi_without_torch'){const t=native.zombies.kongfu_bronze_chi.TimeBeforeSkills;z.kongfu.next=t.Min+this.g.random()*(t.Max-t.Min);z.kongfu.count=Math.round(this.g.random());}
   if(z.kind==='kongfu_bronze_hook'){const t=native.zombies.kongfu_bronze_hook.LeapInterval;z.kongfu!.next=t.Min+this.g.random()*(t.Max-t.Min);}
   if(z.kind==='kongfu_chi')z.kongfu.next=native.zombies.kongfu_chi.ChiIntervalStart;if(z.kind==='kongfu_bomb'){z.kongfu.bomb=true;z.kongfu.ignited=true;}if(z.kind==='kongfu_gong'){const t=native.zombies.kongfu_gong.TimeBeforeSummon;z.kongfu.next=t.Min+this.g.random()*(t.Max-t.Min);}if(z.kind==='kongfu_bronze_statue')z.kongfu.animation='Idle0';if(flying){z.entry='walk';this.g.beach.sounds.push('kongfuRocket/launchSounds');}}
  private change(z:Zombie,animation:string){Object.assign(z.kongfu!,{animation,at:this.g.time,elapsed:0,event:0});}
@@ -137,8 +137,8 @@ export class KongfuCombat {
     if(s.elapsed>=timeline.events.find(e=>e.name==='switchingFalse')!.at)this.change(z,'Walk');z.eating=false;return true;
    }
   }
-  if(z.kind==='kongfu_bronze_chi'){
-   const prop=native.zombies.kongfu_bronze_chi,anims=g.props.plantAnimations.kongfuBronzeChi;
+  if(z.kind==='kongfu_bronze_chi'||z.kind==='kongfu_bronze_chi_without_torch'){
+   const prop=native.zombies[z.kind],anims=g.props.plantAnimations.kongfuBronzeChi;
    if(s.animation==='Walk'){
     if(z.x<cellX(9))s.next!-=dt;
     if(s.next!<=0){this.change(z,!z.reversed&&s.count&&g.plants.some(p=>p.hp>0&&p.row===z.row&&cellX(p.column)<z.x)?'Pull':'Summon');s.count=1-s.count!;const t=prop.TimeBetweenSkills;s.next=t.Min+g.random()*(t.Max-t.Min);}

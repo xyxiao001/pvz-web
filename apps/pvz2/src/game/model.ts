@@ -15,6 +15,7 @@ import {DarkFinalePlants} from './dark-finale-plants';
 import {DarkMemory} from './dark-memory';
 import {DarkPlants} from './dark-plants';
 import {KongfuBladeBoss} from './kongfu-blade-boss';
+import {KongfuChiBoss} from './kongfu-chi-boss';
 import {KongfuBoss} from './kongfu-boss';
 import {LostCityBoss} from './lostcity-boss';
 import {IceageBoss} from './iceage-boss';
@@ -162,7 +163,7 @@ export class Game {
     if(level.world==='egypt'&&level.day===2&&tutorial)this.addPlant('peashooter',2,2);
     this.dark.initLevel();this.iceage.init();for(const t of level.goldTiles)this.beachFinale.tiles.push({...t,next:0,at:-Infinity});
     this.conveyorPlants=level.conveyor?level.conveyor.InitialPlantList.map(p=>({...p})):[];
-    if(level.boss)this.boss=level.boss.kind==='kongfu_boss_blade'?new KongfuBladeBoss(this):level.boss.kind==='kongfu_boss_explode'?new KongfuBoss(this):level.boss.kind.startsWith('zombossmech_lostcity')?new LostCityBoss(this):level.boss.kind.startsWith('zombossmech_iceage')?new IceageBoss(this):level.boss.kind.startsWith('zombossmech_beach')?new BeachBoss(this):level.boss.kind.startsWith('zombossmech_dark')?new DarkBoss(this):level.boss.kind.startsWith('zombossmech_future')?new FutureBoss(this):level.boss.kind.startsWith('zombossmech_cowboy')?new CowboyBoss(this):level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
+    if(level.boss)this.boss=level.boss.kind==='kongfu_boss_chi'?new KongfuChiBoss(this):level.boss.kind==='kongfu_boss_blade'?new KongfuBladeBoss(this):level.boss.kind==='kongfu_boss_explode'?new KongfuBoss(this):level.boss.kind.startsWith('zombossmech_lostcity')?new LostCityBoss(this):level.boss.kind.startsWith('zombossmech_iceage')?new IceageBoss(this):level.boss.kind.startsWith('zombossmech_beach')?new BeachBoss(this):level.boss.kind.startsWith('zombossmech_dark')?new DarkBoss(this):level.boss.kind.startsWith('zombossmech_future')?new FutureBoss(this):level.boss.kind.startsWith('zombossmech_cowboy')?new CowboyBoss(this):level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
     if(level.cannon){this.nextWave=4+RULES.normalWaveEntrance;level.cannon.RowHasCannon.forEach((has,row)=>{if(has)this.addPlant('coconutcannon',row,1);});}
   }
 
@@ -975,6 +976,7 @@ export class Game {
     }
     this.tickConveyor(dt);this.tickPower(dt);this.tickMatching();this.escape.tick(dt);this.finale.tick(dt);this.western.tick(dt);this.westFinale.tick(dt);this.future.tick(dt);
     for (const p of this.plants) {
+      if(this.boss instanceof KongfuChiBoss&&this.boss.plantStunned(p)){p.actionAt+=dt;p.nextAction+=dt;p.nextBurst+=dt;continue;}
       if(p.kind==='hotpotato'){this.iceage.tickHot(p);continue;}
       if(this.iceage.blocked(p))continue;
       if(p.sheep!==undefined){p.actionAt+=dt;p.nextAction+=dt;p.nextBurst+=dt;continue;}

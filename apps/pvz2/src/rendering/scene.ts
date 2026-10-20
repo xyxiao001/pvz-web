@@ -5,6 +5,7 @@ import {iceageArmor} from '../game/iceage';
 import {beachArmor} from '../game/beach';
 import { applyCostume } from '../shell/costumes';
 import {KongfuBladeBoss} from '../game/kongfu-blade-boss';
+import {KongfuChiBoss} from '../game/kongfu-chi-boss';
 import {KongfuBoss} from '../game/kongfu-boss';
 import {LostCityBoss} from '../game/lostcity-boss';
 import {IceageBoss} from '../game/iceage-boss';
@@ -272,6 +273,7 @@ export class Scene {
       Object.assign(events.boss!,{eyeBlopSound:'eyeblopSound',roarSound:'roarSounds',introSkySound:'introSkySounds',shade:'introFlyShadeSounds',introLand:'worldZombossMechStabSounds',introFireSound:'introFireSounds',introRoarSound:'introRoarSounds',deathRoarSound:'deathRoarSounds',fireSteadySound:'fireSteadySounds',fireShootSound:'fireShootSounds',fireEndSound:'fireEndSounds',stunStartSound:'magnetStartSounds',stunEndSound:'magnetEndSounds',rushStart:'rushStartSounds',rushEndSound:'rushEndSounds'});
     }
     if(name==='boss'&&this.art.campaign.actors.boss.group==='kongfu'){events.boss={bomb_knock:'bombKnockSounds',expl:'explodeSounds',shake:'shakeSounds',strike:'strikeSounds',throw:'throwSounds',imp:'throwImpSounds',fly:'flySounds',magic:'magicSounds',say:'saySounds',sayThrow:'sayThrowSounds',pat:'patSounds',landSound:'worldZombossMechLeapEndSounds',blackhole:'blackholeOpenSounds'};}
+    if(name==='boss'&&this.art.campaign.actors.boss.armature==='BossChi')events.boss={};
     if(name==='boss'&&this.art.campaign.actors.boss.group==='lostcity'){
       events.boss={flap:'flapSounds',introSound:'introSounds',introSay:'worldZombossSpawnSaySounds',balloonDeath:'balloonDeathSounds',triggerStart:'triggerSounds',triggerEnd:'triggerSounds',mouthOpen:'mouthOpenSounds',mouthClose:'mouthCloseSounds',engineBurst:'engineShootSounds',plane:'planeSounds',dropSound:'dropSounds',rushSay:'worldZombossStabSaySounds',deathFallSound:'worldZombossMechDeathFallSounds',escape_trigger:'worldZombossEscapeTriggerSound'};
     }
@@ -359,7 +361,7 @@ export class Scene {
         const boss=game.boss,actor=this.actors.get(z.id)??this.addActor(z.id,'boss');
         actor.root.position.set(z.x,boss.y-boss.height);actor.root.zIndex=boss.y+1;
         actor.rig.animation.timeScale=boss.rate;
-        this.animate(actor,boss.animation,boss.animationSerial,['Idle','SummonLoop','Summonning','Stunning','Leaping','StunLoop','CoughLoop','MagnetLoop','RushLoop'].includes(boss.animation)?0:1);
+        this.animate(actor,boss.animation,boss.animationSerial,['Idle','SummonLoop','Summonning','Stunning','Leaping','StunLoop','CoughLoop','MagnetLoop','RushLoop','HoleLoop','LeapLoop'].includes(boss.animation)?0:1);
         continue;
       }
       let actor=this.actors.get(z.id);
@@ -742,7 +744,7 @@ export class Scene {
       }
     }
     for(const rail of game.level.rails?.Rails??[])for(let row=rail.RowStart;row<=rail.RowEnd;row++){
-      const rig=object(`rail-${rail.Column}-${row}`,'rail',(row===rail.RowStart?'Up':row===rail.RowEnd?'Down':'Mid')+(game.level.world==='beach'?'Beach':'Cowboy'),cellX(rail.Column),rowY(row),.5);rig.zIndex=-100;
+      const rig=object(`rail-${rail.Column}-${row}`,'rail',(row===rail.RowStart?'Up':row===rail.RowEnd?'Down':'Mid')+(game.level.world==='kongfu'?'Kongfu':game.level.world==='beach'?'Beach':'Cowboy'),cellX(rail.Column),rowY(row),.5);rig.zIndex=-100;
     }
     if(game.level.corral)for(let row=0;row<5;row++){
       const clear=!game.zombies.some(z=>z.row===row&&z.hp>0);
@@ -750,7 +752,7 @@ export class Scene {
       const front=object(`fence-front-${row}`,'fenceHere','Idle',cellX(8)+BOARD.cellWidth*1.2,rowY(row),.51);front.zIndex=rowY(row)+1;
     }
     for(const z of game.zombies)if(z.west?.chiliUntil&&game.time<z.west.chiliUntil)object(`chili-stun-${z.id}`,'chiliStun','Idle',z.x,rowY(z.row)-40,.51);
-    for(const cart of game.cowboy.carts){const rig=object(`cart-${cart.id}`,'cart','Cowboy',cellX(cart.column),rowY(cart.row),.5);rig.zIndex=rowY(cart.row)-2;rig.armature.getSlot('LINK')!.displayIndex=-1;}
+    for(const cart of game.cowboy.carts){const rig=object(`cart-${cart.id}`,'cart',game.level.world==='kongfu'?'Kongfu':'Cowboy',cellX(cart.column),rowY(cart.row),.5);rig.zIndex=rowY(cart.row)-2;rig.armature.getSlot('LINK')!.displayIndex=-1;}
     for(const shot of game.cowboy.shots){const rig=object(`west-shot-${shot.id}`,shot.mega?'megaPea':'pea','Idle',shot.x,rowY(shot.row)-48,shot.mega?.55:.5);rig.scale.x*=Math.sign(shot.vx);}
     for(const effect of game.cowboy.effects){const age=game.time-effect.at,animation=effect.kind==='cowboyHat'?'Idle':effect.kind==='plateDrop'?'Broken2':effect.kind==='prospectorTail'?'Play0':'Play';const rig=object(`west-fx-${effect.id}`,effect.kind,animation,effect.x,effect.y,.51);rig.animation.lastAnimationState!.playTimes=1;if(effect.kind==='cowboyHat'||effect.kind==='plateDrop'){rig.y+=-100*age+180*age*age;rig.rotation=age*2;rig.alpha=Math.min(1,(1.5-age)*2);}}
     for(const p of game.plants)if((p.kind==='spikeweed'||p.kind==='spikerock')&&p.action==='food')for(let column=0;column<9;column++)if(column!==p.column&&!seaCell(game.level.planks,p.row,column))object(`spike-food-${p.id}-${column}`,p.kind==='spikerock'?'rockFood':'spikeFood','Idle',cellX(column),rowY(p.row),.5);
@@ -824,7 +826,16 @@ export class Scene {
         for(const c of game.boss.chis)object(`blade-chi-${c.id}`,'bladeChi','i',c.x,rowY(c.row)-30,.51);
         const b=game.boss.boomerang;if(b){object(`blade-boomerang-${b.id}`,'bladeBoomerang','Idle',b.x,rowY(b.row),.51);const link=object(`blade-link-${b.id}`,'bladeLink','idle',game.boss.zombie.x,game.boss.y-60,.51);link.scale.x=(b.x-game.boss.zombie.x)/300;link.rotation=Math.atan2(rowY(b.row)-game.boss.y+60,b.x-game.boss.zombie.x);}
       }
-      if(game.boss instanceof KongfuBoss){
+      if(game.boss instanceof KongfuChiBoss){
+        const boss=game.boss;
+        if(boss.shieldLeft>0)for(const back of [true,false]){const rig=object(`chi-shield-${back}`,back?'chiBossShieldBack':'chiBossShield','Idle',boss.zombie.x,boss.y,.51);rig.zIndex=boss.y+(back?-1:2);}
+        if(boss.animation==='RushLoop'){const ray=object('chi-ray','chiBossRay','Idle',boss.zombie.x-60,boss.y-65,.51);ray.scale.x=boss.rayLength/300;object('chi-ray-hit','chiBossRayHit','Idle',boss.zombie.x-60-boss.rayLength,boss.y-65,.51);}
+        for(const p of game.plants)if(boss.plantStunned(p))object(`chi-stuck-${p.id}`,'chiBossStuck','Idle',cellX(p.column),rowY(p.row)-40,.5);
+        for(const c of boss.chis)object(`boss-chi-${c.id}`,'abbotShot','i',c.x,rowY(c.row)-30,.51);
+        for(const m of boss.missiles)object(`chi-rack-${m.id}`,'chiBossRack','Idle',cellX(m.column),rowY(m.row)-600*(1-m.age/1.5),.5);
+        for(const hit of boss.impacts)object(`chi-rack-hit-${hit.id}`,'chiBossRackHit','Play',cellX(hit.column),rowY(hit.row),.5).animation.lastAnimationState!.playTimes=1;
+        if(boss.animation==='Escape')object('chi-escape','chiBossHole','Idle',boss.zombie.x+220,boss.y-90,1.5);
+      }else if(game.boss instanceof KongfuBoss){
         for(const m of game.boss.missiles){const t=m.age/1.5;object(`kongfu-bomb-${m.id}`,'kongfuBossBomb','i',game.boss.zombie.x+(cellX(m.column)-game.boss.zombie.x)*t,game.boss.y-100+(rowY(m.row)-game.boss.y+100)*t-200*4*t*(1-t),.5);}
         for(const b of game.boss.blasts){const rig=object(`kongfu-blast-${b.id}`,b.big?'kongfuBombBig':'kongfuBombSmall','Play',cellX(b.column),rowY(b.row),.5);rig.animation.lastAnimationState!.playTimes=1;}
       }
@@ -832,7 +843,7 @@ export class Scene {
         if(m.age<1.5){object(`boss-missile-${m.id}`,'bossMissile','Idle',cellX(m.column),rowY(m.row)-600*(1-m.age/1.5),.5).zIndex=1100;object(`boss-locator-${m.id}`,'bossTarget','Idle',cellX(m.column),rowY(m.row),.2);}
         else {const west=game.level.world==='west'||game.level.world==='future',key=`boss-impact-${m.id}`;if(west&&!this.objects.has(key))this.onSound('boss/missileImpact');const rig=object(key,west?'bossMissileImpact':'bossMissile','Play',cellX(m.column),rowY(m.row),.5,west?undefined:'ProjectileExplode');rig.animation.lastAnimationState!.playTimes=1;}
       }
-      if(game.boss.animation==='Escape'){const rig=object('boss-escape','bossEscape','Play',game.boss.zombie.x+65.644,game.boss.y-84.136,.5);rig.animation.lastAnimationState!.playTimes=1;}
+      if(game.boss.animation==='Escape'&&!(game.boss instanceof KongfuChiBoss)){const rig=object('boss-escape','bossEscape','Play',game.boss.zombie.x+65.644,game.boss.y-84.136,.5);rig.animation.lastAnimationState!.playTimes=1;}
     }
     for(const p of game.pickups)object(`pickup-${p.id}`,p.kind,'Idle',p.x,p.y+Math.sin(p.age*3)*4,p.kind==='food'?.7:.8).zIndex=1000;
     for(const m of game.missiles){
