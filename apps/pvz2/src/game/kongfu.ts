@@ -1,11 +1,13 @@
+import {KongfuPeach} from './kongfu-peach';
 import {KongfuTurnip} from './kongfu-turnip';
 import {KongfuBamboo} from './kongfu-bamboo';
 import {KongfuCombat,isRack} from './kongfu-combat';
 import {BOARD,cellX,rowY,type ZombieKind} from './level';
 import type {Game,Plant} from './model';
 import native from '../../public/assets/kongfu/properties.json';
-export const kongfuArmor=(kind:ZombieKind)=>kind==='kongfu_armor3'?'kongfu_armor3':kind==='kongfu_armor1'?'kongfu_armor1':kind==='kongfu_armor2'?'kongfu_armor2':null;
+export const kongfuArmor=(kind:ZombieKind)=>(kind==='kongfu_armor3'||kind==='monk_armor3')?'kongfu_armor3':(kind==='kongfu_armor1'||kind==='monk_armor1')?'kongfu_armor1':(kind==='kongfu_armor2'||kind==='monk_armor2')?'kongfu_armor2':null;
 export class KongfuBattle extends KongfuCombat {
+ peach=new KongfuPeach(this.g);
  turnip=new KongfuTurnip(this.g);
  bamboo=new KongfuBamboo(this.g);
  tiles:{row:number;column:number;left:number;lit:boolean;rate:number;deadAt:number|null}[]=[];
@@ -18,7 +20,7 @@ export class KongfuBattle extends KongfuCombat {
   }
  }
  addTiles(cells:{row:number;column:number}[]){for(const c of cells)if(!this.tiles.some(t=>t.row===c.row&&t.column===c.column&&t.deadAt===null))this.tiles.push({...c,left:native.tiles.taichitile.LifeSpan,lit:false,rate:1,deadAt:null});}
- add(p:Plant){this.turnip.add(p);this.bamboo.add(p);if(p.kind==='firegourd'){this.gourds.set(p.id,{sleep:0,charge:0,distance:0,left:0,flame:false,food:false});p.animation='Idle1';}}
+ add(p:Plant){this.peach.add(p);this.turnip.add(p);this.bamboo.add(p);if(p.kind==='firegourd'){this.gourds.set(p.id,{sleep:0,charge:0,distance:0,left:0,flame:false,food:false});p.animation='Idle1';}}
  fire(row:number,column:number){const p=this.g.plants.find(p=>p.kind==='firegourd'&&p.row===row&&p.column===column&&p.hp>0);if(!p||p.sheep!==undefined)return false;const s=this.gourds.get(p.id)!;if(s.sleep>0||p.action!=='idle')return false;this.start(p,false);return true;}
  start(p:Plant,food:boolean){const g=this.g,s=this.gourds.get(p.id)!,prop=g.props.plants.firegourd;
   s.distance=food?prop.PlantfoodDistance:prop.AttackDistanceMin+(prop.AttackDistanceMax-prop.AttackDistanceMin)*(1-Math.min(1,s.charge/prop.ChargingTime))+.2;
