@@ -1,11 +1,16 @@
 import {BOARD,cellX,rowY} from './level';
 import type {Game,Plant,Zombie} from './model';
+import {EightiesCarrot} from './eighties-carrot';
+import {EightiesBoomBox} from './eighties-boombox';
 import {EightiesArcade} from './eighties-arcade';
 import {isFlying} from './pirate';
 
 /** Native Eighties music cues, zombies and plants. */
 export class EightiesBattle {
  readonly arcade:EightiesArcade;
+ readonly carrot:EightiesCarrot;
+ readonly boombox:EightiesBoomBox;
+ get musicJam(){return this.g.time<this.boombox.musicUntil?'jam_ballad':this.jam;}
  spores=new Set<number>();
  sprouts:{row:number;column:number;x:number;at:number}[]=[];
  jam='jam_clear';
@@ -21,7 +26,7 @@ export class EightiesBattle {
  heavy=new Map<number,number>();
  kicks=new Map<number,number>();
  shots:{id:number;row:number;x:number;y:number;food:boolean;left:number;hits:Set<number>}[]=[];
- constructor(private g:Game){this.arcade=new EightiesArcade(g);}
+ constructor(private g:Game){this.arcade=new EightiesArcade(g);this.carrot=new EightiesCarrot(g);this.boombox=new EightiesBoomBox(g);}
  private play(p:Plant,animation:string,action:Plant['action']='idle'){p.animation=animation;p.action=action;p.actionAt=this.g.time;p.eventIndex=0;}
  add(p:Plant){if(p.kind==='sporeshroom'){p.nextAction=this.g.time;this.play(p,'Idle');}if(p.kind==='garlic')this.play(p,'Idle00');if(p.kind==='thymewarp'){this.play(p,'Play','explode');p.hidden=true;this.warp();}if(p.kind==='phatbeet'){this.heavy.set(p.id,2);p.nextAction=this.g.time;this.play(p,'Idle');}if(p.kind==='cactus'){p.nextAction=this.g.time;this.play(p,'Idle');}}
  spawn(z:Zombie){this.arcade.spawn(z);if(z.kind==='eighties_punk')this.kicks.set(z.id,0);if(z.kind==='eighties_gargantuar')this.gargCountdown.set(z.id,4+1.5*this.g.random());}
@@ -95,11 +100,12 @@ export class EightiesBattle {
   return age<1?Math.min(1,(1-age)/.4):age<1+w.delay?0:Math.min(1,(age-1-w.delay)/.4);
  }
  crush(z:Zombie,p:Plant){
-  if(z.kind!=='eighties_glitter'||this.jam!=='jam_pop'||this.g.kongfu.peach.protected(p)||p.action==='food')return false;
+  if(this.carrot.blocked(p)||z.kind!=='eighties_glitter'||this.jam!=='jam_pop'||this.g.kongfu.peach.protected(p)||p.action==='food')return false;
   p.hp=0;p.armor=0;z.eating=false;this.g.future.visual('glitterHit','Play',z.x,rowY(z.row));return true;
  }
  private mcTargets(z:Zombie){return this.g.plants.filter(p=>p.hp>0&&!p.hidden&&!p.leap?.pushed&&p.sheep===undefined&&p.action!=='food'&&p.action!=='explode'&&!this.g.kongfu.peach.protected(p)&&!['spikeweed','spikerock','iceweed','lilypad','potatomine','stunion','iceburg','goldleaf','bambooshoot','hotpotato','thymewarp'].includes(p.kind)&&Math.abs(p.row-z.row)<=1&&Math.abs(cellX(p.column)-z.x)<(p.row===z.row?1.5625:1)*BOARD.cellWidth+22);}
  zombie(z:Zombie,dt:number){
+  if(z.kind==='eighties_boombox')return this.boombox.zombie(z);
   if(z.kind==='eighties_arcade')return this.arcade.zombie(z,dt);
   if(z.kind==='eighties_breakdancer')return this.breakdance(z,dt);
   if(z.kind!=='eighties_mc')return false;
@@ -228,7 +234,7 @@ export class EightiesBattle {
   z.eating=false;g.beach.sounds.push('eightiesPunk/kickSounds');return true;
  }
  tick(dt:number){
-  const g=this.g;this.arcade.tick(dt);
+  const g=this.g;this.carrot.tick();this.boombox.tick(dt);this.arcade.tick(dt);
   for(const s of this.sprouts)if(g.time>=s.at){
    g.future.visual('sporeSpawn','Play',s.x,rowY(s.row));
    if(s.column>=0&&s.column<9&&!g.plants.some(p=>p.hp>0&&p.row===s.row&&p.column===s.column)&&!g.graves.some(t=>t.hp>0&&t.row===s.row&&Math.round(t.column)===s.column)&&!g.level.mold.some(t=>t.row===s.row&&t.column===s.column)){g.addPlant('sporeshroom',s.row,s.column);this.play(g.plants.at(-1)!,'Spawn','grow');}

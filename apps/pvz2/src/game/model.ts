@@ -188,6 +188,7 @@ export class Game {
     // Native powertile tags use tilePutable: ordinary plants may share the square.
     if(tilePlant&&(this.level.powerTiles.some(t=>t.row===row&&t.column===column)||this.plants.some(p=>p.row===row&&p.column===column&&(p.endangered||p.kind==='powerplant'||p.kind==='powerplant_alpha'||p.kind==='powerplant_beta'))))return false;
     const placementKind=kind==='imitater'?this.imitateKind:kind;
+    if(placementKind==='intensivecarrot'&&!this.eighties.carrot.at(row,column))return false;
     const pot=this.plants.find(p=>p.row===row&&p.column===column&&p.kind==='floawerPot');
     const existing=this.plants.find(p=>p.row===row&&p.column===column&&(kind==='lilypad'?p.kind==='lilypad':kind==='floawerPot'?p.kind==='floawerPot':p.kind!=='floawerPot'&&p.kind!=='lilypad'&&p.kind!=='bamboobusket'));
     if(pot&&this.darkPlants.states.get(pot.id)!.moving)return false;
@@ -216,6 +217,8 @@ export class Game {
   }
 
   addPlant(kind: PlantKind, row: number, column: number) {
+    if(kind==='intensivecarrot'){this.eighties.carrot.revive(row,column);return;}
+    if(kind!=='imitater')this.eighties.carrot.clear(row,column);
     if(isBowlingTool(kind)){this.beach.bowling.tool(kind,row,column);return;}
     const p = this.props.plants[kind];
     const nextAction = this.time + ((kind === 'sunflower'||kind==='twinsunflower') ? p.ProduceCountdownStart + this.random() * p.ProduceCountdownStartAdditional : kind==='coconutcannon'?0:.4);
@@ -288,7 +291,7 @@ export class Game {
   }
   plantFood(row: number, column: number, boost=false): boolean {
     const plant = this.plants.filter(p => p.row === row && p.column === column && p.hp>0&&p.kind!=='bamboobusket').sort((a,b)=>Number(a.kind==='floawerPot'||a.kind==='lilypad')-Number(b.kind==='floawerPot'||b.kind==='lilypad'))[0];
-    if(plant?.sheep!==undefined)return false;
+    if(plant?.sheep!==undefined||plant&&this.eighties.carrot.blocked(plant))return false;
     if(plant&&this.westFinale.handles(plant.kind)&&!this.westFinale.foodable(plant))return false;
     if(plant&&this.darkPlants.handles(plant.kind)&&!this.darkPlants.foodable(plant))return false;
     if((plant?.kind==='endurian'||plant?.kind==='peanut')&&plant.armor===this.props.plants[plant.kind].ArmorToughness)return false;
@@ -984,6 +987,7 @@ export class Game {
     }
     this.tickConveyor(dt);this.tickPower(dt);this.tickMatching();this.escape.tick(dt);this.finale.tick(dt);this.western.tick(dt);this.westFinale.tick(dt);this.future.tick(dt);
     for (const p of this.plants) {
+      if(this.eighties.carrot.blocked(p)||this.eighties.boombox.blocked(p)){p.actionAt+=dt;p.nextAction+=dt;p.nextBurst+=dt;continue;}
       if(this.boss instanceof KongfuChiBoss&&this.boss.plantStunned(p)){p.actionAt+=dt;p.nextAction+=dt;p.nextBurst+=dt;continue;}
       if(p.kind==='hotpotato'){this.iceage.tickHot(p);continue;}
       if(this.iceage.blocked(p))continue;
@@ -1130,7 +1134,7 @@ export class Game {
       if(this.beach.fishers.tickZombie(z,statusDt)||this.beach.octopuses.tickZombie(z,statusDt)||this.beach.surfers.tickZombie(z,statusDt)||this.future.tickZombie(z,statusDt)||this.cowboy.tickZombie(z,statusDt)||this.pirate.tickZombie(z,dt)||this.tickSpecialZombie(z,dt))continue;
       if(this.beachFinale.block(z,statusDt)||this.westFinale.blockEnemy(z,statusDt)||this.dark.movement(z)===0)continue;
       if(this.dark.eatPotion(z))continue;
-      const target = this.plants.filter(p => !z.dodo?.flying && (!(z.bug&&z.bug.hp>0)||p.kind==='tallnut') && p.hp > 0 && p.kind!=='thymewarp'&&p.kind!=='bambooshoot'&&p.kind!=='lavaguava'&&p.kind!=='stunion'&&p.kind!=='ghostpepper'&&p.kind!=='goldleaf'&&p.kind!=='hotpotato'&&p.kind!=='tanglekelp' && (p.kind!=='lilypad'||!this.beach.occupant(p)) && p.sheep===undefined && (p.kind!=='floawerPot'||!this.darkPlants.occupant(p)) && !p.leap?.pushed && !((p.kind==='chilibean'||p.kind==='turnip')&&p.leap) && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='empea'&&p.kind!=='blover'&&p.kind!=='hurrikale'&&p.kind!=='stallia'&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='cherry_bomb'&&p.kind!=='jalapeno'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column||Number(b.kind==='bamboobusket')-Number(a.kind==='bamboobusket'))[0];
+      const target = this.plants.filter(p => !z.dodo?.flying && (!(z.bug&&z.bug.hp>0)||p.kind==='tallnut') && p.hp > 0 && p.kind!=='thymewarp'&&p.kind!=='bambooshoot'&&p.kind!=='lavaguava'&&p.kind!=='stunion'&&p.kind!=='ghostpepper'&&p.kind!=='goldleaf'&&p.kind!=='hotpotato'&&p.kind!=='tanglekelp' && (p.kind!=='lilypad'||!this.beach.occupant(p)) && p.sheep===undefined && !this.eighties.carrot.blocked(p) && (p.kind!=='floawerPot'||!this.darkPlants.occupant(p)) && !p.leap?.pushed && !((p.kind==='chilibean'||p.kind==='turnip')&&p.leap) && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='empea'&&p.kind!=='blover'&&p.kind!=='hurrikale'&&p.kind!=='stallia'&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='cherry_bomb'&&p.kind!=='jalapeno'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column||Number(b.kind==='bamboobusket')-Number(a.kind==='bamboobusket'))[0];
       z.eating = !!target;
       if(target&&this.eighties.crush(z,target)){}
       else if(target&&this.eighties.kick(z,target)){}
@@ -1180,6 +1184,7 @@ export class Game {
     this.future.settleNuts();this.darkFinale.settle();
     for(const p of this.plants)if(p.hp<=0&&this.westFinale.handles(p.kind))this.westFinale.removed(p);
     this.plantsLost+=this.plants.filter(p=>p.hp<=0&&!p.transformed&&p.kind!=='bamboobusket').length;
+    for(const p of this.plants)if(p.hp<=0)this.eighties.carrot.remember(p);
     const protectedPlantDied=this.plants.some(p=>p.endangered&&p.hp<=0);
     this.plants = this.plants.filter(p => p.hp > 0);
     this.checkChallenges();
