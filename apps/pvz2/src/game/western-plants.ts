@@ -45,6 +45,7 @@ export class WesternPlants {
   }
   private metal(z:Zombie):Metal|null {
     if(z.kind==='eighties_punk')return {name:'punkHead',animation:'Idle',consumeRate:5};
+    if(z.kind==='eighties_8bit_armor2'&&z.armor>0){const max=this.#game.props.armors.eighties_8bit_armor2.Toughness;return {name:'eighties8BitBucket',animation:`Broken${z.armor>max*2/3?0:z.armor>max/3?1:2}`};}
     if(z.kind==='eighties_armor2'&&z.armor>0){const max=this.#game.props.armors.eighties_armor2.Toughness;return {name:'eightiesBucket',animation:`Broken${z.armor>max*2/3?0:z.armor>max/3?1:2}`};}
     if(z.armor>0&&(z.kind==='kongfu_armor2'||z.kind==='kongfu_armor3')){const max=this.#game.props.armors[z.kind].Toughness;return {name:z.kind==='kongfu_armor3'?'kongfuHelmet':'kongfuBucket',animation:`Broken${z.armor>max*2/3?0:z.armor>max/3?1:2}`};}
     if(z.west?.plate){const fraction=z.west.plate/this.#game.props.zombies[z.kind].ShieldToughness;return {name:'plateDrop',animation:`Broken${fraction>2/3?0:fraction>1/3?1:2}`};}

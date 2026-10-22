@@ -235,6 +235,7 @@ export class FutureBattle {
       if(event==='tile'){const group=p.kind==='powerplant'?'epsilon':p.kind==='powerplant_alpha'?'alpha':'beta';g.level.powerTiles.push({group,row:p.row,column:p.column,delay:1});this.visual('tile_'+group+'Flash','Play',cellX(p.column),rowY(p.row));p.hp=0;p.transformed=true;return;}
       if(event==='explode'){
         for(const z of g.zombies)if(z.hp>0){const dx=Math.abs(z.x-cellX(p.column)),dy=Math.abs(z.row-p.row);if(dy<=1&&dx<=2.5*BOARD.cellWidth||dy<=2&&dx<=1.5*BOARD.cellWidth)this.emp(z,g.props.plants.empea.StunDuration);}
+        g.eighties.arcade.emp(p,g.props.plants.empea.StunDuration);
         this.visual('empBlast','Play',cellX(p.column),rowY(p.row));this.sounds.push('empea/explSound');
       }
       if(event==='die'){p.hp=0;return;}

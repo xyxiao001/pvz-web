@@ -1,9 +1,13 @@
 import {BOARD,cellX,rowY} from './level';
 import type {Game,Plant,Zombie} from './model';
+import {EightiesArcade} from './eighties-arcade';
 import {isFlying} from './pirate';
 
 /** Native Eighties music cues, zombies and plants. */
 export class EightiesBattle {
+ readonly arcade:EightiesArcade;
+ spores=new Set<number>();
+ sprouts:{row:number;column:number;x:number;at:number}[]=[];
  jam='jam_clear';
  warps=new Map<number,{at:number;delay:number;moved:boolean}>();
  glitter=new Map<number,number>();
@@ -17,10 +21,10 @@ export class EightiesBattle {
  heavy=new Map<number,number>();
  kicks=new Map<number,number>();
  shots:{id:number;row:number;x:number;y:number;food:boolean;left:number;hits:Set<number>}[]=[];
- constructor(private g:Game){}
+ constructor(private g:Game){this.arcade=new EightiesArcade(g);}
  private play(p:Plant,animation:string,action:Plant['action']='idle'){p.animation=animation;p.action=action;p.actionAt=this.g.time;p.eventIndex=0;}
- add(p:Plant){if(p.kind==='garlic')this.play(p,'Idle00');if(p.kind==='thymewarp'){this.play(p,'Play','explode');p.hidden=true;this.warp();}if(p.kind==='phatbeet'){this.heavy.set(p.id,2);p.nextAction=this.g.time;this.play(p,'Idle');}if(p.kind==='cactus'){p.nextAction=this.g.time;this.play(p,'Idle');}}
- spawn(z:Zombie){if(z.kind==='eighties_punk')this.kicks.set(z.id,0);if(z.kind==='eighties_gargantuar')this.gargCountdown.set(z.id,4+1.5*this.g.random());}
+ add(p:Plant){if(p.kind==='sporeshroom'){p.nextAction=this.g.time;this.play(p,'Idle');}if(p.kind==='garlic')this.play(p,'Idle00');if(p.kind==='thymewarp'){this.play(p,'Play','explode');p.hidden=true;this.warp();}if(p.kind==='phatbeet'){this.heavy.set(p.id,2);p.nextAction=this.g.time;this.play(p,'Idle');}if(p.kind==='cactus'){p.nextAction=this.g.time;this.play(p,'Idle');}}
+ spawn(z:Zombie){this.arcade.spawn(z);if(z.kind==='eighties_punk')this.kicks.set(z.id,0);if(z.kind==='eighties_gargantuar')this.gargCountdown.set(z.id,4+1.5*this.g.random());}
  gargReady(z:Zombie,dt:number){
   if(this.jam!=='jam_metal'||z.x>=cellX(9))return false;
   const left=this.gargCountdown.get(z.id)!-dt*(this.g.time<z.chilledUntil?.5:1);this.gargCountdown.set(z.id,left);return left<=0;
@@ -36,7 +40,7 @@ export class EightiesBattle {
   if(sound[name])g.beach.sounds.push('eightiesGargantuar/'+sound[name]);
  }
  food(p:Plant){this.play(p,'Food','food');if(p.kind==='garlic')this.g.beach.sounds.push('garlic/foodStart');}
- speed(z:Zombie){return z.kind==='eighties_breakdancer'&&this.jam==='jam_rap'?this.g.props.zombies.eighties_breakdancer.JamWalkSpeedMult:1;}
+ speed(z:Zombie){return z.kind==='eighties_arcade'&&z.x>=cellX(9)?2:z.kind==='eighties_breakdancer'&&this.jam==='jam_rap'?this.g.props.zombies.eighties_breakdancer.JamWalkSpeedMult:1;}
  private garlicMove(p:Plant,z:Zombie){
   const g=this.g,prop=g.props.plants.garlic;
   if(g.props.zombies[z.kind].ImmuneToGarlic||z.garlicLane)return false;
@@ -81,7 +85,7 @@ export class EightiesBattle {
   for(const z of g.zombies)if(z.hp>0&&z!==g.boss?.zombie&&!g.props.zombies[z.kind].IgnoredByThymeWarp&&!this.warps.has(z.id)){
    this.warps.set(z.id,{at:g.time,delay:g.props.plants.thymewarp.WarpTime,moved:false});this.mc.delete(z.id);z.eating=false;z.leap=null;
    this.clearBuff(z);z.hp=g.props.zombies[z.kind].Toughness;
-   if(z.armor>0&&(z.kind==='eighties_armor1'||z.kind==='eighties_armor2'))z.armor=g.props.armors[z.kind].Toughness;
+   if(z.armor>0&&(z.kind==='eighties_8bit_armor1'||z.kind==='eighties_8bit_armor2'||z.kind==='eighties_armor1'||z.kind==='eighties_armor2'))z.armor=g.props.armors[z.kind].Toughness;
    g.future.visual('thymeTeleport','Play',z.x,rowY(z.row));
   }
  }
@@ -96,6 +100,7 @@ export class EightiesBattle {
  }
  private mcTargets(z:Zombie){return this.g.plants.filter(p=>p.hp>0&&!p.hidden&&!p.leap?.pushed&&p.sheep===undefined&&p.action!=='food'&&p.action!=='explode'&&!this.g.kongfu.peach.protected(p)&&!['spikeweed','spikerock','iceweed','lilypad','potatomine','stunion','iceburg','goldleaf','bambooshoot','hotpotato','thymewarp'].includes(p.kind)&&Math.abs(p.row-z.row)<=1&&Math.abs(cellX(p.column)-z.x)<(p.row===z.row?1.5625:1)*BOARD.cellWidth+22);}
  zombie(z:Zombie,dt:number){
+  if(z.kind==='eighties_arcade')return this.arcade.zombie(z,dt);
   if(z.kind==='eighties_breakdancer')return this.breakdance(z,dt);
   if(z.kind!=='eighties_mc')return false;
   const g=this.g;
@@ -127,6 +132,7 @@ export class EightiesBattle {
  }
  plant(p:Plant){
   const g=this.g,prop=g.props.plants[p.kind];
+  if(p.kind==='sporeshroom'){this.sporePlant(p);return;}
   if(p.kind==='garlic'){
    if(p.action==='food'){
     const elapsed=(g.time-p.actionAt)*1.2,timeline=g.props.plantAnimations.garlic.Food;
@@ -183,6 +189,32 @@ export class EightiesBattle {
   }
   if(elapsed>=timeline.duration)this.play(p,p.hidden?'Idle_Hidden':'Idle');
  }
+ private sporeTargets(p:Plant,food:boolean){
+  const g=this.g,zombies=g.zombies.filter(z=>z.hp>0&&(food?z!==g.boss?.zombie:z.row===p.row&&z.x+22>=cellX(p.column)&&z.x-22<=cellX(9))).sort((a,b)=>a.x-b.x);
+  if(zombies.length){const z=zombies[food?Math.floor(g.random()*zombies.length):0];return {id:z.id,x:z.x,y:rowY(z.row)-45};}
+  const tombs=g.graves.filter(t=>t.hp>0&&(food?t.column<9:t.row===p.row&&t.column>=p.column&&t.column<=9)).sort((a,b)=>a.column-b.column);
+  if(tombs.length){const t=tombs[food?Math.floor(g.random()*tombs.length):0];return {id:t.id,x:cellX(t.column),y:rowY(t.row)-40};}
+ }
+ private sporePlant(p:Plant){
+  const g=this.g,prop=g.props.plants.sporeshroom;
+  if(p.action==='idle'&&g.time>=p.nextAction&&this.sporeTargets(p,false)){this.play(p,'Shoot','shoot');p.nextAction=g.time+prop.ShootInterval+g.random()*prop.ShootIntervalAdditional;}
+  if(p.action==='idle')return;
+  const timeline=g.props.plantAnimations.sporeshroom[p.animation!],elapsed=g.time-p.actionAt;
+  while(p.eventIndex!<timeline.events.length&&elapsed>=timeline.events[p.eventIndex!].at){
+   const name=timeline.events[p.eventIndex!++].name;
+   if(name==='shoot'||name==='foodShoot'){const food=name==='foodShoot',t=this.sporeTargets(p,food);g.lob(p,t?.id??-1,t?.x??BOARD.width,t?.y??rowY(p.row)-45,food);}
+   const sound:Record<string,string>={breath:'breath',foodBreath:'foodBreath',shootSound:'shoot',foodShootSound:'foodShoot',gas:'spawn'};
+   if(sound[name])g.beach.sounds.push('sporeshroom/'+sound[name]);
+   if(name==='foodEnd'){this.play(p,'Idle');return;}
+  }
+  if(elapsed>=timeline.duration)this.play(p,'Idle');
+ }
+ sporeHit(z:Zombie){if(z!==this.g.boss?.zombie&&!this.g.props.zombies[z.kind].ImmuneToSporeShroom&&!this.protected(z))this.spores.add(z.id);}
+ die(z:Zombie){
+  if(!this.spores.delete(z.id))return;
+  if(['swallow','blow','toss','water'].includes(z.deathCause))return;
+  this.sprouts.push({row:z.row,column:Math.floor((z.x-BOARD.left)/BOARD.cellWidth),x:z.x,at:this.g.time+.3});
+ }
  kick(z:Zombie,p:Plant){
   const g=this.g;
   if(z.kind!=='eighties_punk'||this.jam!=='jam_punk'||g.time<this.kicks.get(z.id)!||p.action==='food')return false;
@@ -196,7 +228,12 @@ export class EightiesBattle {
   z.eating=false;g.beach.sounds.push('eightiesPunk/kickSounds');return true;
  }
  tick(dt:number){
-  const g=this.g;
+  const g=this.g;this.arcade.tick(dt);
+  for(const s of this.sprouts)if(g.time>=s.at){
+   g.future.visual('sporeSpawn','Play',s.x,rowY(s.row));
+   if(s.column>=0&&s.column<9&&!g.plants.some(p=>p.hp>0&&p.row===s.row&&p.column===s.column)&&!g.graves.some(t=>t.hp>0&&t.row===s.row&&Math.round(t.column)===s.column)&&!g.level.mold.some(t=>t.row===s.row&&t.column===s.column)){g.addPlant('sporeshroom',s.row,s.column);this.play(g.plants.at(-1)!,'Spawn','grow');}
+  }
+  this.sprouts=this.sprouts.filter(s=>s.at>g.time);
   for(const z of [...g.zombies,...g.westFinale.allies])if(z.garlicLane){
    const lane=z.garlicLane,age=g.time-lane.at;
    if(age>=0){if(age<dt)g.beach.sounds.push('garlic/'+(lane.to<lane.from?'moveUpSounds':'moveDownSounds'));const t=Math.min(1,age/g.props.plants.garlic.LaneChangeDuration),ease=t<.5?2*t*t:1-2*(1-t)**2;lane.y=rowY(lane.from)+(rowY(lane.to)-rowY(lane.from))*ease;z.row=Math.round(lane.from+(lane.to-lane.from)*ease);if(t===1)delete z.garlicLane;}
