@@ -14,6 +14,8 @@ import type { CostumePlant } from './costumes';
 import type { StoreCatalog, StoreCategory } from './store';
 import type { MapRenderer } from './renderer';
 
+const QUALITY_HINT_SEEN_KEY = 'pvz2:quality-hint-seen';
+
 export class WorldShell {
   private renderer!: MapRenderer;
   private feature:OuterFeatures|null=null;
@@ -83,7 +85,22 @@ export class WorldShell {
     const names: Record<string,string> = { exitButton: '返回', settingButton: '设置', arcadeButton: '小游戏', almanacButton: '图鉴', zengardenButton: '禅境花园', storeButton: '商店' };
     this.$('.map-controls').innerHTML = Object.entries(this.catalog.buttons).map(([id,b]) => `<button class="native-icon" data-control="${id}" aria-label="${names[id]}" title="${names[id]}"  style="left:${b.x/10.24}%;top:${b.y/6.4}%;width:${b.w/10.24}%;height:${b.h/6.4}%;--normal:url('${assetUrl(b.normal.image)}');--hover:url('${assetUrl(b.hover.image)}');--pressed:url('${assetUrl(b.pressed.image)}')"></button>`).join('');
     this.$('[data-control="exitButton"]').onclick = () => { void this.back(); };
-    this.$('[data-control="settingButton"]').onclick = () => this.settings();
+    const settings = this.$('[data-control="settingButton"]');
+    if (this.storage.getItem(QUALITY_HINT_SEEN_KEY) === null) {
+      settings.insertAdjacentHTML('beforeend', '<span id="quality-hint" class="quality-hint" role="tooltip">这里可以切换分辨率和画质</span>');
+      settings.setAttribute('aria-describedby', 'quality-hint');
+      settings.removeAttribute('title');
+    }
+    settings.onclick = () => {
+      const hint = settings.querySelector('.quality-hint');
+      if (hint) {
+        hint.remove();
+        settings.removeAttribute('aria-describedby');
+        settings.title = '设置';
+        this.storage.setItem(QUALITY_HINT_SEEN_KEY, '1');
+      }
+      this.settings();
+    };
     this.$('[data-control="storeButton"]').onclick = () => { void this.openStore(); };
     for(const [control,feature] of Object.entries({arcadeButton:'arcade',almanacButton:'almanac',zengardenButton:'garden'}))this.$(`[data-control="${control}"]`).onclick=()=>{void this.openFeature(feature as Feature);};
     const ticket=this.catalog.toolbar.find(d=>d.name==='TicketCounter')!;
