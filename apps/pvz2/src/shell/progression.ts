@@ -76,6 +76,7 @@ export class ProgressStore {
       if(level==='egypt5')rewards.push({level,type:'sprout',id:'sprout',count:sprouts});
       this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));
     }
+    if(level==='dino16'||level==='dino20'){const rewards=this.campaignRewards();rewards.push({level,type:'worldtrophy',id:level==='dino16'?'worldkey':'dangerroom_dino',count:1});this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));}
     if(level==='dino12'||level==='dino14'){const rewards=this.campaignRewards();rewards.push({level,type:'pinata',id:'spine_dino',count:1});this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));}
     if(level==='kongfu8'){const rewards=this.campaignRewards();rewards.push({level,type:'worldtrophy',id:'worldkey',count:1});this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));}
     if(level==='pirate7'||level==='pirate8'){const rewards=this.campaignRewards();rewards.push({level,type:level==='pirate7'?'note':'worldtrophy',id:level==='pirate7'?'note_pirate':'worldkey',count:1});this.storage.setItem('pvz2-web:campaign-rewards',JSON.stringify(rewards));}

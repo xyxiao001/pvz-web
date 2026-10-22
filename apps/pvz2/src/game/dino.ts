@@ -1,3 +1,4 @@
+import {DinoTyranno} from './dino-tyranno';
 import {DinoVisitors} from './dino-visitors';
 import source from '../../public/assets/dino/dinosaurs.json';
 import {BOARD,cellX,rowY,type SpawnAction,type ZombieKind} from './level';
@@ -11,8 +12,9 @@ export class DinoBattle {
  pending:{kind:NonNullable<SpawnAction['dinosaur']>['kind'];row:number;at:number}[]=[];
  perfumes:{id:number;row:number;column:number;at:number}[]=[];
  readonly visitors:DinoVisitors;
+ readonly tyranno:DinoTyranno;
  private serial=0;
- constructor(private g:Game){this.visitors=new DinoVisitors(g);}
+ constructor(private g:Game){this.visitors=new DinoVisitors(g);this.tyranno=new DinoTyranno(g);}
  add(action:NonNullable<SpawnAction['dinosaur']>){this.pending.push({kind:action.kind,row:action.row,at:this.g.time+action.delay});}
  private play(r:Raptor,animation:Raptor['animation']){r.animation=animation;r.elapsed=0;r.event=0;}
  private targets(r:Raptor,wide=false){
@@ -21,15 +23,16 @@ export class DinoBattle {
  }
  tick(dt:number){
   const g=this.g,p=source.raptor;
-  for(const item of this.pending)if(g.time>=item.at){if(item.kind!=='raptor'){this.visitors.add(item.kind,item.row,++this.serial);continue;}this.raptors.push({charmed:false,born:g.time,id:++this.serial,row:item.row,x:1070,direction:1,animation:'Walk',elapsed:0,event:0,speed:p.WalkSPS+.1*(1-2*g.random()),left:p.ZombiesToKick,leaveAt:g.time+p.MaxWonderingTime,leaving:false,detect:false,kicked:new Map(),sayAt:g.time+3});}
+  for(const item of this.pending)if(g.time>=item.at){if(item.kind==='tyranno'){this.tyranno.add(item.row,++this.serial);continue;}if(item.kind!=='raptor'){this.visitors.add(item.kind,item.row,++this.serial);continue;}this.raptors.push({charmed:false,born:g.time,id:++this.serial,row:item.row,x:1070,direction:1,animation:'Walk',elapsed:0,event:0,speed:p.WalkSPS+.1*(1-2*g.random()),left:p.ZombiesToKick,leaveAt:g.time+p.MaxWonderingTime,leaving:false,detect:false,kicked:new Map(),sayAt:g.time+3});}
   this.pending=this.pending.filter(item=>g.time<item.at);
   this.perfumes=this.perfumes.filter(f=>g.time-f.at<g.props.plants.perfumeshroom.Duration+g.props.plantAnimations.perfumeFire.Fade.duration+8/18);
   for(const f of this.perfumes){
    const touches=(d:{row:number;x:number;born:number;charmed:boolean})=>!d.charmed&&d.row===f.row&&g.time-d.born>=.5&&d.x>=cellX(0)-41&&d.x<=cellX(8)+41&&g.time-f.at>=Math.abs((d.x-cellX(f.column))/BOARD.cellWidth)/18&&g.time-f.at<g.props.plants.perfumeshroom.Duration;
    for(const r of this.raptors)if(touches(r)){r.charmed=true;r.detect=true;r.left=p.ZombiesToFlickCharmed;r.kicked.clear();this.play(r,r.direction>0?'Turn':'Idle');g.beach.sounds.push('raptor/charmSounds');}
+   for(const d of this.tyranno.items)if(touches(d))this.tyranno.charm(d);
    for(const d of this.visitors.items)if(touches(d))this.visitors.charm(d);
   }
-  this.visitors.tick(dt);
+  this.visitors.tick(dt);this.tyranno.tick(dt);
   for(const r of this.raptors){
    if(r.animation==='Walk'||r.animation==='Idle'){
     if(!r.leaving&&(r.left===0||!r.charmed&&g.time>=r.leaveAt)){r.leaving=true;if(r.direction>0){this.play(r,'Turn');continue;}this.play(r,'Walk');}
@@ -60,6 +63,17 @@ export class DinoBattle {
   const g=this.g,timeline=g.props.plantAnimations.perfumeshroom.Attack,age=g.time-p.actionAt;
   if(!p.fired&&age>=timeline.events.find(e=>e.name==='explode')!.at){p.fired=true;this.perfumes.push({id:++this.serial,row:p.row,column:p.column,at:g.time});g.beach.sounds.push('perfumeshroom/burnSound');}
   if(age>=timeline.duration)p.hp=0;
+ }
+ sunflower(p:Plant){
+  const g=this.g,props=g.props.plants.primalsunflower;
+  if(p.action==='idle'&&g.time>=p.nextAction){p.action='produce';p.animation='Produce';p.actionAt=g.time;p.eventIndex=0;p.nextAction=g.time+props.ProduceInterval+g.random()*props.ProduceIntervalAdditional;}
+  if(p.action!=='produce'&&p.action!=='food')return;
+  const timeline=g.props.plantAnimations.primalsunflower[p.action==='food'?'Food':'Produce'],age=g.time-p.actionAt;
+  while(p.eventIndex!<timeline.events.length&&age>=timeline.events[p.eventIndex!].at){
+   const event=timeline.events[p.eventIndex!++].name;
+   if(event==='Produce'){g.dropSun(cellX(p.column),rowY(p.row)-65,props.SunValue,'plant');g.beach.sounds.push('primalsunflower/produceSound');if(p.action==='food'&&p.eventIndex===1)g.beach.sounds.push('primalsunflower/foodSound');}
+  }
+  if(age>=timeline.duration){if(p.action==='food')p.nextAction=g.time+props.ProduceCountdownStart+g.random()*props.ProduceCountdownStartAdditional;p.action='idle';p.animation=undefined;}
  }
  smashNut(p:Plant){
   if(p.action==='food'||this.g.kongfu.peach.protected(p))return;

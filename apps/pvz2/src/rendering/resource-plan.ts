@@ -86,7 +86,7 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   if(level.world==='beach')for(const n of ['beachLawn','mower','beachCone','beachBucket','tide','tideLine','tideSign'])names.add(n);
   if(level.world==='dark')for(const n of ['darkLawn','mower','darkCone','darkBucket','darkHelmet','darkBricks','graveSun','graveFood'])names.add(n);
   if(level.world==='future')for(const n of [(level.sunBomb||[8,11,16,22,25,27,31,35].includes(level.day))?'futureNightLawn':'futureLawn','mower','futureCone','futureBucket',...new Set(level.powerTiles.flatMap(t=>['tile_'+t.group,'tile_'+t.group+'Flash','tile_'+t.group+'Dot']))])names.add(n);
-  if((level.world==='eighties'||level.world==='lostcity'||level.world==='iceage'||level.world==='beach')&&level.day===16)names.add('zombossicon');
+  if((level.world==='dino'||level.world==='eighties'||level.world==='lostcity'||level.world==='iceage'||level.world==='beach')&&level.day===16)names.add('zombossicon');
   if(level.world==='kongfu'&&level.day===40)names.add('zombossicon');
   if(level.world==='dark'&&level.day===10)names.add('zombossicon');
   if(level.waves.flat().some(z=>z.startsWith('dark_king'))||level.boss?.kind==='zombossmech_dark2')names.add('knightEffect');
