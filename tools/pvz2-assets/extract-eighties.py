@@ -1,4 +1,4 @@
-"""Export Eighties 1–5 from the pinned Cocos build."""
+"""Export Eighties 1–10 from the pinned Cocos build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -18,11 +18,11 @@ def rig(path):
 def props(path,names):
     objs=e.read('json/Objects/'+path).objects[0]['json']['objects']
     return {n:next(o['objdata'] for o in objs if n in o.get('aliases',[])) for n in names}
-paths={'phatbeet':'plants/PhatBeetPLANT','cactus':'plants/CactusPLANT','eighties':'zombies/EightiesBasicZOMBIE','eightiesFlag':'zombies/EightiesFlagZOMBIE','eightiesPunk':'zombies/EightiesPunkZOMBIE'}
+paths={'thymewarp':'plants/ThymeWarpPLANT','eightiesGlitter':'zombies/EightiesGlitterZOMBIE','eightiesMC':'zombies/EightiesMCZOMBIE','phatbeet':'plants/PhatBeetPLANT','cactus':'plants/CactusPLANT','eighties':'zombies/EightiesBasicZOMBIE','eightiesFlag':'zombies/EightiesFlagZOMBIE','eightiesPunk':'zombies/EightiesPunkZOMBIE'}
 actors={n:rig(p) for n,p in paths.items()}
-rigpaths={'phatWave':'a498e40c-beeb-49b7-8ab0-0a41aa3630f8','phatHit':'d4c65092-cccb-479f-8995-23063f8caf7a','cactusShot':'projectiles/CactusThorn0PRJ','cactusShot1':'projectiles/CactusThorn1PRJ','cactusShot2':'projectiles/CactusThorn2PRJ','cactusFood':'projectiles/CactusThornFoodPRJ','eightiesLawn':'lawns/EightiesLAWN','mower':'projectiles/EightiesMowerPRJ','eightiesCone':'armors/EightiesConeARMOR','eightiesBucket':'armors/EightiesBucketARMOR'}
+rigpaths={'punkHead':'15c76516-48e7-4ec8-b4d1-17a9df1804ca','thymeTeleport':'9bd3ba42-e3c6-4135-aa9e-436cb27641f6','glitterTrail':'6df28bce-e93a-4e9c-8fdc-8bd7561d78f4','glitterHit':'39273825-cab5-4b56-b404-29ec11769c97','phatWave':'a498e40c-beeb-49b7-8ab0-0a41aa3630f8','phatHit':'d4c65092-cccb-479f-8995-23063f8caf7a','cactusShot':'projectiles/CactusThorn0PRJ','cactusShot1':'projectiles/CactusThorn1PRJ','cactusShot2':'projectiles/CactusThorn2PRJ','cactusFood':'projectiles/CactusThornFoodPRJ','eightiesLawn':'lawns/EightiesLAWN','mower':'projectiles/EightiesMowerPRJ','eightiesCone':'armors/EightiesConeARMOR','eightiesBucket':'armors/EightiesBucketARMOR'}
 rigs={n:rig(p) for n,p in rigpaths.items()}
-properties={'plants':props('PlantProps',['phatbeet','cactus']),'zombies':props('ZombieProps',['eighties','eighties_armor1','eighties_armor2','eighties_flag','eighties_punk']),'armors':props('ArmorProps',['eighties_armor1','eighties_armor2']),'projectiles':props('ProjectileProps',['cactus','cactus_pf']),'plantAnimations':{}}
+properties={'plants':props('PlantProps',['phatbeet','cactus','thymewarp']),'zombies':props('ZombieProps',['eighties','eighties_armor1','eighties_armor2','eighties_flag','eighties_punk','eighties_glitter','eighties_mc']),'armors':props('ArmorProps',['eighties_armor1','eighties_armor2']),'projectiles':props('ProjectileProps',['cactus','cactus_pf']),'plantAnimations':{}}
 for name,description in {**actors,**rigs}.items():
     sk=json.loads((e.OUT/'rigs'/description['rig']/'skeleton.json').read_text());arm=next(a for a in sk['armature'] if a['name']==description['armature']);timelines={}
     for animation in arm['animation']:
@@ -32,7 +32,7 @@ for name,description in {**actors,**rigs}.items():
             frame+=f.get('duration',1)
         timelines[animation['name']]={'duration':animation.get('duration',1)/arm['frameRate'],'events':events}
     properties['plantAnimations'][name]=timelines
-for day in range(1,6):c.write_json(e.OUT/f'eighties{day}.source.json',e.read(f'levels/eighties{day}').objects[0]['json'])
+for day in range(1,11):c.write_json(e.OUT/f'eighties{day}.source.json',e.read(f'levels/eighties{day}').objects[0]['json'])
 co=next(x for x in walk(e.read('lawns/EightiesLAWN').objects) if x.get('type')=='dragonBones.ArmatureDisplay')
 at=e.read(co['_dragonAtlasAsset']['asset']);atlas=json.loads(at.objects[0]['_atlasJson']);rect=next(x for x in atlas['SubTexture'] if x['name']=='Lawn')
 pixels=Image.open(io.BytesIO(c.native(at.data[1][at.rec[5][0]],'png')))
@@ -65,4 +65,4 @@ for name,path in [('music','eighties/CYS_LP_Eighties'),('jam_punk','jam/Punk_LP'
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{}})
 c.write_json(c.ROOT/'apps/pvz2/eighties-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Eighties 1–5')
+print('Exported Eighties 1–10')

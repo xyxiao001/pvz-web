@@ -5,7 +5,7 @@ import {swinging} from './pirate';
 
 interface Shot {id:number;kind:string;x:number;y:number;vx:number;vy:number;age:number;nextShock:number;contacts:number[];damage:number;armor?:Metal;dead:boolean}
 interface Visual {id:number;name:string;animation:string;x:number;y:number;at:number;duration:number;toX?:number;toY?:number}
-interface Metal {name:string;animation:string;armature?:string}
+interface Metal {consumeRate?:number;name:string;animation:string;armature?:string}
 interface Absorbed extends Metal {id:number;plant:number;zombie:number;x:number;y:number;fromX:number;fromY:number;at:number;food:boolean}
 interface Magnet {restUntil:number;absorbUntil:number;shootRate:number}
 interface Beam {plant:number;at:number;until:number;target:number|null;x:number;y:number;toX:number;toY:number;producers:number[]}
@@ -44,6 +44,8 @@ export class WesternPlants {
     this.shots.push({id:++this.serial,kind,x,y,vx,vy,age:0,nextShock:0,contacts:[],damage:armor?this.#game.props.plants.magnetshroom.PlantfoodThrowDamage:this.#game.props.projectiles[kind].Damage,armor,dead:false});
   }
   private metal(z:Zombie):Metal|null {
+    if(z.kind==='eighties_punk')return {name:'punkHead',animation:'Idle',consumeRate:5};
+    if(z.kind==='eighties_armor2'&&z.armor>0){const max=this.#game.props.armors.eighties_armor2.Toughness;return {name:'eightiesBucket',animation:`Broken${z.armor>max*2/3?0:z.armor>max/3?1:2}`};}
     if(z.armor>0&&(z.kind==='kongfu_armor2'||z.kind==='kongfu_armor3')){const max=this.#game.props.armors[z.kind].Toughness;return {name:z.kind==='kongfu_armor3'?'kongfuHelmet':'kongfuBucket',animation:`Broken${z.armor>max*2/3?0:z.armor>max/3?1:2}`};}
     if(z.west?.plate){const fraction=z.west.plate/this.#game.props.zombies[z.kind].ShieldToughness;return {name:'plateDrop',animation:`Broken${fraction>2/3?0:fraction>1/3?1:2}`};}
     if(z.armor>0&&(z.knighted||z.kind==='cowboy_armor2'||z.kind==='dark_armor2'||z.kind==='dark_armor3')){
@@ -53,7 +55,7 @@ export class WesternPlants {
   }
   private absorb(p:Plant,z:Zombie,food:boolean){
     const metal=this.metal(z)!;
-    if(z.west?.plate)z.west.plate=0;else {z.armor=0;z.magnetized=true;}
+    if(z.kind==='eighties_punk'){z.hp=0;z.magnetized=true;}else if(z.west?.plate)z.west.plate=0;else {z.armor=0;z.magnetized=true;}
     this.metals.push({...metal,id:++this.serial,plant:p.id,zombie:z.id,x:z.x,y:rowY(z.row)-75,fromX:z.x,fromY:rowY(z.row)-75,at:this.#game.time,food});
   }
   private tickMagnet(p:Plant){
@@ -70,7 +72,7 @@ export class WesternPlants {
       if(targets.length){const z=targets[Math.floor(g.random()*targets.length)];this.absorb(p,z,false);this.play(p,'AbsorbStart');this.sounds.push('magnetshroom/absorbSound');}
     }
     const caught=this.metals.find(m=>m.plant===p.id&&!m.food&&g.time-m.at>=.2);
-    if(caught&&p.animation==='AbsorbStart'){state.restUntil=g.time+g.props.plants.magnetshroom.RestTime;this.play(p,'AbsorbEnd');this.sounds.push('magnetshroom/catchSound');}
+    if(caught&&p.animation==='AbsorbStart'){state.restUntil=g.time+g.props.plants.magnetshroom.RestTime/(caught.consumeRate??1);this.play(p,'AbsorbEnd');this.sounds.push('magnetshroom/catchSound');}
   }
   tickPlant(p:Plant,_dt:number){
     const g=this.#game,props=g.props.plants[p.kind];
