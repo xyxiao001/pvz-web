@@ -16,7 +16,7 @@ for(const day of [41,42])test(`Eighties ${day}: route and all referenced rigs`,(
  for(const name of battleEffects(l,plants)){assert.ok(rigs[name],name);const spec=rigs[name],sk=read(`${spec.group}/rigs/${spec.rig}/skeleton.json`);assert.ok(sk.armature.some((a:{name:string})=>a.name===spec.armature),name);}
 });
 test('41–42 are the last two conveyors, retain native dialogue and no extra permanent rewards',()=>{
- assert.equal(Object.keys(BATTLE_LEVELS).length,384);assert.equal(BATTLE_LEVELS.eighties43,undefined);
+ assert.equal(Object.values(BATTLE_LEVELS).filter(l=>l.world==='eighties').length,42);assert.equal(BATTLE_LEVELS.eighties43,undefined);
  const a=level(41),b=level(42);assert.equal(a.initialPlants.length,35);assert.equal(a.conveyor!.InitialPlantList.length,0);assert.equal(a.mowers,false);assert.equal(b.mowers,false);assert.equal(b.graves.length,0);assert.equal(b.boss!.kind,'zombossmech_eighties2');assert.equal(b.waves.length,0);
  assert.deepEqual(b.conveyor!.InitialPlantList.map(p=>p.PlantType),['strawburst','hollyknight','phatbeet','sporeshroom','loquat']);
  for(const day of [41,42]){assert.equal(BATTLE_LEVELS[`eighties${day}`].mode,'conveyor');assert.ok(read('eighties/catalog.json').narratives[`EIGHTIES_${day}_INTRO`].length);assert.equal(BATTLE_LEVELS[`eighties${day}`].firstReward.label,'');}

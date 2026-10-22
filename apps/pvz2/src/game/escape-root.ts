@@ -50,6 +50,7 @@ export class EscapeRoots {
     if(!p.rootGrown){p.age+=dt;if(p.age>=g.props.plants.escaperoot.ChargeTime){p.rootGrown=true;this.play(p,'Baby_End');}return;}
     if(g.zombies.some(z=>z.hp>0&&!isFlying(z)&&!z.leap&&!swinging(z,g.time)&&g.inLane(z,p.row)&&Math.abs(z.x-cellX(p.column))<BOARD.cellWidth/2)){this.bomb(p.row,p.column,'Death');p.hp=0;}
   }
+  shootGrapes(row:number,column:number){for(const x of [-1,0,1])for(const y of [-1,0,1])if(x||y)this.grapes.push({id:--this.serial,x:cellX(column),y:rowY(row)-40,vx:x*15*BOARD.cellWidth,vy:y*15*BOARD.cellHeight,hits:0,lane:row,blocked:false,detected:[]});}
   tick(dt:number){
     const g=this.#game;
     if(this.selected!==null&&!g.plants.some(p=>p.id===this.selected&&p.hp>0))this.selected=null;
@@ -60,7 +61,7 @@ export class EscapeRoots {
         for(const z of g.zombies)if(z.hp>0&&(wide||!isFlying(z))&&Math.abs(z.row-b.row)<=(wide?1:0)&&Math.abs(z.x-cellX(b.column))<BOARD.cellWidth*(wide?1.5:.5))g.damage(z,damage,'potato');
         for(const t of g.graves)if(Math.abs(t.row-b.row)<=(wide?1:0)&&Math.abs(t.column-b.column)<=(wide?1:0))t.hp-=damage;
         g.effects.push({id:--this.serial,kind:b.variant===3?'grape':b.variant===2?'cherry':'explode',x:cellX(b.column),y:rowY(b.row),age:0});g.events.push({type:'explode'});
-        if(b.variant===3)for(const x of [-1,0,1])for(const y of [-1,0,1])if(x||y)this.grapes.push({id:--this.serial,x:cellX(b.column),y:rowY(b.row)-40,vx:x*15*BOARD.cellWidth,vy:y*15*BOARD.cellHeight,hits:0,lane:b.row,blocked:false,detected:[]});
+        if(b.variant===3)this.shootGrapes(b.row,b.column);
       }
     }
     this.bombs=this.bombs.filter(b=>g.time-b.at<g.props.plantAnimations.escaperoot[b.animation].duration);

@@ -27,7 +27,6 @@ test('Eighties 1–42 follow the map, award all six plants and eight campaign re
  assert.deepEqual(p.rewards().map(r=>r.id),[137,70,139,142,144,145]);
  assert.deepEqual(p.campaignRewards().map(r=>[r.level,r.id]),[['eighties12','spine_eighties'],['eighties14','spine_eighties'],['eighties16','worldkey'],['eighties20','dangerroom_eighties'],['eighties24','spine_eighties'],['eighties29','spine_eighties'],['eighties32','worldtrophy_eighties'],['eighties38','dangerroom_eighties2']]);
  assert.equal(Object.values(BATTLE_LEVELS).filter(l=>l.world==='eighties').length,42);
- assert.equal(Object.keys(BATTLE_LEVELS).length,384);
 });
 test('Eighties exported assets match the pinned provenance hashes',()=>{
  const provenance=JSON.parse(readFileSync(new URL('../eighties-provenance.json',import.meta.url),'utf8'));
