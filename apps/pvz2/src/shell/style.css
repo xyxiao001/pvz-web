@@ -41,6 +41,8 @@
 .free-play-switch::after{content:"";display:block;width:1.9cqw;height:1.9cqw;margin:.22cqw;border-radius:50%;background:#ffeab7;box-shadow:0 .12cqw .2cqw #0005;transition:transform .15s}
 .free-play-option input:checked+.free-play-switch{background:#86ae2d}.free-play-option input:checked+.free-play-switch::after{transform:translateX(2.05cqw);background:#fff8da}.free-play-option input:focus-visible+.free-play-switch{outline:.2cqw solid #fff3ac;outline-offset:.3cqw}
 .settings-window .settings-note{margin:.5cqw 0 0;font:1.05cqw/1.5 "PingFang SC",sans-serif;color:#60422a}
+.settings-window .texture-quality{width:100%;padding:.5cqw .8cqw;border:.12cqw solid #7a4e2b;border-radius:.4cqw;background:#fff0c9;color:#49301e;font:1.6cqw "PingFang SC",sans-serif}
+.settings-window .native-window-content{max-height:43cqw;overflow-y:auto;scrollbar-width:thin;padding:.3cqw}
 .settings-window .settings-saved{margin:1.4cqw 0 1.2cqw;font:1.1cqw/1.5 "PingFang SC",sans-serif;color:#523a29}
 .settings-window .native-button{width:73%;margin:0 auto}.settings-window .switch-version{margin-top:1.3cqw;font-size:1.05cqw;opacity:.8}
 @media(prefers-reduced-motion:reduce){.free-play-switch::after{transition:none}}

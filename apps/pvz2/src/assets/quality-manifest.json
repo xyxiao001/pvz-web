@@ -1,0 +1,1854 @@
+{
+  "actors/mummy/texture.webp": {
+    "original": "quality/original/0b6d05be261ac05429fec6d5.webp",
+    "enhanced": "quality/enhanced/0b6d05be261ac05429fec6d5.webp"
+  },
+  "actors/peashooter/texture.webp": {
+    "original": "quality/original/8233829392e44c43af3178a6.webp",
+    "enhanced": "quality/enhanced/8233829392e44c43af3178a6.webp"
+  },
+  "actors/potatomine/texture.webp": {
+    "original": "quality/original/6eadf60a7fd3445024bd6d31.webp",
+    "enhanced": "quality/enhanced/6eadf60a7fd3445024bd6d31.webp"
+  },
+  "actors/ra/texture.webp": {
+    "original": "quality/original/cb24a1ab91ecaf9a85d76ae3.webp",
+    "enhanced": "quality/enhanced/cb24a1ab91ecaf9a85d76ae3.webp"
+  },
+  "actors/sunflower/texture.webp": {
+    "original": "quality/original/2968a4d5a537339ac204ca82.webp",
+    "enhanced": "quality/enhanced/2968a4d5a537339ac204ca82.webp"
+  },
+  "actors/wallnut/texture.webp": {
+    "original": "quality/original/e8de6eee543ff5ec7baefd7d.webp",
+    "enhanced": "quality/enhanced/e8de6eee543ff5ec7baefd7d.webp"
+  },
+  "battle/rigs/056b61b7-396c-470b-8e6c-3527d1d46947/texture.webp": {
+    "original": "quality/original/efa36199f3327fc5929b6323.webp",
+    "enhanced": "quality/enhanced/efa36199f3327fc5929b6323.webp"
+  },
+  "battle/rigs/6c807cbd-230a-4f55-9fe9-112bf4b2ee11/texture.webp": {
+    "original": "quality/original/fc9ea360624bddc60c118adc.webp",
+    "enhanced": "quality/enhanced/fc9ea360624bddc60c118adc.webp"
+  },
+  "battle/rigs/96e43a1a-d2a5-4328-b8c5-ea2c70f7b48b/texture.webp": {
+    "original": "quality/original/1809c1043cee514b095c7441.webp",
+    "enhanced": "quality/enhanced/1809c1043cee514b095c7441.webp"
+  },
+  "battle/rigs/a43b51c3-ddcb-46a2-b58f-4c5044062c90/texture.webp": {
+    "original": "quality/original/6716e0295e2a79cad895cb6b.webp",
+    "enhanced": "quality/enhanced/6716e0295e2a79cad895cb6b.webp"
+  },
+  "battle/rigs/c1219230-1441-4460-9ae0-b7ae3d264d69/texture.webp": {
+    "original": "quality/original/57d61fd9b34d92ebaa00cd8c.webp",
+    "enhanced": "quality/enhanced/57d61fd9b34d92ebaa00cd8c.webp"
+  },
+  "battle/rigs/db226393-8ad9-47f9-9325-6171c02d7b82/texture.webp": {
+    "original": "quality/original/6eadf60a7fd3445024bd6d31.webp",
+    "enhanced": "quality/enhanced/6eadf60a7fd3445024bd6d31.webp"
+  },
+  "battle/rigs/dc745fb4-8f61-4eda-b13f-f2a85a025460/texture.webp": {
+    "original": "quality/original/b691083749b2a52c90df317c.webp",
+    "enhanced": "quality/enhanced/b691083749b2a52c90df317c.webp"
+  },
+  "battle/rigs/eae43360-111c-4ef8-84e0-2eb4261560f2/texture.webp": {
+    "original": "quality/original/408e380d1c579b45788d72b5.webp",
+    "enhanced": "quality/enhanced/408e380d1c579b45788d72b5.webp"
+  },
+  "battle/rigs/f945f3fa-a422-4fc0-91dd-fe14abd302d1/texture.webp": {
+    "original": "quality/original/4100e4218b7c2aec930d6e45.webp",
+    "enhanced": "quality/enhanced/4100e4218b7c2aec930d6e45.webp"
+  },
+  "battle/rigs/ff4ea709-95f2-4f10-a8f9-52e256f1795d/texture.webp": {
+    "original": "quality/original/87497f8f3d60d26ba84a6ea3.webp",
+    "enhanced": "quality/enhanced/87497f8f3d60d26ba84a6ea3.webp"
+  },
+  "beach/rigs/01bb539e-ed32-4972-98c4-18cfe83f265c/texture.webp": {
+    "original": "quality/original/70586fc211f21825ab30ed9e.webp",
+    "enhanced": "quality/enhanced/70586fc211f21825ab30ed9e.webp"
+  },
+  "beach/rigs/08077e46-1710-4157-ad91-85e8c89da601/texture.webp": {
+    "original": "quality/original/f944976853f3ddcddd8b862c.webp",
+    "enhanced": "quality/enhanced/f944976853f3ddcddd8b862c.webp"
+  },
+  "beach/rigs/09695fcd-eefc-4ee7-af4b-a0ddcff5f219/texture.webp": {
+    "original": "quality/original/dbc6998e4b9a454505882c25.webp",
+    "enhanced": "quality/enhanced/dbc6998e4b9a454505882c25.webp"
+  },
+  "beach/rigs/0a34775b-c25c-4d04-b0f6-a0fe00b3a6ab/texture.webp": {
+    "original": "quality/original/7a7487c92e0f81e2aa7af7a7.webp",
+    "enhanced": "quality/enhanced/7a7487c92e0f81e2aa7af7a7.webp"
+  },
+  "beach/rigs/28fcbad6-752c-4b2e-9927-5d49c000da40/texture.webp": {
+    "original": "quality/original/5e9dbdba73270c0eb3d1eb6e.webp",
+    "enhanced": "quality/enhanced/5e9dbdba73270c0eb3d1eb6e.webp"
+  },
+  "beach/rigs/2b09d193-b39b-4390-98ed-8cbaf29a48d0/texture.webp": {
+    "original": "quality/original/dad1dd64d1a74c80f3c5d0ae.webp",
+    "enhanced": "quality/enhanced/dad1dd64d1a74c80f3c5d0ae.webp"
+  },
+  "beach/rigs/40c96281-70e3-440f-b06c-4df3eee831aa/texture.webp": {
+    "original": "quality/original/fccdb220dfb04413cc9c3902.webp",
+    "enhanced": "quality/enhanced/fccdb220dfb04413cc9c3902.webp"
+  },
+  "beach/rigs/4ff66baa-6194-4081-b775-c14212757b64/texture.webp": {
+    "original": "quality/original/98675c61bed381599e1a6ac9.webp",
+    "enhanced": "quality/enhanced/98675c61bed381599e1a6ac9.webp"
+  },
+  "beach/rigs/78106938-30c0-4430-8b1b-02b039f45456/texture.webp": {
+    "original": "quality/original/c3593be41a96ac03596ec79b.webp",
+    "enhanced": "quality/enhanced/c3593be41a96ac03596ec79b.webp"
+  },
+  "beach/rigs/881dea5b-98c0-44be-85a2-b06832cf87f0/texture.webp": {
+    "original": "quality/original/aaeb959584affcf1e9521944.webp",
+    "enhanced": "quality/enhanced/aaeb959584affcf1e9521944.webp"
+  },
+  "beach/rigs/986c6c86-739f-4eec-8ea5-adb9754b49e8/texture.webp": {
+    "original": "quality/original/134db4ba9d8be86260066fdb.webp",
+    "enhanced": "quality/enhanced/134db4ba9d8be86260066fdb.webp"
+  },
+  "beach/rigs/9f4767e6-301f-4599-a4e0-20ca77a20e17/texture.webp": {
+    "original": "quality/original/cf28a5cf9e0a6dc6995b42e5.webp",
+    "enhanced": "quality/enhanced/cf28a5cf9e0a6dc6995b42e5.webp"
+  },
+  "beach/rigs/a14b90c4-1605-405c-8985-62b3c73f8dc7/texture.webp": {
+    "original": "quality/original/abe47504dd1e90896ad50990.webp",
+    "enhanced": "quality/enhanced/abe47504dd1e90896ad50990.webp"
+  },
+  "beach/rigs/a326239d-2636-49a9-b3bf-56a9ace4acfc/texture.webp": {
+    "original": "quality/original/93fe8a583eb358088374836d.webp",
+    "enhanced": "quality/enhanced/93fe8a583eb358088374836d.webp"
+  },
+  "beach/rigs/bd2e03a7-1ec3-497f-b313-eca1a036c47f/texture.webp": {
+    "original": "quality/original/dbb6b53712dc39335f510747.webp",
+    "enhanced": "quality/enhanced/dbb6b53712dc39335f510747.webp"
+  },
+  "beach/rigs/bf3667b8-b1de-4366-b03c-01dbd06e5a6e/texture.webp": {
+    "original": "quality/original/364a3cf6ef3717e226c7fb96.webp",
+    "enhanced": "quality/enhanced/364a3cf6ef3717e226c7fb96.webp"
+  },
+  "beach/rigs/c2e8a153-3c27-415b-933e-d1c48f75d2e7/texture.webp": {
+    "original": "quality/original/ba279b1b5d0d1731649a823a.webp",
+    "enhanced": "quality/enhanced/ba279b1b5d0d1731649a823a.webp"
+  },
+  "beach/rigs/c4786b8f-c141-4ae0-8282-62dc0b663603/texture.webp": {
+    "original": "quality/original/324e115bda138520604ab3aa.webp",
+    "enhanced": "quality/enhanced/324e115bda138520604ab3aa.webp"
+  },
+  "beach/rigs/ceb8d8a3-70d5-4ff2-8bad-755239191770/texture.webp": {
+    "original": "quality/original/fd011b4ceeacd210ae2fb677.webp",
+    "enhanced": "quality/enhanced/fd011b4ceeacd210ae2fb677.webp"
+  },
+  "beach/rigs/cfd9bd4e-12d6-4742-b746-72ccdfb873c1/texture.webp": {
+    "original": "quality/original/abb48c97e8ac8cb5f5a9a071.webp",
+    "enhanced": "quality/enhanced/abb48c97e8ac8cb5f5a9a071.webp"
+  },
+  "beach/rigs/d7cd9058-3379-4523-bc58-18281182a543/texture.webp": {
+    "original": "quality/original/10baef00370c13ab614f1512.webp",
+    "enhanced": "quality/enhanced/10baef00370c13ab614f1512.webp"
+  },
+  "beach/rigs/deb74949-08f6-4a43-89eb-e3b3181797c5/texture.webp": {
+    "original": "quality/original/8f5d7c0fb71ddc7997b49c1d.webp",
+    "enhanced": "quality/enhanced/8f5d7c0fb71ddc7997b49c1d.webp"
+  },
+  "beach/rigs/df0d975f-5d34-49ff-b7d7-ee51c2082cd8/texture.webp": {
+    "original": "quality/original/38dfab5574c6e3f6f38ec943.webp",
+    "enhanced": "quality/enhanced/38dfab5574c6e3f6f38ec943.webp"
+  },
+  "beach/rigs/df110895-20ef-479b-aa5d-2b3b3cbca6db/texture.webp": {
+    "original": "quality/original/8952feb5b298c9dc03f47155.webp",
+    "enhanced": "quality/enhanced/8952feb5b298c9dc03f47155.webp"
+  },
+  "beach/rigs/e4ec8bbd-fc08-4853-8558-7198d3fa139b/texture.webp": {
+    "original": "quality/original/88cf3734bac58528764e962b.webp",
+    "enhanced": "quality/enhanced/88cf3734bac58528764e962b.webp"
+  },
+  "beach/rigs/e91b7fc6-28ca-467f-9da4-d41f2ce83fd4/texture.webp": {
+    "original": "quality/original/c3e73a13e013e8708a1b1ba8.webp",
+    "enhanced": "quality/enhanced/c3e73a13e013e8708a1b1ba8.webp"
+  },
+  "beach/rigs/eae43360-111c-4ef8-84e0-2eb4261560f2/texture.webp": {
+    "original": "quality/original/408e380d1c579b45788d72b5.webp",
+    "enhanced": "quality/enhanced/408e380d1c579b45788d72b5.webp"
+  },
+  "beach/rigs/f56d6266-7c83-45c5-b43e-eadd473b1a8a/texture.webp": {
+    "original": "quality/original/7ee42ab0e9f9b068cde4ef4c.webp",
+    "enhanced": "quality/enhanced/7ee42ab0e9f9b068cde4ef4c.webp"
+  },
+  "beach/rigs/f84c2b5a-689f-47b5-a6da-aba65efc2363/texture.webp": {
+    "original": "quality/original/22cd2b357b95b84c1940b750.webp",
+    "enhanced": "quality/enhanced/22cd2b357b95b84c1940b750.webp"
+  },
+  "campaign/rigs/0955af66-13ec-4e96-9207-020925d42f15/texture.webp": {
+    "original": "quality/original/ba7c09e31369f4605b52a473.webp",
+    "enhanced": "quality/enhanced/ba7c09e31369f4605b52a473.webp"
+  },
+  "campaign/rigs/0c3c9b4c-1c92-4589-ad44-9494e0556891/texture.webp": {
+    "original": "quality/original/c69546097aa0c3dfc3052119.webp",
+    "enhanced": "quality/enhanced/c69546097aa0c3dfc3052119.webp"
+  },
+  "campaign/rigs/16b97a5b-4d4b-4bf4-a362-d2fb3c413fee/texture.webp": {
+    "original": "quality/original/2e95d06711beac9104a8498c.webp",
+    "enhanced": "quality/enhanced/2e95d06711beac9104a8498c.webp"
+  },
+  "campaign/rigs/20461b09-a5ce-4eda-99fd-476673b3fcaa/texture.webp": {
+    "original": "quality/original/17ae140b84d24747a016c695.webp",
+    "enhanced": "quality/enhanced/17ae140b84d24747a016c695.webp"
+  },
+  "campaign/rigs/22993386-31e7-4b84-b2ca-8e645088032c/texture.webp": {
+    "original": "quality/original/155ac5459d5c9ada0cc6aa04.webp",
+    "enhanced": "quality/enhanced/155ac5459d5c9ada0cc6aa04.webp"
+  },
+  "campaign/rigs/261c91e7-4ef6-49b8-aedf-c43565d2202b/texture.webp": {
+    "original": "quality/original/0f616960f3966039b6693ff2.webp",
+    "enhanced": "quality/enhanced/0f616960f3966039b6693ff2.webp"
+  },
+  "campaign/rigs/26aeaf9c-e3b3-4f8f-ac36-c9ccf2d0d090/texture.webp": {
+    "original": "quality/original/0e458c887d6f0e47b3a1dae5.webp",
+    "enhanced": "quality/enhanced/0e458c887d6f0e47b3a1dae5.webp"
+  },
+  "campaign/rigs/2d732139-f172-4303-95ed-cf8374886b31/texture.webp": {
+    "original": "quality/original/ab3346dc75f0d39b15a5e428.webp",
+    "enhanced": "quality/enhanced/ab3346dc75f0d39b15a5e428.webp"
+  },
+  "campaign/rigs/30e88536-e53d-4e07-abbb-e74cc2ea8713/texture.webp": {
+    "original": "quality/original/e1c1afe1bc1e784e8a54a6d2.webp",
+    "enhanced": "quality/enhanced/e1c1afe1bc1e784e8a54a6d2.webp"
+  },
+  "campaign/rigs/36da5206-7722-4541-b262-0d9a7ab17c82/texture.webp": {
+    "original": "quality/original/a484d7a755aada70ebb696c6.webp",
+    "enhanced": "quality/enhanced/a484d7a755aada70ebb696c6.webp"
+  },
+  "campaign/rigs/42723d37-b9dd-4adb-8e18-1d95e6c96968/texture.webp": {
+    "original": "quality/original/8fa09d3787ba151c5c859668.webp",
+    "enhanced": "quality/enhanced/8fa09d3787ba151c5c859668.webp"
+  },
+  "campaign/rigs/6446af35-2367-4014-95a0-fe71ba5ca45e/texture.webp": {
+    "original": "quality/original/9b950d36e1f8e8f53abc4da8.webp",
+    "enhanced": "quality/enhanced/9b950d36e1f8e8f53abc4da8.webp"
+  },
+  "campaign/rigs/68b8a14e-1c80-45e2-91a2-2b4d38cd6c93/texture.webp": {
+    "original": "quality/original/768ccf09bf46a8ad0309bff1.webp",
+    "enhanced": "quality/enhanced/768ccf09bf46a8ad0309bff1.webp"
+  },
+  "campaign/rigs/778238aa-56ad-4779-9786-813a55d57979/texture.webp": {
+    "original": "quality/original/fa6ccf4798c20982b4378d2b.webp",
+    "enhanced": "quality/enhanced/fa6ccf4798c20982b4378d2b.webp"
+  },
+  "campaign/rigs/79eee8e5-13b8-4423-8e8a-29c21b41276b/texture.webp": {
+    "original": "quality/original/b607c034d4b5dd4fdf557478.webp",
+    "enhanced": "quality/enhanced/b607c034d4b5dd4fdf557478.webp"
+  },
+  "campaign/rigs/7a2cc27f-9a29-433c-b877-4207791c9634/texture.webp": {
+    "original": "quality/original/eb48c3a0b315fc9336360b13.webp",
+    "enhanced": "quality/enhanced/eb48c3a0b315fc9336360b13.webp"
+  },
+  "campaign/rigs/7c254133-24e0-444e-a949-99873cdfe373/texture.webp": {
+    "original": "quality/original/b7b9622cd02f761872a36cfd.webp",
+    "enhanced": "quality/enhanced/b7b9622cd02f761872a36cfd.webp"
+  },
+  "campaign/rigs/8ce34184-5480-4c08-a2a2-69ad32cfc510/texture.webp": {
+    "original": "quality/original/60beb84e01eac49154417727.webp",
+    "enhanced": "quality/enhanced/60beb84e01eac49154417727.webp"
+  },
+  "campaign/rigs/90e14eaa-eddf-4b63-b5c3-91569e90b73a/texture.webp": {
+    "original": "quality/original/c8726861df2554e3aaef8647.webp",
+    "enhanced": "quality/enhanced/c8726861df2554e3aaef8647.webp"
+  },
+  "campaign/rigs/95b41cda-ea77-4c41-9197-72c3ae010b7a/texture.webp": {
+    "original": "quality/original/803c2c24aeee2a64712e7fb0.webp",
+    "enhanced": "quality/enhanced/803c2c24aeee2a64712e7fb0.webp"
+  },
+  "campaign/rigs/96f6e4b4-6a47-42ad-a088-102ebafe3373/texture.webp": {
+    "original": "quality/original/568cb5f3454bd79b2eeef5d0.webp",
+    "enhanced": "quality/enhanced/568cb5f3454bd79b2eeef5d0.webp"
+  },
+  "campaign/rigs/97297419-a434-4577-8b24-ffaaf24e98ce/texture.webp": {
+    "original": "quality/original/2968a4d5a537339ac204ca82.webp",
+    "enhanced": "quality/enhanced/2968a4d5a537339ac204ca82.webp"
+  },
+  "campaign/rigs/986c6c86-739f-4eec-8ea5-adb9754b49e8/texture.webp": {
+    "original": "quality/original/134db4ba9d8be86260066fdb.webp",
+    "enhanced": "quality/enhanced/134db4ba9d8be86260066fdb.webp"
+  },
+  "campaign/rigs/9afd7d82-5eae-4860-8c94-4343005093a4/texture.webp": {
+    "original": "quality/original/7172ff5e59e76f58fba92626.webp",
+    "enhanced": "quality/enhanced/7172ff5e59e76f58fba92626.webp"
+  },
+  "campaign/rigs/9c001604-bfd9-4be1-a920-88d244dd31e8/texture.webp": {
+    "original": "quality/original/39f267d45592c351c060a7fb.webp",
+    "enhanced": "quality/enhanced/39f267d45592c351c060a7fb.webp"
+  },
+  "campaign/rigs/a06ecd8b-4f8d-4bd3-aeb1-9e1a98cf9d0f/texture.webp": {
+    "original": "quality/original/eae7bad8a39547ff4fcb0c71.webp",
+    "enhanced": "quality/enhanced/eae7bad8a39547ff4fcb0c71.webp"
+  },
+  "campaign/rigs/a67b8475-cf59-4940-8d93-185f0e5304d7/texture.webp": {
+    "original": "quality/original/e29477a492779a740f708938.webp",
+    "enhanced": "quality/enhanced/e29477a492779a740f708938.webp"
+  },
+  "campaign/rigs/bd2e03a7-1ec3-497f-b313-eca1a036c47f/texture.webp": {
+    "original": "quality/original/dbb6b53712dc39335f510747.webp",
+    "enhanced": "quality/enhanced/dbb6b53712dc39335f510747.webp"
+  },
+  "campaign/rigs/c0be64d4-65a8-4732-8f07-a7dfc6aa1033/texture.webp": {
+    "original": "quality/original/35ffd22dc147901eab8edda1.webp",
+    "enhanced": "quality/enhanced/35ffd22dc147901eab8edda1.webp"
+  },
+  "campaign/rigs/c5ab87ef-5df4-4609-86e2-595742d3b075/texture.webp": {
+    "original": "quality/original/715ab323f65d197c07b2133d.webp",
+    "enhanced": "quality/enhanced/715ab323f65d197c07b2133d.webp"
+  },
+  "campaign/rigs/c9f3d7df-5a6e-4134-8890-234764fc3b67/texture.webp": {
+    "original": "quality/original/56f3b590ef3e25ec2a9ab7da.webp",
+    "enhanced": "quality/enhanced/56f3b590ef3e25ec2a9ab7da.webp"
+  },
+  "campaign/rigs/ce33031c-cfee-4b0e-addf-b4c322805a2d/texture.webp": {
+    "original": "quality/original/294cf4a1a29644665f0aa3b1.webp",
+    "enhanced": "quality/enhanced/294cf4a1a29644665f0aa3b1.webp"
+  },
+  "campaign/rigs/ceb8d8a3-70d5-4ff2-8bad-755239191770/texture.webp": {
+    "original": "quality/original/fd011b4ceeacd210ae2fb677.webp",
+    "enhanced": "quality/enhanced/fd011b4ceeacd210ae2fb677.webp"
+  },
+  "campaign/rigs/dae343a4-a461-4970-95d1-59644d9cb7f0/texture.webp": {
+    "original": "quality/original/43760bdebea702595ae80904.webp",
+    "enhanced": "quality/enhanced/43760bdebea702595ae80904.webp"
+  },
+  "campaign/rigs/db633a56-fb78-4a5f-9e42-61918444b7eb/texture.webp": {
+    "original": "quality/original/cb38894c9b1102e3621aff40.webp",
+    "enhanced": "quality/enhanced/cb38894c9b1102e3621aff40.webp"
+  },
+  "campaign/rigs/e62a2cc8-91f8-4d50-b219-9d65dd59b388/texture.webp": {
+    "original": "quality/original/ec76b472bdd4c0a5caaea21b.webp",
+    "enhanced": "quality/enhanced/ec76b472bdd4c0a5caaea21b.webp"
+  },
+  "campaign/rigs/eae43360-111c-4ef8-84e0-2eb4261560f2/texture.webp": {
+    "original": "quality/original/408e380d1c579b45788d72b5.webp",
+    "enhanced": "quality/enhanced/408e380d1c579b45788d72b5.webp"
+  },
+  "campaign/rigs/f1ed6853-4874-4b19-a073-0912f749cc74/texture.webp": {
+    "original": "quality/original/b7347299f5a2765474e093e6.webp",
+    "enhanced": "quality/enhanced/b7347299f5a2765474e093e6.webp"
+  },
+  "cowboy/rigs/15bca159-6151-4284-b1d4-a3fc1ab1163d/texture.webp": {
+    "original": "quality/original/6b7d7fa8fbeb548845a64697.webp",
+    "enhanced": "quality/enhanced/6b7d7fa8fbeb548845a64697.webp"
+  },
+  "cowboy/rigs/18f31b0d-1f08-4aca-b326-c888f7f0b94a/texture.webp": {
+    "original": "quality/original/8913b20728ae1c1eaf4354d9.webp",
+    "enhanced": "quality/enhanced/8913b20728ae1c1eaf4354d9.webp"
+  },
+  "cowboy/rigs/292dfac9-05ae-4635-b088-df88f5e150e1/texture.webp": {
+    "original": "quality/original/cc4a5125a1ad4bc59893269f.webp",
+    "enhanced": "quality/enhanced/cc4a5125a1ad4bc59893269f.webp"
+  },
+  "cowboy/rigs/2e9a731d-e4ac-4554-ad5b-2a30f15be90c/texture.webp": {
+    "original": "quality/original/c21476e11fc4e5696180f59e.webp",
+    "enhanced": "quality/enhanced/c21476e11fc4e5696180f59e.webp"
+  },
+  "cowboy/rigs/3296e039-a321-458f-9057-f88cc3a59d93/texture.webp": {
+    "original": "quality/original/a3f3bfa788981d17b21c0214.webp",
+    "enhanced": "quality/enhanced/a3f3bfa788981d17b21c0214.webp"
+  },
+  "cowboy/rigs/4076af18-7721-451f-8bb8-4bad57efd7c9/texture.webp": {
+    "original": "quality/original/19fcf3514e96401f5433e8c4.webp",
+    "enhanced": "quality/enhanced/19fcf3514e96401f5433e8c4.webp"
+  },
+  "cowboy/rigs/458f722c-2110-4e55-b1a2-497587e2a8da/texture.webp": {
+    "original": "quality/original/7fd743cf41fe22182048ca2a.webp",
+    "enhanced": "quality/enhanced/7fd743cf41fe22182048ca2a.webp"
+  },
+  "cowboy/rigs/54a8967b-f7da-442f-b88c-3b630ed521d9/texture.webp": {
+    "original": "quality/original/e31f047fa33d134c46b184ae.webp",
+    "enhanced": "quality/enhanced/e31f047fa33d134c46b184ae.webp"
+  },
+  "cowboy/rigs/68b8a14e-1c80-45e2-91a2-2b4d38cd6c93/texture.webp": {
+    "original": "quality/original/768ccf09bf46a8ad0309bff1.webp",
+    "enhanced": "quality/enhanced/768ccf09bf46a8ad0309bff1.webp"
+  },
+  "cowboy/rigs/6b48dff6-f954-45ab-b01b-d2ca002f1a1a/texture.webp": {
+    "original": "quality/original/d19825f8ab00870430ead879.webp",
+    "enhanced": "quality/enhanced/d19825f8ab00870430ead879.webp"
+  },
+  "cowboy/rigs/76bc7834-f92b-4a40-9ecc-b586ee6b4c07/texture.webp": {
+    "original": "quality/original/407e85b85f0ec334317b1195.webp",
+    "enhanced": "quality/enhanced/407e85b85f0ec334317b1195.webp"
+  },
+  "cowboy/rigs/7c254133-24e0-444e-a949-99873cdfe373/texture.webp": {
+    "original": "quality/original/b7b9622cd02f761872a36cfd.webp",
+    "enhanced": "quality/enhanced/b7b9622cd02f761872a36cfd.webp"
+  },
+  "cowboy/rigs/7ce47f1c-1655-4dd3-95df-d0209765b90b/texture.webp": {
+    "original": "quality/original/3fef976c884450325a2a5888.webp",
+    "enhanced": "quality/enhanced/3fef976c884450325a2a5888.webp"
+  },
+  "cowboy/rigs/7e1ee550-9ce6-44d4-bef1-04126dabd265/texture.webp": {
+    "original": "quality/original/9c5aca96b64f9de84cc4938c.webp",
+    "enhanced": "quality/enhanced/9c5aca96b64f9de84cc4938c.webp"
+  },
+  "cowboy/rigs/80b8e904-9a37-4e0c-be21-394f46945994/texture.webp": {
+    "original": "quality/original/e0961a53fd4678b7e9c748ae.webp",
+    "enhanced": "quality/enhanced/e0961a53fd4678b7e9c748ae.webp"
+  },
+  "cowboy/rigs/85eb707a-a466-45c6-a927-f07ba5b7b7f9/texture.webp": {
+    "original": "quality/original/8afa1ee77d54987b338ff947.webp",
+    "enhanced": "quality/enhanced/8afa1ee77d54987b338ff947.webp"
+  },
+  "cowboy/rigs/930b65e7-17af-4d8d-95ee-93c8b0df8063/texture.webp": {
+    "original": "quality/original/c66a2b7647468a5d48811c2b.webp",
+    "enhanced": "quality/enhanced/c66a2b7647468a5d48811c2b.webp"
+  },
+  "cowboy/rigs/a2425f9e-8d5f-4b08-adbd-e3c683e72395/texture.webp": {
+    "original": "quality/original/c225842abf73c137e6c91065.webp",
+    "enhanced": "quality/enhanced/c225842abf73c137e6c91065.webp"
+  },
+  "cowboy/rigs/b0b6fcf3-5ef6-4f7f-9534-fd042a9c40c5/texture.webp": {
+    "original": "quality/original/b0317e2a42cbc50c2f3ec4af.webp",
+    "enhanced": "quality/enhanced/b0317e2a42cbc50c2f3ec4af.webp"
+  },
+  "cowboy/rigs/b73b4f84-a54b-4aef-a0a2-30c7d9e9af07/texture.webp": {
+    "original": "quality/original/d4b41766fc0300e0428c9fda.webp",
+    "enhanced": "quality/enhanced/d4b41766fc0300e0428c9fda.webp"
+  },
+  "cowboy/rigs/bb718505-56c4-4790-b984-e659a4c295d0/texture.webp": {
+    "original": "quality/original/b58676e7c6fd8cac27482467.webp",
+    "enhanced": "quality/enhanced/b58676e7c6fd8cac27482467.webp"
+  },
+  "cowboy/rigs/bd2e03a7-1ec3-497f-b313-eca1a036c47f/texture.webp": {
+    "original": "quality/original/dbb6b53712dc39335f510747.webp",
+    "enhanced": "quality/enhanced/dbb6b53712dc39335f510747.webp"
+  },
+  "cowboy/rigs/c3c9b932-ea24-4bf7-b650-d350c8dc3574/texture.webp": {
+    "original": "quality/original/df014d6948b4dcb8d9235a33.webp",
+    "enhanced": "quality/enhanced/df014d6948b4dcb8d9235a33.webp"
+  },
+  "cowboy/rigs/c9e6905c-9209-476a-8c81-e1ab821f99dd/texture.webp": {
+    "original": "quality/original/6ac1d0e2e5008555c42f2373.webp",
+    "enhanced": "quality/enhanced/6ac1d0e2e5008555c42f2373.webp"
+  },
+  "cowboy/rigs/e3843b07-9e8c-42d2-9afa-8d6e84906cbf/texture.webp": {
+    "original": "quality/original/632ee1e1ce1a7d0aa96b9ba0.webp",
+    "enhanced": "quality/enhanced/632ee1e1ce1a7d0aa96b9ba0.webp"
+  },
+  "cowboy/rigs/e7a2cb27-24c8-47c1-a36a-818b2653dd06/texture.webp": {
+    "original": "quality/original/da459ce83c8a6dc894b5e74e.webp",
+    "enhanced": "quality/enhanced/da459ce83c8a6dc894b5e74e.webp"
+  },
+  "cowboy/rigs/f3bd66ec-2c8b-411f-a876-d5a904cf4adc/texture.webp": {
+    "original": "quality/original/60904b7febb831d82a06af70.webp",
+    "enhanced": "quality/enhanced/60904b7febb831d82a06af70.webp"
+  },
+  "cowboy/rigs/f7f9f2b4-bb52-45c0-92ca-44866ab39890/texture.webp": {
+    "original": "quality/original/e8bcbf5d2be82f95bee251fe.webp",
+    "enhanced": "quality/enhanced/e8bcbf5d2be82f95bee251fe.webp"
+  },
+  "cowboy/rigs/f8be0823-6a5c-41fc-8332-7d3a2c0d242e/texture.webp": {
+    "original": "quality/original/37d62556111bd86c8046fe80.webp",
+    "enhanced": "quality/enhanced/37d62556111bd86c8046fe80.webp"
+  },
+  "cowboy/rigs/f9e78c5a-a9a5-4b49-a91e-6125b7afebb9/texture.webp": {
+    "original": "quality/original/e060eb1109193a44a9f2f097.webp",
+    "enhanced": "quality/enhanced/e060eb1109193a44a9f2f097.webp"
+  },
+  "cowboy/rigs/fd6c9dc1-1938-4f19-9713-2178f9d85c95/texture.webp": {
+    "original": "quality/original/6848789d873f8807ad677b70.webp",
+    "enhanced": "quality/enhanced/6848789d873f8807ad677b70.webp"
+  },
+  "cowboy/rigs/ff4ea709-95f2-4f10-a8f9-52e256f1795d/texture.webp": {
+    "original": "quality/original/87497f8f3d60d26ba84a6ea3.webp",
+    "enhanced": "quality/enhanced/87497f8f3d60d26ba84a6ea3.webp"
+  },
+  "dark/rigs/0cdb42cf-8ac4-4116-b90f-ae005d9af8df/texture.webp": {
+    "original": "quality/original/a2afa0545f49df1c8cfa9e6c.webp",
+    "enhanced": "quality/enhanced/a2afa0545f49df1c8cfa9e6c.webp"
+  },
+  "dark/rigs/1c5a6638-caf0-4624-b0ac-5e6a461d2ae6/texture.webp": {
+    "original": "quality/original/e53d024b79f47051d53dce00.webp",
+    "enhanced": "quality/enhanced/e53d024b79f47051d53dce00.webp"
+  },
+  "dark/rigs/254920be-0854-4e14-b296-ddb7d4ab85ba/texture.webp": {
+    "original": "quality/original/2655f744ca4366c17e68909a.webp",
+    "enhanced": "quality/enhanced/2655f744ca4366c17e68909a.webp"
+  },
+  "dark/rigs/285fec60-5348-47df-a51d-7e9776e55637/texture.webp": {
+    "original": "quality/original/af8849bc1ddbca72a9e22631.webp",
+    "enhanced": "quality/enhanced/af8849bc1ddbca72a9e22631.webp"
+  },
+  "dark/rigs/3504414f-d3e9-4731-b0cc-66beec19ea09/texture.webp": {
+    "original": "quality/original/94238c47e3699f30572c8eb7.webp",
+    "enhanced": "quality/enhanced/94238c47e3699f30572c8eb7.webp"
+  },
+  "dark/rigs/36da5206-7722-4541-b262-0d9a7ab17c82/texture.webp": {
+    "original": "quality/original/a484d7a755aada70ebb696c6.webp",
+    "enhanced": "quality/enhanced/a484d7a755aada70ebb696c6.webp"
+  },
+  "dark/rigs/3da7208e-de32-4d5c-a649-171383cd7ecc/texture.webp": {
+    "original": "quality/original/6148e43c3a2b5a258b3e42f0.webp",
+    "enhanced": "quality/enhanced/6148e43c3a2b5a258b3e42f0.webp"
+  },
+  "dark/rigs/423e6dbf-6fd2-4d5e-a1aa-47f83f25cbaa/texture.webp": {
+    "original": "quality/original/05c772d2e6c630b8e107c2e6.webp",
+    "enhanced": "quality/enhanced/05c772d2e6c630b8e107c2e6.webp"
+  },
+  "dark/rigs/5b41ad9c-f6a7-4bbe-937d-a5f7b37fb4dc/texture.webp": {
+    "original": "quality/original/2dbad7719f41a31dbb38f536.webp",
+    "enhanced": "quality/enhanced/2dbad7719f41a31dbb38f536.webp"
+  },
+  "dark/rigs/6e7011e9-34b5-451d-a683-c5a6417621e4/texture.webp": {
+    "original": "quality/original/e1143f5b1ba3d3e7362c89f1.webp",
+    "enhanced": "quality/enhanced/e1143f5b1ba3d3e7362c89f1.webp"
+  },
+  "dark/rigs/7cc4f7cc-bba6-44fb-8756-498fd80ddfa7/texture.webp": {
+    "original": "quality/original/bb1af1182438fa50bfa260cc.webp",
+    "enhanced": "quality/enhanced/bb1af1182438fa50bfa260cc.webp"
+  },
+  "dark/rigs/80e2bf94-f1dd-41e5-b51c-cf573eba2989/texture.webp": {
+    "original": "quality/original/1de953215f88111a0ceb00d7.webp",
+    "enhanced": "quality/enhanced/1de953215f88111a0ceb00d7.webp"
+  },
+  "dark/rigs/8e219398-5293-4fb4-aa76-fe21681adacd/texture.webp": {
+    "original": "quality/original/b809ef3c6f4c581075d953b2.webp",
+    "enhanced": "quality/enhanced/b809ef3c6f4c581075d953b2.webp"
+  },
+  "dark/rigs/98a83eea-a633-44b3-9464-d5a80e2ab5af/texture.webp": {
+    "original": "quality/original/e882ffd072d580503cc5f26c.webp",
+    "enhanced": "quality/enhanced/e882ffd072d580503cc5f26c.webp"
+  },
+  "dark/rigs/a2892bfd-b361-479e-b482-1d34543e53e2/texture.webp": {
+    "original": "quality/original/390668ce0f137736618589ea.webp",
+    "enhanced": "quality/enhanced/390668ce0f137736618589ea.webp"
+  },
+  "dark/rigs/a31f0fd4-7ff6-4b57-b541-95889f5aef9c/texture.webp": {
+    "original": "quality/original/ac3c8b0b5df0b8748f2a04dd.webp",
+    "enhanced": "quality/enhanced/ac3c8b0b5df0b8748f2a04dd.webp"
+  },
+  "dark/rigs/a7fa2cfb-7f77-4863-83c6-7f6b15e57c11/texture.webp": {
+    "original": "quality/original/cc06a767c152a13e354c978d.webp",
+    "enhanced": "quality/enhanced/cc06a767c152a13e354c978d.webp"
+  },
+  "dark/rigs/bd2e03a7-1ec3-497f-b313-eca1a036c47f/texture.webp": {
+    "original": "quality/original/dbb6b53712dc39335f510747.webp",
+    "enhanced": "quality/enhanced/dbb6b53712dc39335f510747.webp"
+  },
+  "dark/rigs/bdd1abe8-4161-49ed-b469-615a87ea2389/texture.webp": {
+    "original": "quality/original/c6c2a058d7c2d5f9f22a7da3.webp",
+    "enhanced": "quality/enhanced/c6c2a058d7c2d5f9f22a7da3.webp"
+  },
+  "dark/rigs/c98d5ab7-d6bc-4e0c-91c6-026bc56a1eef/texture.webp": {
+    "original": "quality/original/1a3399c4ca28244bfc566cf3.webp",
+    "enhanced": "quality/enhanced/1a3399c4ca28244bfc566cf3.webp"
+  },
+  "dark/rigs/cb458b2b-f685-477d-9f1d-6f5b71707c16/texture.webp": {
+    "original": "quality/original/5ef43ee86d6bc82abdd947a9.webp",
+    "enhanced": "quality/enhanced/5ef43ee86d6bc82abdd947a9.webp"
+  },
+  "dark/rigs/d6401f7f-2deb-4fab-a66f-06f72b15cd6b/texture.webp": {
+    "original": "quality/original/48235267905ecfa76afd322c.webp",
+    "enhanced": "quality/enhanced/48235267905ecfa76afd322c.webp"
+  },
+  "dark/rigs/e3ea9f9d-0df9-4a87-a2db-9bb06a0a9ecf/texture.webp": {
+    "original": "quality/original/afed93d063341c300f490fd5.webp",
+    "enhanced": "quality/enhanced/afed93d063341c300f490fd5.webp"
+  },
+  "dino/rigs/0394e437-323f-4da3-ac6a-dfe817031d90/texture.webp": {
+    "original": "quality/original/616b90f119e476dbd04fe3d3.webp",
+    "enhanced": "quality/enhanced/616b90f119e476dbd04fe3d3.webp"
+  },
+  "dino/rigs/08e9b921-5279-407f-b84b-c5eb8a595eaf/texture.webp": {
+    "original": "quality/original/afe585e20039f1642697d30d.webp",
+    "enhanced": "quality/enhanced/afe585e20039f1642697d30d.webp"
+  },
+  "dino/rigs/26b06430-2ee8-4237-918b-b9beeab7c883/texture.webp": {
+    "original": "quality/original/9c060ce0a52d7a418865b9c2.webp",
+    "enhanced": "quality/enhanced/9c060ce0a52d7a418865b9c2.webp"
+  },
+  "dino/rigs/4c6d2561-f08a-45f6-8e48-60799035b1ba/texture.webp": {
+    "original": "quality/original/bdd26de61ba44d02b8e69637.webp",
+    "enhanced": "quality/enhanced/bdd26de61ba44d02b8e69637.webp"
+  },
+  "dino/rigs/5903018c-8533-42aa-a36a-95105b544336/texture.webp": {
+    "original": "quality/original/f868e9284862e0e6bc10114e.webp",
+    "enhanced": "quality/enhanced/f868e9284862e0e6bc10114e.webp"
+  },
+  "dino/rigs/63a125b0-3811-49dd-96ed-e7fdd89024ce/texture.webp": {
+    "original": "quality/original/e9e9ce46754b61ba50b0eeb4.webp",
+    "enhanced": "quality/enhanced/e9e9ce46754b61ba50b0eeb4.webp"
+  },
+  "dino/rigs/65a43d2b-132d-4576-9b5a-4e33796e82fd/texture.webp": {
+    "original": "quality/original/7158c7ae15be97556fb6bb16.webp",
+    "enhanced": "quality/enhanced/7158c7ae15be97556fb6bb16.webp"
+  },
+  "dino/rigs/7ad93c66-cc22-41bd-94d9-dd8756c0cb3e/texture.webp": {
+    "original": "quality/original/12b783ec39dd4d8000c3aac3.webp",
+    "enhanced": "quality/enhanced/12b783ec39dd4d8000c3aac3.webp"
+  },
+  "dino/rigs/812b98dd-10c7-4a58-9075-03799556fd98/texture.webp": {
+    "original": "quality/original/f3aea9344f796124270dcaf4.webp",
+    "enhanced": "quality/enhanced/f3aea9344f796124270dcaf4.webp"
+  },
+  "dino/rigs/afa49e82-8e10-4ea9-a4eb-a016eec9292e/texture.webp": {
+    "original": "quality/original/2278134b2ed758b4403c92c7.webp",
+    "enhanced": "quality/enhanced/2278134b2ed758b4403c92c7.webp"
+  },
+  "eighties/rigs/05736661-7b56-4cac-ae70-8d04caf428df/texture.webp": {
+    "original": "quality/original/f3b33080e6ade14033d025b0.webp",
+    "enhanced": "quality/enhanced/f3b33080e6ade14033d025b0.webp"
+  },
+  "eighties/rigs/10c943b6-908d-460d-acd1-046d612da076/texture.webp": {
+    "original": "quality/original/9812a5a85126b806473c8736.webp",
+    "enhanced": "quality/enhanced/9812a5a85126b806473c8736.webp"
+  },
+  "eighties/rigs/1fb067f5-1164-4d46-99fb-cf5bdd4333d3/texture.webp": {
+    "original": "quality/original/10779c3e532b0150c15e02c5.webp",
+    "enhanced": "quality/enhanced/10779c3e532b0150c15e02c5.webp"
+  },
+  "eighties/rigs/2382059d-29d3-45a9-96d7-dbcba1650c49/texture.webp": {
+    "original": "quality/original/eb7fd1740e3b05bce715a2d6.webp",
+    "enhanced": "quality/enhanced/eb7fd1740e3b05bce715a2d6.webp"
+  },
+  "eighties/rigs/34bb7e0b-b0b3-46e4-b282-27981cdc3000/texture.webp": {
+    "original": "quality/original/f370e0c52d46f48177166a1f.webp",
+    "enhanced": "quality/enhanced/f370e0c52d46f48177166a1f.webp"
+  },
+  "eighties/rigs/3a966d76-fbdb-46b2-89e3-6ff424d0f0f9/texture.webp": {
+    "original": "quality/original/cfe2327d642a1e6495aced3e.webp",
+    "enhanced": "quality/enhanced/cfe2327d642a1e6495aced3e.webp"
+  },
+  "eighties/rigs/3e2bffcb-2c9b-4b04-bc09-8199dd664d5a/texture.webp": {
+    "original": "quality/original/3adada63d66baaadf1a880a9.webp",
+    "enhanced": "quality/enhanced/3adada63d66baaadf1a880a9.webp"
+  },
+  "eighties/rigs/48a71df2-3265-4552-a2ed-23882faaac23/texture.webp": {
+    "original": "quality/original/e60d0987188590e7c1cf5044.webp",
+    "enhanced": "quality/enhanced/e60d0987188590e7c1cf5044.webp"
+  },
+  "eighties/rigs/4e30777e-afa2-4194-a3a6-16d7cf6eed8c/texture.webp": {
+    "original": "quality/original/ec8b9be1e07d8a1542ee2879.webp",
+    "enhanced": "quality/enhanced/ec8b9be1e07d8a1542ee2879.webp"
+  },
+  "eighties/rigs/560fd5a4-3031-4953-86f4-1b961d1c0f6b/texture.webp": {
+    "original": "quality/original/271dd0f30516c8b0575b3053.webp",
+    "enhanced": "quality/enhanced/271dd0f30516c8b0575b3053.webp"
+  },
+  "eighties/rigs/787c87b5-adc2-4a0e-a219-37e01e182b32/texture.webp": {
+    "original": "quality/original/3bfbfdc091cb71d9c9df3209.webp",
+    "enhanced": "quality/enhanced/3bfbfdc091cb71d9c9df3209.webp"
+  },
+  "eighties/rigs/81dbaf3f-f8e2-43ad-9c96-f5f1613936fb/texture.webp": {
+    "original": "quality/original/7a4f6b47800cee07b9583761.webp",
+    "enhanced": "quality/enhanced/7a4f6b47800cee07b9583761.webp"
+  },
+  "eighties/rigs/88092ebd-7e93-4d2f-a991-c0afa49240db/texture.webp": {
+    "original": "quality/original/0e740bcfdbbde28f2d5810c7.webp",
+    "enhanced": "quality/enhanced/0e740bcfdbbde28f2d5810c7.webp"
+  },
+  "eighties/rigs/93c2ce20-767e-405d-9d64-52b2b0e3b2c3/texture.webp": {
+    "original": "quality/original/e888e79071a6b95d50905942.webp",
+    "enhanced": "quality/enhanced/e888e79071a6b95d50905942.webp"
+  },
+  "eighties/rigs/a648312c-1f53-48a9-bb3d-a420c4387259/texture.webp": {
+    "original": "quality/original/ec83e6fe7a33549cb843abb2.webp",
+    "enhanced": "quality/enhanced/ec83e6fe7a33549cb843abb2.webp"
+  },
+  "eighties/rigs/ae1295a5-ecdd-4bed-9970-117f74abc4a1/texture.webp": {
+    "original": "quality/original/4f306470549f993911b1ed9e.webp",
+    "enhanced": "quality/enhanced/4f306470549f993911b1ed9e.webp"
+  },
+  "eighties/rigs/b4d26279-0f10-47dd-b162-956b12ffbefb/texture.webp": {
+    "original": "quality/original/a1039975c8f56f3bcbdbd250.webp",
+    "enhanced": "quality/enhanced/a1039975c8f56f3bcbdbd250.webp"
+  },
+  "eighties/rigs/b64a8afa-2a80-4d8a-9fc1-0e220bd96aa2/texture.webp": {
+    "original": "quality/original/b18b538d3262db9f96e2475f.webp",
+    "enhanced": "quality/enhanced/b18b538d3262db9f96e2475f.webp"
+  },
+  "eighties/rigs/b9d562fe-fe5e-4720-bd8b-8588b593c0de/texture.webp": {
+    "original": "quality/original/92bf5e538de8750aacef971f.webp",
+    "enhanced": "quality/enhanced/92bf5e538de8750aacef971f.webp"
+  },
+  "eighties/rigs/c86b7e59-6d21-4f1c-8d89-a1f8d7fcdf3f/texture.webp": {
+    "original": "quality/original/f5686b5fd5812cbdf2af8526.webp",
+    "enhanced": "quality/enhanced/f5686b5fd5812cbdf2af8526.webp"
+  },
+  "eighties/rigs/d6e3471a-f96d-4dfa-ac09-5afc23aaf4f2/texture.webp": {
+    "original": "quality/original/ce111870d69320c8d2cb50ba.webp",
+    "enhanced": "quality/enhanced/ce111870d69320c8d2cb50ba.webp"
+  },
+  "eighties/rigs/e06bd08c-d60f-4ddc-9e9e-5ec45a19d628/texture.webp": {
+    "original": "quality/original/ba1882d83488937c1acba47b.webp",
+    "enhanced": "quality/enhanced/ba1882d83488937c1acba47b.webp"
+  },
+  "eighties/rigs/e1562588-2bf1-41e9-8bd6-b6b4bd7b7d9c/texture.webp": {
+    "original": "quality/original/8c6813095f7c6014e04ed05a.webp",
+    "enhanced": "quality/enhanced/8c6813095f7c6014e04ed05a.webp"
+  },
+  "eighties/rigs/ea8184e9-c668-4473-b398-b2a5c92cdb4e/texture.webp": {
+    "original": "quality/original/c45ab2fc682b02f0ad857067.webp",
+    "enhanced": "quality/enhanced/c45ab2fc682b02f0ad857067.webp"
+  },
+  "eighties/rigs/ee077d86-b09f-4488-83d4-d06163c5077a/texture.webp": {
+    "original": "quality/original/8a433837de3d74695a22bfd2.webp",
+    "enhanced": "quality/enhanced/8a433837de3d74695a22bfd2.webp"
+  },
+  "eighties/rigs/efaac5fe-51ed-48bb-86c1-b1ddec215a16/texture.webp": {
+    "original": "quality/original/0b6cbdb97ae3023990bc3782.webp",
+    "enhanced": "quality/enhanced/0b6cbdb97ae3023990bc3782.webp"
+  },
+  "eighties/rigs/fa14e7f7-d97c-4e71-b016-5444e7e1db64/texture.webp": {
+    "original": "quality/original/b50e98467ade4c7a43bb9e67.webp",
+    "enhanced": "quality/enhanced/b50e98467ade4c7a43bb9e67.webp"
+  },
+  "future/rigs/0130e9ee-b436-43d0-947b-e6b5d43b8889/texture.webp": {
+    "original": "quality/original/db35a1f0e6cde80fb1da2b3b.webp",
+    "enhanced": "quality/enhanced/db35a1f0e6cde80fb1da2b3b.webp"
+  },
+  "future/rigs/13ccd066-b7db-42ad-8177-523e9f1fe2cd/texture.webp": {
+    "original": "quality/original/5eddeffae65d2641afbc1de3.webp",
+    "enhanced": "quality/enhanced/5eddeffae65d2641afbc1de3.webp"
+  },
+  "future/rigs/1c08d179-7752-4431-96b9-f580236adf7b/texture.webp": {
+    "original": "quality/original/76bf0f8178a43badb00f88ad.webp",
+    "enhanced": "quality/enhanced/76bf0f8178a43badb00f88ad.webp"
+  },
+  "future/rigs/2204540b-a2be-4d76-afbd-ac04e19ed69d/texture.webp": {
+    "original": "quality/original/c017f309e542dea589d049ec.webp",
+    "enhanced": "quality/enhanced/c017f309e542dea589d049ec.webp"
+  },
+  "future/rigs/2e0cae99-2934-4eea-8b25-6d896b720826/texture.webp": {
+    "original": "quality/original/ef24d8f6aa1ce2c590ca82d0.webp",
+    "enhanced": "quality/enhanced/ef24d8f6aa1ce2c590ca82d0.webp"
+  },
+  "future/rigs/33ad4c3a-2ad8-4fff-b644-f634d8752611/texture.webp": {
+    "original": "quality/original/8c7f7daaf39ba7478b5b59fa.webp",
+    "enhanced": "quality/enhanced/8c7f7daaf39ba7478b5b59fa.webp"
+  },
+  "future/rigs/3c5474f8-69e5-4284-9d34-fc4233b8a30c/texture.webp": {
+    "original": "quality/original/e3ed13cccca5dcb49fcb2259.webp",
+    "enhanced": "quality/enhanced/e3ed13cccca5dcb49fcb2259.webp"
+  },
+  "future/rigs/3cf31d7b-b700-4a1c-b370-8ee09bc4715b/texture.webp": {
+    "original": "quality/original/111fe4bd064e0e607519a66b.webp",
+    "enhanced": "quality/enhanced/111fe4bd064e0e607519a66b.webp"
+  },
+  "future/rigs/476564a9-2769-488c-a7e0-96961cd084f0/texture.webp": {
+    "original": "quality/original/54c50ddce4684a0ee895bb22.webp",
+    "enhanced": "quality/enhanced/54c50ddce4684a0ee895bb22.webp"
+  },
+  "future/rigs/481be93e-a969-459a-9c1d-362a3de2472d/texture.webp": {
+    "original": "quality/original/af33193d4c6a48cbcc49e162.webp",
+    "enhanced": "quality/enhanced/af33193d4c6a48cbcc49e162.webp"
+  },
+  "future/rigs/522e89b8-16fb-40ea-85fc-a1b9aab8da2a/texture.webp": {
+    "original": "quality/original/6eb3dea56ae44d43a2bbca60.webp",
+    "enhanced": "quality/enhanced/6eb3dea56ae44d43a2bbca60.webp"
+  },
+  "future/rigs/556d239e-7a6f-4629-bed3-587b48969e1f/texture.webp": {
+    "original": "quality/original/1f39f6e2e43a70705be504ba.webp",
+    "enhanced": "quality/enhanced/1f39f6e2e43a70705be504ba.webp"
+  },
+  "future/rigs/5fed8596-1b76-4440-a1a6-47bc7a1d064d/texture.webp": {
+    "original": "quality/original/27fb808169fff4e3516172b2.webp",
+    "enhanced": "quality/enhanced/27fb808169fff4e3516172b2.webp"
+  },
+  "future/rigs/640f3d39-4aa6-438c-ac6e-c31a08c99cd9/texture.webp": {
+    "original": "quality/original/ee142684b39dceeb4c9b1f0d.webp",
+    "enhanced": "quality/enhanced/ee142684b39dceeb4c9b1f0d.webp"
+  },
+  "future/rigs/68b8a14e-1c80-45e2-91a2-2b4d38cd6c93/texture.webp": {
+    "original": "quality/original/768ccf09bf46a8ad0309bff1.webp",
+    "enhanced": "quality/enhanced/768ccf09bf46a8ad0309bff1.webp"
+  },
+  "future/rigs/69b9a209-5f6f-4bf1-b789-2851ea6ba6c3/texture.webp": {
+    "original": "quality/original/bd37b0a780e82a603b5231bf.webp",
+    "enhanced": "quality/enhanced/bd37b0a780e82a603b5231bf.webp"
+  },
+  "future/rigs/79117d08-6876-49ae-98ed-bfeb6f96fceb/texture.webp": {
+    "original": "quality/original/ac71c3913a5c60c80f664af6.webp",
+    "enhanced": "quality/enhanced/ac71c3913a5c60c80f664af6.webp"
+  },
+  "future/rigs/7b5ed6f8-0180-4187-93d8-53755f13f24d/texture.webp": {
+    "original": "quality/original/56058197ad8a5c03eae3c052.webp",
+    "enhanced": "quality/enhanced/56058197ad8a5c03eae3c052.webp"
+  },
+  "future/rigs/7c254133-24e0-444e-a949-99873cdfe373/texture.webp": {
+    "original": "quality/original/b7b9622cd02f761872a36cfd.webp",
+    "enhanced": "quality/enhanced/b7b9622cd02f761872a36cfd.webp"
+  },
+  "future/rigs/85eaaca6-f977-4163-b0bb-d95a290d2c4a/texture.webp": {
+    "original": "quality/original/bcdc8d8bbe466e2af083c8d2.webp",
+    "enhanced": "quality/enhanced/bcdc8d8bbe466e2af083c8d2.webp"
+  },
+  "future/rigs/99b51958-2487-44fc-b119-2ba7469e5bc0/texture.webp": {
+    "original": "quality/original/93f7adb7aad0f954be20fd26.webp",
+    "enhanced": "quality/enhanced/93f7adb7aad0f954be20fd26.webp"
+  },
+  "future/rigs/a0600e0d-3a0e-43bb-8ade-acca114f6ee6/texture.webp": {
+    "original": "quality/original/2d97d7a0e20e183bcac8a66b.webp",
+    "enhanced": "quality/enhanced/2d97d7a0e20e183bcac8a66b.webp"
+  },
+  "future/rigs/a197bbe2-6c96-4332-bbcc-23b79389cfd6/texture.webp": {
+    "original": "quality/original/bff2496ee883d23914c4d716.webp",
+    "enhanced": "quality/enhanced/bff2496ee883d23914c4d716.webp"
+  },
+  "future/rigs/a43b51c3-ddcb-46a2-b58f-4c5044062c90/texture.webp": {
+    "original": "quality/original/6716e0295e2a79cad895cb6b.webp",
+    "enhanced": "quality/enhanced/6716e0295e2a79cad895cb6b.webp"
+  },
+  "future/rigs/a47a7eca-d6d7-4616-a925-36b839e86daa/texture.webp": {
+    "original": "quality/original/cadad00ac7313fb99c04bd9b.webp",
+    "enhanced": "quality/enhanced/cadad00ac7313fb99c04bd9b.webp"
+  },
+  "future/rigs/a536cd34-9cac-4606-84be-160326a4e421/texture.webp": {
+    "original": "quality/original/1044ac2762589b075cb1d124.webp",
+    "enhanced": "quality/enhanced/1044ac2762589b075cb1d124.webp"
+  },
+  "future/rigs/a8e1a224-cdc8-4f9b-b80b-7b9a454cd02e/texture.webp": {
+    "original": "quality/original/8ed2042cb3e113850777b28c.webp",
+    "enhanced": "quality/enhanced/8ed2042cb3e113850777b28c.webp"
+  },
+  "future/rigs/a9a5d2a4-4fbe-4054-b48c-5702a0c52d3d/texture.webp": {
+    "original": "quality/original/fe370cd7735db8dbb54d7ef6.webp",
+    "enhanced": "quality/enhanced/fe370cd7735db8dbb54d7ef6.webp"
+  },
+  "future/rigs/ac0dd02f-18fd-49bf-9c79-e6e57f522624/texture.webp": {
+    "original": "quality/original/25420850e493152404ea4782.webp",
+    "enhanced": "quality/enhanced/25420850e493152404ea4782.webp"
+  },
+  "future/rigs/bd2e03a7-1ec3-497f-b313-eca1a036c47f/texture.webp": {
+    "original": "quality/original/dbb6b53712dc39335f510747.webp",
+    "enhanced": "quality/enhanced/dbb6b53712dc39335f510747.webp"
+  },
+  "future/rigs/c60b53e7-4697-4853-9d60-a4f4133f99ff/texture.webp": {
+    "original": "quality/original/0054f6bbb73eab6255771c17.webp",
+    "enhanced": "quality/enhanced/0054f6bbb73eab6255771c17.webp"
+  },
+  "future/rigs/cf349864-d246-4c99-a17b-342439feffe7/texture.webp": {
+    "original": "quality/original/fed0590e2a4c79c3b52b7a7f.webp",
+    "enhanced": "quality/enhanced/fed0590e2a4c79c3b52b7a7f.webp"
+  },
+  "future/rigs/e6cc7524-6ffa-4b5a-a085-0955d4eccd57/texture.webp": {
+    "original": "quality/original/7ab59e0286889eb6c93d6c2e.webp",
+    "enhanced": "quality/enhanced/7ab59e0286889eb6c93d6c2e.webp"
+  },
+  "iceage/rigs/073dee59-a0b4-43cd-89b9-6e74d25e80c5/texture.webp": {
+    "original": "quality/original/71d548cdadd47419b4b06f84.webp",
+    "enhanced": "quality/enhanced/71d548cdadd47419b4b06f84.webp"
+  },
+  "iceage/rigs/342ebb04-a3e7-4b2d-9d7a-ef2672f76116/texture.webp": {
+    "original": "quality/original/e2b127489a9a820e02a0cfd8.webp",
+    "enhanced": "quality/enhanced/e2b127489a9a820e02a0cfd8.webp"
+  },
+  "iceage/rigs/3461c273-7def-4524-bb69-31d49fbc1ad0/texture.webp": {
+    "original": "quality/original/fb944620cf7955b8f633c8de.webp",
+    "enhanced": "quality/enhanced/fb944620cf7955b8f633c8de.webp"
+  },
+  "iceage/rigs/382f414c-33bf-4125-9f39-824735f90a22/texture.webp": {
+    "original": "quality/original/d3844d894346b15578d26fa1.webp",
+    "enhanced": "quality/enhanced/d3844d894346b15578d26fa1.webp"
+  },
+  "iceage/rigs/3b1c3cc9-b126-4d13-ac2b-1f76e53b99af/texture.webp": {
+    "original": "quality/original/b156212720e493499147a966.webp",
+    "enhanced": "quality/enhanced/b156212720e493499147a966.webp"
+  },
+  "iceage/rigs/3cc985d4-5d66-4761-b25d-3d135736bafd/texture.webp": {
+    "original": "quality/original/e3824b0f9da90ad71f173793.webp",
+    "enhanced": "quality/enhanced/e3824b0f9da90ad71f173793.webp"
+  },
+  "iceage/rigs/3f2013b2-c020-4df1-b26f-6676a178400b/texture.webp": {
+    "original": "quality/original/79cac5ba25d39468637df98f.webp",
+    "enhanced": "quality/enhanced/79cac5ba25d39468637df98f.webp"
+  },
+  "iceage/rigs/41a0b3ac-de2f-4243-9ff9-4837bf27deff/texture.webp": {
+    "original": "quality/original/9cf37531ef1350a186fb77f0.webp",
+    "enhanced": "quality/enhanced/9cf37531ef1350a186fb77f0.webp"
+  },
+  "iceage/rigs/53985f04-df09-4ed0-8d9b-cf4fc2cd3061/texture.webp": {
+    "original": "quality/original/2555861bc09fcfb905f0585b.webp",
+    "enhanced": "quality/enhanced/2555861bc09fcfb905f0585b.webp"
+  },
+  "iceage/rigs/587aa4da-75ef-455a-bbad-2fcf5accbb8a/texture.webp": {
+    "original": "quality/original/27eaa11c70ba8c4d7ff504e8.webp",
+    "enhanced": "quality/enhanced/27eaa11c70ba8c4d7ff504e8.webp"
+  },
+  "iceage/rigs/7a1788da-ac4e-4484-8bfe-88c1abd0d443/texture.webp": {
+    "original": "quality/original/5cf66e8417a7df346943ad41.webp",
+    "enhanced": "quality/enhanced/5cf66e8417a7df346943ad41.webp"
+  },
+  "iceage/rigs/7c254133-24e0-444e-a949-99873cdfe373/texture.webp": {
+    "original": "quality/original/b7b9622cd02f761872a36cfd.webp",
+    "enhanced": "quality/enhanced/b7b9622cd02f761872a36cfd.webp"
+  },
+  "iceage/rigs/84edf564-86e5-48bf-9854-c00778282c8a/texture.webp": {
+    "original": "quality/original/d653ab4886d8915b0aa64294.webp",
+    "enhanced": "quality/enhanced/d653ab4886d8915b0aa64294.webp"
+  },
+  "iceage/rigs/90e14eaa-eddf-4b63-b5c3-91569e90b73a/texture.webp": {
+    "original": "quality/original/c8726861df2554e3aaef8647.webp",
+    "enhanced": "quality/enhanced/c8726861df2554e3aaef8647.webp"
+  },
+  "iceage/rigs/96ef2835-1e8b-4821-a2d7-95b7d51a913b/texture.webp": {
+    "original": "quality/original/285d3958f9ddead1d594c95d.webp",
+    "enhanced": "quality/enhanced/285d3958f9ddead1d594c95d.webp"
+  },
+  "iceage/rigs/9c54c1c9-86b7-4a70-b22b-928365061462/texture.webp": {
+    "original": "quality/original/f9185915887602829c4e08bb.webp",
+    "enhanced": "quality/enhanced/f9185915887602829c4e08bb.webp"
+  },
+  "iceage/rigs/b094a154-3469-4271-b464-327a4aca1e42/texture.webp": {
+    "original": "quality/original/cf3baf60abf9e4a69ecb026d.webp",
+    "enhanced": "quality/enhanced/cf3baf60abf9e4a69ecb026d.webp"
+  },
+  "iceage/rigs/b5b63179-989b-4002-ad69-d03f500fb797/texture.webp": {
+    "original": "quality/original/14e7541c7ec2f8a3226b2df5.webp",
+    "enhanced": "quality/enhanced/14e7541c7ec2f8a3226b2df5.webp"
+  },
+  "iceage/rigs/b6929939-c667-4927-83d9-570dc8a2390c/texture.webp": {
+    "original": "quality/original/81dee0cd0a3513283ef56932.webp",
+    "enhanced": "quality/enhanced/81dee0cd0a3513283ef56932.webp"
+  },
+  "iceage/rigs/bc5c2eaa-6f11-4816-a17a-728548dc14ee/texture.webp": {
+    "original": "quality/original/46782de97f1045c2591c5718.webp",
+    "enhanced": "quality/enhanced/46782de97f1045c2591c5718.webp"
+  },
+  "iceage/rigs/c7473142-564a-4c18-9315-e60fb5fc9b68/texture.webp": {
+    "original": "quality/original/ed2320b8b4057ab505f4d526.webp",
+    "enhanced": "quality/enhanced/ed2320b8b4057ab505f4d526.webp"
+  },
+  "iceage/rigs/cc5814bb-917a-4bee-84e9-9b21e052ff5d/texture.webp": {
+    "original": "quality/original/bcc3c462c08b9e9787e67912.webp",
+    "enhanced": "quality/enhanced/bcc3c462c08b9e9787e67912.webp"
+  },
+  "iceage/rigs/d5656e0c-cfbb-4fae-a63c-e5935a26c570/texture.webp": {
+    "original": "quality/original/ed37d79ee24fdbd7390624e7.webp",
+    "enhanced": "quality/enhanced/ed37d79ee24fdbd7390624e7.webp"
+  },
+  "iceage/rigs/eae43360-111c-4ef8-84e0-2eb4261560f2/texture.webp": {
+    "original": "quality/original/408e380d1c579b45788d72b5.webp",
+    "enhanced": "quality/enhanced/408e380d1c579b45788d72b5.webp"
+  },
+  "iceage/rigs/f13b2192-4880-459a-9751-e7023788727e/texture.webp": {
+    "original": "quality/original/402c6ba83de8b04f52519b40.webp",
+    "enhanced": "quality/enhanced/402c6ba83de8b04f52519b40.webp"
+  },
+  "kongfu/rigs/041c6308-affc-4b1e-89e6-16ade3d0ca3d/texture.webp": {
+    "original": "quality/original/32ece26a134763337952ea10.webp",
+    "enhanced": "quality/enhanced/32ece26a134763337952ea10.webp"
+  },
+  "kongfu/rigs/0539be43-ccaf-4dea-a9de-210c188a3bfb/texture.webp": {
+    "original": "quality/original/8476ca8de2ec1fb9962853e6.webp",
+    "enhanced": "quality/enhanced/8476ca8de2ec1fb9962853e6.webp"
+  },
+  "kongfu/rigs/05f41d45-2c26-464c-ad79-d416c55b6b15/texture.webp": {
+    "original": "quality/original/f79c16188db6e37eb4febec6.webp",
+    "enhanced": "quality/enhanced/f79c16188db6e37eb4febec6.webp"
+  },
+  "kongfu/rigs/07a7c094-46b0-4c91-a5bd-26ab01d4dbd7/texture.webp": {
+    "original": "quality/original/19e09cb81731efdf691b075b.webp",
+    "enhanced": "quality/enhanced/19e09cb81731efdf691b075b.webp"
+  },
+  "kongfu/rigs/0fc71541-952c-4b88-9e16-d2d385187146/texture.webp": {
+    "original": "quality/original/c6b54ad4f66dfc394fe1ff03.webp",
+    "enhanced": "quality/enhanced/c6b54ad4f66dfc394fe1ff03.webp"
+  },
+  "kongfu/rigs/135d206c-2eda-453e-ad15-1a4c7ea97571/texture.webp": {
+    "original": "quality/original/17cc6948ad8080e85bea1ab6.webp",
+    "enhanced": "quality/enhanced/17cc6948ad8080e85bea1ab6.webp"
+  },
+  "kongfu/rigs/14d5b6bf-4091-4c97-b872-c9f824352dad/texture.webp": {
+    "original": "quality/original/07ff60b06d55d85bf05b921f.webp",
+    "enhanced": "quality/enhanced/07ff60b06d55d85bf05b921f.webp"
+  },
+  "kongfu/rigs/4ae3b13e-572e-4eaa-8332-787acb012a7f/texture.webp": {
+    "original": "quality/original/11a75c75cd17916aa9b9e7e1.webp",
+    "enhanced": "quality/enhanced/11a75c75cd17916aa9b9e7e1.webp"
+  },
+  "kongfu/rigs/4f441597-d292-453c-bfd5-05f60920fa55/texture.webp": {
+    "original": "quality/original/7e634cfeddc838be4e7d894f.webp",
+    "enhanced": "quality/enhanced/7e634cfeddc838be4e7d894f.webp"
+  },
+  "kongfu/rigs/507f4144-2375-45cc-8168-15d7f0ab169e/texture.webp": {
+    "original": "quality/original/1aaaa0dcb06f42d0706b9ea8.webp",
+    "enhanced": "quality/enhanced/1aaaa0dcb06f42d0706b9ea8.webp"
+  },
+  "kongfu/rigs/59d67902-aca3-4f2e-889f-42ab58f23173/texture.webp": {
+    "original": "quality/original/ab5172944568d2a549faadab.webp",
+    "enhanced": "quality/enhanced/ab5172944568d2a549faadab.webp"
+  },
+  "kongfu/rigs/5f456d61-6342-4cee-9e75-0a08c26e3fb2/texture.webp": {
+    "original": "quality/original/8e08566dbd4e3cb76f94cf0b.webp",
+    "enhanced": "quality/enhanced/8e08566dbd4e3cb76f94cf0b.webp"
+  },
+  "kongfu/rigs/62732fe1-b408-4cf3-99f1-fbd28e293cfe/texture.webp": {
+    "original": "quality/original/caa7730ebd5d5e49c2a325f8.webp",
+    "enhanced": "quality/enhanced/caa7730ebd5d5e49c2a325f8.webp"
+  },
+  "kongfu/rigs/6bfd0b08-a5ed-420e-b8a5-393fc3000863/texture.webp": {
+    "original": "quality/original/d8496e26bee386301291148e.webp",
+    "enhanced": "quality/enhanced/d8496e26bee386301291148e.webp"
+  },
+  "kongfu/rigs/77c0cbba-c62d-4492-af93-786aa846614e/texture.webp": {
+    "original": "quality/original/42d46670f87b055c3c3e7a51.webp",
+    "enhanced": "quality/enhanced/42d46670f87b055c3c3e7a51.webp"
+  },
+  "kongfu/rigs/86d72cb9-63c6-4def-90c5-2ccae41b60d2/texture.webp": {
+    "original": "quality/original/18cccaa2174cc1d13a4a779e.webp",
+    "enhanced": "quality/enhanced/18cccaa2174cc1d13a4a779e.webp"
+  },
+  "kongfu/rigs/8e43a765-4cc0-4d5d-84b6-2f4393351abb/texture.webp": {
+    "original": "quality/original/e707c515431fe3343305d3bc.webp",
+    "enhanced": "quality/enhanced/e707c515431fe3343305d3bc.webp"
+  },
+  "kongfu/rigs/8ee02a01-8408-4230-9a39-b4d3ec132ad4/texture.webp": {
+    "original": "quality/original/5fe0193c0ab2161bf2c1c30a.webp",
+    "enhanced": "quality/enhanced/5fe0193c0ab2161bf2c1c30a.webp"
+  },
+  "kongfu/rigs/9170ebd4-7d61-4961-a607-0e6259ff6281/texture.webp": {
+    "original": "quality/original/9162b92e89df7a5c3e0975ba.webp",
+    "enhanced": "quality/enhanced/9162b92e89df7a5c3e0975ba.webp"
+  },
+  "kongfu/rigs/94dd38e5-9c36-435c-af5d-172b19d8817b/texture.webp": {
+    "original": "quality/original/b4abf6d6002b074f74a3ca50.webp",
+    "enhanced": "quality/enhanced/b4abf6d6002b074f74a3ca50.webp"
+  },
+  "kongfu/rigs/980bd3f7-3da9-4122-85e1-e007dd760fcf/texture.webp": {
+    "original": "quality/original/4a5728797517139f1fc97bd5.webp",
+    "enhanced": "quality/enhanced/4a5728797517139f1fc97bd5.webp"
+  },
+  "kongfu/rigs/981c23a3-7893-49f5-9eff-db089ee157fa/texture.webp": {
+    "original": "quality/original/0afe2b028382968b2cd90ae5.webp",
+    "enhanced": "quality/enhanced/0afe2b028382968b2cd90ae5.webp"
+  },
+  "kongfu/rigs/9ee2ff68-3a70-462f-9e2c-aba9cd4a414f/texture.webp": {
+    "original": "quality/original/1bddd80f5562711ca7bef6bb.webp",
+    "enhanced": "quality/enhanced/1bddd80f5562711ca7bef6bb.webp"
+  },
+  "kongfu/rigs/ac074328-a842-46ea-bead-fd0b4b448b01/texture.webp": {
+    "original": "quality/original/75c7f83e5dd2d90821b201aa.webp",
+    "enhanced": "quality/enhanced/75c7f83e5dd2d90821b201aa.webp"
+  },
+  "kongfu/rigs/b25536f7-f280-4e15-bd8e-6348359ba726/texture.webp": {
+    "original": "quality/original/91e85d6735a82f93cf793564.webp",
+    "enhanced": "quality/enhanced/91e85d6735a82f93cf793564.webp"
+  },
+  "kongfu/rigs/b350ba7d-8ced-4de8-8e23-17db34baf1ed/texture.webp": {
+    "original": "quality/original/37a983e57b17523cc7ac81dd.webp",
+    "enhanced": "quality/enhanced/37a983e57b17523cc7ac81dd.webp"
+  },
+  "kongfu/rigs/b654307b-eba2-4ee6-a3aa-b7670c0170ac/texture.webp": {
+    "original": "quality/original/ca223fe4c3f5836cb1fc4af5.webp",
+    "enhanced": "quality/enhanced/ca223fe4c3f5836cb1fc4af5.webp"
+  },
+  "kongfu/rigs/b9604f77-a663-4cb3-8179-96f1bef46060/texture.webp": {
+    "original": "quality/original/4ed37402ab02863f2fdb7516.webp",
+    "enhanced": "quality/enhanced/4ed37402ab02863f2fdb7516.webp"
+  },
+  "kongfu/rigs/bdd10469-780b-4fcf-8d6d-e310bf1782e4/texture.webp": {
+    "original": "quality/original/7e18ea5dfb095c43e1abcbbd.webp",
+    "enhanced": "quality/enhanced/7e18ea5dfb095c43e1abcbbd.webp"
+  },
+  "kongfu/rigs/c37d837f-6b16-4f14-8093-acc0bac5efc2/texture.webp": {
+    "original": "quality/original/692bfb126bd560f64633de5f.webp",
+    "enhanced": "quality/enhanced/692bfb126bd560f64633de5f.webp"
+  },
+  "kongfu/rigs/d42b4fb7-8fa6-4086-b885-784b316fc4b2/texture.webp": {
+    "original": "quality/original/b4664362634cc2e30627d8af.webp",
+    "enhanced": "quality/enhanced/b4664362634cc2e30627d8af.webp"
+  },
+  "kongfu/rigs/d42c3823-afb7-4112-93b9-90a4ca85b5e7/texture.webp": {
+    "original": "quality/original/8fe898aad75fe3d1b9876d0a.webp",
+    "enhanced": "quality/enhanced/8fe898aad75fe3d1b9876d0a.webp"
+  },
+  "kongfu/rigs/d81559d0-8415-4b15-a647-6484c1533c37/texture.webp": {
+    "original": "quality/original/df5f7d3c0c697d6e6e74def9.webp",
+    "enhanced": "quality/enhanced/df5f7d3c0c697d6e6e74def9.webp"
+  },
+  "kongfu/rigs/d8bf6ee9-a429-4287-9708-d3776360fec2/texture.webp": {
+    "original": "quality/original/b4bc8b6d255de657676b98dd.webp",
+    "enhanced": "quality/enhanced/b4bc8b6d255de657676b98dd.webp"
+  },
+  "kongfu/rigs/d93e580b-2953-42b2-b5e4-a8b3db1521e4/texture.webp": {
+    "original": "quality/original/844516917b27704b5b4281da.webp",
+    "enhanced": "quality/enhanced/844516917b27704b5b4281da.webp"
+  },
+  "kongfu/rigs/e215fe53-e3ec-4e6d-be34-aec39a83a556/texture.webp": {
+    "original": "quality/original/785ba4f193a3b7feacdc967a.webp",
+    "enhanced": "quality/enhanced/785ba4f193a3b7feacdc967a.webp"
+  },
+  "kongfu/rigs/ee8ff8f3-4ced-4e82-8139-80a481133b4d/texture.webp": {
+    "original": "quality/original/ac713b6fbebb36de4dbaee20.webp",
+    "enhanced": "quality/enhanced/ac713b6fbebb36de4dbaee20.webp"
+  },
+  "kongfu/rigs/ef541256-36db-45be-b10e-aad0db4dae41/texture.webp": {
+    "original": "quality/original/d4a96efcf9edddf07c9ae47d.webp",
+    "enhanced": "quality/enhanced/d4a96efcf9edddf07c9ae47d.webp"
+  },
+  "kongfu/rigs/f1485270-0642-4f81-b5b1-ab6014a5c0a9/texture.webp": {
+    "original": "quality/original/371b25afd29d75b0d19ebdc8.webp",
+    "enhanced": "quality/enhanced/371b25afd29d75b0d19ebdc8.webp"
+  },
+  "kongfu/rigs/ffc26dd7-0a0d-4152-8b6b-94d947dbe29a/texture.webp": {
+    "original": "quality/original/c09b5e881253ead577d37baf.webp",
+    "enhanced": "quality/enhanced/c09b5e881253ead577d37baf.webp"
+  },
+  "lostcity/rigs/02f61fda-299c-4de0-b4a1-d64bccd7bda8/texture.webp": {
+    "original": "quality/original/14813ee23a0f426e71e1ec79.webp",
+    "enhanced": "quality/enhanced/14813ee23a0f426e71e1ec79.webp"
+  },
+  "lostcity/rigs/05b3d9c0-2ced-462b-8215-d906dc33dde6/texture.webp": {
+    "original": "quality/original/f2ecf3370058ba89786d966d.webp",
+    "enhanced": "quality/enhanced/f2ecf3370058ba89786d966d.webp"
+  },
+  "lostcity/rigs/2120077a-cdf4-4ee8-aa7d-0dffcb8a0473/texture.webp": {
+    "original": "quality/original/3559d198364574bff47b9f30.webp",
+    "enhanced": "quality/enhanced/3559d198364574bff47b9f30.webp"
+  },
+  "lostcity/rigs/3b2cad80-cb70-4001-a17a-718b92fcf149/texture.webp": {
+    "original": "quality/original/4d3e805f98dbfa71f4b17f02.webp",
+    "enhanced": "quality/enhanced/4d3e805f98dbfa71f4b17f02.webp"
+  },
+  "lostcity/rigs/451ef6bc-abc1-48d1-8dd7-44d1871e4ff6/texture.webp": {
+    "original": "quality/original/c66db790ded978ca62ea2f43.webp",
+    "enhanced": "quality/enhanced/c66db790ded978ca62ea2f43.webp"
+  },
+  "lostcity/rigs/492a6fa0-3fc2-4684-bb30-d2cdbd454ad5/texture.webp": {
+    "original": "quality/original/e3ec9665eb95d6589b35c507.webp",
+    "enhanced": "quality/enhanced/e3ec9665eb95d6589b35c507.webp"
+  },
+  "lostcity/rigs/5098a7dd-8cd5-4a6c-9ddb-5ba6f3a9cc30/texture.webp": {
+    "original": "quality/original/e95919d5cb414b4325fbd690.webp",
+    "enhanced": "quality/enhanced/e95919d5cb414b4325fbd690.webp"
+  },
+  "lostcity/rigs/5495b351-20ba-44c9-bc1e-cc9faa5ab56b/texture.webp": {
+    "original": "quality/original/7ee2e234655a9c136634f11c.webp",
+    "enhanced": "quality/enhanced/7ee2e234655a9c136634f11c.webp"
+  },
+  "lostcity/rigs/6b7878b6-8ca2-47cf-94a4-41dee5dec59a/texture.webp": {
+    "original": "quality/original/aaf07e4b5e6ae512793c69d0.webp",
+    "enhanced": "quality/enhanced/aaf07e4b5e6ae512793c69d0.webp"
+  },
+  "lostcity/rigs/74e4479e-6b92-4b32-8eab-7c7aaaa2161e/texture.webp": {
+    "original": "quality/original/ccde3bfe49ece85d0dfb90ac.webp",
+    "enhanced": "quality/enhanced/ccde3bfe49ece85d0dfb90ac.webp"
+  },
+  "lostcity/rigs/8ce34184-5480-4c08-a2a2-69ad32cfc510/texture.webp": {
+    "original": "quality/original/60beb84e01eac49154417727.webp",
+    "enhanced": "quality/enhanced/60beb84e01eac49154417727.webp"
+  },
+  "lostcity/rigs/a60a86d0-2ec2-452c-809e-a33963f77a49/texture.webp": {
+    "original": "quality/original/cb9279bf12674b18b04b70cd.webp",
+    "enhanced": "quality/enhanced/cb9279bf12674b18b04b70cd.webp"
+  },
+  "lostcity/rigs/b28cf245-b9bc-4a50-98cb-b6bed62f2e46/texture.webp": {
+    "original": "quality/original/944315d16fc8f54ff4c61938.webp",
+    "enhanced": "quality/enhanced/944315d16fc8f54ff4c61938.webp"
+  },
+  "lostcity/rigs/c87c40f9-89c3-47af-9477-78e6449f951e/texture.webp": {
+    "original": "quality/original/672dab1882257e71745ff817.webp",
+    "enhanced": "quality/enhanced/672dab1882257e71745ff817.webp"
+  },
+  "lostcity/rigs/d1d19c20-f9e3-438f-9e1e-186943100b2f/texture.webp": {
+    "original": "quality/original/99cca60df0d10e95c48bcedb.webp",
+    "enhanced": "quality/enhanced/99cca60df0d10e95c48bcedb.webp"
+  },
+  "lostcity/rigs/d938dfd2-24d8-4cfc-9fa8-95ceffe3b2a4/texture.webp": {
+    "original": "quality/original/b11c034d5c9a380114e801a6.webp",
+    "enhanced": "quality/enhanced/b11c034d5c9a380114e801a6.webp"
+  },
+  "lostcity/rigs/e7c5ab9b-5d69-43ca-a6d3-3d4777b0a042/texture.webp": {
+    "original": "quality/original/12e6698c0f87c6baf207a658.webp",
+    "enhanced": "quality/enhanced/12e6698c0f87c6baf207a658.webp"
+  },
+  "lostcity/rigs/f0b2798c-7b01-43fd-a8de-efcebf1154c9/texture.webp": {
+    "original": "quality/original/aaa41c4b24ca0c1b525826b5.webp",
+    "enhanced": "quality/enhanced/aaa41c4b24ca0c1b525826b5.webp"
+  },
+  "lostcity/rigs/f2b5c25f-2e30-401f-8d30-e57ebca51cac/texture.webp": {
+    "original": "quality/original/a71ae77211f6b0309f5d6d0e.webp",
+    "enhanced": "quality/enhanced/a71ae77211f6b0309f5d6d0e.webp"
+  },
+  "lostcity/rigs/f45acdda-601b-4b98-8088-6e2d6cee6abf/texture.webp": {
+    "original": "quality/original/85bd485947c7baaa1cf61332.webp",
+    "enhanced": "quality/enhanced/85bd485947c7baaa1cf61332.webp"
+  },
+  "lostcity/rigs/f599a8a8-ec82-42aa-86a9-ba7ee7d06743/texture.webp": {
+    "original": "quality/original/55323b59daf7fd1931e997e1.webp",
+    "enhanced": "quality/enhanced/55323b59daf7fd1931e997e1.webp"
+  },
+  "lostcity/rigs/f6712c1e-8962-4e15-ab08-c39a7a4fbdb7/texture.webp": {
+    "original": "quality/original/042ad33f6f995abf844ddbc8.webp",
+    "enhanced": "quality/enhanced/042ad33f6f995abf844ddbc8.webp"
+  },
+  "outer/rigs/085b51b1-ab9c-4c2a-aa6d-5c92b680015a/texture.webp": {
+    "original": "quality/original/c426cd326f4112f7c4f2b74f.webp",
+    "enhanced": "quality/enhanced/c426cd326f4112f7c4f2b74f.webp"
+  },
+  "outer/rigs/300a1aed-4d0c-40b9-a632-03cd633d92fe/texture.webp": {
+    "original": "quality/original/0f4646210e31b4354a71e01a.webp",
+    "enhanced": "quality/enhanced/0f4646210e31b4354a71e01a.webp"
+  },
+  "outer/rigs/52499037-3d67-4db4-a1c1-d5055559bc09/texture.webp": {
+    "original": "quality/original/6220624dd796d57446002c48.webp",
+    "enhanced": "quality/enhanced/6220624dd796d57446002c48.webp"
+  },
+  "outer/rigs/5c1124b0-5e4a-4a7f-9ab4-4f2b390637ab/texture.webp": {
+    "original": "quality/original/f2dc8a7325f1c8bc24d1d010.webp",
+    "enhanced": "quality/enhanced/f2dc8a7325f1c8bc24d1d010.webp"
+  },
+  "outer/rigs/8963b6a2-e807-4e46-a463-24b96f59eee5/texture.webp": {
+    "original": "quality/original/d5b081ea65c760d1c10749f4.webp",
+    "enhanced": "quality/enhanced/d5b081ea65c760d1c10749f4.webp"
+  },
+  "outer/rigs/abe0c1b8-bebf-4e00-aceb-915f9c33c344/texture.webp": {
+    "original": "quality/original/331021ea707a0979af34bbdd.webp",
+    "enhanced": "quality/enhanced/331021ea707a0979af34bbdd.webp"
+  },
+  "outer/rigs/af8adfc4-86f7-4895-b8bf-02e4ab47797d/texture.webp": {
+    "original": "quality/original/4b87a68d8431b18c71f6a204.webp",
+    "enhanced": "quality/enhanced/4b87a68d8431b18c71f6a204.webp"
+  },
+  "outer/rigs/d515c188-d365-47b2-bfe0-9f4988fd9396/texture.webp": {
+    "original": "quality/original/fa70b99f04983f86e0b169dd.webp",
+    "enhanced": "quality/enhanced/fa70b99f04983f86e0b169dd.webp"
+  },
+  "pirate/rigs/035495fd-8562-42dd-bdbe-d7bd774a3103/texture.webp": {
+    "original": "quality/original/1da1911a7719b4f3f9290bf9.webp",
+    "enhanced": "quality/enhanced/1da1911a7719b4f3f9290bf9.webp"
+  },
+  "pirate/rigs/1d8544dd-6603-4b01-baa1-e53095e90f52/texture.webp": {
+    "original": "quality/original/8f62db4c0a3c0f0a12e30fbe.webp",
+    "enhanced": "quality/enhanced/8f62db4c0a3c0f0a12e30fbe.webp"
+  },
+  "pirate/rigs/1d869464-237c-46aa-aa18-b171e34cf196/texture.webp": {
+    "original": "quality/original/ce8df166daf8e828064e93c2.webp",
+    "enhanced": "quality/enhanced/ce8df166daf8e828064e93c2.webp"
+  },
+  "pirate/rigs/1ffb7f87-b9e4-4415-9322-56fd55abf21a/texture.webp": {
+    "original": "quality/original/221032b6c1a1ecdbcae30d14.webp",
+    "enhanced": "quality/enhanced/221032b6c1a1ecdbcae30d14.webp"
+  },
+  "pirate/rigs/270250f4-70ed-4074-8e48-66097a83bc25/texture.webp": {
+    "original": "quality/original/e216305b3c05cc4bc28cbe9b.webp",
+    "enhanced": "quality/enhanced/e216305b3c05cc4bc28cbe9b.webp"
+  },
+  "pirate/rigs/2760ad15-27e8-49d1-8fde-1c46235b4e6a/texture.webp": {
+    "original": "quality/original/b1d4f4cc962a04f495d0bf06.webp",
+    "enhanced": "quality/enhanced/b1d4f4cc962a04f495d0bf06.webp"
+  },
+  "pirate/rigs/38e3080b-6f84-4119-bafe-e06481344094/texture.webp": {
+    "original": "quality/original/ffc38cebca1cff70e40ed137.webp",
+    "enhanced": "quality/enhanced/ffc38cebca1cff70e40ed137.webp"
+  },
+  "pirate/rigs/409e42be-3898-4c3b-8dec-2cf13e962809/texture.webp": {
+    "original": "quality/original/1c846c9d5c234abb392c60f2.webp",
+    "enhanced": "quality/enhanced/1c846c9d5c234abb392c60f2.webp"
+  },
+  "pirate/rigs/451e65d1-d8e5-4329-bf53-37e08c5b564e/texture.webp": {
+    "original": "quality/original/885c67cd60ed93825e54520a.webp",
+    "enhanced": "quality/enhanced/885c67cd60ed93825e54520a.webp"
+  },
+  "pirate/rigs/5903018c-8533-42aa-a36a-95105b544336/texture.webp": {
+    "original": "quality/original/f868e9284862e0e6bc10114e.webp",
+    "enhanced": "quality/enhanced/f868e9284862e0e6bc10114e.webp"
+  },
+  "pirate/rigs/739cd6f3-c8df-4f77-9d5d-fbe3aadfd232/texture.webp": {
+    "original": "quality/original/69add0802ca59d80ad1f48c2.webp",
+    "enhanced": "quality/enhanced/69add0802ca59d80ad1f48c2.webp"
+  },
+  "pirate/rigs/739fb125-2da9-4e96-b65e-82d20fa3b834/texture.webp": {
+    "original": "quality/original/886ef36f18499813ad206f58.webp",
+    "enhanced": "quality/enhanced/886ef36f18499813ad206f58.webp"
+  },
+  "pirate/rigs/761bf914-f8d5-4431-a30c-ae1fe970466e/texture.webp": {
+    "original": "quality/original/261001f968e2da032fa228fb.webp",
+    "enhanced": "quality/enhanced/261001f968e2da032fa228fb.webp"
+  },
+  "pirate/rigs/7ef7f6df-4ef7-4a78-88f0-61ada199aba0/texture.webp": {
+    "original": "quality/original/30215260ecacddf764799676.webp",
+    "enhanced": "quality/enhanced/30215260ecacddf764799676.webp"
+  },
+  "pirate/rigs/820a7bfd-b192-4087-ba88-a8d87511c6e6/texture.webp": {
+    "original": "quality/original/00e8ab16bf669dbaee81a613.webp",
+    "enhanced": "quality/enhanced/00e8ab16bf669dbaee81a613.webp"
+  },
+  "pirate/rigs/869d5588-cf79-4200-bd8f-44cb15c51ee9/texture.webp": {
+    "original": "quality/original/fb7d1c32bc9aeca6896b8327.webp",
+    "enhanced": "quality/enhanced/fb7d1c32bc9aeca6896b8327.webp"
+  },
+  "pirate/rigs/8903f19b-f61e-47a7-aa5a-baa081989741/texture.webp": {
+    "original": "quality/original/618386bdab6a9c7c6784bb8e.webp",
+    "enhanced": "quality/enhanced/618386bdab6a9c7c6784bb8e.webp"
+  },
+  "pirate/rigs/8c69dc20-1ef1-4e28-b192-0bca1d529b0f/texture.webp": {
+    "original": "quality/original/ec9fc3065073ee8fe2eefe3a.webp",
+    "enhanced": "quality/enhanced/ec9fc3065073ee8fe2eefe3a.webp"
+  },
+  "pirate/rigs/bd2e03a7-1ec3-497f-b313-eca1a036c47f/texture.webp": {
+    "original": "quality/original/dbb6b53712dc39335f510747.webp",
+    "enhanced": "quality/enhanced/dbb6b53712dc39335f510747.webp"
+  },
+  "pirate/rigs/c931d5d9-47b9-4814-a6de-da5cdac21f47/texture.webp": {
+    "original": "quality/original/0d129ef9cc0cd08c82b3c4f0.webp",
+    "enhanced": "quality/enhanced/0d129ef9cc0cd08c82b3c4f0.webp"
+  },
+  "pirate/rigs/cf3ab9db-bd49-431c-9f2d-2b0917b8e6eb/texture.webp": {
+    "original": "quality/original/19c99fff61d8406abbf85cec.webp",
+    "enhanced": "quality/enhanced/19c99fff61d8406abbf85cec.webp"
+  },
+  "pirate/rigs/d81559d0-8415-4b15-a647-6484c1533c37/texture.webp": {
+    "original": "quality/original/df5f7d3c0c697d6e6e74def9.webp",
+    "enhanced": "quality/enhanced/df5f7d3c0c697d6e6e74def9.webp"
+  },
+  "pirate/rigs/e2ef7232-ed91-4769-9a15-dac4e7bfe4fe/texture.webp": {
+    "original": "quality/original/c072145e3897a0ec04d2023d.webp",
+    "enhanced": "quality/enhanced/c072145e3897a0ec04d2023d.webp"
+  },
+  "pirate/rigs/eae43360-111c-4ef8-84e0-2eb4261560f2/texture.webp": {
+    "original": "quality/original/408e380d1c579b45788d72b5.webp",
+    "enhanced": "quality/enhanced/408e380d1c579b45788d72b5.webp"
+  },
+  "pirate/rigs/ecebb615-1205-4d56-bb76-f98de1d78290/texture.webp": {
+    "original": "quality/original/361b36a5dc388b79cdebb971.webp",
+    "enhanced": "quality/enhanced/361b36a5dc388b79cdebb971.webp"
+  },
+  "pirate/rigs/f66d6fd9-0b5d-4fdc-813a-907f1c2e8f19/texture.webp": {
+    "original": "quality/original/e8659ddb1c14025b3becc536.webp",
+    "enhanced": "quality/enhanced/e8659ddb1c14025b3becc536.webp"
+  },
+  "pirate/rigs/f8be0823-6a5c-41fc-8332-7d3a2c0d242e/texture.webp": {
+    "original": "quality/original/37d62556111bd86c8046fe80.webp",
+    "enhanced": "quality/enhanced/37d62556111bd86c8046fe80.webp"
+  },
+  "shell/rigs/0130e9ee-b436-43d0-947b-e6b5d43b8889/texture.webp": {
+    "original": "quality/original/db35a1f0e6cde80fb1da2b3b.webp",
+    "enhanced": "quality/enhanced/db35a1f0e6cde80fb1da2b3b.webp"
+  },
+  "shell/rigs/036858f6-a72e-4305-a82f-3488e6407763/texture.webp": {
+    "original": "quality/original/24758e5543051634627533da.webp",
+    "enhanced": "quality/enhanced/24758e5543051634627533da.webp"
+  },
+  "shell/rigs/08e9b921-5279-407f-b84b-c5eb8a595eaf/texture.webp": {
+    "original": "quality/original/afe585e20039f1642697d30d.webp",
+    "enhanced": "quality/enhanced/afe585e20039f1642697d30d.webp"
+  },
+  "shell/rigs/0d90669d-6164-4ea0-b271-b5f6e33b1b41/texture.webp": {
+    "original": "quality/original/1cf8b95757f4d9dffb667c14.webp",
+    "enhanced": "quality/enhanced/1cf8b95757f4d9dffb667c14.webp"
+  },
+  "shell/rigs/14c3a2da-4015-4277-b6bc-f95a94e07a4b/texture.webp": {
+    "original": "quality/original/dd99713f5dc8604dbae55b4f.webp",
+    "enhanced": "quality/enhanced/dd99713f5dc8604dbae55b4f.webp"
+  },
+  "shell/rigs/14d5b6bf-4091-4c97-b872-c9f824352dad/texture.webp": {
+    "original": "quality/original/07ff60b06d55d85bf05b921f.webp",
+    "enhanced": "quality/enhanced/07ff60b06d55d85bf05b921f.webp"
+  },
+  "shell/rigs/153de422-1daa-447b-a41b-41d73350fe9c/texture.webp": {
+    "original": "quality/original/3ed33168db108766e3305639.webp",
+    "enhanced": "quality/enhanced/3ed33168db108766e3305639.webp"
+  },
+  "shell/rigs/15bca159-6151-4284-b1d4-a3fc1ab1163d/texture.webp": {
+    "original": "quality/original/6b7d7fa8fbeb548845a64697.webp",
+    "enhanced": "quality/enhanced/6b7d7fa8fbeb548845a64697.webp"
+  },
+  "shell/rigs/1c08d179-7752-4431-96b9-f580236adf7b/texture.webp": {
+    "original": "quality/original/76bf0f8178a43badb00f88ad.webp",
+    "enhanced": "quality/enhanced/76bf0f8178a43badb00f88ad.webp"
+  },
+  "shell/rigs/1c5a6638-caf0-4624-b0ac-5e6a461d2ae6/texture.webp": {
+    "original": "quality/original/e53d024b79f47051d53dce00.webp",
+    "enhanced": "quality/enhanced/e53d024b79f47051d53dce00.webp"
+  },
+  "shell/rigs/1d8544dd-6603-4b01-baa1-e53095e90f52/texture.webp": {
+    "original": "quality/original/8f62db4c0a3c0f0a12e30fbe.webp",
+    "enhanced": "quality/enhanced/8f62db4c0a3c0f0a12e30fbe.webp"
+  },
+  "shell/rigs/20461b09-a5ce-4eda-99fd-476673b3fcaa/texture.webp": {
+    "original": "quality/original/17ae140b84d24747a016c695.webp",
+    "enhanced": "quality/enhanced/17ae140b84d24747a016c695.webp"
+  },
+  "shell/rigs/23f33c1d-7985-44aa-bf7a-3200984a26bf/texture.webp": {
+    "original": "quality/original/f1cdac1f0ade91a24ee01335.webp",
+    "enhanced": "quality/enhanced/f1cdac1f0ade91a24ee01335.webp"
+  },
+  "shell/rigs/261c91e7-4ef6-49b8-aedf-c43565d2202b/texture.webp": {
+    "original": "quality/original/0f616960f3966039b6693ff2.webp",
+    "enhanced": "quality/enhanced/0f616960f3966039b6693ff2.webp"
+  },
+  "shell/rigs/2677ce26-b981-4691-a40f-89f86944af6c/texture.webp": {
+    "original": "quality/original/f5734dc96c8073349e08295f.webp",
+    "enhanced": "quality/enhanced/f5734dc96c8073349e08295f.webp"
+  },
+  "shell/rigs/270250f4-70ed-4074-8e48-66097a83bc25/texture.webp": {
+    "original": "quality/original/e216305b3c05cc4bc28cbe9b.webp",
+    "enhanced": "quality/enhanced/e216305b3c05cc4bc28cbe9b.webp"
+  },
+  "shell/rigs/2d732139-f172-4303-95ed-cf8374886b31/texture.webp": {
+    "original": "quality/original/ab3346dc75f0d39b15a5e428.webp",
+    "enhanced": "quality/enhanced/ab3346dc75f0d39b15a5e428.webp"
+  },
+  "shell/rigs/2e0cae99-2934-4eea-8b25-6d896b720826/texture.webp": {
+    "original": "quality/original/ef24d8f6aa1ce2c590ca82d0.webp",
+    "enhanced": "quality/enhanced/ef24d8f6aa1ce2c590ca82d0.webp"
+  },
+  "shell/rigs/30e88536-e53d-4e07-abbb-e74cc2ea8713/texture.webp": {
+    "original": "quality/original/e1c1afe1bc1e784e8a54a6d2.webp",
+    "enhanced": "quality/enhanced/e1c1afe1bc1e784e8a54a6d2.webp"
+  },
+  "shell/rigs/316e6f39-3449-49e7-a184-26142098bb07/texture.webp": {
+    "original": "quality/original/234acf7230192c7eb0290f71.webp",
+    "enhanced": "quality/enhanced/234acf7230192c7eb0290f71.webp"
+  },
+  "shell/rigs/342ebb04-a3e7-4b2d-9d7a-ef2672f76116/texture.webp": {
+    "original": "quality/original/e2b127489a9a820e02a0cfd8.webp",
+    "enhanced": "quality/enhanced/e2b127489a9a820e02a0cfd8.webp"
+  },
+  "shell/rigs/34d354d5-502f-43e3-9160-0c51cd8033ab/texture.webp": {
+    "original": "quality/original/857a13de701d478799e1765b.webp",
+    "enhanced": "quality/enhanced/857a13de701d478799e1765b.webp"
+  },
+  "shell/rigs/39a245d4-0667-4fbd-bb31-9768c1e25ccc/texture.webp": {
+    "original": "quality/original/2097b580c0bd4b28dbed7e9c.webp",
+    "enhanced": "quality/enhanced/2097b580c0bd4b28dbed7e9c.webp"
+  },
+  "shell/rigs/3c1364a1-62de-425a-ba7c-dfe1fe514b04/texture.webp": {
+    "original": "quality/original/4450d1a4f1240c8c14ccc57a.webp",
+    "enhanced": "quality/enhanced/4450d1a4f1240c8c14ccc57a.webp"
+  },
+  "shell/rigs/3c316a65-8317-4e0d-a36d-074e0dd6ddee/texture.webp": {
+    "original": "quality/original/de80030d281c06d6f0b4ce72.webp",
+    "enhanced": "quality/enhanced/de80030d281c06d6f0b4ce72.webp"
+  },
+  "shell/rigs/3cf31d7b-b700-4a1c-b370-8ee09bc4715b/texture.webp": {
+    "original": "quality/original/111fe4bd064e0e607519a66b.webp",
+    "enhanced": "quality/enhanced/111fe4bd064e0e607519a66b.webp"
+  },
+  "shell/rigs/3e2bffcb-2c9b-4b04-bc09-8199dd664d5a/texture.webp": {
+    "original": "quality/original/3adada63d66baaadf1a880a9.webp",
+    "enhanced": "quality/enhanced/3adada63d66baaadf1a880a9.webp"
+  },
+  "shell/rigs/458f722c-2110-4e55-b1a2-497587e2a8da/texture.webp": {
+    "original": "quality/original/7fd743cf41fe22182048ca2a.webp",
+    "enhanced": "quality/enhanced/7fd743cf41fe22182048ca2a.webp"
+  },
+  "shell/rigs/47aabd6b-2862-4277-8e9c-61c302aaa516/texture.webp": {
+    "original": "quality/original/4f79d315d23518b5f31ff49d.webp",
+    "enhanced": "quality/enhanced/4f79d315d23518b5f31ff49d.webp"
+  },
+  "shell/rigs/4819e304-6bc6-46b3-9623-668076157faa/texture.webp": {
+    "original": "quality/original/66de50fc0db2f6bf810fc2db.webp",
+    "enhanced": "quality/enhanced/66de50fc0db2f6bf810fc2db.webp"
+  },
+  "shell/rigs/4f441597-d292-453c-bfd5-05f60920fa55/texture.webp": {
+    "original": "quality/original/7e634cfeddc838be4e7d894f.webp",
+    "enhanced": "quality/enhanced/7e634cfeddc838be4e7d894f.webp"
+  },
+  "shell/rigs/4ff66baa-6194-4081-b775-c14212757b64/texture.webp": {
+    "original": "quality/original/98675c61bed381599e1a6ac9.webp",
+    "enhanced": "quality/enhanced/98675c61bed381599e1a6ac9.webp"
+  },
+  "shell/rigs/52149860-4256-46c1-9e7f-0bfb9aa4af29/texture.webp": {
+    "original": "quality/original/44f6fb318c07884f16c4b43f.webp",
+    "enhanced": "quality/enhanced/44f6fb318c07884f16c4b43f.webp"
+  },
+  "shell/rigs/54a8967b-f7da-442f-b88c-3b630ed521d9/texture.webp": {
+    "original": "quality/original/e31f047fa33d134c46b184ae.webp",
+    "enhanced": "quality/enhanced/e31f047fa33d134c46b184ae.webp"
+  },
+  "shell/rigs/58686157-c439-4dd3-8580-9e78f18594a3/texture.webp": {
+    "original": "quality/original/e1608460a745d3a202dc5be8.webp",
+    "enhanced": "quality/enhanced/e1608460a745d3a202dc5be8.webp"
+  },
+  "shell/rigs/5abd3586-10ae-43d0-ae6b-97cddfc1aacc/texture.webp": {
+    "original": "quality/original/0155625a320b58104024600d.webp",
+    "enhanced": "quality/enhanced/0155625a320b58104024600d.webp"
+  },
+  "shell/rigs/5bc6be25-020e-497d-8c83-5ca8e26882bb/texture.webp": {
+    "original": "quality/original/f2a66ab97626c7345630cf62.webp",
+    "enhanced": "quality/enhanced/f2a66ab97626c7345630cf62.webp"
+  },
+  "shell/rigs/62732fe1-b408-4cf3-99f1-fbd28e293cfe/texture.webp": {
+    "original": "quality/original/caa7730ebd5d5e49c2a325f8.webp",
+    "enhanced": "quality/enhanced/caa7730ebd5d5e49c2a325f8.webp"
+  },
+  "shell/rigs/63a125b0-3811-49dd-96ed-e7fdd89024ce/texture.webp": {
+    "original": "quality/original/e9e9ce46754b61ba50b0eeb4.webp",
+    "enhanced": "quality/enhanced/e9e9ce46754b61ba50b0eeb4.webp"
+  },
+  "shell/rigs/682dae50-33ed-4a2e-922a-e81f7a6c22e9/texture.webp": {
+    "original": "quality/original/4b95248b58445dd5cdfe1a28.webp",
+    "enhanced": "quality/enhanced/4b95248b58445dd5cdfe1a28.webp"
+  },
+  "shell/rigs/69b9a209-5f6f-4bf1-b789-2851ea6ba6c3/texture.webp": {
+    "original": "quality/original/bd37b0a780e82a603b5231bf.webp",
+    "enhanced": "quality/enhanced/bd37b0a780e82a603b5231bf.webp"
+  },
+  "shell/rigs/6b48dff6-f954-45ab-b01b-d2ca002f1a1a/texture.webp": {
+    "original": "quality/original/d19825f8ab00870430ead879.webp",
+    "enhanced": "quality/enhanced/d19825f8ab00870430ead879.webp"
+  },
+  "shell/rigs/6e7011e9-34b5-451d-a683-c5a6417621e4/texture.webp": {
+    "original": "quality/original/e1143f5b1ba3d3e7362c89f1.webp",
+    "enhanced": "quality/enhanced/e1143f5b1ba3d3e7362c89f1.webp"
+  },
+  "shell/rigs/742990ae-6713-4b0f-8d31-fcf53de01f4b/texture.webp": {
+    "original": "quality/original/39b637bcf7ca9d81e270f0c5.webp",
+    "enhanced": "quality/enhanced/39b637bcf7ca9d81e270f0c5.webp"
+  },
+  "shell/rigs/761bf914-f8d5-4431-a30c-ae1fe970466e/texture.webp": {
+    "original": "quality/original/261001f968e2da032fa228fb.webp",
+    "enhanced": "quality/enhanced/261001f968e2da032fa228fb.webp"
+  },
+  "shell/rigs/7685d03d-076b-4348-98dc-b3a098e731e0/texture.webp": {
+    "original": "quality/original/51345d412a8ddfb2563ad8a7.webp",
+    "enhanced": "quality/enhanced/51345d412a8ddfb2563ad8a7.webp"
+  },
+  "shell/rigs/778238aa-56ad-4779-9786-813a55d57979/texture.webp": {
+    "original": "quality/original/fa6ccf4798c20982b4378d2b.webp",
+    "enhanced": "quality/enhanced/fa6ccf4798c20982b4378d2b.webp"
+  },
+  "shell/rigs/7ba747de-6803-4556-883f-74bd69e6b0ef/texture.webp": {
+    "original": "quality/original/e477f400ab6da20fe125873f.webp",
+    "enhanced": "quality/enhanced/e477f400ab6da20fe125873f.webp"
+  },
+  "shell/rigs/7ce47f1c-1655-4dd3-95df-d0209765b90b/texture.webp": {
+    "original": "quality/original/3fef976c884450325a2a5888.webp",
+    "enhanced": "quality/enhanced/3fef976c884450325a2a5888.webp"
+  },
+  "shell/rigs/7f02152b-b9da-4562-bbc8-1eeac2b70729/texture.webp": {
+    "original": "quality/original/45bb9def1480231fb3293c12.webp",
+    "enhanced": "quality/enhanced/45bb9def1480231fb3293c12.webp"
+  },
+  "shell/rigs/81b1f640-d442-4fa3-b875-9768ccb3b1ac/texture.webp": {
+    "original": "quality/original/e376a7c10f6035ca64b869f3.webp",
+    "enhanced": "quality/enhanced/e376a7c10f6035ca64b869f3.webp"
+  },
+  "shell/rigs/820a7bfd-b192-4087-ba88-a8d87511c6e6/texture.webp": {
+    "original": "quality/original/00e8ab16bf669dbaee81a613.webp",
+    "enhanced": "quality/enhanced/00e8ab16bf669dbaee81a613.webp"
+  },
+  "shell/rigs/8c4877c1-bfd4-4b57-8976-f558350e7249/texture.webp": {
+    "original": "quality/original/8ebaf25a209c37f0843360a7.webp",
+    "enhanced": "quality/enhanced/8ebaf25a209c37f0843360a7.webp"
+  },
+  "shell/rigs/8c69dc20-1ef1-4e28-b192-0bca1d529b0f/texture.webp": {
+    "original": "quality/original/ec9fc3065073ee8fe2eefe3a.webp",
+    "enhanced": "quality/enhanced/ec9fc3065073ee8fe2eefe3a.webp"
+  },
+  "shell/rigs/8ce34184-5480-4c08-a2a2-69ad32cfc510/texture.webp": {
+    "original": "quality/original/60beb84e01eac49154417727.webp",
+    "enhanced": "quality/enhanced/60beb84e01eac49154417727.webp"
+  },
+  "shell/rigs/8f039fb8-cb23-490b-8c02-cf31ce4169da/texture.webp": {
+    "original": "quality/original/3c4d4b79de4d703080a512eb.webp",
+    "enhanced": "quality/enhanced/3c4d4b79de4d703080a512eb.webp"
+  },
+  "shell/rigs/8fa3fdd7-793d-4173-a442-adb670e1c02d/texture.webp": {
+    "original": "quality/original/4d6bf5012026f230f370d382.webp",
+    "enhanced": "quality/enhanced/4d6bf5012026f230f370d382.webp"
+  },
+  "shell/rigs/91731241-49e8-4db3-bb69-f04d4f4762d6/texture.webp": {
+    "original": "quality/original/5e34cd8e6c2d6a932d08ce57.webp",
+    "enhanced": "quality/enhanced/5e34cd8e6c2d6a932d08ce57.webp"
+  },
+  "shell/rigs/93c01682-8e55-4a02-b0da-52478be30db1/texture.webp": {
+    "original": "quality/original/b5be31727d4a7fe3154bcf35.webp",
+    "enhanced": "quality/enhanced/b5be31727d4a7fe3154bcf35.webp"
+  },
+  "shell/rigs/97297419-a434-4577-8b24-ffaaf24e98ce/texture.webp": {
+    "original": "quality/original/2968a4d5a537339ac204ca82.webp",
+    "enhanced": "quality/enhanced/2968a4d5a537339ac204ca82.webp"
+  },
+  "shell/rigs/97a0820f-e6f9-482e-9ed9-9e52b1ec18eb/texture.webp": {
+    "original": "quality/original/82f3ad48f473b0d484fd64fa.webp",
+    "enhanced": "quality/enhanced/82f3ad48f473b0d484fd64fa.webp"
+  },
+  "shell/rigs/980bd3f7-3da9-4122-85e1-e007dd760fcf/texture.webp": {
+    "original": "quality/original/4a5728797517139f1fc97bd5.webp",
+    "enhanced": "quality/enhanced/4a5728797517139f1fc97bd5.webp"
+  },
+  "shell/rigs/98a83eea-a633-44b3-9464-d5a80e2ab5af/texture.webp": {
+    "original": "quality/original/e882ffd072d580503cc5f26c.webp",
+    "enhanced": "quality/enhanced/e882ffd072d580503cc5f26c.webp"
+  },
+  "shell/rigs/99b51958-2487-44fc-b119-2ba7469e5bc0/texture.webp": {
+    "original": "quality/original/93f7adb7aad0f954be20fd26.webp",
+    "enhanced": "quality/enhanced/93f7adb7aad0f954be20fd26.webp"
+  },
+  "shell/rigs/9afd7d82-5eae-4860-8c94-4343005093a4/texture.webp": {
+    "original": "quality/original/7172ff5e59e76f58fba92626.webp",
+    "enhanced": "quality/enhanced/7172ff5e59e76f58fba92626.webp"
+  },
+  "shell/rigs/9b364a01-0e29-4109-bbbf-e82567563e65/texture.webp": {
+    "original": "quality/original/a041a6d04c4bd662277b4c24.webp",
+    "enhanced": "quality/enhanced/a041a6d04c4bd662277b4c24.webp"
+  },
+  "shell/rigs/9b811ec2-d0f2-452a-84ac-91cd0307135e/texture.webp": {
+    "original": "quality/original/eedc517e6ccefd3f142662a2.webp",
+    "enhanced": "quality/enhanced/eedc517e6ccefd3f142662a2.webp"
+  },
+  "shell/rigs/9c001604-bfd9-4be1-a920-88d244dd31e8/texture.webp": {
+    "original": "quality/original/39f267d45592c351c060a7fb.webp",
+    "enhanced": "quality/enhanced/39f267d45592c351c060a7fb.webp"
+  },
+  "shell/rigs/9c8060b8-2939-47af-a166-dcfe58e5ccb8/texture.webp": {
+    "original": "quality/original/81e24380b2cb4203b9697f84.webp",
+    "enhanced": "quality/enhanced/81e24380b2cb4203b9697f84.webp"
+  },
+  "shell/rigs/9f4767e6-301f-4599-a4e0-20ca77a20e17/texture.webp": {
+    "original": "quality/original/cf28a5cf9e0a6dc6995b42e5.webp",
+    "enhanced": "quality/enhanced/cf28a5cf9e0a6dc6995b42e5.webp"
+  },
+  "shell/rigs/a05134aa-b9e3-4b7a-a483-0f67eba4c8f1/texture.webp": {
+    "original": "quality/original/d910036693e022ce10c266bd.webp",
+    "enhanced": "quality/enhanced/d910036693e022ce10c266bd.webp"
+  },
+  "shell/rigs/a21356eb-0324-4df6-a338-d3efbe27a31c/texture.webp": {
+    "original": "quality/original/91bbc52c09a7533e0145770b.webp",
+    "enhanced": "quality/enhanced/91bbc52c09a7533e0145770b.webp"
+  },
+  "shell/rigs/a2425f9e-8d5f-4b08-adbd-e3c683e72395/texture.webp": {
+    "original": "quality/original/c225842abf73c137e6c91065.webp",
+    "enhanced": "quality/enhanced/c225842abf73c137e6c91065.webp"
+  },
+  "shell/rigs/a67b8475-cf59-4940-8d93-185f0e5304d7/texture.webp": {
+    "original": "quality/original/e29477a492779a740f708938.webp",
+    "enhanced": "quality/enhanced/e29477a492779a740f708938.webp"
+  },
+  "shell/rigs/a6fd1463-8512-49a4-a106-b8e7e5137cb1/texture.webp": {
+    "original": "quality/original/b7d580094129134901416c06.webp",
+    "enhanced": "quality/enhanced/b7d580094129134901416c06.webp"
+  },
+  "shell/rigs/a82a6fc7-702f-49f4-9a4e-edba445cfa16/texture.webp": {
+    "original": "quality/original/49829b2079c3239cf6ee733f.webp",
+    "enhanced": "quality/enhanced/49829b2079c3239cf6ee733f.webp"
+  },
+  "shell/rigs/ae1295a5-ecdd-4bed-9970-117f74abc4a1/texture.webp": {
+    "original": "quality/original/4f306470549f993911b1ed9e.webp",
+    "enhanced": "quality/enhanced/4f306470549f993911b1ed9e.webp"
+  },
+  "shell/rigs/b0a21e82-611f-4976-bc5a-c13625be3f2e/texture.webp": {
+    "original": "quality/original/5ddacbed65f4ea0e7d3d0313.webp",
+    "enhanced": "quality/enhanced/5ddacbed65f4ea0e7d3d0313.webp"
+  },
+  "shell/rigs/b0b6fcf3-5ef6-4f7f-9534-fd042a9c40c5/texture.webp": {
+    "original": "quality/original/b0317e2a42cbc50c2f3ec4af.webp",
+    "enhanced": "quality/enhanced/b0317e2a42cbc50c2f3ec4af.webp"
+  },
+  "shell/rigs/b25536f7-f280-4e15-bd8e-6348359ba726/texture.webp": {
+    "original": "quality/original/91e85d6735a82f93cf793564.webp",
+    "enhanced": "quality/enhanced/91e85d6735a82f93cf793564.webp"
+  },
+  "shell/rigs/b28cf245-b9bc-4a50-98cb-b6bed62f2e46/texture.webp": {
+    "original": "quality/original/944315d16fc8f54ff4c61938.webp",
+    "enhanced": "quality/enhanced/944315d16fc8f54ff4c61938.webp"
+  },
+  "shell/rigs/b5b63179-989b-4002-ad69-d03f500fb797/texture.webp": {
+    "original": "quality/original/14e7541c7ec2f8a3226b2df5.webp",
+    "enhanced": "quality/enhanced/14e7541c7ec2f8a3226b2df5.webp"
+  },
+  "shell/rigs/b6929939-c667-4927-83d9-570dc8a2390c/texture.webp": {
+    "original": "quality/original/81dee0cd0a3513283ef56932.webp",
+    "enhanced": "quality/enhanced/81dee0cd0a3513283ef56932.webp"
+  },
+  "shell/rigs/bb718505-56c4-4790-b984-e659a4c295d0/texture.webp": {
+    "original": "quality/original/b58676e7c6fd8cac27482467.webp",
+    "enhanced": "quality/enhanced/b58676e7c6fd8cac27482467.webp"
+  },
+  "shell/rigs/bc5c2eaa-6f11-4816-a17a-728548dc14ee/texture.webp": {
+    "original": "quality/original/46782de97f1045c2591c5718.webp",
+    "enhanced": "quality/enhanced/46782de97f1045c2591c5718.webp"
+  },
+  "shell/rigs/bcf0c068-b731-4605-94f2-37aa02e426b9/texture.webp": {
+    "original": "quality/original/771bae7032e7c5b40ac1a3a5.webp",
+    "enhanced": "quality/enhanced/771bae7032e7c5b40ac1a3a5.webp"
+  },
+  "shell/rigs/bd09174c-adbd-4254-97f4-793e917b0f6b/texture.webp": {
+    "original": "quality/original/0d113dd50cc947b25f0e2c14.webp",
+    "enhanced": "quality/enhanced/0d113dd50cc947b25f0e2c14.webp"
+  },
+  "shell/rigs/bf3667b8-b1de-4366-b03c-01dbd06e5a6e/texture.webp": {
+    "original": "quality/original/364a3cf6ef3717e226c7fb96.webp",
+    "enhanced": "quality/enhanced/364a3cf6ef3717e226c7fb96.webp"
+  },
+  "shell/rigs/c0be64d4-65a8-4732-8f07-a7dfc6aa1033/texture.webp": {
+    "original": "quality/original/35ffd22dc147901eab8edda1.webp",
+    "enhanced": "quality/enhanced/35ffd22dc147901eab8edda1.webp"
+  },
+  "shell/rigs/c1219230-1441-4460-9ae0-b7ae3d264d69/texture.webp": {
+    "original": "quality/original/57d61fd9b34d92ebaa00cd8c.webp",
+    "enhanced": "quality/enhanced/57d61fd9b34d92ebaa00cd8c.webp"
+  },
+  "shell/rigs/c60b53e7-4697-4853-9d60-a4f4133f99ff/texture.webp": {
+    "original": "quality/original/0054f6bbb73eab6255771c17.webp",
+    "enhanced": "quality/enhanced/0054f6bbb73eab6255771c17.webp"
+  },
+  "shell/rigs/c662fd36-7ae0-4c44-9c6f-d4bfdc312277/texture.webp": {
+    "original": "quality/original/c325e24e77f4b3c04e1c673b.webp",
+    "enhanced": "quality/enhanced/c325e24e77f4b3c04e1c673b.webp"
+  },
+  "shell/rigs/c7033e7d-7c06-4540-89d2-80a9f491a641/texture.webp": {
+    "original": "quality/original/efc5859bae8590700f233d8a.webp",
+    "enhanced": "quality/enhanced/efc5859bae8590700f233d8a.webp"
+  },
+  "shell/rigs/c7473142-564a-4c18-9315-e60fb5fc9b68/texture.webp": {
+    "original": "quality/original/ed2320b8b4057ab505f4d526.webp",
+    "enhanced": "quality/enhanced/ed2320b8b4057ab505f4d526.webp"
+  },
+  "shell/rigs/c86b7e59-6d21-4f1c-8d89-a1f8d7fcdf3f/texture.webp": {
+    "original": "quality/original/f5686b5fd5812cbdf2af8526.webp",
+    "enhanced": "quality/enhanced/f5686b5fd5812cbdf2af8526.webp"
+  },
+  "shell/rigs/c8bc39c9-9119-4717-bba6-5b54733e98d8/texture.webp": {
+    "original": "quality/original/3d75393eba891f427c2f9021.webp",
+    "enhanced": "quality/enhanced/3d75393eba891f427c2f9021.webp"
+  },
+  "shell/rigs/c8f1c3fe-6c85-457c-8ff9-0a3156815ada/texture.webp": {
+    "original": "quality/original/0b2d57bddb0ca8805486d280.webp",
+    "enhanced": "quality/enhanced/0b2d57bddb0ca8805486d280.webp"
+  },
+  "shell/rigs/c9f3d7df-5a6e-4134-8890-234764fc3b67/texture.webp": {
+    "original": "quality/original/56f3b590ef3e25ec2a9ab7da.webp",
+    "enhanced": "quality/enhanced/56f3b590ef3e25ec2a9ab7da.webp"
+  },
+  "shell/rigs/cb458b2b-f685-477d-9f1d-6f5b71707c16/texture.webp": {
+    "original": "quality/original/5ef43ee86d6bc82abdd947a9.webp",
+    "enhanced": "quality/enhanced/5ef43ee86d6bc82abdd947a9.webp"
+  },
+  "shell/rigs/ce8294b0-7c76-4c91-939a-12540455d8f9/texture.webp": {
+    "original": "quality/original/7c25d62628fb13804f11baaa.webp",
+    "enhanced": "quality/enhanced/7c25d62628fb13804f11baaa.webp"
+  },
+  "shell/rigs/ceb8d8a3-70d5-4ff2-8bad-755239191770/texture.webp": {
+    "original": "quality/original/fd011b4ceeacd210ae2fb677.webp",
+    "enhanced": "quality/enhanced/fd011b4ceeacd210ae2fb677.webp"
+  },
+  "shell/rigs/cf3ab9db-bd49-431c-9f2d-2b0917b8e6eb/texture.webp": {
+    "original": "quality/original/19c99fff61d8406abbf85cec.webp",
+    "enhanced": "quality/enhanced/19c99fff61d8406abbf85cec.webp"
+  },
+  "shell/rigs/cfd9bd4e-12d6-4742-b746-72ccdfb873c1/texture.webp": {
+    "original": "quality/original/abb48c97e8ac8cb5f5a9a071.webp",
+    "enhanced": "quality/enhanced/abb48c97e8ac8cb5f5a9a071.webp"
+  },
+  "shell/rigs/d2761bd2-7cb4-4074-a56b-0a33e1e69468/texture.webp": {
+    "original": "quality/original/f3ea5d467c6ecc2ba07afdc4.webp",
+    "enhanced": "quality/enhanced/f3ea5d467c6ecc2ba07afdc4.webp"
+  },
+  "shell/rigs/d42c3823-afb7-4112-93b9-90a4ca85b5e7/texture.webp": {
+    "original": "quality/original/8fe898aad75fe3d1b9876d0a.webp",
+    "enhanced": "quality/enhanced/8fe898aad75fe3d1b9876d0a.webp"
+  },
+  "shell/rigs/d81559d0-8415-4b15-a647-6484c1533c37/texture.webp": {
+    "original": "quality/original/df5f7d3c0c697d6e6e74def9.webp",
+    "enhanced": "quality/enhanced/df5f7d3c0c697d6e6e74def9.webp"
+  },
+  "shell/rigs/e06bd08c-d60f-4ddc-9e9e-5ec45a19d628/texture.webp": {
+    "original": "quality/original/ba1882d83488937c1acba47b.webp",
+    "enhanced": "quality/enhanced/ba1882d83488937c1acba47b.webp"
+  },
+  "shell/rigs/e136bf3f-ac66-42ce-8b43-a54d22223186/texture.webp": {
+    "original": "quality/original/80424ea541ef38da1b035ee6.webp",
+    "enhanced": "quality/enhanced/80424ea541ef38da1b035ee6.webp"
+  },
+  "shell/rigs/e19d5c87-ce5f-4106-a677-86b3eb53e5dc/texture.webp": {
+    "original": "quality/original/52606225171652a219b48d53.webp",
+    "enhanced": "quality/enhanced/52606225171652a219b48d53.webp"
+  },
+  "shell/rigs/e2ef7232-ed91-4769-9a15-dac4e7bfe4fe/texture.webp": {
+    "original": "quality/original/c072145e3897a0ec04d2023d.webp",
+    "enhanced": "quality/enhanced/c072145e3897a0ec04d2023d.webp"
+  },
+  "shell/rigs/e3a381b8-03c2-4c29-9aaa-e69178f7e8e1/texture.webp": {
+    "original": "quality/original/cd750119a7772677f670802c.webp",
+    "enhanced": "quality/enhanced/cd750119a7772677f670802c.webp"
+  },
+  "shell/rigs/e905710e-3ed6-424a-90f3-d6211fc5ee23/texture.webp": {
+    "original": "quality/original/74281cd08fd3b6e98959fca6.webp",
+    "enhanced": "quality/enhanced/74281cd08fd3b6e98959fca6.webp"
+  },
+  "shell/rigs/e91b7fc6-28ca-467f-9da4-d41f2ce83fd4/texture.webp": {
+    "original": "quality/original/c3e73a13e013e8708a1b1ba8.webp",
+    "enhanced": "quality/enhanced/c3e73a13e013e8708a1b1ba8.webp"
+  },
+  "shell/rigs/e9e0f704-7422-4267-a5bb-4bb0b9136111/texture.webp": {
+    "original": "quality/original/6413f30ef4ea3f979a5ca645.webp",
+    "enhanced": "quality/enhanced/6413f30ef4ea3f979a5ca645.webp"
+  },
+  "shell/rigs/ea8184e9-c668-4473-b398-b2a5c92cdb4e/texture.webp": {
+    "original": "quality/original/c45ab2fc682b02f0ad857067.webp",
+    "enhanced": "quality/enhanced/c45ab2fc682b02f0ad857067.webp"
+  },
+  "shell/rigs/f2b5c25f-2e30-401f-8d30-e57ebca51cac/texture.webp": {
+    "original": "quality/original/a71ae77211f6b0309f5d6d0e.webp",
+    "enhanced": "quality/enhanced/a71ae77211f6b0309f5d6d0e.webp"
+  },
+  "shell/rigs/f3bd66ec-2c8b-411f-a876-d5a904cf4adc/texture.webp": {
+    "original": "quality/original/60904b7febb831d82a06af70.webp",
+    "enhanced": "quality/enhanced/60904b7febb831d82a06af70.webp"
+  },
+  "shell/rigs/f7f9f2b4-bb52-45c0-92ca-44866ab39890/texture.webp": {
+    "original": "quality/original/e8bcbf5d2be82f95bee251fe.webp",
+    "enhanced": "quality/enhanced/e8bcbf5d2be82f95bee251fe.webp"
+  },
+  "shell/rigs/f8be0823-6a5c-41fc-8332-7d3a2c0d242e/texture.webp": {
+    "original": "quality/original/37d62556111bd86c8046fe80.webp",
+    "enhanced": "quality/enhanced/37d62556111bd86c8046fe80.webp"
+  },
+  "egypt/lawn.webp": {
+    "original": "quality/original/8406114c559215580392be9f.webp",
+    "enhanced": "quality/enhanced/8406114c559215580392be9f.webp"
+  },
+  "campaign/night.webp": {
+    "original": "quality/original/430bcea948f37c73b7ea25db.webp",
+    "enhanced": "quality/enhanced/430bcea948f37c73b7ea25db.webp"
+  },
+  "pirate/lawn.webp": {
+    "original": "quality/original/701deb7c32bc6e79ff7abe89.webp",
+    "enhanced": "quality/enhanced/701deb7c32bc6e79ff7abe89.webp"
+  },
+  "cowboy/lawn.webp": {
+    "original": "quality/original/7d97575bcceb62959f76781a.webp",
+    "enhanced": "quality/enhanced/7d97575bcceb62959f76781a.webp"
+  },
+  "future/lawn.webp": {
+    "original": "quality/original/3daf0b31872b2d66af6d1a40.webp",
+    "enhanced": "quality/enhanced/3daf0b31872b2d66af6d1a40.webp"
+  },
+  "future/lawn-night.webp": {
+    "original": "quality/original/cdaa06f850674768c5453527.webp",
+    "enhanced": "quality/enhanced/cdaa06f850674768c5453527.webp"
+  },
+  "dark/lawn.webp": {
+    "original": "quality/original/ecbe59e8a470a5ede84dd1be.webp",
+    "enhanced": "quality/enhanced/ecbe59e8a470a5ede84dd1be.webp"
+  },
+  "beach/lawn.webp": {
+    "original": "quality/original/3fbbbae5459c89bd2f5a9a2b.webp",
+    "enhanced": "quality/enhanced/3fbbbae5459c89bd2f5a9a2b.webp"
+  },
+  "iceage/lawn.webp": {
+    "original": "quality/original/332ef703b6ca2364f729db00.webp",
+    "enhanced": "quality/enhanced/332ef703b6ca2364f729db00.webp"
+  },
+  "lostcity/lawn.webp": {
+    "original": "quality/original/9753ef2858a8a3901f627ae5.webp",
+    "enhanced": "quality/enhanced/9753ef2858a8a3901f627ae5.webp"
+  },
+  "lostcity/lawn-night.webp": {
+    "original": "quality/original/72b2cff28c2b083a3ae86a62.webp",
+    "enhanced": "quality/enhanced/72b2cff28c2b083a3ae86a62.webp"
+  },
+  "kongfu/lawn.webp": {
+    "original": "quality/original/271e4e554fe66437bedb16dc.webp",
+    "enhanced": "quality/enhanced/271e4e554fe66437bedb16dc.webp"
+  },
+  "eighties/lawn.webp": {
+    "original": "quality/original/24b11c2459afd6947aee2e62.webp",
+    "enhanced": "quality/enhanced/24b11c2459afd6947aee2e62.webp"
+  },
+  "dino/lawn.webp": {
+    "original": "quality/original/b076bc11e3dab5e35cecb430.webp",
+    "enhanced": "quality/enhanced/b076bc11e3dab5e35cecb430.webp"
+  }
+}
