@@ -1,3 +1,4 @@
+import {DinoBully} from './dino-bully';
 import {DinoPlants} from './dino-plants';
 import {DinoMines} from './dino-mine';
 import {DinoAnkylo} from './dino-ankylo';
@@ -8,7 +9,7 @@ import {BOARD,cellX,rowY,type SpawnAction,type ZombieKind} from './level';
 import {isFlying,swinging} from './pirate';
 import type {Game,Plant} from './model';
 
-export const dinoArmor=(kind:ZombieKind)=>kind==='dino_armor1'||kind==='dino_armor2'||kind==='dino_armor3'?kind:null;
+export const dinoArmor=(kind:ZombieKind)=>kind==='dino_armor1'||kind==='dino_armor2'||kind==='dino_armor3'||kind==='dino_armor4'?kind:null;
 export interface Raptor {id:number;row:number;x:number;direction:number;animation:'Walk'|'Turn'|'Kick'|'Idle';charmed:boolean;born:number;elapsed:number;event:number;speed:number;left:number;leaveAt:number;leaving:boolean;detect:boolean;kicked:Map<number,number>;sayAt:number}
 export class DinoBattle {
  raptors:Raptor[]=[];
@@ -19,16 +20,17 @@ export class DinoBattle {
  readonly ankylo:DinoAnkylo;
  readonly mines:DinoMines;
  readonly plants:DinoPlants;
+ readonly bully:DinoBully;
  private serial=0;
- constructor(private g:Game){this.plants=new DinoPlants(g);this.ankylo=new DinoAnkylo(g);this.mines=new DinoMines(g);this.visitors=new DinoVisitors(g);this.tyranno=new DinoTyranno(g);}
+ constructor(private g:Game){this.bully=new DinoBully(g);this.plants=new DinoPlants(g);this.ankylo=new DinoAnkylo(g);this.mines=new DinoMines(g);this.visitors=new DinoVisitors(g);this.tyranno=new DinoTyranno(g);}
  add(action:NonNullable<SpawnAction['dinosaur']>){this.pending.push({kind:action.kind,row:action.row,at:this.g.time+action.delay});}
  private play(r:Raptor,animation:Raptor['animation']){r.animation=animation;r.elapsed=0;r.event=0;}
  private targets(r:Raptor,wide=false){
   const g=this.g,rect=source.attackRect,center=r.x+rect.x*.6*(wide||r.charmed?r.direction:1),half=rect.w*.6*(wide?2.5:1)/2;
-  return [...g.zombies,...g.westFinale.allies].filter(z=>z!==g.boss?.zombie&&z.hp>0&&z.row===r.row&&!z.dinoCarry&&!z.leap&&!isFlying(z)&&!swinging(z,g.time)&&(z.kind==='dino_bully'||!g.props.zombies[z.kind].CannotBeKnockedBackByProjectiles)&&!g.props.zombies[z.kind].CannotBeFlickedByPowerToss&&g.time>=(r.kicked.get(z.id)??0)&&Math.abs(z.x-center)<half+20).sort((a,b)=>(b.x-a.x)*r.direction);
+  return [...g.zombies,...g.westFinale.allies].filter(z=>z!==g.boss?.zombie&&z.hp>0&&z.row===r.row&&!z.dinoCarry&&!z.leap&&!isFlying(z)&&!swinging(z,g.time)&&(z.kind==='dino_bully'||z.kind==='dino_bully_veteran'||!g.props.zombies[z.kind].CannotBeKnockedBackByProjectiles)&&!g.props.zombies[z.kind].CannotBeFlickedByPowerToss&&g.time>=(r.kicked.get(z.id)??0)&&Math.abs(z.x-center)<half+20).sort((a,b)=>(b.x-a.x)*r.direction);
  }
  tick(dt:number){
-  this.plants.tick();
+  this.plants.tick();this.bully.tick();
   const g=this.g,p=source.raptor;
   for(const item of this.pending)if(g.time>=item.at){if(item.kind==='ankylo'){this.ankylo.add(item.row,++this.serial);continue;}if(item.kind==='tyranno'){this.tyranno.add(item.row,++this.serial);continue;}if(item.kind!=='raptor'){this.visitors.add(item.kind,item.row,++this.serial);continue;}this.raptors.push({charmed:false,born:g.time,id:++this.serial,row:item.row,x:1070,direction:1,animation:'Walk',elapsed:0,event:0,speed:p.WalkSPS+.1*(1-2*g.random()),left:p.ZombiesToKick,leaveAt:g.time+p.MaxWonderingTime,leaving:false,detect:false,kicked:new Map(),sayAt:g.time+3});}
   this.pending=this.pending.filter(item=>g.time<item.at);

@@ -11,7 +11,7 @@ export class DinoAnkylo {
  animation(d:Ankylo){return d.animation+(d.charmed?'_Charmed':'');}
  charm(d:Ankylo){d.charmed=true;d.left=source.ankylo.ZombiesToThrow;if(d.animation!=='Intro'&&d.animation!=='Outro')this.play(d,'Idle0');this.g.beach.sounds.push('ankylo/charmSounds');}
  private play(d:Ankylo,animation:string){d.animation=animation;d.elapsed=0;d.event=0;if(animation==='Kick')d.leaveAt=this.g.time+source.ankylo.MaxWonderingTime;}
- private targets(d:Ankylo){const g=this.g,x=d.x-(d.charmed?230.7087:310.2935)*.6;return [...g.zombies,...g.westFinale.allies].filter(z=>z!==g.boss?.zombie&&z.hp>0&&z.row===d.row&&z.x>=BOARD.left&&z.x<=cellX(8.5)&&!z.dinoCarry&&!z.leap&&!isFlying(z)&&!swinging(z,g.time)&&(z.kind==='dino_bully'||!g.props.zombies[z.kind].CannotBeKnockedBackByProjectiles)&&!g.props.zombies[z.kind].CannotBeFlickedByPowerToss&&!this.slides.has(z)&&Math.abs(z.x-x)<1.5*BOARD.cellWidth);}
+ private targets(d:Ankylo){const g=this.g,x=d.x-(d.charmed?230.7087:310.2935)*.6;return [...g.zombies,...g.westFinale.allies].filter(z=>z!==g.boss?.zombie&&z.hp>0&&z.row===d.row&&z.x>=BOARD.left&&z.x<=cellX(8.5)&&!z.dinoCarry&&!z.leap&&!isFlying(z)&&!swinging(z,g.time)&&(z.kind==='dino_bully'||z.kind==='dino_bully_veteran'||!g.props.zombies[z.kind].CannotBeKnockedBackByProjectiles)&&!g.props.zombies[z.kind].CannotBeFlickedByPowerToss&&!this.slides.has(z)&&Math.abs(z.x-x)<1.5*BOARD.cellWidth);}
  tick(dt:number){
   const g=this.g;
   for(const [z,s] of this.slides){const t=Math.min(1,(g.time-s.at)/.7);z.x=s.from+(s.to-s.from)*t;z.eating=false;z.stunnedUntil=g.time+dt;

@@ -11,7 +11,7 @@ export class DinoVisitors {
  animation(d:DinoVisitor){return d.animation+(d.charmed&&!d.animation.endsWith('_Tail')?'_Charmed':'');}
  private play(d:DinoVisitor,animation:string){d.animation=animation;d.elapsed=0;d.event=0;}
  charm(d:DinoVisitor){d.charmed=true;d.left=d.kind==='stego'?source.stego.MaxThrowingTime:source.ptero.FlyingTimes;if(d.kind==='stego')d.held=[];this.g.beach.sounds.push(d.kind+'/charmSounds');}
- private targets(d:DinoVisitor){const g=this.g;return [...g.zombies,...g.westFinale.allies].filter(z=>z!==g.boss?.zombie&&z.hp>0&&z.row===d.row&&!z.dinoCarry&&!z.leap&&!isFlying(z)&&!swinging(z,g.time)&&(z.kind==='dino_bully'||!g.props.zombies[z.kind].CannotBeKnockedBackByProjectiles)&&!g.props.zombies[z.kind].CannotBeFlickedByPowerToss&&!d.held.includes(z));}
+ private targets(d:DinoVisitor){const g=this.g;return [...g.zombies,...g.westFinale.allies].filter(z=>z!==g.boss?.zombie&&z.hp>0&&z.row===d.row&&!z.dinoCarry&&!z.leap&&!isFlying(z)&&!swinging(z,g.time)&&(z.kind==='dino_bully'||z.kind==='dino_bully_veteran'||!g.props.zombies[z.kind].CannotBeKnockedBackByProjectiles)&&!g.props.zombies[z.kind].CannotBeFlickedByPowerToss&&!d.held.includes(z));}
  tick(dt:number){
   const g=this.g;
   for(const d of this.items){

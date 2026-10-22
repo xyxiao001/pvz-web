@@ -1,4 +1,4 @@
-"""Export Dino 1–35 from the pinned Cocos build."""
+"""Export Dino 1–40 from the pinned Cocos build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -18,15 +18,15 @@ def rig(path):
 def props(path,names):
     objs=e.read('json/Objects/'+path).objects[0]['json']['objects']
     return {n:next(o['objdata'] for o in objs if n in o.get('aliases',[])) for n in names}
-paths={'torchwood':'plants/TorchwoodPLANT','goldbloom':'plants/GoldBloomPLANT','boss':'zombies/DinoZombossMechZOMBIE','dinoBully':'zombies/DinoBullyZOMBIE','primalpotatomine':'plants/PrimalPotatoMinePLANT','primalsunflower':'plants/PrimalSunflowerPLANT','perfumeshroom':'plants/PerfumeShroomPLANT','grapeshot':'plants/GrapeShotPLANT','primalwallnut':'plants/PrimalWallnutPLANT','dino':'zombies/DinoBasicZOMBIE','dinoFlag':'zombies/DinoFlagZOMBIE','dinoImp':'zombies/DinoImpZOMBIE','dinoGargantuar':'zombies/DinoGargantuarZOMBIE'}
+paths={'explodeonut':'plants/ExplodeONutPLANT','dinoBullyVeteran':'zombies/DinoBullyVeteranZOMBIE','torchwood':'plants/TorchwoodPLANT','goldbloom':'plants/GoldBloomPLANT','boss':'zombies/DinoZombossMechZOMBIE','dinoBully':'zombies/DinoBullyZOMBIE','primalpotatomine':'plants/PrimalPotatoMinePLANT','primalsunflower':'plants/PrimalSunflowerPLANT','perfumeshroom':'plants/PerfumeShroomPLANT','grapeshot':'plants/GrapeShotPLANT','primalwallnut':'plants/PrimalWallnutPLANT','dino':'zombies/DinoBasicZOMBIE','dinoFlag':'zombies/DinoFlagZOMBIE','dinoImp':'zombies/DinoImpZOMBIE','dinoGargantuar':'zombies/DinoGargantuarZOMBIE'}
 actors={n:rig(p) for n,p in paths.items()}
-rigpaths={'ankylo':'dinosaurs/AnkyloDINOSAUR','tyranno':'dinosaurs/TyrannoDINOSAUR','stego':'dinosaurs/StegoDINOSAUR','ptero':'dinosaurs/PteroDINOSAUR','perfumeFire':'f05a1ef6-85a9-4568-a3a5-a18ddcab1dc7','raptor':'dinosaurs/RaptorDINOSAUR','dinoLawn':'lawns/DinoLAWN','mower':'projectiles/DinoMowerPRJ','dinoCone':'armors/DinoConeARMOR','dinoBucket':'armors/DinoBucketARMOR','dinoHelmet':'armors/DinoHelmetARMOR'}
+rigpaths={'ankylo':'dinosaurs/AnkyloDINOSAUR','tyranno':'dinosaurs/TyrannoDINOSAUR','stego':'dinosaurs/StegoDINOSAUR','ptero':'dinosaurs/PteroDINOSAUR','perfumeFire':'f05a1ef6-85a9-4568-a3a5-a18ddcab1dc7','raptor':'dinosaurs/RaptorDINOSAUR','dinoLawn':'lawns/DinoLAWN','mower':'projectiles/DinoMowerPRJ','dinoCone':'armors/DinoConeARMOR','dinoBucket':'armors/DinoBucketARMOR','dinoHelmet':'armors/DinoHelmetARMOR','dinoBricks':'armors/DinoBricksARMOR'}
 rigpaths.update({'torchYellow':'31649f81-baf2-467c-bc14-1cebe50d6dd8','torchBlue':'c0c6775e-839f-4bc5-8012-c34cca303d6a','bossMissile':'projectiles/DinoZombossMissilePRJ','bossMissileImpact':'ca6e370e-c6c7-4493-800e-9d216b4b1955','dinoLaserEye':'a275e7ed-5910-43a3-9eb6-95987aca1e12','dinoLaser':'dd64da6b-b1d9-49c8-ace2-dd19a55ce94d','dinoLaserFloor':'74024636-4aed-434a-9ffe-a2b173dd5989','dinoFire':'1064647e-f971-40bc-b09b-245c0b1bd2ff'})
 rigpaths['spudowPrimal']=e.read('resouce_prefabs/ParticlesRP').objects[1]['_components'][0]['spudowExplosionPrimal']['asset']
 for name,key in [('dinoCrack','crackle'),('dinoCrackSparkle','crackleSparkles')]:rigpaths[name]=e.read('resouce_prefabs/ParticlesRP').objects[1]['_components'][0][key]['asset']
 rigs={n:rig(p) for n,p in rigpaths.items()}
 rigs['dinoCharm']={'rig':e.rig('812b98dd-10c7-4a58-9075-03799556fd98','e6399a6e-28e3-4e94-9700-7e809f1c496f'),'armature':'Buff','animation':'Start','group':'dino'}
-properties={'plants':props('PlantProps',['torchwood','goldbloom','grapeshot','primalwallnut','perfumeshroom','primalsunflower','primalpotatomine']),'zombies':props('ZombieProps',['zombossmech_dino','dino','dino_armor1','dino_armor2','dino_armor3','dino_flag','dino_imp','dino_gargantuar','dino_bully']),'armors':props('ArmorProps',['dino_armor1','dino_armor2','dino_armor3']),'projectiles':props('ProjectileProps',['zomboss_missile_dino']),'plantAnimations':{}}
+properties={'plants':props('PlantProps',['explodeonut','torchwood','goldbloom','grapeshot','primalwallnut','perfumeshroom','primalsunflower','primalpotatomine']),'zombies':props('ZombieProps',['dino_bully_veteran','dino_armor4','zombossmech_dino','dino','dino_armor1','dino_armor2','dino_armor3','dino_flag','dino_imp','dino_gargantuar','dino_bully']),'armors':props('ArmorProps',['dino_armor1','dino_armor2','dino_armor3','dino_armor4']),'projectiles':props('ProjectileProps',['zomboss_missile_dino']),'plantAnimations':{}}
 c.write_json(e.OUT/'dinosaurs.json',{**props('DinosaurProps',['raptor','stego','ptero','tyranno','ankylo']),'attackRect':props('RectangleProps',['DinoRaptorAttackRect'])['DinoRaptorAttackRect']['Values']})
 for name,description in {**actors,**rigs}.items():
     sk=json.loads((e.OUT/'rigs'/description['rig']/'skeleton.json').read_text());arm=next(a for a in sk['armature'] if a['name']==description['armature']);timelines={}
@@ -37,7 +37,7 @@ for name,description in {**actors,**rigs}.items():
             frame+=f.get('duration',1)
         timelines[animation['name']]={'duration':animation.get('duration',1)/arm['frameRate'],'events':events}
     properties['plantAnimations'][name]=timelines
-for day in range(1,36):c.write_json(e.OUT/f'dino{day}.source.json',e.read(f'levels/dino{day}').objects[0]['json'])
+for day in range(1,41):c.write_json(e.OUT/f'dino{day}.source.json',e.read(f'levels/dino{day}').objects[0]['json'])
 co=next(x for x in walk(e.read('lawns/DinoLAWN').objects) if x.get('type')=='dragonBones.ArmatureDisplay')
 at=e.read(co['_dragonAtlasAsset']['asset']);atlas=json.loads(at.objects[0]['_atlasJson']);rect=next(x for x in atlas['SubTexture'] if x['name']=='Lawn')
 pixels=Image.open(io.BytesIO(c.native(at.data[1][at.rec[5][0]],'png')))
@@ -70,4 +70,4 @@ for name,path in [('music','dino/CYS_LP_Dino'),('minigame','dino/MG_Dino')]:
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{}})
 c.write_json(c.ROOT/'apps/pvz2/dino-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Dino 1–35')
+print('Exported Dino 1–40')
