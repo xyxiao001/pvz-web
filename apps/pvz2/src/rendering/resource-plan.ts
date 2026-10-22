@@ -6,6 +6,8 @@ export function battleActors(level:Level,plants:readonly PlantKind[]){
   if(names.has('eightiesPunkVeteran'))names.add('eightiesSkunk');
   if(names.has('eightiesArcade'))names.add('eighties8Bit');
   if(names.has('eightiesGargantuar'))names.add('eightiesImp');
+  if(names.has('hollyknight')){names.add('hollybarrierleaf');names.add('hollybarrierleafplantfood');}
+  if(level.boss?.kind==='zombossmech_eighties2')for(const n of ['eightiesPunkVeteran','eightiesSkunk','eightiesBoomBox'])names.add(n);
   if(names.has('bamboozle'))names.add('bamboobusket');
   if(names.has('kongfuBronzeChi'))for(const n of ['kongfuHammer','kongfuTorch','kongfuBomb','kongfuDrink','monkBlade','monkTorch','monkNunchaku','monkDrink'])names.add(n);
   if(level.world==='eighties')names.add('eightiesFlag');
@@ -34,7 +36,7 @@ export function battleActors(level:Level,plants:readonly PlantKind[]){
   if(names.has('pirateCaptain'))names.add('pirateParrot');
   if(names.has('barrelroller'))names.add('pirateBarrel');
   if(['barrelroller','pirateGargantuar','impCannon'].some(n=>names.has(n)))names.add('pirateImp');
-  if(level.boss?.kind==='zombossmech_eighties')for(const name of ['boss','eighties','eightiesFlag','eightiesPunk','eightiesGlitter','eightiesBreakDancer','eightiesMC','eightiesArcade','eighties8Bit','eightiesGargantuar','eightiesImp'])names.add(name);
+  if(level.boss?.kind.startsWith('zombossmech_eighties'))for(const name of ['boss','eighties','eightiesFlag','eightiesPunk','eightiesGlitter','eightiesBreakDancer','eightiesMC','eightiesArcade','eighties8Bit','eightiesGargantuar','eightiesImp'])names.add(name);
   else if(level.boss?.kind==='kongfu_boss_chi')for(const name of ['boss','abbot','abbotFlag','abbotFan','abbotStaff','abbotTorch','abbotChi','abbotImp','kongfuGong','kongfuBomb','kongfuBronzeChi','kongfuHammer','kongfuDrink','monk','monkBlade','monkNunchaku','monkDrink','monkTorch','kongfuTorch'])names.add(name);
   else if(level.boss?.kind==='kongfu_boss_blade')for(const name of ['boss','monk','monkFlag','monkBlade','monkTorch','monkNunchaku','monkImp','monkDrink','kongfuBomb','kongfuChi','kongfuHook'])names.add(name);
   else if(level.boss?.kind==='kongfu_boss_explode')for(const name of ['boss','kongfu','kongfuTorch','kongfuHammer','kongfuChi','kongfuBomb','kongfuGong','kongfuDrink','kongfuStrong','kongfuRocket'])names.add(name);
@@ -58,6 +60,8 @@ export function battleActors(level:Level,plants:readonly PlantKind[]){
 }
 export function battleEffects(level:Level,plants:readonly PlantKind[]){
   const names=new Set(['food']);
+  if(level.world==='eighties'&&level.day===41)names.add('clearMissile');
+  if(level.boss?.kind==='zombossmech_eighties2')for(const n of ['eightiesBricks','skunkFart','skunkDeath','punkRotate','boomboxLove'])names.add(n);
   if(level.world==='eighties')for(const n of ['eightiesLawn','eightiesCone','eightiesBucket','mower'])names.add(n);
   if(plants.includes('intensivecarrot'))names.add('carrotRevive');
   if(level.waves.flat().includes('eighties_boombox'))names.add('boomboxLove');
@@ -97,7 +101,7 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   if(level.world==='pirate')for(const name of ['pirateLawn','mower','pirateCone','pirateBucket','seaSplash'])names.add(name);
   if(level.waves.flat().includes('pirate_armor4')||level.boss?.kind==='zombossmech_pirate2')names.add('pirateBricks');
   const actors=new Set(battleActors(level,plants)),actions=level.actions.flat();
-  if(level.boss?.kind==='zombossmech_eighties'||actions.some(a=>a.graveTypes?.includes('speaker')))for(const n of ['speaker','speakerWave'])names.add(n);
+  if(level.boss?.kind.startsWith('zombossmech_eighties')||actions.some(a=>a.graveTypes?.includes('speaker')))for(const n of ['speaker','speakerWave'])names.add(n);
   if(actors.has('eightiesPunkVeteran'))for(const n of ['punkRotate','skunkDeath'])names.add(n);
   if(actors.has('eightiesSkunk'))names.add('skunkFart');
   if(level.waves.flat().includes('eighties_armor4'))names.add('eightiesBricks');
@@ -120,7 +124,7 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   if(actors.has('abbotStaff'))names.add('staffShield');
   if(actors.has('abbotFan'))for(const n of ['fanStorm','fanStormBack'])names.add(n);
   if(actors.has('abbotChi'))names.add('abbotShot');
-  const plantEffects:Partial<Record<PlantKind,string[]>>={caulipower:['cauliShot'],cantaloupe:['cantaloupeShot','cantaloupeFood','cantaloupeSplash','cantaloupeShoot'],bamboozle:['bamboozleShot'],solarsage:['sageSpirit'],lychee:['lycheeHit','lycheeMetal'],peach:['peachHeal','peachShield'],bambooshoot:['bamboo','bambooPF'],firegourd:['gourdFire'],bloominghearts:['blooming_heart','blooming_heart_pf'],zoybeanpod:['zoybeanCone','zoybeanBucket','zoyFog'],snowpea:['snowPea'],toadstool:['toadTongue'],primalpeashooter:['primalPea'],
+  const plantEffects:Partial<Record<PlantKind,string[]>>={gumnut:['gum','gumShot'],strawburst:['strawShot0','strawShot1','strawShot2','strawExpl0','strawExpl1','strawExpl2','strawFood'],hollyknight:['hollyShot','hollyFoodShot','hollyAim','hollyStab'],caulipower:['cauliShot'],cantaloupe:['cantaloupeShot','cantaloupeFood','cantaloupeSplash','cantaloupeShoot'],bamboozle:['bamboozleShot'],solarsage:['sageSpirit'],lychee:['lycheeHit','lycheeMetal'],peach:['peachHeal','peachShield'],bambooshoot:['bamboo','bambooPF'],firegourd:['gourdFire'],bloominghearts:['blooming_heart','blooming_heart_pf'],zoybeanpod:['zoybeanCone','zoybeanBucket','zoyFog'],snowpea:['snowPea'],toadstool:['toadTongue'],primalpeashooter:['primalPea'],
     akee:['akeeShot','akeeFood'],gatling:['firePea','bluePea'],lavaguava:['lava','lavaCrack','plantHeat'],firepeashooter:['firePea','firePeaHit','plantHeat','jalapenoFire'],stunion:['stunionSpawn','stunionPush','chiliStun'],pepperpult:['pepper','pepper_pf','plantHeat'],moonflower:['moonShield'],seashooter:['seaPea'],goldleaf:['goldtile'],ghostpepper:['ghost','ghostFog'],coldsnapdragon:['coldBreath','coldFood'],
     missiletoe:['missiletoeShot','missiletoeHit','missiletoeTarget'],seashroom:['seashroom_spore','seashroom_sporeHit'],homingthistle:['thistle','thistleFood'],tanglekelp:['kelpHands'],guacodile:['guacShot','guacRunner'],jackolantern:['jackFire','jackFood'],scaredyshroom:['scaredyShot','scaredyFood'],peanut:['peanutShot'],sunbean:['sunbeanBlast'],fumeshroom:['fumeShot','fumeFood','fumeHit'],applemortar:['appleShot','appleFood','appleHit','appleFoodHit'],electricblueberry:['blueberryCloud'],pinkstarfruit:['pinkShot','pinkFood','pinkHit','pinkFoodHit'],redstinger:['redShot','redWeak','redHit','redRay'],powerplant:['tile_epsilon','tile_epsilonFlash','tile_epsilonDot'],starfruit:['starShot','starFood','starHit','starFoodHit'],holonut:['infinutShield'],powerplant_alpha:['tile_alpha','tile_alphaFlash','tile_alphaDot'],powerplant_beta:['tile_beta','tile_betaFlash','tile_betaDot'],citron:['citronShot','citronFood','citronHit','citronFoodHit','citronToss','citronLightning'],empea:['empBlast','empEffect'],laser_bean:['laserBeam','laserDirt'],shadowshroom:['shadowExpl'],hurrikale:['windUpper','windLower'],puffshroom:['puffshroom_spore','puffshroom_sporeHit'],banana:['bananaShot','bananaHit','bananaTarget'],electriccurrant:['currantLine','currantCenter','currantHit'],
     electricpeashooter:['electricpea','electricpea_pf','electricpea_small','electricFoot','electricLink','electricHit','electricBigHit','electricSmallHit'],magnetshroom:['cowboyBucket','plateDrop'],magnifyinggrass:['magnifying_grass','grassHit','grassFrom','grassTo','grassAbsorb','grassRay'],wintermelon:['winter_melon','winter_melon_pf'],chilibean:['chiliFart','chiliStun'],splitpea:['megaPea'],xshot:['rotobaga','rotobagaFood'],chardguard:['chardHand'],dandelion:['dandelionShot','dandelionFood','dandelionExplosion','dandelionFoodExplosion','dandelionThrow'],jalapeno:['jalapenoFire'],lightningreed:['reedCloud','reedHit','reedLink'],escaperoot:['grapeshot','escapeGrapeExplosion','cherryExplosion'],spikerock:['rockFood'],spikeweed:['spikeFood'],snapdragon:['snapFire','snapFood','snapBall'],coconutcannon:['coconut','coconutHit','coconutFood','coconutFoodHit'],iceburg:['iceTrap'],iceweed:['iceSaw','iceTrap'],snowdrop:['snowdrop','snowdrop_freeze','iceTrap'],
@@ -130,7 +134,7 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   for(const plant of plants)for(const effect of plantEffects[plant]??[])names.add(effect);
   if(actors.has('futureGargantuar'))for(const name of ['gargEye','gargHit','gargRay'])names.add(name);
   if(actors.has('discoMech'))names.add('dirtSpawn');
-  if(level.boss?.kind==='zombossmech_eighties')for(const name of ['bandUp','bandMid','bandDown','bossCostume','bossTarget','bossEscape','zombossicon','dirtSpawn'])names.add(name);
+  if(level.boss?.kind.startsWith('zombossmech_eighties'))for(const name of ['bandUp','bandMid','bandDown','bossCostume','bossTarget','bossEscape','zombossicon','dirtSpawn'])names.add(name);
   else if(level.boss?.kind==='kongfu_boss_chi')for(const name of ['chiBossRack','chiBossRackHit','chiBossRay','chiBossRayHit','chiBossHole','chiBossStuck','chiBossShield','chiBossShieldBack','abbotShot','bossTarget','zombossicon','dirtSpawn'])names.add(name);
   else if(level.boss?.kind==='kongfu_boss_blade')for(const name of ['bladeChi','bladeBoomerang','bladeLink','bossEscape','zombossicon','dirtSpawn'])names.add(name);
   else if(level.boss?.kind==='kongfu_boss_explode')for(const name of ['kongfuBossBomb','kongfuBombSmall','kongfuBombBig','bossTarget','bossEscape','zombossicon','dirtSpawn'])names.add(name);

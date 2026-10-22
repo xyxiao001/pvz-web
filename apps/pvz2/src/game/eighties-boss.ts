@@ -1,7 +1,6 @@
 import {EgyptBoss} from './egypt-boss';
-import {cellX,rowY,type BossAction,type ZombieKind} from './level';
+import {BOARD,cellX,rowY,type BossAction,type ZombieKind} from './level';
 import type {Game} from './model';
-import native from '../../public/assets/eighties/properties.json';
 
 /** Fixed five-lane stage: summon, drop speakers, charge a lane, then change genre. */
 export class EightiesBoss extends EgyptBoss {
@@ -11,7 +10,7 @@ export class EightiesBoss extends EgyptBoss {
  private shotLeft=0;
  private previous:BossAction|null=null;
  private repeatLeft=0;
- private pending:{kind:ZombieKind;row:number;delay:number;food:boolean}[]=[];
+ private pending:{kind:ZombieKind;row:number;delay:number;food:boolean;column:number}[]=[];
  bandAt=0;
  deathAt:number|null=null;
  constructor(g:Game){super(g);this.zombie.x=cellX(7.6);this.y=rowY(1.667);}
@@ -20,8 +19,8 @@ export class EightiesBoss extends EgyptBoss {
  private change(animation:string){this.animation=animation;this.elapsed=0;this.cursor=0;this.animationSerial++;}
  private rest(){this.restLeft=this.current.MinIdleTime+this.game.random()*(this.current.MaxIdleTime-this.current.MinIdleTime);}
  private switchJam(){
-  const g=this.game,jam=native.zombies.zombossmech_eighties.ZombossStages[this.stage].JamStyle;
-  g.eighties.jam=jam;this.change('Idle_'+({jam_punk:'Punk',jam_pop:'Pop',jam_rap:'Rap',jam_8bit:'8bit',jam_metal:'Metal'}[jam]));
+  const g=this.game,jam=this.current.JamStyle!;
+  g.eighties.jam=jam;this.change('Idle_'+({jam_punk:'Punk',jam_pop:'Pop',jam_rap:'Rap',jam_8bit:'8bit',jam_metal:'Metal'} as Record<string,string>)[jam]);
   for(let row=0;row<5;row++){const old=g.graves.find(t=>t.row===row&&t.column===6);if(old)g.graves.splice(g.graves.indexOf(old),1);g.eighties.speaker.spawn(row,6);}
   g.future.visual('bossCostume','Play',this.zombie.x,this.y);g.beach.sounds.push('eightiesBoss/sparkSounds');this.rest();
  }
@@ -39,7 +38,7 @@ export class EightiesBoss extends EgyptBoss {
  private summonColumn(action:BossAction){
   const g=this.game,p=action.summonProps,floor=this.stages.slice(this.stage+1).reduce((n,s)=>n+s.HitPoints,0),part=1-(this.zombie.hp-floor)/this.current.HitPoints;
   let points=p.pointMin+part*(p.pointMax-p.pointMin),pool=p.zombieList.filter(k=>g.props.zombies[k].WavePointCost<=points),food=g.random()<(p.plantfoodchance===undefined?.3:p.plantfoodchance);
-  while(pool.length){const kind=pool[Math.floor(g.random()*pool.length)];this.pending.push({kind,row:Math.floor(g.random()*5),delay:g.random(),food});food=false;points-=g.props.zombies[kind].WavePointCost;pool=pool.filter(k=>g.props.zombies[k].WavePointCost<=points);}
+  while(pool.length){const kind=pool[Math.floor(g.random()*pool.length)];this.pending.push({kind,row:Math.floor(g.random()*5),delay:g.random(),food,column:Math.floor((this.zombie.x-BOARD.left)/BOARD.cellWidth)-2+p.columnOffset!});food=false;points-=g.props.zombies[kind].WavePointCost;pool=pool.filter(k=>g.props.zombies[k].WavePointCost<=points);}
  }
  private choose(){
   const g=this.game,choices=this.current.Actions.filter(a=>a.weight>0&&(this.repeatLeft>0?a===this.previous:a!==this.previous));let roll=g.random()*choices.reduce((sum,a)=>sum+a.weight,0);const action=choices.find(a=>(roll-=a.weight)<0)!;
@@ -54,7 +53,7 @@ export class EightiesBoss extends EgyptBoss {
  }
  override tick(dt:number){
   const g=this.game;if(this.defeated)return;
-  for(const p of this.pending){p.delay-=dt;if(p.delay<=0){const z=g.spawnZombie(p.kind,p.row,cellX(5),'ground');z.food=p.food;}}this.pending=this.pending.filter(p=>p.delay>0);
+  for(const p of this.pending){p.delay-=dt;if(p.delay<=0){const z=g.spawnZombie(p.kind,p.row,cellX(p.column),'ground');z.food=p.food;}}this.pending=this.pending.filter(p=>p.delay>0);
   if(this.stunned>0){this.stunned-=dt;if(this.stunned<=0)this.switchJam();return;}
   if(this.shotLeft>0){this.shotLeft-=dt;if(this.shotLeft<=0){for(const t of this.targets)g.eighties.speaker.spawn(t.row,t.column);this.targets=[];}}
   const animation=this.animation,timeline=g.props.plantAnimations.eightiesBoss[animation];this.elapsed+=dt;
