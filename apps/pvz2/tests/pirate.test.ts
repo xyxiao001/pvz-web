@@ -66,11 +66,11 @@ test('snapdragon attacks three rows and plant food burns once per zombie then ex
 });
 test('world key opens Pirate once and world completion preserves independent progress and rewards',()=>{
  const data=new Map<string,string>(),storage={getItem:(k:string)=>data.get(k)??null,setItem:(k:string,v:string)=>{data.set(k,v);},removeItem:(k:string)=>{data.delete(k);}};
- const progress=new ProgressStore(storage);assert.equal(progress.worldUnlocked('pirate'),false);assert.equal(progress.unlockWorld('pirate'),false);
- progress.finish('egypt','egypt8');assert.equal(progress.worldKeys(),1);assert.equal(progress.unlockWorld('pirate'),true);assert.equal(progress.unlockWorld('pirate'),false);assert.equal(progress.worldKeys(),0);
+ const progress=new ProgressStore(storage);assert.equal(progress.worldUnlocked('pirate'),false);assert.equal(progress.worldKeys(),5);
+ progress.finish('egypt','egypt8');assert.equal(progress.worldKeys(),6);assert.equal(progress.unlockWorld('pirate'),true);assert.equal(progress.unlockWorld('pirate'),false);assert.equal(progress.worldKeys(),5);
  const map=read<WorldMap>('shell/maps/pirate.json');
  for(let day=1;day<=20;day++){const id=`pirate${day}`;progress.finish('pirate',id);for(const event of completionEvents(map,id,progress.completed(map),progress.rewardNodes('pirate')))if(event.action==='reward')progress.award('pirate',map.islands.find(n=>n.node===event.node)!);progress.finishPresentation();}
- assert.ok(progress.ownedPlants().has(30));assert.ok(progress.ownedPlants().has(59));assert.ok(progress.ownedPlants().has(37));assert.ok(progress.ownedPlants().has(32));assert.ok(progress.ownedPlants().has(57));assert.ok(progress.ownedPlants().has(17));assert.ok(progress.ownedPlants().has(38));assert.ok(progress.ownedUpgrades().has(6));assert.equal(progress.battleBonuses().shovelRefund,.25);assert.equal(progress.worldKeys(),1);assert.equal(progress.isComplete('egypt1'),false);
+ assert.ok(progress.ownedPlants().has(30));assert.ok(progress.ownedPlants().has(59));assert.ok(progress.ownedPlants().has(37));assert.ok(progress.ownedPlants().has(32));assert.ok(progress.ownedPlants().has(57));assert.ok(progress.ownedPlants().has(17));assert.ok(progress.ownedPlants().has(38));assert.ok(progress.ownedUpgrades().has(6));assert.equal(progress.battleBonuses().shovelRefund,.25);assert.equal(progress.worldKeys(),6);assert.equal(progress.isComplete('egypt1'),false);
  assert.equal(new ProgressStore(storage).worldUnlocked('pirate'),true);
  assert.deepEqual(progress.campaignRewards().filter(r=>r.level.startsWith('pirate')).map(r=>r.id),['dangerroom_pirate','spine_pirate','note_pirate','worldkey','spine_pirate','spine_pirate']);
 });

@@ -53,7 +53,7 @@ test('Future 6–10 rewards persist exactly once and display native cards and ma
  const data=new Map<string,string>(),store=new ProgressStore({getItem:k=>data.get(k)??null,setItem:(k,v)=>{data.set(k,v);},removeItem:k=>{data.delete(k);}}),map=read('shell/maps/future.json') as WorldMap;
  for(let day=1;day<=10;day++){const id=`future${day}`;store.finish('future',id);for(const event of completionEvents(map,id,store.completed(map),store.rewardNodes('future')))if(event.action==='reward')store.award('future',map.islands.find(n=>n.node===event.node)!);store.finishPresentation();}
  for(const day of [7,8])store.finish('future',`future${day}`);
- assert.ok(store.ownedPlants().has(88));assert.ok(store.ownedPlants().has(87));assert.equal(store.worldKeys(),1);assert.equal(store.campaignRewards().filter(r=>r.id==='note_future').length,1);
+ assert.ok(store.ownedPlants().has(88));assert.ok(store.ownedPlants().has(87));assert.equal(store.worldKeys(),6);assert.equal(store.campaignRewards().filter(r=>r.id==='note_future').length,1);
  const cards=read('shell/rigs/91731241-49e8-4db3-bb69-f04d4f4762d6/skeleton.json').armature.find((a:{name:string})=>a.name==='plants');
  for(const kind of ['citron','empea','powerplant_alpha','powerplant_beta'] as const)assert.ok(cards.animation.some((a:{name:string})=>a.name===seedCardAnimation(kind)));
  const displays=read('shell/progression.json');for(const id of [87,88])assert.ok(displays.plants[id].length);

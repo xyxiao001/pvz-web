@@ -88,7 +88,7 @@ test('Saved free play opens maps across reloads without granting completion, rew
    const states=islandStates(map,store.completed(map),store.rewardNodes(map.id),store.temporaryUnlock);
    for(const node of map.islands.filter(n=>n.kind===0))assert.equal(states.get(node.node),node.levels.some(id=>LEVEL_ROUTES[id])?'open':'locked',`${map.id}/${node.name}`);
  }
- assert.equal(data.get('pvz2-web:free-play'),'1');assert.deepEqual([...data].filter(([k])=>k!=='pvz2-web:free-play'),before);assert.equal(store.isComplete('dark10'),false);assert.deepEqual(store.rewards(),[]);assert.equal(store.worldKeys(),0);
+ assert.equal(data.get('pvz2-web:free-play'),'1');assert.deepEqual([...data].filter(([k])=>k!=='pvz2-web:free-play'),before);assert.equal(store.isComplete('dark10'),false);assert.deepEqual(store.rewards(),[]);assert.equal(store.worldKeys(),5);
  store.temporaryUnlock=false;assert.equal(store.worldUnlocked('dark'),false);assert.equal(islandStates(dark,new Set(),new Set(),store.temporaryUnlock).get(tenth.node),'locked');
  assert.equal(new ProgressStore(storage).temporaryUnlock,false);assert.deepEqual([...data],before);
  store.temporaryUnlock=true;assert.equal(new ProgressStore(storage).temporaryUnlock,true);

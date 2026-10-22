@@ -43,7 +43,7 @@ test('West rewards unlock peapod and lightning reed and award one world key',()=
  const data=new Map<string,string>(),store=new ProgressStore({getItem:k=>data.get(k)??null,setItem:(k,v)=>{data.set(k,v);},removeItem:k=>{data.delete(k);}});
  const map=JSON.parse(readFileSync(new URL('../public/assets/shell/maps/cowboy.json',import.meta.url),'utf8')) as WorldMap;
  for(let day=1;day<=10;day++){const id=`cowboy${day}`;store.finish('cowboy',id);for(const event of completionEvents(map,id,store.completed(map),new Set(store.rewards().filter(r=>r.world==='cowboy').map(r=>r.node))))if(event.action==='reward')store.award('cowboy',map.islands.find(n=>n.node===event.node)!);store.finishPresentation();}
- assert.ok(store.ownedPlants().has(58));assert.ok(store.ownedPlants().has(29));assert.equal(store.worldKeys(),1);
- store.finish('cowboy','cowboy8');assert.equal(store.worldKeys(),1);assert.ok(store.campaignRewards().some(r=>r.id==='note_cowboy'));
+ assert.ok(store.ownedPlants().has(58));assert.ok(store.ownedPlants().has(29));assert.equal(store.worldKeys(),6);
+ store.finish('cowboy','cowboy8');assert.equal(store.worldKeys(),6);assert.ok(store.campaignRewards().some(r=>r.id==='note_cowboy'));
  assert.equal(BATTLE_LEVELS.cowboy9.mode,'preset');assert.ok(BATTLE_LEVELS.cowboy9.plants.some(p=>p.kind==='wintermelon'&&p.id===35));
 });

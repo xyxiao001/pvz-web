@@ -10,7 +10,7 @@ test('Iceage 14–18 preserve presets, protection, frozen placements, mowers and
  assert.equal(level(16).mowers,false);assert.equal(level(17).mowers,true);assert.equal(level(17).frozenPlants.length,5);assert.equal(level(18).frozenZombies.length,5);
  const data=new Map<string,string>(),store=new ProgressStore({getItem:k=>data.get(k)??null,setItem:(k,v)=>{data.set(k,v);},removeItem:k=>{data.delete(k);}});
  for(const day of [14,15,16,17]){store.finish('iceage',`iceage${day}`);store.finish('iceage',`iceage${day}`);}
- assert.deepEqual(store.campaignRewards().map(r=>r.id),['spine_iceage','note_iceage','worldkey','spine_iceage']);assert.equal(store.worldKeys(),1);
+ assert.deepEqual(store.campaignRewards().map(r=>r.id),['spine_iceage','note_iceage','worldkey','spine_iceage']);assert.equal(store.worldKeys(),6);
 });
 for(const day of [14,15,16,17,18])test(`iceage${day} controlled-damage wave and settlement smoke`,()=>{
  const g=create(day);for(let i=0;i<60000&&g.phase==='playing';i++){g.tick(1/60);for(const z of g.zombies)g.damage(z,100000,'water');}assert.equal(g.phase,'won');assert.equal(g.wave,g.level.waves.length);

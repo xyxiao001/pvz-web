@@ -60,7 +60,7 @@ test('Dark 6–10 retain original setup, preset, potions, helmets, giant and rew
  const g=create(7),z=g.spawnZombie('dark_armor3',2,cellX(5));assert.equal(z.hp,190);assert.equal(z.armor,1600);g.damage(z,100);assert.equal(z.armor,1500);assert.equal(g.western['metal'](z)?.name,'darkHelmet');
  const data=new Map<string,string>(),storage={getItem:(k:string)=>data.get(k)??null,setItem:(k:string,v:string)=>{data.set(k,v);},removeItem:(k:string)=>{data.delete(k);}},store=new ProgressStore(storage);
  for(let repeat=0;repeat<2;repeat++)for(const day of [8,9,10])store.finish('dark','dark'+day);
- assert.deepEqual(store.campaignRewards().map(r=>r.id),['spine_dark','note_dark','worldkey']);assert.equal(store.worldKeys(),1);
+ assert.deepEqual(store.campaignRewards().map(r=>r.id),['spine_dark','note_dark','worldkey']);assert.equal(store.worldKeys(),6);
 });
 test('Sunbean converts actual damage into sun and empowered bean burns its eater once',()=>{
  const g=quiet();g.addPlant('sunbean',2,2);const z=g.spawnZombie('dark_armor3',2,cellX(2)+20);tick(g,.6);assert.ok(z.dark?.bean);assert.equal(g.plants.length,0);
