@@ -38,6 +38,7 @@ export class MapRenderer {
   private carouselTarget = 0;
   private transition = .2;
   private pointer: { id: number; x: number; origin: number; moved: boolean } | null = null;
+  private hoveredIsland: number | null = null;
   private scale = 1;
   private grey = new ColorMatrixFilter();
   private backgroundColor = [0, 255, 224];
@@ -45,6 +46,7 @@ export class MapRenderer {
   private observer!: ResizeObserver;
   onWorld: (index: number) => void = () => {};
   onIsland: (island: Island) => void = () => {};
+  onHoverIsland: (node: number | null) => void = () => {};
   onCamera: (x: number) => void = () => {};
   onFrame: (camera: number, carousel: number) => void = () => {};
   onStep: (direction: number) => void = () => {};
@@ -68,6 +70,7 @@ export class MapRenderer {
     }); this.observer.observe(this.host);
     const x = (event: PointerEvent) => (event.clientX - this.app.canvas.getBoundingClientRect().left) / this.scale;
     this.app.canvas.addEventListener('pointerdown', event => {
+      this.hoverIsland(null);
       this.velocity = 0; this.pointer = { id: event.pointerId, x: x(event), origin: x(event), moved: false };
       this.app.canvas.setPointerCapture(event.pointerId);
     });
@@ -75,6 +78,7 @@ export class MapRenderer {
       const px=x(event),py=(event.clientY-this.app.canvas.getBoundingClientRect().top)/this.scale;
       const index=Math.round((px-512+this.carousel)/264);
       this.app.canvas.title=this.mode==='chooser'&&py>100&&py<570&&index>=0&&index<this.catalog.worlds.length&&!isWorldMigrated(this.catalog.worlds[index].id)?'尚未迁移':'';
+      if (event.pointerType === 'mouse' && !this.pointer && this.mode === 'map') this.hoverIsland(this.islandAt(px, py)?.node ?? null);
       if (!this.pointer || this.pointer.id !== event.pointerId) return;
       const next = x(event), delta = next - this.pointer.x;
       if (Math.abs(next - this.pointer.origin) > 6) this.pointer.moved = true;
@@ -90,11 +94,12 @@ export class MapRenderer {
         const index = Math.round((px - 512 + this.carousel) / 264);
         if (index >= 0 && index < this.catalog.worlds.length && py > 100 && py < 570) this.onWorld(index);
       } else {
-        const island = this.map!.islands.filter(n => n.kind === 0 || n.kind === 2).find(n => Math.abs(px - (512 + n.x - this.camera)) < 32 && Math.abs(py - (320 + n.y - (n.kind===2?40:18))) < (n.kind===2?60:44));
+        const island = this.islandAt(px, py);
         if (island) this.onIsland(island);
       }
     });
     this.app.canvas.addEventListener('pointercancel', () => { this.pointer = null; this.velocity = 0; });
+    this.app.canvas.addEventListener('pointerleave', () => this.hoverIsland(null));
     this.app.canvas.addEventListener('wheel', event => {
       event.preventDefault();
       if (this.mode === 'chooser') {
@@ -136,6 +141,7 @@ export class MapRenderer {
     });
   }
   private clear() {
+    this.hoverIsland(null);
     for (const view of this.views.values()) { for (const rig of view.rigs) rig.dispose(); view.root.destroy({ children: true }); }
     this.views.clear(); this.draws = []; PixiFactory.advanceTime(0);
   }
@@ -351,8 +357,16 @@ export class MapRenderer {
     }
     this.layer.sortableChildren = true; this.onCamera(this.camera);
   }
-  private setCamera(x: number) { this.camera = clampCamera(this.map!, x); this.positionMap(); }
+  private islandAt(x: number, y: number) {
+    return this.map!.islands.filter(n => n.kind === 0 || n.kind === 2).find(n => Math.abs(x - (512 + n.x - this.camera)) < 32 && Math.abs(y - (320 + n.y - (n.kind === 2 ? 40 : 18))) < (n.kind === 2 ? 60 : 44));
+  }
+  private hoverIsland(node: number | null) {
+    if (this.hoveredIsland === node) return;
+    this.hoveredIsland = node;
+    this.onHoverIsland(node);
+  }
+  private setCamera(x: number) { this.hoverIsland(null); this.camera = clampCamera(this.map!, x); this.positionMap(); }
   moveBy(delta: number) { this.velocity = 0; this.setCamera(this.camera + delta); }
   start() { this.app.start(); }
-  stop() { this.app.stop(); this.velocity = 0; }
+  stop() { this.hoverIsland(null); this.app.stop(); this.velocity = 0; }
 }

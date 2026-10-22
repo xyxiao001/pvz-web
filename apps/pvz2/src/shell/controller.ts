@@ -54,6 +54,9 @@ export class WorldShell {
     await this.renderer.init();
     this.renderer.onWorld = index => { void this.choose(index); };
     this.renderer.onIsland = island => { void this.selectLevel(island); };
+    this.renderer.onHoverIsland = node => {
+      for (const target of this.host.querySelectorAll<HTMLElement>('[data-level-node]')) target.classList.toggle('hovered', Number(target.dataset.levelNode) === node);
+    };
     this.renderer.onStep = direction => this.step(direction);
     this.renderer.onCamera = camera => { if (this.map) this.navigation.cameras[this.map.id] = camera; };
     this.renderer.onFrame = (camera, carousel) => this.layoutTargets(camera, carousel);
@@ -133,7 +136,7 @@ export class WorldShell {
   }
   private async openWorld(world: World) {
     if (!isWorldMigrated(world.id)) { await this.showChooser(); return; }
-    this.loading(true); this.closeModal(); this.host.dataset.view = 'map'; this.currentWorld = world; this.cameraLayout = NaN;
+    this.loading(true); this.closeModal(); this.host.dataset.view = 'map'; this.currentWorld = world;
     try {
       this.map = await json<WorldMap>(`shell/maps/${world.id}.json`); this.navigation.world = world.id;
       this.$('.world-labels').innerHTML = '';
@@ -146,6 +149,7 @@ export class WorldShell {
       const events = pending?.world === world.id ? completionEvents(this.map,pending.level,completed,rewards) : [];
       const displayed = new Set(completed); if (events.length) displayed.delete(pending!.level);
       await this.renderer.showMap(this.map,camera,displayed,world.night,rewards,this.progression,events,this.progress.temporaryUnlock);
+      this.cameraLayout = NaN;
       this.$('.map-caption').textContent = `${world.name} · 拖动或滚轮浏览`;
       this.save(); this.loading(false);
       if (events.length) {
