@@ -8,7 +8,7 @@ export class DinoTyranno {
  add(row:number,id:number){const p=source.tyranno;this.items.push({id,row,x:cellX(p.IdleColumn),born:this.g.time,charmed:false,animation:'Intro',elapsed:0,event:0,idle:2,roars:p.MaxRoaringTime,bites:p.MaxBitingTime,leaveAt:this.g.time+p.MaxWonderingTime});}
  charm(d:Tyranno){d.charmed=true;}
  private play(d:Tyranno,animation:string){d.animation=animation;d.elapsed=0;d.event=0;if(animation==='Bite'||animation==='Roar'){d.idle=2;d.leaveAt=this.g.time+source.tyranno.MaxWonderingTime;}}
- private targets(d:Tyranno){return [...this.g.zombies,...this.g.westFinale.allies].filter(z=>z.hp>0&&z.row===d.row&&!z.dinoCarry&&z.x>=BOARD.left&&z.x<=cellX(8.5));}
+ private targets(d:Tyranno){return [...this.g.zombies,...this.g.westFinale.allies].filter(z=>z!==this.g.boss?.zombie&&z.hp>0&&z.row===d.row&&!z.dinoCarry&&z.x>=BOARD.left&&z.x<=cellX(8.5));}
  private biteTarget(d:Tyranno){return this.targets(d).filter(z=>!this.g.props.zombies[z.kind].CannotBeChompedByTyranno&&Math.abs(z.x-d.x)<=BOARD.cellWidth+20).sort((a,b)=>a.x-b.x)[0];}
  private cancelFear(z:Zombie){const g=this.g;if(g.time<z.chilledUntil||g.time<z.frozenUntil||g.time<(z.perfumeUntil??0)||g.time<(z.sappedUntil??0))z.scaredByTyranno=false;}
  tick(dt:number){

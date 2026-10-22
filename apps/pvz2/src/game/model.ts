@@ -16,6 +16,7 @@ import {BeachBattle,beachArmor} from './beach';
 import {DarkFinalePlants} from './dark-finale-plants';
 import {DarkMemory} from './dark-memory';
 import {DarkPlants} from './dark-plants';
+import {DinoBoss} from './dino-boss';
 import {EightiesBoss} from './eighties-boss';
 import {KongfuBladeBoss} from './kongfu-blade-boss';
 import {KongfuChiBoss} from './kongfu-chi-boss';
@@ -168,7 +169,7 @@ export class Game {
     if(level.world==='egypt'&&level.day===2&&tutorial)this.addPlant('peashooter',2,2);
     this.dark.initLevel();this.iceage.init();for(const t of level.goldTiles)this.beachFinale.tiles.push({...t,next:0,at:-Infinity});
     this.conveyorPlants=level.conveyor?level.conveyor.InitialPlantList.map(p=>({...p})):[];
-    if(level.boss)this.boss=level.boss.kind.startsWith('zombossmech_eighties')?new EightiesBoss(this):level.boss.kind==='kongfu_boss_chi'?new KongfuChiBoss(this):level.boss.kind==='kongfu_boss_blade'?new KongfuBladeBoss(this):level.boss.kind==='kongfu_boss_explode'?new KongfuBoss(this):level.boss.kind.startsWith('zombossmech_lostcity')?new LostCityBoss(this):level.boss.kind.startsWith('zombossmech_iceage')?new IceageBoss(this):level.boss.kind.startsWith('zombossmech_beach')?new BeachBoss(this):level.boss.kind.startsWith('zombossmech_dark')?new DarkBoss(this):level.boss.kind.startsWith('zombossmech_future')?new FutureBoss(this):level.boss.kind.startsWith('zombossmech_cowboy')?new CowboyBoss(this):level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
+    if(level.boss)this.boss=level.boss.kind==='zombossmech_dino'?new DinoBoss(this):level.boss.kind.startsWith('zombossmech_eighties')?new EightiesBoss(this):level.boss.kind==='kongfu_boss_chi'?new KongfuChiBoss(this):level.boss.kind==='kongfu_boss_blade'?new KongfuBladeBoss(this):level.boss.kind==='kongfu_boss_explode'?new KongfuBoss(this):level.boss.kind.startsWith('zombossmech_lostcity')?new LostCityBoss(this):level.boss.kind.startsWith('zombossmech_iceage')?new IceageBoss(this):level.boss.kind.startsWith('zombossmech_beach')?new BeachBoss(this):level.boss.kind.startsWith('zombossmech_dark')?new DarkBoss(this):level.boss.kind.startsWith('zombossmech_future')?new FutureBoss(this):level.boss.kind.startsWith('zombossmech_cowboy')?new CowboyBoss(this):level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
     if(level.cannon){this.nextWave=4+RULES.normalWaveEntrance;level.cannon.RowHasCannon.forEach((has,row)=>{if(has)this.addPlant('coconutcannon',row,1);});}
   }
 
@@ -204,6 +205,7 @@ export class Game {
     if(kind==='imitater'&&this.imitateKind===null)return false;
     if(!this.beach.canPlant(placementKind!,row,column))return false;
     if(this.level.boss&&column>=BOARD.columns-this.level.boss.reserved)return false;
+    if(this.boss instanceof DinoBoss&&this.boss.cracks.some(c=>c.row===row&&c.column===column&&c.until>this.time))return false;
     const packet=this.conveyor.find(c=>c.id===packetId&&c.kind===kind);
     if (this.phase !== 'playing' || row < 0 || row >= BOARD.rows || column < 0 || column >= BOARD.columns
       || this.level.mold.some(c=>c.row===row&&c.column===column)
@@ -242,6 +244,7 @@ export class Game {
     if(this.future.handles(kind))this.future.init(plant);
     if(this.westFinale.handles(kind))this.westFinale.init(plant);
     if(kind==='chardguard')plant.leaves=p.MaxBounceTime;
+    if(kind==='goldbloom'){plant.animation='Attack';plant.action='produce';plant.eventIndex=0;}
     if(kind==='jalapeno'||kind==='perfumeshroom')plant.animation='Attack';
     if(kind==='escaperoot'){plant.rootGrown=false;plant.animation='Baby_Start';}
     if(kind==='peapod')plant.heads=1;
@@ -301,14 +304,16 @@ export class Game {
     if(plant?.kind==='sunbean'&&this.dark.beanFood.has(plant.id))return false;
     if(plant?.kind==='holonut'&&!this.future.nutFoodable(plant))return false;
     if(plant?.kind==='lychee'&&this.kongfu.lychee.states.get(plant.id)!.fooded)return false;
+    if(plant?.kind==='torchwood'&&this.dino.plants.blue.has(plant.id))return false;
     if(plant?.kind==='cactus'&&this.eighties.lit.has(plant.id))return false;
     if((plant?.kind==='tallnut'||plant?.kind==='primalwallnut')&&plant.armor>0)return false;
     if(plant?.kind==='escaperoot'&&(!plant.rootGrown||plant.action!=='idle'||plant.animation!=='Idle'))return false;
-    if (!plant || plant.leap?.pushed || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['loquat','hollybarrierleaf','hollybarrierleafplantfood','thymewarp','powerlily','goldleaf','hotpotato','powerplant','powerplant_alpha','powerplant_beta','empea','blover','gravebuster','imitater','perfumeshroom','grapeshot','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
+    if (!plant || plant.leap?.pushed || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['goldbloom','loquat','hollybarrierleaf','hollybarrierleafplantfood','thymewarp','powerlily','goldleaf','hotpotato','powerplant','powerplant_alpha','powerplant_beta','empea','blover','gravebuster','imitater','perfumeshroom','grapeshot','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
     this.eighties.skunk.stunned.delete(plant.id);
     if(!boost){this.food--;this.future.link(plant);} plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
     if(this.eighties.finale.handles(plant.kind)||plant.kind==='caulipower'||plant.kind==='sporeshroom'||plant.kind==='garlic'||plant.kind==='phatbeet'||plant.kind==='cactus')this.eighties.food(plant);
+    if(plant.kind==='torchwood')this.dino.plants.food(plant);
     if(plant.kind==='primalpotatomine')this.dino.mines.food(plant);
     if(plant.kind==='primalsunflower'){plant.animation='Food';plant.eventIndex=0;}
     if(plant.kind==='toadstool')this.toadstool.food(plant);
@@ -1006,6 +1011,7 @@ export class Game {
       if(p.kind==='toadstool'){this.toadstool.tick(p,dt);continue;}
       if((this.level.world==='kongfu'||this.level.world==='eighties'||this.level.world==='dino')&&p.leap?.pushed){if(this.time-p.leap.at<(p.leap.duration??.5))continue;delete p.leap;}
       if(p.kind==='powerlily'){if(this.time-p.actionAt>=this.props.plantAnimations.powerlily.Attack.events.find(e=>e.name==='produce')!.at){this.pickups.push({id:this.nextEntityId(),kind:'food',x:cellX(p.column),y:rowY(p.row)-45,age:0});p.hp=0;}continue;}
+      if(p.kind==='goldbloom'||p.kind==='torchwood'){this.dino.plants.plant(p);continue;}
       if(p.kind==='primalpotatomine'){p.age+=dt;this.dino.mines.tick(p);continue;}
       if(p.kind==='primalsunflower'){this.dino.sunflower(p);continue;}
       if(p.kind==='perfumeshroom'){this.dino.perfume(p);continue;}
@@ -1119,6 +1125,7 @@ export class Game {
     for (const pea of this.peas) {
       const oldX = pea.x; pea.x += dt * (pea.vector?pea.vector.vx:pea.powered ? pea.speed! : 360);
       if(pea.vector){const v=pea.vector;pea.y+=v.vy*dt+.5*v.ay*dt*dt;v.vy+=v.ay*dt;if(v.stopY!==undefined&&(v.ay>0?v.vy>=0:v.vy<=0)){pea.y=v.stopY;v.vy=0;v.ay=0;delete v.stopY;}}
+      this.dino.plants.ignite(pea,oldX);
       if(this.iceage.hit(pea.row,oldX,pea.x,pea.damage)){pea.x=1300;continue;}
       const target = this.zombies.filter(z => z.hp > 0 && !this.beach.diving(z) && (pea.vector?(z===this.boss?.zombie&&this.level.world==='iceage'?[1,2,3].some(row=>Math.abs(rowY(row)-40-pea.y)<35):Math.abs(rowY(z.row)-40-pea.y)<35):this.inLane(z,pea.row)) && z.x - 18 >= Math.min(oldX,pea.x) - 12 && z.x - 18 <= Math.max(oldX,pea.x) + 12).sort((a, b) => a.x - b.x)[0];
       const grave=this.graves.filter(g=>g.hp>0&&(pea.vector?Math.abs(rowY(g.row)-40-pea.y)<35:g.row===pea.row)&&cellX(g.column)-25>=oldX-12&&cellX(g.column)-25<=pea.x+12).sort((a,b)=>a.column-b.column)[0];
@@ -1150,7 +1157,7 @@ export class Game {
       if(this.beach.fishers.tickZombie(z,statusDt)||this.beach.octopuses.tickZombie(z,statusDt)||this.beach.surfers.tickZombie(z,statusDt)||this.future.tickZombie(z,statusDt)||this.cowboy.tickZombie(z,statusDt)||this.pirate.tickZombie(z,dt)||this.tickSpecialZombie(z,dt))continue;
       if(this.beachFinale.block(z,statusDt)||this.westFinale.blockEnemy(z,statusDt)||this.dark.movement(z)===0)continue;
       if(this.dark.eatPotion(z))continue;
-      const target = this.plants.filter(p => !z.dodo?.flying && (!(z.bug&&z.bug.hp>0)||p.kind==='tallnut') && p.hp > 0 && !(p.kind==='primalpotatomine'&&(p.rootGrown||p.leap)) && p.kind!=='thymewarp'&&p.kind!=='bambooshoot'&&p.kind!=='lavaguava'&&p.kind!=='stunion'&&p.kind!=='ghostpepper'&&p.kind!=='goldleaf'&&p.kind!=='hotpotato'&&p.kind!=='tanglekelp' && (p.kind!=='lilypad'||!this.beach.occupant(p)) && p.sheep===undefined && !this.eighties.carrot.blocked(p) && (p.kind!=='floawerPot'||!this.darkPlants.occupant(p)) && !p.leap?.pushed && !((p.kind==='chilibean'||p.kind==='turnip')&&p.leap) && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='empea'&&p.kind!=='blover'&&p.kind!=='hurrikale'&&p.kind!=='stallia'&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='perfumeshroom'&&p.kind!=='grapeshot'&&p.kind!=='cherry_bomb'&&p.kind!=='jalapeno'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column||Number(b.kind==='bamboobusket')-Number(a.kind==='bamboobusket'))[0];
+      const target = this.plants.filter(p => !z.dodo?.flying && (!(z.bug&&z.bug.hp>0)||p.kind==='tallnut') && p.hp > 0 && !(p.kind==='primalpotatomine'&&(p.rootGrown||p.leap)) && p.kind!=='goldbloom'&&p.kind!=='thymewarp'&&p.kind!=='bambooshoot'&&p.kind!=='lavaguava'&&p.kind!=='stunion'&&p.kind!=='ghostpepper'&&p.kind!=='goldleaf'&&p.kind!=='hotpotato'&&p.kind!=='tanglekelp' && (p.kind!=='lilypad'||!this.beach.occupant(p)) && p.sheep===undefined && !this.eighties.carrot.blocked(p) && (p.kind!=='floawerPot'||!this.darkPlants.occupant(p)) && !p.leap?.pushed && !((p.kind==='chilibean'||p.kind==='turnip')&&p.leap) && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='empea'&&p.kind!=='blover'&&p.kind!=='hurrikale'&&p.kind!=='stallia'&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='perfumeshroom'&&p.kind!=='grapeshot'&&p.kind!=='cherry_bomb'&&p.kind!=='jalapeno'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column||Number(b.kind==='bamboobusket')-Number(a.kind==='bamboobusket'))[0];
       z.eating = !!target;
       if(target&&this.eighties.crush(z,target)){}
       else if(target&&this.eighties.finale.eaten(target)){}
@@ -1200,6 +1207,7 @@ export class Game {
     this.zombies = this.zombies.filter(z => z===this.boss?.zombie||z.weasel?.exploding||z.hp > 0&&!(z.reversed&&!z.parrot&&z.x>1070));
     this.future.settleNuts();this.darkFinale.settle();
     for(const p of this.plants)if(p.hp<=0&&this.westFinale.handles(p.kind))this.westFinale.removed(p);
+    for(const p of this.plants)if(p.hp<=0&&p.kind==='torchwood')this.dino.plants.removed(p);
     this.plantsLost+=this.plants.filter(p=>p.hp<=0&&!p.transformed&&p.kind!=='bamboobusket').length;
     for(const p of this.plants)if(p.hp<=0)this.eighties.carrot.remember(p);
     const protectedPlantDied=this.plants.some(p=>p.endangered&&p.hp<=0);

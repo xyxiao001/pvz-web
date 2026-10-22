@@ -3,7 +3,7 @@ import type {Game,Plant,Zombie} from './model';
 
 export class IceageCombat {
   weaselThrowers:{row:number;x:number;reversed:boolean;left:number;cooldown:number}[]=[];
-  primalPeas:{id:number;row:number;x:number;y:number;kind:'pea_primal'|'pea_primal_kb'|'pea_primal_pf'}[]=[];
+  primalPeas:{fire?:'firePea'|'bluePea';id:number;row:number;x:number;y:number;kind:'pea_primal'|'pea_primal_kb'|'pea_primal_pf'}[]=[];
   firePeas:{id:number;row:number;x:number;y:number}[]=[];
   fireHits:{id:number;x:number;y:number;at:number}[]=[];
   troglobites=new Map<number,{at:number;elapsed:number;event:number;pushing:boolean}>();
@@ -177,12 +177,12 @@ export class IceageCombat {
     if(g.time-p.actionAt>=timeline.duration){if(p.action==='food'&&p.burst<prop.PlantfoodPeaCount){p.actionAt+=timeline.duration;p.eventIndex=0;}else {p.action='idle';p.animation='Idle';}}
   }
   tick(dt:number){const g=this.g;
-    for(const b of this.primalPeas){const old=b.x;b.x+=8*BOARD.cellWidth*dt;const prop=g.props.projectiles[b.kind];
-      if(g.iceage.hit(b.row,old,b.x,prop.Damage)){b.x=1300;continue;}
+    for(const b of this.primalPeas){const old=b.x;b.x+=8*BOARD.cellWidth*dt;const prop=g.props.projectiles[b.kind];g.dino.plants.ignite(b,old);const damage=prop.Damage*(b.fire==='bluePea'?3:b.fire==='firePea'?2:1);
+      if(g.iceage.hit(b.row,old,b.x,damage)){b.x=1300;continue;}
       const target=g.zombies.filter(z=>z.hp>0&&g.inLane(z,b.row)&&!g.beach.diving(z)&&z.x>=old-25&&z.x<=b.x+25).sort((a,c)=>a.x-c.x)[0];
       if(!target)continue;
       const x=target.x,targets=b.kind==='pea_primal_pf'?g.zombies.filter(z=>z.hp>0&&g.inLane(z,b.row)&&Math.abs(z.x-x)<=BOARD.cellWidth):[target];
-      for(const z of targets){g.damage(z,prop.Damage);if(z!==g.boss?.zombie){z.stunnedUntil=g.time+prop.StunDuration;if(b.kind!=='pea_primal'&&!g.props.zombies[z.kind].CannotBeKnockedBackByProjectiles)z.leap={fromX:z.x,fromY:rowY(z.row),toX:z.x+prop.KnockbackDistance*BOARD.cellWidth,toRow:z.row,at:g.time,duration:.5};}}
+      for(const z of targets){g.damage(z,damage);if(b.fire){z.frozenUntil=0;z.chilledUntil=0;}if(z!==g.boss?.zombie){z.stunnedUntil=g.time+prop.StunDuration;if(b.kind!=='pea_primal'&&!g.props.zombies[z.kind].CannotBeKnockedBackByProjectiles)z.leap={fromX:z.x,fromY:rowY(z.row),toX:z.x+prop.KnockbackDistance*BOARD.cellWidth,toRow:z.row,at:g.time,duration:.5};}}
       b.x=1300;
     }
     this.primalPeas=this.primalPeas.filter(b=>b.x<1200);
