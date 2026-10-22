@@ -309,6 +309,7 @@ export class Game {
     if(!boost){this.food--;this.future.link(plant);} plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
     if(this.eighties.finale.handles(plant.kind)||plant.kind==='caulipower'||plant.kind==='sporeshroom'||plant.kind==='garlic'||plant.kind==='phatbeet'||plant.kind==='cactus')this.eighties.food(plant);
+    if(plant.kind==='primalpotatomine')this.dino.mines.food(plant);
     if(plant.kind==='primalsunflower'){plant.animation='Food';plant.eventIndex=0;}
     if(plant.kind==='toadstool')this.toadstool.food(plant);
     if(plant.kind==='akee')this.lostcity.food(plant);
@@ -1003,8 +1004,9 @@ export class Game {
       if(this.iceage.blocked(p))continue;
       if(p.sheep!==undefined){p.actionAt+=dt;p.nextAction+=dt;p.nextBurst+=dt;continue;}
       if(p.kind==='toadstool'){this.toadstool.tick(p,dt);continue;}
-      if((this.level.world==='kongfu'||this.level.world==='eighties')&&p.leap?.pushed){if(this.time-p.leap.at<(p.leap.duration??.5))continue;delete p.leap;}
+      if((this.level.world==='kongfu'||this.level.world==='eighties'||this.level.world==='dino')&&p.leap?.pushed){if(this.time-p.leap.at<(p.leap.duration??.5))continue;delete p.leap;}
       if(p.kind==='powerlily'){if(this.time-p.actionAt>=this.props.plantAnimations.powerlily.Attack.events.find(e=>e.name==='produce')!.at){this.pickups.push({id:this.nextEntityId(),kind:'food',x:cellX(p.column),y:rowY(p.row)-45,age:0});p.hp=0;}continue;}
+      if(p.kind==='primalpotatomine'){p.age+=dt;this.dino.mines.tick(p);continue;}
       if(p.kind==='primalsunflower'){this.dino.sunflower(p);continue;}
       if(p.kind==='perfumeshroom'){this.dino.perfume(p);continue;}
       if(p.kind==='primalwallnut'){this.dino.nut(p);continue;}
@@ -1148,7 +1150,7 @@ export class Game {
       if(this.beach.fishers.tickZombie(z,statusDt)||this.beach.octopuses.tickZombie(z,statusDt)||this.beach.surfers.tickZombie(z,statusDt)||this.future.tickZombie(z,statusDt)||this.cowboy.tickZombie(z,statusDt)||this.pirate.tickZombie(z,dt)||this.tickSpecialZombie(z,dt))continue;
       if(this.beachFinale.block(z,statusDt)||this.westFinale.blockEnemy(z,statusDt)||this.dark.movement(z)===0)continue;
       if(this.dark.eatPotion(z))continue;
-      const target = this.plants.filter(p => !z.dodo?.flying && (!(z.bug&&z.bug.hp>0)||p.kind==='tallnut') && p.hp > 0 && p.kind!=='thymewarp'&&p.kind!=='bambooshoot'&&p.kind!=='lavaguava'&&p.kind!=='stunion'&&p.kind!=='ghostpepper'&&p.kind!=='goldleaf'&&p.kind!=='hotpotato'&&p.kind!=='tanglekelp' && (p.kind!=='lilypad'||!this.beach.occupant(p)) && p.sheep===undefined && !this.eighties.carrot.blocked(p) && (p.kind!=='floawerPot'||!this.darkPlants.occupant(p)) && !p.leap?.pushed && !((p.kind==='chilibean'||p.kind==='turnip')&&p.leap) && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='empea'&&p.kind!=='blover'&&p.kind!=='hurrikale'&&p.kind!=='stallia'&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='perfumeshroom'&&p.kind!=='grapeshot'&&p.kind!=='cherry_bomb'&&p.kind!=='jalapeno'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column||Number(b.kind==='bamboobusket')-Number(a.kind==='bamboobusket'))[0];
+      const target = this.plants.filter(p => !z.dodo?.flying && (!(z.bug&&z.bug.hp>0)||p.kind==='tallnut') && p.hp > 0 && !(p.kind==='primalpotatomine'&&(p.rootGrown||p.leap)) && p.kind!=='thymewarp'&&p.kind!=='bambooshoot'&&p.kind!=='lavaguava'&&p.kind!=='stunion'&&p.kind!=='ghostpepper'&&p.kind!=='goldleaf'&&p.kind!=='hotpotato'&&p.kind!=='tanglekelp' && (p.kind!=='lilypad'||!this.beach.occupant(p)) && p.sheep===undefined && !this.eighties.carrot.blocked(p) && (p.kind!=='floawerPot'||!this.darkPlants.occupant(p)) && !p.leap?.pushed && !((p.kind==='chilibean'||p.kind==='turnip')&&p.leap) && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='empea'&&p.kind!=='blover'&&p.kind!=='hurrikale'&&p.kind!=='stallia'&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='perfumeshroom'&&p.kind!=='grapeshot'&&p.kind!=='cherry_bomb'&&p.kind!=='jalapeno'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column||Number(b.kind==='bamboobusket')-Number(a.kind==='bamboobusket'))[0];
       z.eating = !!target;
       if(target&&this.eighties.crush(z,target)){}
       else if(target&&this.eighties.finale.eaten(target)){}

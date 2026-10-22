@@ -16,7 +16,7 @@ reward_ids = set()
 for world in ['egypt', 'pirate', 'cowboy', 'future', 'dark', 'beach', 'iceage', 'lostcity', 'kongfu', 'eighties']:
     world_map = json.loads((c.OUT / f'shell/maps/{world}.json').read_text())
     reward_ids.update(i['plant'] for i in world_map['islands'] if i['kind'] == 1)
-reward_ids.update([18, 41, 160, 146])  # Dino 1–20 reward plants.
+reward_ids.update([18, 41, 160, 146, 54])  # Dino 1–25 reward plants.
 for plant in sorted(reward_ids):
     name = features[plant]['RES']['Disabled']
     asset = e.read('plants/' + name + 'DIS')

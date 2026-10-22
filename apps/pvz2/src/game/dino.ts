@@ -1,3 +1,5 @@
+import {DinoMines} from './dino-mine';
+import {DinoAnkylo} from './dino-ankylo';
 import {DinoTyranno} from './dino-tyranno';
 import {DinoVisitors} from './dino-visitors';
 import source from '../../public/assets/dino/dinosaurs.json';
@@ -13,26 +15,29 @@ export class DinoBattle {
  perfumes:{id:number;row:number;column:number;at:number}[]=[];
  readonly visitors:DinoVisitors;
  readonly tyranno:DinoTyranno;
+ readonly ankylo:DinoAnkylo;
+ readonly mines:DinoMines;
  private serial=0;
- constructor(private g:Game){this.visitors=new DinoVisitors(g);this.tyranno=new DinoTyranno(g);}
+ constructor(private g:Game){this.ankylo=new DinoAnkylo(g);this.mines=new DinoMines(g);this.visitors=new DinoVisitors(g);this.tyranno=new DinoTyranno(g);}
  add(action:NonNullable<SpawnAction['dinosaur']>){this.pending.push({kind:action.kind,row:action.row,at:this.g.time+action.delay});}
  private play(r:Raptor,animation:Raptor['animation']){r.animation=animation;r.elapsed=0;r.event=0;}
  private targets(r:Raptor,wide=false){
   const g=this.g,rect=source.attackRect,center=r.x+rect.x*.6*(wide||r.charmed?r.direction:1),half=rect.w*.6*(wide?2.5:1)/2;
-  return [...g.zombies,...g.westFinale.allies].filter(z=>z.hp>0&&z.row===r.row&&!z.dinoCarry&&!z.leap&&!isFlying(z)&&!swinging(z,g.time)&&!g.props.zombies[z.kind].CannotBeKnockedBackByProjectiles&&!g.props.zombies[z.kind].CannotBeFlickedByPowerToss&&g.time>=(r.kicked.get(z.id)??0)&&Math.abs(z.x-center)<half+20).sort((a,b)=>(b.x-a.x)*r.direction);
+  return [...g.zombies,...g.westFinale.allies].filter(z=>z.hp>0&&z.row===r.row&&!z.dinoCarry&&!z.leap&&!isFlying(z)&&!swinging(z,g.time)&&(z.kind==='dino_bully'||!g.props.zombies[z.kind].CannotBeKnockedBackByProjectiles)&&!g.props.zombies[z.kind].CannotBeFlickedByPowerToss&&g.time>=(r.kicked.get(z.id)??0)&&Math.abs(z.x-center)<half+20).sort((a,b)=>(b.x-a.x)*r.direction);
  }
  tick(dt:number){
   const g=this.g,p=source.raptor;
-  for(const item of this.pending)if(g.time>=item.at){if(item.kind==='tyranno'){this.tyranno.add(item.row,++this.serial);continue;}if(item.kind!=='raptor'){this.visitors.add(item.kind,item.row,++this.serial);continue;}this.raptors.push({charmed:false,born:g.time,id:++this.serial,row:item.row,x:1070,direction:1,animation:'Walk',elapsed:0,event:0,speed:p.WalkSPS+.1*(1-2*g.random()),left:p.ZombiesToKick,leaveAt:g.time+p.MaxWonderingTime,leaving:false,detect:false,kicked:new Map(),sayAt:g.time+3});}
+  for(const item of this.pending)if(g.time>=item.at){if(item.kind==='ankylo'){this.ankylo.add(item.row,++this.serial);continue;}if(item.kind==='tyranno'){this.tyranno.add(item.row,++this.serial);continue;}if(item.kind!=='raptor'){this.visitors.add(item.kind,item.row,++this.serial);continue;}this.raptors.push({charmed:false,born:g.time,id:++this.serial,row:item.row,x:1070,direction:1,animation:'Walk',elapsed:0,event:0,speed:p.WalkSPS+.1*(1-2*g.random()),left:p.ZombiesToKick,leaveAt:g.time+p.MaxWonderingTime,leaving:false,detect:false,kicked:new Map(),sayAt:g.time+3});}
   this.pending=this.pending.filter(item=>g.time<item.at);
   this.perfumes=this.perfumes.filter(f=>g.time-f.at<g.props.plants.perfumeshroom.Duration+g.props.plantAnimations.perfumeFire.Fade.duration+8/18);
   for(const f of this.perfumes){
    const touches=(d:{row:number;x:number;born:number;charmed:boolean})=>!d.charmed&&d.row===f.row&&g.time-d.born>=.5&&d.x>=cellX(0)-41&&d.x<=cellX(8)+41&&g.time-f.at>=Math.abs((d.x-cellX(f.column))/BOARD.cellWidth)/18&&g.time-f.at<g.props.plants.perfumeshroom.Duration;
    for(const r of this.raptors)if(touches(r)){r.charmed=true;r.detect=true;r.left=p.ZombiesToFlickCharmed;r.kicked.clear();this.play(r,r.direction>0?'Turn':'Idle');g.beach.sounds.push('raptor/charmSounds');}
+   for(const d of this.ankylo.items)if(touches({...d,x:d.x-BOARD.cellWidth}))this.ankylo.charm(d);
    for(const d of this.tyranno.items)if(touches(d))this.tyranno.charm(d);
    for(const d of this.visitors.items)if(touches(d))this.visitors.charm(d);
   }
-  this.visitors.tick(dt);this.tyranno.tick(dt);
+  this.visitors.tick(dt);this.tyranno.tick(dt);this.ankylo.tick(dt);
   for(const r of this.raptors){
    if(r.animation==='Walk'||r.animation==='Idle'){
     if(!r.leaving&&(r.left===0||!r.charmed&&g.time>=r.leaveAt)){r.leaving=true;if(r.direction>0){this.play(r,'Turn');continue;}this.play(r,'Walk');}
