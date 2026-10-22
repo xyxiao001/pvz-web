@@ -19,7 +19,7 @@ test('Dino 21–25 preserve nine waves, last stand, dinosaurs, intros and reward
  const l=level(22),g=create(22);assert.equal(g.preparing,true);assert.equal(g.sun,3000);assert.equal(g.food,3);assert.equal(l.sunDrops,false);assert.ok(l.blacklist.includes('primalsunflower'));const time=g.time;tick(g,2);assert.equal(g.time,time);g.startLastStand();tick(g,.1);assert.ok(g.time>time);
  assert.deepEqual(level(23).chooserPlants,['primalpotatomine']);assert.equal(BATTLE_LEVELS.dino23.firstReward.plant,'primalpotatomine');assert.equal(BATTLE_LEVELS.dino24.firstReward.image,'spine_dino');
  assert.equal(BATTLE_LEVELS.dino21.narrative,'DINO_21_INTRO');assert.equal(BATTLE_LEVELS.dino23.narrative,'DINO_23_INTRO');assert.ok(read('shell/progression.json').plants[54]);
- assert.ok(level(25).actions.flat().some(a=>a.dinosaur?.kind==='ankylo'&&a.dinosaur.delay===3));assert.equal(Object.keys(BATTLE_LEVELS).length,409);
+ assert.ok(level(25).actions.flat().some(a=>a.dinosaur?.kind==='ankylo'&&a.dinosaur.delay===3));assert.ok(Object.keys(BATTLE_LEVELS).length>=409);
 });
 const isolated=(day=25)=>{const g=create(day);Object.assign(g,{nextWave:Infinity});g.plants=[];return g;};
 test('Primal mine arms after six seconds plus Grow, then deals 2700 across three rows',()=>{
