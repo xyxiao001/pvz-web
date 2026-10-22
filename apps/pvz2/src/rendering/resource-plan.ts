@@ -33,7 +33,8 @@ export function battleActors(level:Level,plants:readonly PlantKind[]){
   if(names.has('pirateCaptain'))names.add('pirateParrot');
   if(names.has('barrelroller'))names.add('pirateBarrel');
   if(['barrelroller','pirateGargantuar','impCannon'].some(n=>names.has(n)))names.add('pirateImp');
-  if(level.boss?.kind==='kongfu_boss_chi')for(const name of ['boss','abbot','abbotFlag','abbotFan','abbotStaff','abbotTorch','abbotChi','abbotImp','kongfuGong','kongfuBomb','kongfuBronzeChi','kongfuHammer','kongfuDrink','monk','monkBlade','monkNunchaku','monkDrink','monkTorch','kongfuTorch'])names.add(name);
+  if(level.boss?.kind==='zombossmech_eighties')for(const name of ['boss','eighties','eightiesFlag','eightiesPunk','eightiesGlitter','eightiesBreakDancer','eightiesMC','eightiesArcade','eighties8Bit','eightiesGargantuar','eightiesImp'])names.add(name);
+  else if(level.boss?.kind==='kongfu_boss_chi')for(const name of ['boss','abbot','abbotFlag','abbotFan','abbotStaff','abbotTorch','abbotChi','abbotImp','kongfuGong','kongfuBomb','kongfuBronzeChi','kongfuHammer','kongfuDrink','monk','monkBlade','monkNunchaku','monkDrink','monkTorch','kongfuTorch'])names.add(name);
   else if(level.boss?.kind==='kongfu_boss_blade')for(const name of ['boss','monk','monkFlag','monkBlade','monkTorch','monkNunchaku','monkImp','monkDrink','kongfuBomb','kongfuChi','kongfuHook'])names.add(name);
   else if(level.boss?.kind==='kongfu_boss_explode')for(const name of ['boss','kongfu','kongfuTorch','kongfuHammer','kongfuChi','kongfuBomb','kongfuGong','kongfuDrink','kongfuStrong','kongfuRocket'])names.add(name);
   else if(level.boss?.kind.startsWith('zombossmech_lostcity'))for(const name of ['boss','lostcity','lostJane','lostExcavator','lostPorter','lostCrystal','lostPilot',...(level.boss.kind==='zombossmech_lostcity2'?['lostPilotVeteran','lostImp','lostGargantuar']:[])])names.add(name);
@@ -95,6 +96,7 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   if(level.world==='pirate')for(const name of ['pirateLawn','mower','pirateCone','pirateBucket','seaSplash'])names.add(name);
   if(level.waves.flat().includes('pirate_armor4')||level.boss?.kind==='zombossmech_pirate2')names.add('pirateBricks');
   const actors=new Set(battleActors(level,plants)),actions=level.actions.flat();
+  if(level.boss?.kind==='zombossmech_eighties'||actions.some(a=>a.graveTypes?.includes('speaker')))for(const n of ['speaker','speakerWave'])names.add(n);
   if(actors.has('eightiesArcade'))for(const n of ['arcadeCabinet','arcadeBreak','eighties8BitCone','eighties8BitBucket'])names.add(n);
   if(actors.has('eightiesGargantuar'))for(const n of ['metalWave','metalHit'])names.add(n);
   if(actors.has('eightiesGlitter'))for(const n of ['glitterTrail','glitterHit'])names.add(n);
@@ -124,7 +126,8 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   for(const plant of plants)for(const effect of plantEffects[plant]??[])names.add(effect);
   if(actors.has('futureGargantuar'))for(const name of ['gargEye','gargHit','gargRay'])names.add(name);
   if(actors.has('discoMech'))names.add('dirtSpawn');
-  if(level.boss?.kind==='kongfu_boss_chi')for(const name of ['chiBossRack','chiBossRackHit','chiBossRay','chiBossRayHit','chiBossHole','chiBossStuck','chiBossShield','chiBossShieldBack','abbotShot','bossTarget','zombossicon','dirtSpawn'])names.add(name);
+  if(level.boss?.kind==='zombossmech_eighties')for(const name of ['bandUp','bandMid','bandDown','bossCostume','bossTarget','bossEscape','zombossicon','dirtSpawn'])names.add(name);
+  else if(level.boss?.kind==='kongfu_boss_chi')for(const name of ['chiBossRack','chiBossRackHit','chiBossRay','chiBossRayHit','chiBossHole','chiBossStuck','chiBossShield','chiBossShieldBack','abbotShot','bossTarget','zombossicon','dirtSpawn'])names.add(name);
   else if(level.boss?.kind==='kongfu_boss_blade')for(const name of ['bladeChi','bladeBoomerang','bladeLink','bossEscape','zombossicon','dirtSpawn'])names.add(name);
   else if(level.boss?.kind==='kongfu_boss_explode')for(const name of ['kongfuBossBomb','kongfuBombSmall','kongfuBombBig','bossTarget','bossEscape','zombossicon','dirtSpawn'])names.add(name);
   else if(level.boss?.kind.startsWith('zombossmech_lostcity'))for(const name of ['bossEscape','zombossicon','sandbag','planeShade','dirtSpawn'])names.add(name);

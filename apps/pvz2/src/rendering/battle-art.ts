@@ -23,6 +23,7 @@ export class BattleArt {
     if(config.assets==='campaign'){
       this.campaign=await json<CampaignCatalog>('campaign/catalog.json');
       for(const bundle of config.bundles??[]){const extra=await json<CampaignCatalog>(`${bundle}/catalog.json`);this.campaign={actors:{...this.campaign.actors,...extra.actors},rigs:{...this.campaign.rigs,...extra.rigs},ui:{...this.campaign.ui,...extra.ui},sounds:{...this.campaign.sounds,...extra.sounds},narratives:{...this.campaign.narratives,...extra.narratives}};}
+      if(level.boss?.kind==='zombossmech_eighties')this.campaign.actors.boss=this.campaign.actors.eightiesBoss;
       if(level.boss?.kind==='kongfu_boss_chi')this.campaign.actors.boss=this.campaign.actors.bossChi;
       if(level.boss?.kind==='kongfu_boss_blade')this.campaign.actors.boss=this.campaign.actors.bossBlade;
       const names=battleEffects(level,plants);

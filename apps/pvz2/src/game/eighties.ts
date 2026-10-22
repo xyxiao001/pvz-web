@@ -2,11 +2,13 @@ import {BOARD,cellX,rowY} from './level';
 import type {Game,Plant,Zombie} from './model';
 import {EightiesCarrot} from './eighties-carrot';
 import {EightiesBoomBox} from './eighties-boombox';
+import {EightiesSpeaker} from './eighties-speaker';
 import {EightiesArcade} from './eighties-arcade';
 import {isFlying} from './pirate';
 
 /** Native Eighties music cues, zombies and plants. */
 export class EightiesBattle {
+ readonly speaker:EightiesSpeaker;
  readonly arcade:EightiesArcade;
  readonly carrot:EightiesCarrot;
  readonly boombox:EightiesBoomBox;
@@ -26,7 +28,7 @@ export class EightiesBattle {
  heavy=new Map<number,number>();
  kicks=new Map<number,number>();
  shots:{id:number;row:number;x:number;y:number;food:boolean;left:number;hits:Set<number>}[]=[];
- constructor(private g:Game){this.arcade=new EightiesArcade(g);this.carrot=new EightiesCarrot(g);this.boombox=new EightiesBoomBox(g);}
+ constructor(private g:Game){this.speaker=new EightiesSpeaker(g);this.arcade=new EightiesArcade(g);this.carrot=new EightiesCarrot(g);this.boombox=new EightiesBoomBox(g);}
  private play(p:Plant,animation:string,action:Plant['action']='idle'){p.animation=animation;p.action=action;p.actionAt=this.g.time;p.eventIndex=0;}
  add(p:Plant){if(p.kind==='sporeshroom'){p.nextAction=this.g.time;this.play(p,'Idle');}if(p.kind==='garlic')this.play(p,'Idle00');if(p.kind==='thymewarp'){this.play(p,'Play','explode');p.hidden=true;this.warp();}if(p.kind==='phatbeet'){this.heavy.set(p.id,2);p.nextAction=this.g.time;this.play(p,'Idle');}if(p.kind==='cactus'){p.nextAction=this.g.time;this.play(p,'Idle');}}
  spawn(z:Zombie){this.arcade.spawn(z);if(z.kind==='eighties_punk')this.kicks.set(z.id,0);if(z.kind==='eighties_gargantuar')this.gargCountdown.set(z.id,4+1.5*this.g.random());}
@@ -234,7 +236,7 @@ export class EightiesBattle {
   z.eating=false;g.beach.sounds.push('eightiesPunk/kickSounds');return true;
  }
  tick(dt:number){
-  const g=this.g;this.carrot.tick();this.boombox.tick(dt);this.arcade.tick(dt);
+  const g=this.g;this.carrot.tick();this.boombox.tick(dt);this.arcade.tick(dt);this.speaker.tick(dt);
   for(const s of this.sprouts)if(g.time>=s.at){
    g.future.visual('sporeSpawn','Play',s.x,rowY(s.row));
    if(s.column>=0&&s.column<9&&!g.plants.some(p=>p.hp>0&&p.row===s.row&&p.column===s.column)&&!g.graves.some(t=>t.hp>0&&t.row===s.row&&Math.round(t.column)===s.column)&&!g.level.mold.some(t=>t.row===s.row&&t.column===s.column)){g.addPlant('sporeshroom',s.row,s.column);this.play(g.plants.at(-1)!,'Spawn','grow');}

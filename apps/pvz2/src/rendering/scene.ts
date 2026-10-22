@@ -7,6 +7,7 @@ import { applyCostume } from '../shell/costumes';
 import {KongfuBladeBoss} from '../game/kongfu-blade-boss';
 import {KongfuChiBoss} from '../game/kongfu-chi-boss';
 import {KongfuBoss} from '../game/kongfu-boss';
+import {EightiesBoss} from '../game/eighties-boss';
 import {LostCityBoss} from '../game/lostcity-boss';
 import {IceageBoss} from '../game/iceage-boss';
 import {BeachBoss} from '../game/beach-boss';
@@ -281,6 +282,7 @@ export class Scene {
       Object.assign(events.boss!,{eyeBlopSound:'eyeblopSound',roarSound:'roarSounds',introSkySound:'introSkySounds',shade:'introFlyShadeSounds',introLand:'worldZombossMechStabSounds',introFireSound:'introFireSounds',introRoarSound:'introRoarSounds',deathRoarSound:'deathRoarSounds',fireSteadySound:'fireSteadySounds',fireShootSound:'fireShootSounds',fireEndSound:'fireEndSounds',stunStartSound:'magnetStartSounds',stunEndSound:'magnetEndSounds',rushStart:'rushStartSounds',rushEndSound:'rushEndSounds'});
     }
     if(name==='boss'&&this.art.campaign.actors.boss.group==='kongfu'){events.boss={bomb_knock:'bombKnockSounds',expl:'explodeSounds',shake:'shakeSounds',strike:'strikeSounds',throw:'throwSounds',imp:'throwImpSounds',fly:'flySounds',magic:'magicSounds',say:'saySounds',sayThrow:'sayThrowSounds',pat:'patSounds',landSound:'worldZombossMechLeapEndSounds',blackhole:'blackholeOpenSounds'};}
+    if(name==='boss'&&this.art.campaign.actors.boss.group==='eighties')events.boss={};
     if(name==='boss'&&this.art.campaign.actors.boss.armature==='BossChi')events.boss={};
     if(name==='boss'&&this.art.campaign.actors.boss.group==='lostcity'){
       events.boss={flap:'flapSounds',introSound:'introSounds',introSay:'worldZombossSpawnSaySounds',balloonDeath:'balloonDeathSounds',triggerStart:'triggerSounds',triggerEnd:'triggerSounds',mouthOpen:'mouthOpenSounds',mouthClose:'mouthCloseSounds',engineBurst:'engineShootSounds',plane:'planeSounds',dropSound:'dropSounds',rushSay:'worldZombossStabSaySounds',deathFallSound:'worldZombossMechDeathFallSounds',escape_trigger:'worldZombossEscapeTriggerSound'};
@@ -370,7 +372,7 @@ export class Scene {
         const boss=game.boss,actor=this.actors.get(z.id)??this.addActor(z.id,'boss');
         actor.root.position.set(z.x,boss.y-boss.height);actor.root.zIndex=boss.y+1;
         actor.rig.animation.timeScale=boss.rate;
-        this.animate(actor,boss.animation,boss.animationSerial,['Idle','SummonLoop','Summonning','Stunning','Leaping','StunLoop','CoughLoop','MagnetLoop','RushLoop','HoleLoop','LeapLoop'].includes(boss.animation)?0:1);
+        this.animate(actor,boss.animation,boss.animationSerial,(boss.animation.startsWith('Idle_')||['Idle','SummonLoop','Summonning','Stunning','Leaping','StunLoop','CoughLoop','MagnetLoop','RushLoop','HoleLoop','LeapLoop'].includes(boss.animation))?0:1);
         continue;
       }
       let actor=this.actors.get(z.id);
@@ -802,6 +804,7 @@ export class Scene {
       if(animation==='N-B'||animation==='B-N'||animation==='P-N'||animation==='N-R'||animation==='R-N')rig.animation.lastAnimationState!.playTimes=1;
     }
     for(const g of game.graves){
+      if(g.kind==='speaker'){const state=game.eighties.speaker.states.get(g.id)!,rig=object(`speaker-${g.id}-${state.at}`,'speaker',state.animation,cellX(g.column),rowY(g.row),.51);rig.animation.lastAnimationState!.playTimes=state.animation==='Idle'?0:1;for(const slot of rig.armature.getSlots())if(slot.name.includes('MAIN'))slot.displayIndex=g.stage;rig.zIndex=rowY(g.row)-1;continue;}
       if(g.kind==='eightiesarcadecabinet'){
         const state=game.eighties.arcade.cabinets.get(g.id)!,rig=object(`grave-${g.id}`,'arcadeCabinet',game.time-g.spawnAt!<2/3?'Spawn':'Idle',cellX(g.column),rowY(g.row),.51);
         rig.armature.getSlot('MAIN')!.displayIndex=g.stage;rig.armature.getSlot('LIGHT')!.displayIndex=game.eighties.jam==='jam_8bit'&&game.time>=state.empUntil?g.stage:-1;rig.zIndex=rowY(g.row)-1;
@@ -815,9 +818,20 @@ export class Scene {
       rig.armature.getSlot('MAIN')!.displayIndex=g.stage;rig.zIndex=rowY(g.row)-1;
       rig.visible=!game.plants.some(p=>p.kind==='gravebuster'&&p.row===g.row&&p.column===g.column&&p.age>=game.timing.special!.graveBust);
     }
+    for(const w of game.eighties.speaker.waves)object(`speaker-wave-${w.id}`,'speakerWave','i',w.x,rowY(w.row),.51);
     for(const sap of game.sap){const rig=object(`sap-${sap.id}`,'sapTile','Idle',cellX(sap.column),rowY(sap.row)-40,.35);rig.zIndex=rowY(sap.row)-3;}
     if(game.boss){
       if(!(game.boss instanceof LostCityBoss)&&(game.boss.animation==='Summonning'||game.boss.animation==='SummonStart'))object('boss-portal','bossPortal','Idle',game.boss.zombie.x-38.184,game.boss.y-44.147,.5);
+      if(game.boss instanceof EightiesBoss){
+        const boss=game.boss;
+        for(const name of ['bandUp','bandMid','bandDown']){
+          const timelines=game.props.plantAnimations[name],age=game.time-(boss.deathAt??boss.bandAt),dying=boss.deathAt!==null;
+          if(dying&&age>=timelines.DeathStart.duration+timelines.DeathIdle.duration+timelines.Fade.duration)continue;
+          const animation=dying?(age<timelines.DeathStart.duration?'DeathStart':age<timelines.DeathStart.duration+timelines.DeathIdle.duration?'DeathIdle':'Fade'):age<timelines.Start.duration?'Start':'Idle';
+          const fresh=!this.objects.has(name),rig=object(name,name,animation,boss.zombie.x,boss.y,.51);if(fresh)rig.addDBEventListener(EventObject.FRAME_EVENT,event=>{const sound:Record<string,string>={fire:'fireSounds',expl:'explSounds',deathStartSound:'deathStartSounds'};if(sound[event.name])this.onSound(name+'/'+sound[event.name]);},this);rig.animation.lastAnimationState!.playTimes=animation==='Idle'?0:1;rig.zIndex=name==='bandMid'?-90:name==='bandUp'?rowY(0)-1:rowY(3)+1;
+          for(const slot of rig.armature.getSlots()){const bp=/BP([1-5])/.exec(slot.name);if(bp)slot.displayIndex=(dying?5:boss.stage)>=Number(bp[1])?0:-1;}
+        }
+      }
       if(game.boss instanceof LostCityBoss){
         for(const b of game.boss.sandbags)object(`city-bag-${b.id}`,'sandbag','idle',cellX(b.column),rowY(b.row)-180*(1-b.age/.75),.51).zIndex=1100;
         for(const p of game.boss.planes){const rig=object(`city-plane-${p.id}`,'planeShade','PlayL',cellX(3),rowY(2),.51);rig.zIndex=1200;rig.animation.lastAnimationState!.playTimes=1;}

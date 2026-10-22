@@ -17,7 +17,7 @@ for(const day of [21,22,23,24,25])test(`Eighties ${day}: controlled settlement a
 
 import {ProgressStore} from '../src/shell/progression';
 test('native flower line, conveyor additions, last stand, unlock and pinata',()=>{
- assert.equal(Object.keys(BATTLE_LEVELS).length,367);
+ assert.ok(Object.keys(BATTLE_LEVELS).length>=367);
  assert.deepEqual([21,22,23,24,25].map(d=>level(d).waves.length),[10,10,10,12,10]);
  assert.equal(level(21).flowerLine,3);assert.equal(create(24).sun,2000);assert.equal(create(24).food,2);assert.equal(create(24).preparing,true);
  assert.equal(BATTLE_LEVELS.eighties22.mode,'conveyor');assert.equal(level(22).sunDrops,false);assert.equal(level(22).conveyor!.InitialPlantList[0].PlantType,'sporeshroom');

@@ -15,6 +15,7 @@ import {BeachBattle,beachArmor} from './beach';
 import {DarkFinalePlants} from './dark-finale-plants';
 import {DarkMemory} from './dark-memory';
 import {DarkPlants} from './dark-plants';
+import {EightiesBoss} from './eighties-boss';
 import {KongfuBladeBoss} from './kongfu-blade-boss';
 import {KongfuChiBoss} from './kongfu-chi-boss';
 import {KongfuBoss} from './kongfu-boss';
@@ -165,7 +166,7 @@ export class Game {
     if(level.world==='egypt'&&level.day===2&&tutorial)this.addPlant('peashooter',2,2);
     this.dark.initLevel();this.iceage.init();for(const t of level.goldTiles)this.beachFinale.tiles.push({...t,next:0,at:-Infinity});
     this.conveyorPlants=level.conveyor?level.conveyor.InitialPlantList.map(p=>({...p})):[];
-    if(level.boss)this.boss=level.boss.kind==='kongfu_boss_chi'?new KongfuChiBoss(this):level.boss.kind==='kongfu_boss_blade'?new KongfuBladeBoss(this):level.boss.kind==='kongfu_boss_explode'?new KongfuBoss(this):level.boss.kind.startsWith('zombossmech_lostcity')?new LostCityBoss(this):level.boss.kind.startsWith('zombossmech_iceage')?new IceageBoss(this):level.boss.kind.startsWith('zombossmech_beach')?new BeachBoss(this):level.boss.kind.startsWith('zombossmech_dark')?new DarkBoss(this):level.boss.kind.startsWith('zombossmech_future')?new FutureBoss(this):level.boss.kind.startsWith('zombossmech_cowboy')?new CowboyBoss(this):level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
+    if(level.boss)this.boss=level.boss.kind==='zombossmech_eighties'?new EightiesBoss(this):level.boss.kind==='kongfu_boss_chi'?new KongfuChiBoss(this):level.boss.kind==='kongfu_boss_blade'?new KongfuBladeBoss(this):level.boss.kind==='kongfu_boss_explode'?new KongfuBoss(this):level.boss.kind.startsWith('zombossmech_lostcity')?new LostCityBoss(this):level.boss.kind.startsWith('zombossmech_iceage')?new IceageBoss(this):level.boss.kind.startsWith('zombossmech_beach')?new BeachBoss(this):level.boss.kind.startsWith('zombossmech_dark')?new DarkBoss(this):level.boss.kind.startsWith('zombossmech_future')?new FutureBoss(this):level.boss.kind.startsWith('zombossmech_cowboy')?new CowboyBoss(this):level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
     if(level.cannon){this.nextWave=4+RULES.normalWaveEntrance;level.cannon.RowHasCannon.forEach((has,row)=>{if(has)this.addPlant('coconutcannon',row,1);});}
   }
 
@@ -205,7 +206,7 @@ export class Game {
     if (this.phase !== 'playing' || row < 0 || row >= BOARD.rows || column < 0 || column >= BOARD.columns
       || this.level.mold.some(c=>c.row===row&&c.column===column)
       || this.level.cannon || this.level.blacklist.includes(kind) || this.level.powerups || this.level.match || (this.level.conveyor?!packet:this.sun < this.seedCost(kind) || !this.preparing&&this.cooldowns[kind] > 0)
-      || (placementKind==='gravebuster'?!this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0&&g.kind!=='eightiesarcadecabinet'&&g.kind!=='tent'&&g.kind!=='backpack'&&!isRack(g.kind)):this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0)) || existing&&!tilePlant&&!stacking&&!repairing) return false;
+      || (placementKind==='gravebuster'?!this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0&&g.kind!=='speaker'&&g.kind!=='eightiesarcadecabinet'&&g.kind!=='tent'&&g.kind!=='backpack'&&!isRack(g.kind)):this.graves.some(g=>g.row===row&&g.column===column&&g.hp>0)) || existing&&!tilePlant&&!stacking&&!repairing) return false;
     if(packet){if(this.level.corral)this.corralWaiting=false;this.conveyor.splice(this.conveyor.indexOf(packet),1);if(!this.level.corral)this.nextCard=Math.min(this.nextCard,this.time+this.conveyorDelay());}
     else {const cost=this.seedCost(kind);this.sun -= cost; this.sunSpent+=cost;this.cooldowns[kind] = this.preparing?0:this.seedCooldown(kind);}
     if(repairing){if(kind==='bamboozle')this.kongfu.bamboozle.repair(existing);else if(kind==='lychee')this.kongfu.lychee.repair(existing);else if(kind==='bowlingbulb')this.beach.bowling.replant(existing);else if(kind==='holonut')this.future.recoverNut(existing);else if(kind==='garlic'||kind==='turnip'||kind==='endurian'||kind==='peanut'||kind==='redstinger'||kind==='wallnut'||kind==='tallnut')existing.hp=p.Toughness;else if(kind==='chardguard'){existing.leaves=p.MaxBounceTime;existing.hp=p.Toughness;}else existing.spikes=p.MaxSpike;}else if(stacking){existing.heads!++;existing.hp=p.Toughness;}else this.addPlant(kind, row, column);
@@ -470,6 +471,7 @@ export class Game {
       if(action.mode==='tide'){this.beach.change(action.tide!);continue;}
       if(action.mode==='conveyor'){if(action.remove)this.conveyorPlants=this.conveyorPlants.filter(p=>!action.remove!.includes(p.PlantType));this.conveyorPlants.push(...action.add!);continue;}
       if(action.mode==='graves'){
+        if(action.graveTypes!.every(t=>t==='speaker')){const cells=action.positions!.filter(c=>!this.graves.some(g=>g.row===c.row&&g.column===c.column));for(let i=0;i<action.graveCount!&&cells.length;i++){const c=cells.splice(Math.floor(this.random()*cells.length),1)[0];this.eighties.speaker.spawn(c.row,c.column);}continue;}
         if(action.graveTypes!.every(t=>t==='taichitile')){this.kongfu.addTiles(action.positions!.slice(0,action.graveCount));continue;}
         const cells=action.positions!.filter(c=>!this.graves.some(g=>g.row===c.row&&g.column===c.column));
         for(let i=0;i<action.graveCount!&&cells.length;i++){const cell=cells.splice(Math.floor(this.random()*cells.length),1)[0];this.graves.push({...cell,kind:action.graveTypes![i],spawnAt:this.time,id:++this.id,hp:isRack(action.graveTypes![i])?rackHP(action.graveTypes![i]):this.props.grave.Toughness,stage:0});this.effect('graveSpawn',cellX(cell.column),rowY(cell.row));}
@@ -1115,6 +1117,7 @@ export class Game {
     for(const grave of this.graves){
       if(isRack(grave.kind)){grave.stage=Math.min(3,Math.max(0,4-Math.ceil(grave.hp/rackHP(grave.kind!)*4)));continue;}
       if(grave.kind==='tent'||grave.kind==='backpack'){this.lostcity.damageTomb(grave);continue;}
+      if(grave.kind==='speaker'){this.eighties.speaker.damage(grave);continue;}
       if(grave.kind==='eightiesarcadecabinet'){this.eighties.arcade.damage(grave);continue;}
       if(grave.kind==='octopus'){if(grave.hp<=0)this.beach.octopuses.release(grave);continue;}
       if(grave.kind==='surfboard'){this.beach.surfers.damageBoard(grave);continue;}
@@ -1163,7 +1166,7 @@ export class Game {
       if(mower.starting>0)mower.starting=Math.max(0,mower.starting-dt);
       else mower.x += 600 * dt;
       for (const z of this.zombies) if (z!==this.boss?.zombie&&z.hp>0 && z.row === mower.row && z.x < mower.x + 40) {z.hp = 0;z.deathCause=this.props.zombies[z.kind].NormalDeathWhenMowed?'normal':'mower';}
-      if (mower.x > 1230) { mower.spent = true; mower.active = false; }
+      if (mower.x > (this.boss instanceof EightiesBoss?cellX(7):1230)) { mower.spent = true; mower.active = false; }
     }
     if(this.level.killChallenge&&!this.killChallengeComplete)this.recentKills=this.recentKills.filter(at=>this.time-at<this.level.killChallenge!.seconds);
     this.kongfu.lychee.settle();
@@ -1212,6 +1215,6 @@ export class Game {
         this.nextWave = this.time + (this.level.corral?0:(this.wave + 1) % this.level.flagInterval === 0 ? RULES.flagWaveEntrance : RULES.normalWaveEntrance);
       }
     }
-    if ((this.boss?this.boss.defeated:this.wave === this.level.waves.length && !this.pending.length &&!this.pendingGraveSpawns.length&& !this.zombies.length && !this.cowboy.chickenThrowers.length && !this.iceageCombat.weaselThrowers.length && !this.pendingPharaohs.length&&!this.lostcity.porterDrops.size) && (!this.level.memory||this.darkMemory.complete) && this.phase === 'playing') {if(this.level.killChallenge&&!this.killChallengeComplete){this.phase='lost';this.lossReason='killChallenge';this.events.push({type:'lose'});}else if(this.level.targetSun!==null&&this.sunProduced<this.level.targetSun){this.phase='lost';this.lossReason='sunProduced';this.events.push({type:'lose'});}else if(this.level.cannon&&this.pirate.score<this.level.cannon.MinScore){this.phase='lost';this.lossReason='score';this.events.push({type:'lose'});}else {this.phase = 'won';this.eighties.arcade.finish(); this.events.push({ type: 'win' });} }
+    if ((this.boss?this.boss.defeated:this.wave === this.level.waves.length && !this.pending.length &&!this.pendingGraveSpawns.length&& !this.zombies.length && !this.cowboy.chickenThrowers.length && !this.iceageCombat.weaselThrowers.length && !this.pendingPharaohs.length&&!this.lostcity.porterDrops.size) && (!this.level.memory||this.darkMemory.complete) && this.phase === 'playing') {if(this.level.killChallenge&&!this.killChallengeComplete){this.phase='lost';this.lossReason='killChallenge';this.events.push({type:'lose'});}else if(this.level.targetSun!==null&&this.sunProduced<this.level.targetSun){this.phase='lost';this.lossReason='sunProduced';this.events.push({type:'lose'});}else if(this.level.cannon&&this.pirate.score<this.level.cannon.MinScore){this.phase='lost';this.lossReason='score';this.events.push({type:'lose'});}else {this.phase = 'won';this.eighties.arcade.finish();this.eighties.speaker.finish(); this.events.push({ type: 'win' });} }
   }
 }
