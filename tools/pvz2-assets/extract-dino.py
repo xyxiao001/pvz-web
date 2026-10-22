@@ -1,4 +1,4 @@
-"""Export Dino 1–5 from the pinned Cocos build."""
+"""Export Dino 1–10 from the pinned Cocos build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -18,12 +18,13 @@ def rig(path):
 def props(path,names):
     objs=e.read('json/Objects/'+path).objects[0]['json']['objects']
     return {n:next(o['objdata'] for o in objs if n in o.get('aliases',[])) for n in names}
-paths={'grapeshot':'plants/GrapeShotPLANT','primalwallnut':'plants/PrimalWallnutPLANT','dino':'zombies/DinoBasicZOMBIE','dinoFlag':'zombies/DinoFlagZOMBIE','dinoImp':'zombies/DinoImpZOMBIE'}
+paths={'perfumeshroom':'plants/PerfumeShroomPLANT','grapeshot':'plants/GrapeShotPLANT','primalwallnut':'plants/PrimalWallnutPLANT','dino':'zombies/DinoBasicZOMBIE','dinoFlag':'zombies/DinoFlagZOMBIE','dinoImp':'zombies/DinoImpZOMBIE'}
 actors={n:rig(p) for n,p in paths.items()}
-rigpaths={'raptor':'dinosaurs/RaptorDINOSAUR','dinoLawn':'lawns/DinoLAWN','mower':'projectiles/DinoMowerPRJ','dinoCone':'armors/DinoConeARMOR','dinoBucket':'armors/DinoBucketARMOR','dinoHelmet':'armors/DinoHelmetARMOR'}
+rigpaths={'stego':'dinosaurs/StegoDINOSAUR','ptero':'dinosaurs/PteroDINOSAUR','perfumeFire':'f05a1ef6-85a9-4568-a3a5-a18ddcab1dc7','raptor':'dinosaurs/RaptorDINOSAUR','dinoLawn':'lawns/DinoLAWN','mower':'projectiles/DinoMowerPRJ','dinoCone':'armors/DinoConeARMOR','dinoBucket':'armors/DinoBucketARMOR','dinoHelmet':'armors/DinoHelmetARMOR'}
 rigs={n:rig(p) for n,p in rigpaths.items()}
-properties={'plants':props('PlantProps',['grapeshot','primalwallnut']),'zombies':props('ZombieProps',['dino','dino_armor1','dino_armor2','dino_armor3','dino_flag','dino_imp']),'armors':props('ArmorProps',['dino_armor1','dino_armor2','dino_armor3']),'projectiles':{},'plantAnimations':{}}
-c.write_json(e.OUT/'dinosaurs.json',{'raptor':props('DinosaurProps',['raptor'])['raptor'],'attackRect':props('RectangleProps',['DinoRaptorAttackRect'])['DinoRaptorAttackRect']['Values']})
+rigs['dinoCharm']={'rig':e.rig('812b98dd-10c7-4a58-9075-03799556fd98','e6399a6e-28e3-4e94-9700-7e809f1c496f'),'armature':'Buff','animation':'Start','group':'dino'}
+properties={'plants':props('PlantProps',['grapeshot','primalwallnut','perfumeshroom']),'zombies':props('ZombieProps',['dino','dino_armor1','dino_armor2','dino_armor3','dino_flag','dino_imp']),'armors':props('ArmorProps',['dino_armor1','dino_armor2','dino_armor3']),'projectiles':{},'plantAnimations':{}}
+c.write_json(e.OUT/'dinosaurs.json',{**props('DinosaurProps',['raptor','stego','ptero']),'attackRect':props('RectangleProps',['DinoRaptorAttackRect'])['DinoRaptorAttackRect']['Values']})
 for name,description in {**actors,**rigs}.items():
     sk=json.loads((e.OUT/'rigs'/description['rig']/'skeleton.json').read_text());arm=next(a for a in sk['armature'] if a['name']==description['armature']);timelines={}
     for animation in arm['animation']:
@@ -33,7 +34,7 @@ for name,description in {**actors,**rigs}.items():
             frame+=f.get('duration',1)
         timelines[animation['name']]={'duration':animation.get('duration',1)/arm['frameRate'],'events':events}
     properties['plantAnimations'][name]=timelines
-for day in range(1,6):c.write_json(e.OUT/f'dino{day}.source.json',e.read(f'levels/dino{day}').objects[0]['json'])
+for day in range(1,11):c.write_json(e.OUT/f'dino{day}.source.json',e.read(f'levels/dino{day}').objects[0]['json'])
 co=next(x for x in walk(e.read('lawns/DinoLAWN').objects) if x.get('type')=='dragonBones.ArmatureDisplay')
 at=e.read(co['_dragonAtlasAsset']['asset']);atlas=json.loads(at.objects[0]['_atlasJson']);rect=next(x for x in atlas['SubTexture'] if x['name']=='Lawn')
 pixels=Image.open(io.BytesIO(c.native(at.data[1][at.rec[5][0]],'png')))
@@ -52,7 +53,7 @@ for name,path in {**paths,**rigpaths}.items():
             for key,value in obj['soundRes'].items():
                 if key not in ['type','volumeScale']:sound(name+'/'+key,value)
 npc=e.read('b697cdfd-e783-4f80-abbe-ac197db6cf97');narratives={}
-for name in ['DINO_1_INTRO','DINO_2_INTRO']:
+for name in ['DINO_1_INTRO','DINO_2_INTRO','DINO_6_INTRO','DINO_8_INTRO','DINO_9_INTRO']:
     flow=next(o['objdata']['Flow'] for o in e.read('json/Objects/NarrativeList').objects[0]['json']['objects'] if name in o.get('aliases',[]))
     for step in flow:
         if 'Lines' in step:
@@ -66,4 +67,4 @@ for name,path in [('music','dino/CYS_LP_Dino'),('minigame','dino/MG_Dino')]:
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{}})
 c.write_json(c.ROOT/'apps/pvz2/dino-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Dino 1–5')
+print('Exported Dino 1–10')

@@ -64,7 +64,8 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   if(level.world==='eighties'&&level.day===41)names.add('clearMissile');
   if(level.boss?.kind==='zombossmech_eighties2')for(const n of ['eightiesBricks','skunkFart','skunkDeath','punkRotate','boomboxLove'])names.add(n);
   if(level.world==='dino')for(const n of ['dinoLawn','dinoCone','dinoBucket','dinoHelmet','mower'])names.add(n);
-  if(level.actions.flat().some(a=>a.dinosaur))names.add('raptor');
+  for(const a of level.actions.flat())if(a.dinosaur)names.add(a.dinosaur.kind);
+  if(plants.includes('perfumeshroom'))for(const name of ['perfumeFire','dinoCharm'])names.add(name);
   if(level.world==='eighties')for(const n of ['eightiesLawn','eightiesCone','eightiesBucket','mower'])names.add(n);
   if(plants.includes('intensivecarrot'))names.add('carrotRevive');
   if(level.waves.flat().includes('eighties_boombox'))names.add('boomboxLove');
