@@ -16,13 +16,13 @@ updateNotice.className = 'pvz2-update-notice'; updateNotice.hidden = true;
 updateNotice.setAttribute('aria-label', '游戏更新');
 updateNotice.innerHTML = '<div><strong>植物大战僵尸 2 有更新</strong><span>新版已就绪，更新会重新加载游戏，请先完成当前关卡。</span></div><button id="update-now">立即更新</button><button id="update-later">稍后</button>';
 document.body.append(updateNotice);
-function offerUpdate() {
+function offerUpdate(worker: ServiceWorker) {
   button('pwa-update').textContent = '更新并重新加载';
   release.textContent = '新版已准备好，点击更新后重新加载。';
   updateNotice.hidden = false;
+  updateNotice.querySelector<HTMLButtonElement>('#update-now')!.onclick = () => activateUpdate(worker);
 }
-function activateUpdate() { reloadRequested = true; registration.waiting!.postMessage('ACTIVATE'); }
-updateNotice.querySelector<HTMLButtonElement>('#update-now')!.onclick = activateUpdate;
+function activateUpdate(worker: ServiceWorker) { reloadRequested = true; worker.postMessage('ACTIVATE'); }
 updateNotice.querySelector<HTMLButtonElement>('#update-later')!.onclick = () => { updateNotice.hidden = true; };
 // Fullscreen only paints descendants of the fullscreen element.
 document.addEventListener('fullscreenchange', () => {
@@ -63,19 +63,25 @@ button('pwa-download').onclick = async () => {
 };
 button('pwa-update').onclick = async () => {
   try {
-    if (registration.waiting) activateUpdate();
+    if (registration.waiting) activateUpdate(registration.waiting);
     else { await registration.update(); release.textContent = registration.installing ? '正在下载新版启动文件…' : '检查完成，当前没有待安装更新。'; }
   } catch (error) { release.textContent = `更新失败：${String(error)}`; }
 };
 function observe(worker: ServiceWorker) {
   worker.addEventListener('statechange', () => {
-    if (worker.state === 'installed' && registration.active) offerUpdate();
+    if (worker.state === 'installed' && registration.active) offerUpdate(worker);
   });
 }
 export async function registerPwa() {
   if (!import.meta.env.PROD) return;
   try {
-    navigator.serviceWorker.addEventListener('controllerchange', () => { if (reloadRequested && navigator.serviceWorker.controller?.scriptURL === new URL('sw.js', new URL(import.meta.env.BASE_URL, location.href)).href) location.reload(); });
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (navigator.serviceWorker.controller?.scriptURL === new URL('sw.js', new URL(import.meta.env.BASE_URL, location.href)).href) {
+        updateNotice.hidden = true;
+        button('pwa-update').textContent = '检查更新';
+        if (reloadRequested) location.reload();
+      }
+    });
     registration = await navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`, { scope: import.meta.env.BASE_URL, updateViaCache: 'none' });
     if (registration.installing) observe(registration.installing);
     registration.addEventListener('updatefound', () => observe(registration.installing!));
@@ -96,7 +102,7 @@ export async function registerPwa() {
       });
     }
     button('pwa-download').disabled = false; button('pwa-update').disabled = false;
-    if (registration.waiting) offerUpdate();
+    if (registration.waiting) offerUpdate(registration.waiting);
     await request('STATUS');
   } catch (error) { showStatus(`离线服务启动失败：${String(error)}`); }
 }

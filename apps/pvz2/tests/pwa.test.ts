@@ -86,7 +86,8 @@ test('PVZ2 has its own install identity, start URL and icon', () => {
   for (const icon of manifest.icons) assert.ok(readFileSync(new URL(`../public/${icon.src}`, import.meta.url)).length);
 });
 
-test('client waits for PVZ2 activation even with a PVZ1 controller and reloads only its own accepted update', async () => {
+for (const action of ['notice', 'settings', 'activating', 'other-tab']) {
+test(`client waits for PVZ2 activation and handles updates via ${action}`, async () => {
   const { transpileModule, ScriptTarget, ModuleKind } = await import('typescript');
   const input = readFileSync(new URL('../src/pwa.ts', import.meta.url), 'utf8').replace("import './pwa.css';", '').replaceAll('import.meta.env.PROD', 'true').replaceAll('import.meta.env.BASE_URL', "'/pvz2/'").replaceAll('export ', '');
   const code = transpileModule(input, { compilerOptions: { target: ScriptTarget.ES2022, module: ModuleKind.ESNext } }).outputText;
@@ -131,7 +132,19 @@ test('client waits for PVZ2 activation even with a PVZ1 controller and reloads o
   const next = new Worker(); registration.installing = next; registration.dispatchEvent(new Event('updatefound'));
   registration.waiting = next; next.state = 'installed'; next.dispatchEvent(new Event('statechange'));
   assert.equal(elements[1].hidden, false); assert.equal(reloads, 0);
-  elements[1].querySelector('#update-now').onclick!(); assert.equal(next.activated, true);
+  if (action === 'activating') {
+    registration.waiting = null; registration.active = next; next.state = 'activating';
+    next.dispatchEvent(new Event('statechange'));
+  }
+  if (action === 'settings') await elements[0].querySelector('#pwa-update').onclick!();
+  else if (action !== 'other-tab') elements[1].querySelector('#update-now').onclick!();
+  assert.equal(next.activated, action !== 'other-tab');
   serviceWorker.dispatchEvent(new Event('controllerchange')); assert.equal(reloads, 0, 'PVZ1 controller does not trigger reload');
-  serviceWorker.controller = next; serviceWorker.dispatchEvent(new Event('controllerchange')); assert.equal(reloads, 1);
+  assert.equal(elements[1].hidden, false, 'PVZ1 controller does not dismiss the PVZ2 update');
+  registration.waiting = null; registration.active = next; next.state = 'activated';
+  serviceWorker.controller = next; serviceWorker.dispatchEvent(new Event('controllerchange'));
+  assert.equal(reloads, action === 'other-tab' ? 0 : 1);
+  assert.equal(elements[1].hidden, true, 'activated updates no longer offer a stale update button');
+  assert.equal(elements[0].querySelector('#pwa-update').textContent, '检查更新');
 });
+}
