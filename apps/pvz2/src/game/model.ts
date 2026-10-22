@@ -303,9 +303,10 @@ export class Game {
     if(plant?.kind==='tallnut'&&plant.armor>0)return false;
     if(plant?.kind==='escaperoot'&&(!plant.rootGrown||plant.action!=='idle'||plant.animation!=='Idle'))return false;
     if (!plant || plant.leap?.pushed || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['thymewarp','powerlily','goldleaf','hotpotato','powerplant','powerplant_alpha','powerplant_beta','empea','blover','gravebuster','imitater','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
+    this.eighties.skunk.stunned.delete(plant.id);
     if(!boost){this.food--;this.future.link(plant);} plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
-    if(plant.kind==='sporeshroom'||plant.kind==='garlic'||plant.kind==='phatbeet'||plant.kind==='cactus')this.eighties.food(plant);
+    if(plant.kind==='caulipower'||plant.kind==='sporeshroom'||plant.kind==='garlic'||plant.kind==='phatbeet'||plant.kind==='cactus')this.eighties.food(plant);
     if(plant.kind==='toadstool')this.toadstool.food(plant);
     if(plant.kind==='akee')this.lostcity.food(plant);
     if(plant.kind==='zoybeanpod')this.lostcity.zoyFood(plant);
@@ -539,7 +540,7 @@ export class Game {
   spawnZombie(kind:ZombieKind,row:number,x:number,entry:SpawnAction['mode']='walk') {
     const camel=isCamel(kind),match=isMatchCamel(kind);
     const z:Zombie={id:++this.id,kind,row,x,hp:camel?this.props.zombies.mummy.Toughness:(kind==='pharaoh'||kind==='pharaoh_weak')?this.props.zombies.pharaoh_inner.Toughness:this.props.zombies[kind].Toughness,
-      armor:(kind==='eighties_8bit_armor1'||kind==='eighties_8bit_armor2'||kind==='eighties_armor1'||kind==='eighties_armor2')?this.props.armors[kind].Toughness:kongfuArmor(kind)?this.props.armors[kongfuArmor(kind)!].Toughness:lostcityArmor(kind)?this.props.armors[lostcityArmor(kind)!].Toughness:iceageArmor(kind)?this.props.armors[iceageArmor(kind)!].Toughness:beachArmor(kind)?this.props.armors[beachArmor(kind)!].Toughness:darkArmor(kind)?this.props.armors[darkArmor(kind)!].Toughness:futureArmor(kind)?this.props.armors[futureArmor(kind)!].Toughness:cowboyArmor(kind)?this.props.armors[cowboyArmor(kind)!].Toughness:pirateArmor(kind)?this.props.armors[pirateArmor(kind)!].Toughness:(kind==='pharaoh'||kind==='pharaoh_weak')?this.props.zombies[kind].Toughness:camel&&!match?this.props.zombies[kind].Toughness:kind==='mummy_armor1'?this.props.armors.egypt_armor1.Toughness:kind==='mummy_armor2'?this.props.armors.egypt_armor2.Toughness:kind==='mummy_armor4'?this.props.armors.egypt_armor4.Toughness:0,
+      armor:(kind==='eighties_8bit_armor1'||kind==='eighties_8bit_armor2'||kind==='eighties_armor1'||kind==='eighties_armor2'||kind==='eighties_armor4')?this.props.armors[kind].Toughness:kongfuArmor(kind)?this.props.armors[kongfuArmor(kind)!].Toughness:lostcityArmor(kind)?this.props.armors[lostcityArmor(kind)!].Toughness:iceageArmor(kind)?this.props.armors[iceageArmor(kind)!].Toughness:beachArmor(kind)?this.props.armors[beachArmor(kind)!].Toughness:darkArmor(kind)?this.props.armors[darkArmor(kind)!].Toughness:futureArmor(kind)?this.props.armors[futureArmor(kind)!].Toughness:cowboyArmor(kind)?this.props.armors[cowboyArmor(kind)!].Toughness:pirateArmor(kind)?this.props.armors[pirateArmor(kind)!].Toughness:(kind==='pharaoh'||kind==='pharaoh_weak')?this.props.zombies[kind].Toughness:camel&&!match?this.props.zombies[kind].Toughness:kind==='mummy_armor1'?this.props.armors.egypt_armor1.Toughness:kind==='mummy_armor2'?this.props.armors.egypt_armor2.Toughness:kind==='mummy_armor4'?this.props.armors.egypt_armor4.Toughness:0,
       eating:false,absorbed:0,absorbUntil:0,absorbState:'idle',absorbAt:0,deathCause:'normal',frozenUntil:0,chilledUntil:0,food:false,entry,entryAt:this.time,entryX:x,camelPart:0,team:0,leap:null};
     this.zombies.push(z);this.eighties.spawn(z);this.kongfu.spawn(z);this.lostcity.spawn(z);this.iceageCombat.spawn(z);this.beach.fishers.spawn(z);this.beach.surfers.spawn(z);this.beach.octopuses.spawn(z);this.dark.spawn(z);this.future.spawn(z);this.cowboy.spawn(z);if(this.level.world==='pirate')this.pirate.spawn(z);
     if(match)this.camelCards.set(z.id,{face:Math.floor(this.random()*this.level.match!.types),state:'back',at:this.time,removeAt:Infinity});
@@ -989,7 +990,7 @@ export class Game {
     }
     this.tickConveyor(dt);this.tickPower(dt);this.tickMatching();this.escape.tick(dt);this.finale.tick(dt);this.western.tick(dt);this.westFinale.tick(dt);this.future.tick(dt);
     for (const p of this.plants) {
-      if(this.eighties.carrot.blocked(p)||this.eighties.boombox.blocked(p)){p.actionAt+=dt;p.nextAction+=dt;p.nextBurst+=dt;continue;}
+      if(this.eighties.carrot.blocked(p)||this.eighties.boombox.blocked(p)||this.eighties.skunk.blocked(p)){p.actionAt+=dt;p.nextAction+=dt;p.nextBurst+=dt;continue;}
       if(this.boss instanceof KongfuChiBoss&&this.boss.plantStunned(p)){p.actionAt+=dt;p.nextAction+=dt;p.nextBurst+=dt;continue;}
       if(p.kind==='hotpotato'){this.iceage.tickHot(p);continue;}
       if(this.iceage.blocked(p))continue;
@@ -997,7 +998,7 @@ export class Game {
       if(p.kind==='toadstool'){this.toadstool.tick(p,dt);continue;}
       if((this.level.world==='kongfu'||this.level.world==='eighties')&&p.leap?.pushed){if(this.time-p.leap.at<(p.leap.duration??.5))continue;delete p.leap;}
       if(p.kind==='powerlily'){if(this.time-p.actionAt>=this.props.plantAnimations.powerlily.Attack.events.find(e=>e.name==='produce')!.at){this.pickups.push({id:this.nextEntityId(),kind:'food',x:cellX(p.column),y:rowY(p.row)-45,age:0});p.hp=0;}continue;}
-      if(p.kind==='sporeshroom'||p.kind==='garlic'||p.kind==='thymewarp'||p.kind==='phatbeet'||p.kind==='cactus'){this.eighties.plant(p);continue;}
+      if(p.kind==='caulipower'||p.kind==='sporeshroom'||p.kind==='garlic'||p.kind==='thymewarp'||p.kind==='phatbeet'||p.kind==='cactus'){this.eighties.plant(p);continue;}
       if(p.kind==='peach'){this.kongfu.peach.tick(p,dt);continue;}
       if(p.kind==='bamboozle'||p.kind==='bamboobusket'){this.kongfu.bamboozle.plant(p);continue;}
       if(p.kind==='solarsage'){this.kongfu.sage.plant(p);continue;}

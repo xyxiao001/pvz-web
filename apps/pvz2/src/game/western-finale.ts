@@ -197,14 +197,15 @@ export class WesternFinale {
     for(const a of this.allies){
       if(a.hp<=0)continue;
       if(a.leap||g.time<a.frozenUntil||g.time<(a.landUntil??0)||g.time<(a.stunnedUntil??0)||g.time<(a.butteredUntil??0))continue;
+      if(a.kind==='eighties_skunk'&&g.eighties.skunk.zombie(a,dt))continue;
       if(g.cowboy.tickZombie(a,dt))continue;
       const direction=a.reversed?1:-1;
       const target=g.zombies.filter(z=>z.hp>0&&g.inLane(z,a.row)&&(z.x-a.x)*direction>=-45&&(z.x-a.x)*direction<=50).sort((u,v)=>direction*(u.x-v.x))[0];
       a.eating=!!target;
       if(target){const reflected=this.hitAlly(target,g.props.zombies[a.kind].EatDPS*dt);if(reflected)g.damage(a,reflected);}
-      else a.x+=direction*g.props.zombies[a.kind].WalkSPS*BOARD.cellWidth*dt;
+      else a.x+=direction*g.props.zombies[a.kind].WalkSPS*BOARD.cellWidth*dt*(a.kind==='eighties_skunk'?g.eighties.skunk.speed(a):1);
     }
-    for(const a of this.allies)if(a.hp<=0){g.cowboy.die(a);g.deaths.push({zombie:{...a},cause:a.deathCause,at:g.time});}else if(a.x>=1250||a.x<0)this.converted.add(a.id);
+    for(const a of this.allies)if(a.hp<=0){g.eighties.skunk.die(a);g.cowboy.die(a);g.deaths.push({zombie:{...a},cause:a.deathCause,at:g.time});}else if(a.x>=1250||a.x<0)this.converted.add(a.id);
     this.allies=this.allies.filter(a=>a.hp>0&&a.x<1250&&a.x>=0);
     for(const death of this.dyingCurrants)if(!death.fired&&g.time-death.at>=g.props.plantAnimations.electriccurrant.Death.events.find(e=>e.name==='death')!.at){
       death.fired=true;this.sounds.push('electriccurrant/death');

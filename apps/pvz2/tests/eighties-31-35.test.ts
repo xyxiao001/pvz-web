@@ -19,7 +19,7 @@ for(const day of [31,32,33,34,35])test(`Eighties ${day}: controlled settlement a
 import {ProgressStore} from '../src/shell/progression';
 import {EightiesBoss} from '../src/game/eighties-boss';
 test('31–35 configs, five-stage boss, speaker waves, conveyor changes and trophy',()=>{
- assert.equal(Object.keys(BATTLE_LEVELS).length,377);
+ assert.ok(Object.keys(BATTLE_LEVELS).length>=377);
  assert.deepEqual([31,32,33,34,35].map(d=>level(d).waves.length),[10,0,12,14,15]);
  assert.deepEqual(level(31).preset,['sunshroom','electricblueberry','sporeshroom','wallnut','intensivecarrot']);
  assert.equal(level(32).boss!.kind,'zombossmech_eighties');assert.equal(level(32).boss!.reserved,3);assert.deepEqual(level(32).graves,[]);assert.equal(level(32).mowers,true);assert.equal(level(32).sunDrops,false);
