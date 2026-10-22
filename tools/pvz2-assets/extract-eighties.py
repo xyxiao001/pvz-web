@@ -1,4 +1,4 @@
-"""Export Eighties 1–15 from the pinned Cocos build."""
+"""Export Eighties 1–20 from the pinned Cocos build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -18,11 +18,11 @@ def rig(path):
 def props(path,names):
     objs=e.read('json/Objects/'+path).objects[0]['json']['objects']
     return {n:next(o['objdata'] for o in objs if n in o.get('aliases',[])) for n in names}
-paths={'eightiesGargantuar':'zombies/EightiesGargantuarZOMBIE','eightiesImp':'zombies/EightiesImpZOMBIE','thymewarp':'plants/ThymeWarpPLANT','eightiesGlitter':'zombies/EightiesGlitterZOMBIE','eightiesMC':'zombies/EightiesMCZOMBIE','phatbeet':'plants/PhatBeetPLANT','cactus':'plants/CactusPLANT','eighties':'zombies/EightiesBasicZOMBIE','eightiesFlag':'zombies/EightiesFlagZOMBIE','eightiesPunk':'zombies/EightiesPunkZOMBIE'}
+paths={'garlic':'plants/GarlicPLANT','eightiesBreakDancer':'zombies/EightiesBreakDancerZOMBIE','eightiesGargantuar':'zombies/EightiesGargantuarZOMBIE','eightiesImp':'zombies/EightiesImpZOMBIE','thymewarp':'plants/ThymeWarpPLANT','eightiesGlitter':'zombies/EightiesGlitterZOMBIE','eightiesMC':'zombies/EightiesMCZOMBIE','phatbeet':'plants/PhatBeetPLANT','cactus':'plants/CactusPLANT','eighties':'zombies/EightiesBasicZOMBIE','eightiesFlag':'zombies/EightiesFlagZOMBIE','eightiesPunk':'zombies/EightiesPunkZOMBIE'}
 actors={n:rig(p) for n,p in paths.items()}
-rigpaths={'metalWave':'projectiles/EightiesGargantuarWavePRJ','metalHit':'507da2a0-90a2-4a7f-976d-1eae1cfbad26','punkHead':'15c76516-48e7-4ec8-b4d1-17a9df1804ca','thymeTeleport':'9bd3ba42-e3c6-4135-aa9e-436cb27641f6','glitterTrail':'6df28bce-e93a-4e9c-8fdc-8bd7561d78f4','glitterHit':'39273825-cab5-4b56-b404-29ec11769c97','phatWave':'a498e40c-beeb-49b7-8ab0-0a41aa3630f8','phatHit':'d4c65092-cccb-479f-8995-23063f8caf7a','cactusShot':'projectiles/CactusThorn0PRJ','cactusShot1':'projectiles/CactusThorn1PRJ','cactusShot2':'projectiles/CactusThorn2PRJ','cactusFood':'projectiles/CactusThornFoodPRJ','eightiesLawn':'lawns/EightiesLAWN','mower':'projectiles/EightiesMowerPRJ','eightiesCone':'armors/EightiesConeARMOR','eightiesBucket':'armors/EightiesBucketARMOR'}
+rigpaths={'garlicDisgust':'68fab54f-6538-4457-939b-f26d6f2fec2e','metalWave':'projectiles/EightiesGargantuarWavePRJ','metalHit':'507da2a0-90a2-4a7f-976d-1eae1cfbad26','punkHead':'15c76516-48e7-4ec8-b4d1-17a9df1804ca','thymeTeleport':'9bd3ba42-e3c6-4135-aa9e-436cb27641f6','glitterTrail':'6df28bce-e93a-4e9c-8fdc-8bd7561d78f4','glitterHit':'39273825-cab5-4b56-b404-29ec11769c97','phatWave':'a498e40c-beeb-49b7-8ab0-0a41aa3630f8','phatHit':'d4c65092-cccb-479f-8995-23063f8caf7a','cactusShot':'projectiles/CactusThorn0PRJ','cactusShot1':'projectiles/CactusThorn1PRJ','cactusShot2':'projectiles/CactusThorn2PRJ','cactusFood':'projectiles/CactusThornFoodPRJ','eightiesLawn':'lawns/EightiesLAWN','mower':'projectiles/EightiesMowerPRJ','eightiesCone':'armors/EightiesConeARMOR','eightiesBucket':'armors/EightiesBucketARMOR'}
 rigs={n:rig(p) for n,p in rigpaths.items()}
-properties={'plants':props('PlantProps',['phatbeet','cactus','thymewarp']),'zombies':props('ZombieProps',['eighties','eighties_armor1','eighties_armor2','eighties_flag','eighties_punk','eighties_glitter','eighties_mc','eighties_gargantuar','eighties_imp']),'armors':props('ArmorProps',['eighties_armor1','eighties_armor2']),'projectiles':props('ProjectileProps',['cactus','cactus_pf','eighties_gargantuar_wave']),'plantAnimations':{}}
+properties={'plants':props('PlantProps',['phatbeet','cactus','thymewarp','garlic']),'zombies':props('ZombieProps',['eighties','eighties_armor1','eighties_armor2','eighties_flag','eighties_punk','eighties_glitter','eighties_mc','eighties_gargantuar','eighties_imp','eighties_breakdancer']),'armors':props('ArmorProps',['eighties_armor1','eighties_armor2']),'projectiles':props('ProjectileProps',['cactus','cactus_pf','eighties_gargantuar_wave']),'plantAnimations':{}}
 for name,description in {**actors,**rigs}.items():
     sk=json.loads((e.OUT/'rigs'/description['rig']/'skeleton.json').read_text());arm=next(a for a in sk['armature'] if a['name']==description['armature']);timelines={}
     for animation in arm['animation']:
@@ -32,7 +32,7 @@ for name,description in {**actors,**rigs}.items():
             frame+=f.get('duration',1)
         timelines[animation['name']]={'duration':animation.get('duration',1)/arm['frameRate'],'events':events}
     properties['plantAnimations'][name]=timelines
-for day in range(1,16):c.write_json(e.OUT/f'eighties{day}.source.json',e.read(f'levels/eighties{day}').objects[0]['json'])
+for day in range(1,21):c.write_json(e.OUT/f'eighties{day}.source.json',e.read(f'levels/eighties{day}').objects[0]['json'])
 co=next(x for x in walk(e.read('lawns/EightiesLAWN').objects) if x.get('type')=='dragonBones.ArmatureDisplay')
 at=e.read(co['_dragonAtlasAsset']['asset']);atlas=json.loads(at.objects[0]['_atlasJson']);rect=next(x for x in atlas['SubTexture'] if x['name']=='Lawn')
 pixels=Image.open(io.BytesIO(c.native(at.data[1][at.rec[5][0]],'png')))
@@ -51,8 +51,10 @@ for name,path in {**paths,**rigpaths}.items():
             for key,value in obj['soundRes'].items():
                 if key not in ['type','volumeScale']:sound(name+'/'+key,value)
 npc=e.read('b697cdfd-e783-4f80-abbe-ac197db6cf97');narratives={}
-for name in ['EIGHTIES_1_INTRO','EIGHTIES_2_INTRO','EIGHTIES_3_INTRO','EIGHTIES_15_OUTRO']:
+for name in ['EIGHTIES_1_INTRO','EIGHTIES_2_INTRO','EIGHTIES_3_INTRO','EIGHTIES_15_OUTRO','EIGHTIES_16_INTRO','EIGHTIES_17_INTRO','EIGHTIES_OUTRO_DANGER_ROOM_KEY']:
     flow=next(o['objdata']['Flow'] for o in e.read('json/Objects/NarrativeList').objects[0]['json']['objects'] if name in o.get('aliases',[]))
+    # The pinned day-17 dialogue spells this existing NPC with a capital W.
+    if name=='EIGHTIES_17_INTRO':flow[3]['Character']='winnie'
     for step in flow:
         if 'Lines' in step:
             length=max(1,min(3,math.floor(len(step['Lines']['zh'])*3.1/21+.5)));step['Animation']=['Say_Small','Say_Medium','Say_Long'][length-1]
@@ -65,4 +67,4 @@ for name,path in [('music','eighties/CYS_LP_Eighties'),('jam_punk','jam/Punk_LP'
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{}})
 c.write_json(c.ROOT/'apps/pvz2/eighties-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Eighties 1–15')
+print('Exported Eighties 1–20')

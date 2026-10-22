@@ -9,6 +9,7 @@ export class EightiesBattle {
  glitter=new Map<number,number>();
  trails=new Map<number,{x:number;row:number;at:number;fade:number|null;reversed:boolean}>();
  mc=new Map<number,{at:number;elapsed:number;event:number}>();
+ spins=new Map<number,{animation:string;at:number;elapsed:number;event:number}>();
  gargCountdown=new Map<number,number>();
  waves:{id:number;x:number;row:number;direction:number;friendly:boolean}[]=[];
  private nextGlitterSound=0;
@@ -18,7 +19,7 @@ export class EightiesBattle {
  shots:{id:number;row:number;x:number;y:number;food:boolean;left:number;hits:Set<number>}[]=[];
  constructor(private g:Game){}
  private play(p:Plant,animation:string,action:Plant['action']='idle'){p.animation=animation;p.action=action;p.actionAt=this.g.time;p.eventIndex=0;}
- add(p:Plant){if(p.kind==='thymewarp'){this.play(p,'Play','explode');p.hidden=true;this.warp();}if(p.kind==='phatbeet'){this.heavy.set(p.id,2);p.nextAction=this.g.time;this.play(p,'Idle');}if(p.kind==='cactus'){p.nextAction=this.g.time;this.play(p,'Idle');}}
+ add(p:Plant){if(p.kind==='garlic')this.play(p,'Idle00');if(p.kind==='thymewarp'){this.play(p,'Play','explode');p.hidden=true;this.warp();}if(p.kind==='phatbeet'){this.heavy.set(p.id,2);p.nextAction=this.g.time;this.play(p,'Idle');}if(p.kind==='cactus'){p.nextAction=this.g.time;this.play(p,'Idle');}}
  spawn(z:Zombie){if(z.kind==='eighties_punk')this.kicks.set(z.id,0);if(z.kind==='eighties_gargantuar')this.gargCountdown.set(z.id,4+1.5*this.g.random());}
  gargReady(z:Zombie,dt:number){
   if(this.jam!=='jam_metal'||z.x>=cellX(9))return false;
@@ -34,7 +35,45 @@ export class EightiesBattle {
   const sound:Record<string,string>={swing:'swingSounds',smash:'smashSounds',afterSmash:'afterSmashSaySounds',impThrow:'ImpThrowSounds'};
   if(sound[name])g.beach.sounds.push('eightiesGargantuar/'+sound[name]);
  }
- food(p:Plant){this.play(p,'Food','food');}
+ food(p:Plant){this.play(p,'Food','food');if(p.kind==='garlic')this.g.beach.sounds.push('garlic/foodStart');}
+ speed(z:Zombie){return z.kind==='eighties_breakdancer'&&this.jam==='jam_rap'?this.g.props.zombies.eighties_breakdancer.JamWalkSpeedMult:1;}
+ private garlicMove(p:Plant,z:Zombie){
+  const g=this.g,prop=g.props.plants.garlic;
+  if(g.props.zombies[z.kind].ImmuneToGarlic||z.garlicLane)return false;
+  const rows=[z.row-1,z.row+1].filter(r=>r>=0&&r<BOARD.rows),to=rows[Math.floor(g.random()*rows.length)];
+  z.garlicLane={from:z.row,to,at:g.time+prop.DisgustDuration,y:rowY(z.row)};
+  z.stunnedUntil=Math.max(z.stunnedUntil??0,g.time+(p.action==='food'?prop.StunDurationPlantfood:prop.DisgustDuration+prop.LaneChangeDuration));z.eating=false;
+  g.beach.sounds.push('garlic/disgustSounds');g.future.visual('garlicDisgust','Play',z.x,rowY(z.row)-80);return true;
+ }
+ eatGarlic(p:Plant,z:Zombie){
+  if(!this.garlicMove(p,z))return false;
+  if(!this.g.props.zombies[z.kind].DoesNotDamageHeavilyToGarlic)p.hp-=this.g.props.plants.garlic.ReceivesDamageWhenEaten*this.g.future.plantDamageScale(p);
+  return true;
+ }
+ private kickTargets(z:Zombie,range:number){
+  const group=this.g.westFinale.allies.includes(z)?this.g.westFinale.allies:this.g.zombies;
+  return group.filter(other=>other!==z&&other.hp>0&&other.row===z.row&&!other.leap&&!other.garlicLane&&other.x>=BOARD.left&&!(other.kind==='eighties_breakdancer'&&this.spins.has(other.id))&&Math.abs(other.x-z.x)<=range*BOARD.cellWidth+22);
+ }
+ private breakdance(z:Zombie,dt:number){
+  const g=this.g,prop=g.props.zombies.eighties_breakdancer;
+  const play=(animation:string)=>{this.spins.set(z.id,{animation,at:g.time,elapsed:0,event:0});z.eating=false;};
+  if(!this.spins.has(z.id)&&this.jam==='jam_rap'&&z.x<cellX(9)&&this.kickTargets(z,.5).length)play('RotateStart');
+  const state=this.spins.get(z.id);if(!state)return false;
+  state.elapsed+=dt*(g.time<z.chilledUntil?.5:1);
+  const timeline=g.props.plantAnimations.eightiesBreakDancer[state.animation];
+  while(state.event<timeline.events.length&&state.elapsed>=timeline.events[state.event].at){
+   const name=timeline.events[state.event++].name;
+   if(name==='rotateStart'){
+    for(const other of this.kickTargets(z,.75))other.leap={fromX:other.x,fromY:rowY(other.row),toX:Math.max(BOARD.left,other.x+(z.reversed?1:-1)*prop.KickDistance*BOARD.cellWidth),toRow:other.row,at:g.time,duration:.5};
+    play('RotateLoop');return true;
+   }
+   if(name==='switchingFalse'){this.spins.delete(z.id);return true;}
+   const sounds:Record<string,string>={rotate_start_say:'rotateStartSaySounds',rotate_start_sound:'rotateStartSounds',rotate_end_say:'rotateEndSaySounds'};
+   if(sounds[name])g.beach.sounds.push('eightiesBreakDancer/'+sounds[name]);
+  }
+  if(state.animation==='RotateLoop'&&state.elapsed>=prop.KickingTime)play('RotateEnd');
+  return true;
+ }
  protected(z:Zombie){return this.warps.has(z.id)||this.g.time<(this.glitter.get(z.id)??0);}
  private clearBuff(z:Zombie){z.frozenUntil=z.chilledUntil=0;delete z.stunnedUntil;delete z.butteredUntil;delete z.poison;delete z.sappedUntil;delete z.perfumeUntil;delete z.heartDefence;}
  private warp(){
@@ -57,6 +96,7 @@ export class EightiesBattle {
  }
  private mcTargets(z:Zombie){return this.g.plants.filter(p=>p.hp>0&&!p.hidden&&!p.leap?.pushed&&p.sheep===undefined&&p.action!=='food'&&p.action!=='explode'&&!this.g.kongfu.peach.protected(p)&&!['spikeweed','spikerock','iceweed','lilypad','potatomine','stunion','iceburg','goldleaf','bambooshoot','hotpotato','thymewarp'].includes(p.kind)&&Math.abs(p.row-z.row)<=1&&Math.abs(cellX(p.column)-z.x)<(p.row===z.row?1.5625:1)*BOARD.cellWidth+22);}
  zombie(z:Zombie,dt:number){
+  if(z.kind==='eighties_breakdancer')return this.breakdance(z,dt);
   if(z.kind!=='eighties_mc')return false;
   const g=this.g;
   if(!this.mc.has(z.id)&&this.jam==='jam_rap'&&z.x<cellX(9)&&this.mcTargets(z).length){this.mc.set(z.id,{at:g.time,elapsed:0,event:0});z.eating=false;}
@@ -87,6 +127,17 @@ export class EightiesBattle {
  }
  plant(p:Plant){
   const g=this.g,prop=g.props.plants[p.kind];
+  if(p.kind==='garlic'){
+   if(p.action==='food'){
+    const elapsed=(g.time-p.actionAt)*1.2,timeline=g.props.plantAnimations.garlic.Food;
+    while(p.eventIndex!<timeline.events.length&&elapsed>=timeline.events[p.eventIndex!].at){
+     const name=timeline.events[p.eventIndex!++].name;
+     if(name==='shoot'){for(const z of g.zombies)if(z.hp>0&&z.row===p.row&&z.x+22>cellX(p.column))this.garlicMove(p,z);g.future.visual('chiliFart','Play',cellX(p.column)+30,rowY(p.row));g.beach.sounds.push('garlic/foodShoot');}
+     if(name==='foodEnd'){this.play(p,'Idle00');return;}
+    }
+   }else {const animation=p.hp<=prop.Toughness/3?'Idle20':p.hp<=prop.Toughness*2/3?'Idle10':'Idle00';if(p.animation!==animation)this.play(p,animation);}
+   return;
+  }
   if(p.kind==='thymewarp'){if(g.time-p.actionAt>=g.props.plantAnimations.thymewarp.Play.events.find(e=>e.name==='kill')!.at)p.hp=0;return;}
   if(p.kind==='phatbeet'){
    if(p.action==='idle'&&g.time>=p.nextAction&&(this.enemies(p,1).length||g.graves.some(t=>t.hp>0&&Math.abs(t.row-p.row)<=1&&Math.abs(t.column-p.column)<=1))){this.play(p,'Attack','shoot');p.nextAction=g.time+prop.AttackInterval;}
@@ -146,6 +197,11 @@ export class EightiesBattle {
  }
  tick(dt:number){
   const g=this.g;
+  for(const z of [...g.zombies,...g.westFinale.allies])if(z.garlicLane){
+   const lane=z.garlicLane,age=g.time-lane.at;
+   if(age>=0){if(age<dt)g.beach.sounds.push('garlic/'+(lane.to<lane.from?'moveUpSounds':'moveDownSounds'));const t=Math.min(1,age/g.props.plants.garlic.LaneChangeDuration),ease=t<.5?2*t*t:1-2*(1-t)**2;lane.y=rowY(lane.from)+(rowY(lane.to)-rowY(lane.from))*ease;z.row=Math.round(lane.from+(lane.to-lane.from)*ease);if(t===1)delete z.garlicLane;}
+  }
+  for(const id of this.spins.keys())if(![...g.zombies,...g.westFinale.allies].some(z=>z.id===id&&z.hp>0))this.spins.delete(id);
   for(const w of this.waves){
    const from=w.x;w.x+=w.direction*5.5*BOARD.cellWidth*dt;
    const left=Math.min(from,w.x)-22,right=Math.max(from,w.x)+22;
