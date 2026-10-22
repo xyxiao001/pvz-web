@@ -61,6 +61,11 @@ export class DinoBattle {
   if(!p.fired&&age>=timeline.events.find(e=>e.name==='explode')!.at){p.fired=true;this.perfumes.push({id:++this.serial,row:p.row,column:p.column,at:g.time});g.beach.sounds.push('perfumeshroom/burnSound');}
   if(age>=timeline.duration)p.hp=0;
  }
+ smashNut(p:Plant){
+  if(p.action==='food'||this.g.kongfu.peach.protected(p))return;
+  if(p.armor>0)p.armor=0;
+  else {const quarter=this.g.props.plants.primalwallnut.Toughness/4;p.hp=(Math.ceil(p.hp/quarter)-1)*quarter;}
+ }
  nut(p:Plant){
   const g=this.g;
   if(p.action!=='food')return;

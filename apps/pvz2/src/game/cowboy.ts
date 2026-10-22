@@ -37,7 +37,7 @@ export class CowboyBattle {
   const g=this.#game,props=g.props.zombies[z.kind];
   if((z.kind==='west_bull'||z.kind==='west_bull_veteran'))z.west={at:g.time,elapsed:0,imp:true,fired:false,bull:{delay:props.BullRunAgainDelay,blocked:false,retreating:false,cheer:3}};
   if(z.kind==='chicken_farmer')z.west={at:g.time,elapsed:0,chickens:true};
-  if(z.kind==='eighties_gargantuar'||z.kind==='zoybean_gargantuar'||z.kind==='lostcity_gargantuar'||z.kind==='iceage_gargantuar'||z.kind==='cowboy_gargantuar'||z.kind==='dark_gargantuar'||z.kind==='beach_gargantuar')z.west={at:g.time,elapsed:0,imp:z.kind!=='zoybean_gargantuar',animation:'Walk',fired:false,...(z.kind==='iceage_gargantuar'?{iceageImps:0,iceageHeld:0}:{})};
+  if(z.kind==='dino_gargantuar'||z.kind==='eighties_gargantuar'||z.kind==='zoybean_gargantuar'||z.kind==='lostcity_gargantuar'||z.kind==='iceage_gargantuar'||z.kind==='cowboy_gargantuar'||z.kind==='dark_gargantuar'||z.kind==='beach_gargantuar')z.west={at:g.time,elapsed:0,imp:z.kind!=='zoybean_gargantuar',animation:'Walk',fired:false,...(z.kind==='iceage_gargantuar'?{iceageImps:0,iceageHeld:0}:{})};
   if(z.kind==='piano'||z.kind==='west_bullrider')z.west={at:g.time,elapsed:0};
   if(z.kind==='prospector')z.west={at:g.time,elapsed:0,fuse:props.ExplodeCountdown,ignited:true,dirty:false};
   if(z.kind.startsWith('poncho'))z.west={at:g.time,elapsed:0,poncho:props.PonchoToughness,plate:g.random()<props.ChanceToPlate?props.ShieldToughness:0};
@@ -90,7 +90,7 @@ export class CowboyBattle {
  tickZombie(z:Zombie,dt:number){
   const g=this.#game,s=z.west;
   if((z.kind==='west_bull'||z.kind==='west_bull_veteran'))return this.tickBull(z,dt);
-  if(z.kind==='eighties_gargantuar'||z.kind==='zoybean_gargantuar'||z.kind==='lostcity_gargantuar'||z.kind==='iceage_gargantuar'||z.kind==='cowboy_gargantuar'||z.kind==='dark_gargantuar'||z.kind==='beach_gargantuar')return this.tickGargantuar(z,dt);
+  if(z.kind==='dino_gargantuar'||z.kind==='eighties_gargantuar'||z.kind==='zoybean_gargantuar'||z.kind==='lostcity_gargantuar'||z.kind==='iceage_gargantuar'||z.kind==='cowboy_gargantuar'||z.kind==='dark_gargantuar'||z.kind==='beach_gargantuar')return this.tickGargantuar(z,dt);
   if(s?.poisonAt!==undefined&&g.time-s.poisonAt>=2)return true;
   if(z.kind==='piano'&&z.hp<=g.props.zombies.piano.Toughness/2){if(!s!.animation){s!.animation='Walk_Break';s!.at=g.time;}else if(s!.animation==='Walk_Break'&&g.time-s!.at>=g.props.plantAnimations.piano.Walk_Break.duration)s!.animation='Walk_Broken';}
   if(z.kind==='prospector'){
@@ -152,7 +152,7 @@ export class CowboyBattle {
   return true;
  }
  private tickGargantuar(z:Zombie,dt:number){
-  const g=this.#game,s=z.west!,rig=z.kind==='eighties_gargantuar'?'eightiesGargantuar':z.kind==='zoybean_gargantuar'?'zoybeanGarg':z.kind==='lostcity_gargantuar'?'lostGargantuar':z.kind==='iceage_gargantuar'?'iceageGargantuar':z.kind==='beach_gargantuar'?'beachGargantuar':z.kind==='dark_gargantuar'?'darkGargantuar':'cowboyGargantuar',timelines=g.props.plantAnimations[rig];
+  const g=this.#game,s=z.west!,rig=z.kind==='dino_gargantuar'?'dinoGargantuar':z.kind==='eighties_gargantuar'?'eightiesGargantuar':z.kind==='zoybean_gargantuar'?'zoybeanGarg':z.kind==='lostcity_gargantuar'?'lostGargantuar':z.kind==='iceage_gargantuar'?'iceageGargantuar':z.kind==='beach_gargantuar'?'beachGargantuar':z.kind==='dark_gargantuar'?'darkGargantuar':'cowboyGargantuar',timelines=g.props.plantAnimations[rig];
   const friendly=g.westFinale.allies.includes(z),foes=friendly?g.zombies:g.westFinale.allies;
   const foe=foes.find(a=>a.hp>0&&g.inLane(a,z.row)&&Math.abs(a.x-z.x)<90);
   const target=friendly?undefined:g.plants.filter(p=>p.hp>0&&p.kind!=='stunion'&&p.kind!=='tanglekelp'&&p.sheep===undefined&&!p.leap&&p.row===z.row&&Math.abs(cellX(p.column)-z.x)<75&&!(p.kind==='escaperoot'&&p.rootGrown)&&!(p.kind==='springbean'&&['Ready','Idle_Ready'].includes(p.animation!))).sort((a,b)=>b.column-a.column)[0];
@@ -167,10 +167,10 @@ export class CowboyBattle {
   if(z.kind==='iceage_gargantuar'&&s.animation==='Throw'&&s.elapsed>=timelines.Throw.events.find(e=>e.name==='getImp')!.at)s.iceageHeld=s.iceageImps!+Number(!s.fired);
   if(!s.fired&&s.elapsed>=timelines[s.animation!].events.find(e=>e.name===event)!.at){
    s.fired=true;
-   if(event==='impThrow'){if(z.kind==='iceage_gargantuar'){s.iceageImps!++;s.imp=s.iceageImps!<3;}else s.imp=false;const imp=g.spawnZombie(z.kind==='eighties_gargantuar'?'eighties_imp':z.kind==='lostcity_gargantuar'?'lostcity_imp':z.kind==='iceage_gargantuar'?'iceage_imp':z.kind==='beach_gargantuar'?'beach_imp':z.kind==='dark_gargantuar'?'dark_imp':'west_bullrider',z.row,z.x);imp.reversed=z.kind==='iceage_gargantuar'&&g.random()<g.props.zombies[z.kind].ChanceToReverseImp?!z.reversed:z.reversed;imp.leap={fromX:z.x,fromY:rowY(z.row)-100,toX:cellX(z.reversed?6:2),toRow:z.row,at:g.time,duration:1.5};if(friendly)g.westFinale.adopt(imp);}
+   if(event==='impThrow'){if(z.kind==='iceage_gargantuar'){s.iceageImps!++;s.imp=s.iceageImps!<3;}else s.imp=false;const imp=g.spawnZombie(z.kind==='dino_gargantuar'?'dino_imp':z.kind==='eighties_gargantuar'?'eighties_imp':z.kind==='lostcity_gargantuar'?'lostcity_imp':z.kind==='iceage_gargantuar'?'iceage_imp':z.kind==='beach_gargantuar'?'beach_imp':z.kind==='dark_gargantuar'?'dark_imp':'west_bullrider',z.row,z.x);imp.reversed=z.kind==='iceage_gargantuar'&&g.random()<g.props.zombies[z.kind].ChanceToReverseImp?!z.reversed:z.reversed;imp.leap={fromX:z.x,fromY:rowY(z.row)-100,toX:cellX(z.reversed?6:2),toRow:z.row,at:g.time,duration:1.5};if(friendly)g.westFinale.adopt(imp);}
    else {
     if(foe){if(friendly){const reflected=g.westFinale.hitAlly(foe,g.props.zombies[z.kind].SmashDamage);if(reflected)g.damage(z,reflected);}else g.damage(foe,g.props.zombies[z.kind].SmashDamage);}
-    else if(target){if(z.kind==='lostcity_gargantuar'&&g.lostcity.torches.get(z.id)){target.hp=0;target.armor=0;}else if(target.kind==='spikeweed'||target.kind==='spikerock'){g.damage(z,g.props.plants[target.kind].Damage);if(target.action!=='food'){if(target.kind==='spikerock'){target.spikes!--;if(target.spikes===0)target.hp=0;}else target.hp=0;}}else {target.hp=0;target.armor=0;}}
+    else if(target){if(z.kind==='lostcity_gargantuar'&&g.lostcity.torches.get(z.id)){target.hp=0;target.armor=0;}else if(target.kind==='spikeweed'||target.kind==='spikerock'){g.damage(z,g.props.plants[target.kind].Damage);if(target.action!=='food'){if(target.kind==='spikerock'){target.spikes!--;if(target.spikes===0)target.hp=0;}else target.hp=0;}}else if(target.kind==='primalwallnut')g.dino.smashNut(target);else {target.hp=0;target.armor=0;}}
     if(z.kind==='lostcity_gargantuar'&&g.lostcity.torches.get(z.id)){
      this.sounds.push('lostGargantuar/fireSwingSound');
      for(const p of g.plants)if(!friendly&&p.hp>0&&p.row===z.row&&Math.abs(cellX(p.column)-z.x)<75){p.hp=0;p.armor=0;}
