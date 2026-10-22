@@ -5,7 +5,8 @@ export function battleActors(level:Level,plants:readonly PlantKind[]){
   if(level.world==='kongfu'){names.add(level.day>=33?'abbotFlag':level.day>=17?'monkFlag':'kongfuFlag');names.add('kongfu');if(level.day>=17)names.add('monk');if(level.day>=33)names.add('abbot');if(level.bronzeStatues.length){names.add('kongfuStatue');for(const t of level.bronzeStatues)for(const z of t.ZombiesToSpawn)names.add(zombieRig(z));}const racks=[...level.graves.map(t=>t.kind),...level.actions.flat().flatMap(a=>a.graveTypes??[])];if(racks.includes('kongfu_rack_bomb')||names.has('kongfuGong'))names.add('kongfuBomb');if(racks.includes('kongfu_rack_torch'))names.add(level.day>=33?'abbotTorch':level.day>=17?'monkTorch':'kongfuTorch');if(racks.includes('kongfu_rack_blade'))names.add('monkBlade');if(racks.includes('kongfu_rack_nunchaku'))names.add('monkNunchaku');if(racks.includes('kongfu_rack_3section_staff'))names.add('abbotStaff');if(racks.includes('kongfu_rack_fan'))names.add('abbotFan');if(racks.includes('kongfu_rack_hammer'))names.add('kongfuHammer');}
   if(names.has('eightiesPunkVeteran'))names.add('eightiesSkunk');
   if(names.has('eightiesArcade'))names.add('eighties8Bit');
-  if(level.boss?.kind==='zombossmech_dino')for(const name of ['boss','dino','dinoFlag','dinoBully','dinoGargantuar','dinoImp'])names.add(name);
+  if(level.boss?.kind==='zombossmech_dino2')names.add('dinoBullyVeteran');
+  if(level.boss?.kind.startsWith('zombossmech_dino'))for(const name of ['boss','dino','dinoFlag','dinoBully','dinoGargantuar','dinoImp'])names.add(name);
   if(names.has('dinoGargantuar'))names.add('dinoImp');
   if(names.has('eightiesGargantuar'))names.add('eightiesImp');
   if(names.has('hollyknight')){names.add('hollybarrierleaf');names.add('hollybarrierleafplantfood');}
@@ -142,7 +143,7 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   if(actors.has('futureGargantuar'))for(const name of ['gargEye','gargHit','gargRay'])names.add(name);
   if(actors.has('dinoBullyVeteran'))for(const name of ['dinoCrack','dinoCrackSparkle'])names.add(name);
   if(actors.has('discoMech'))names.add('dirtSpawn');
-  if(level.boss?.kind==='zombossmech_dino')for(const name of ['bossTarget','bossMissile','bossMissileImpact','bossEscape','zombossicon','dirtSpawn','dinoLaserEye','dinoLaser','dinoLaserFloor','dinoFire','dinoCrack','dinoCrackSparkle','raptor','stego','ptero','tyranno','ankylo','dinoCharm'])names.add(name);
+  if(level.boss?.kind.startsWith('zombossmech_dino'))for(const name of ['bossTarget','bossMissile','bossMissileImpact','bossEscape','zombossicon','dirtSpawn','dinoLaserEye','dinoLaser','dinoLaserFloor','dinoFire','dinoCrack','dinoCrackSparkle','raptor','stego','ptero','tyranno','ankylo','dinoCharm'])names.add(name);
   else if(level.boss?.kind.startsWith('zombossmech_eighties'))for(const name of ['bandUp','bandMid','bandDown','bossCostume','bossTarget','bossEscape','zombossicon','dirtSpawn'])names.add(name);
   else if(level.boss?.kind==='kongfu_boss_chi')for(const name of ['chiBossRack','chiBossRackHit','chiBossRay','chiBossRayHit','chiBossHole','chiBossStuck','chiBossShield','chiBossShieldBack','abbotShot','bossTarget','zombossicon','dirtSpawn'])names.add(name);
   else if(level.boss?.kind==='kongfu_boss_blade')for(const name of ['bladeChi','bladeBoomerang','bladeLink','bossEscape','zombossicon','dirtSpawn'])names.add(name);
