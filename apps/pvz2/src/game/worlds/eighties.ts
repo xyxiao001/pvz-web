@@ -1,0 +1,8 @@
+import type {BattleLevel} from '../battle-level';
+import {KONGFU_LEVELS} from './kongfu';
+const inherited=KONGFU_LEVELS.kongfu48.plants;
+export const EIGHTIES_LEVELS:Readonly<Record<string,BattleLevel>>=Object.fromEntries([1,2,3,4,5].map(day=>{
+ const plants:BattleLevel['plants']=[...inherited,...(day>=2?[{id:137,kind:'phatbeet' as const}]:[])];
+ const level:BattleLevel={id:`eighties${day}`,world:'eighties',worldName:'炫光魔音游',day,source:`eighties/eighties${day}.source.json`,assets:'campaign',bundles:['pirate','cowboy','future','dark','beach','iceage','lostcity','kongfu','eighties'],presentation:{lawn:'eighties/lawn.webp',loading:'eighties/lawn.webp',music:'eighties/music.mp3'},plants,actors:plants.map(p=>p.kind),mode:day===3?'conveyor':'seedbank',night:true,narrative:day<=3?`EIGHTIES_${day}_INTRO`:null,firstReward:day===1?{image:'',plant:'phatbeet',label:'魔音甜菜'}:day===5?{image:'',plant:'celerystalker',label:'潜伏芹菜'}:{image:'',label:''}};
+ return [level.id,level];
+}));
