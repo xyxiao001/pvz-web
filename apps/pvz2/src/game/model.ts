@@ -975,7 +975,7 @@ export class Game {
         }else if(t===1){
           z.row=flight.toRow;this.cowboy.landed(z);
           if(z.kind==='lostcity_imp')z.landUntil=this.time+this.props.plantAnimations.lostImp.Land.duration;
-          if(z.kind==='iceage_imp'||z.kind==='dark_imp'||z.kind==='egypt_imp'||z.kind==='pirate_imp'||z.kind==='west_bullrider')z.landUntil=this.time+(z.west?.bullThrown?this.props.plantAnimations.cowboyImp.LandVerticle.events.find(e=>e.name==='switchingFalse')!.at:14/30);
+          if(z.kind==='eighties_imp'||z.kind==='iceage_imp'||z.kind==='dark_imp'||z.kind==='egypt_imp'||z.kind==='pirate_imp'||z.kind==='west_bullrider')z.landUntil=this.time+(z.west?.bullThrown?this.props.plantAnimations.cowboyImp.LandVerticle.events.find(e=>e.name==='switchingFalse')!.at:14/30);
           if(z.west?.bullThrown){z.west.animation='LandVerticle';z.west.at=this.time;this.cowboy.sounds.push('cowboyImp/landSounds');}
           if(this.level.world==='pirate'&&seaCell(this.level.planks,z.row,Math.floor((z.x-BOARD.left)/BOARD.cellWidth))&&!isFlying(z)){z.hp=0;z.deathCause='water';}z.leap=null;
         }

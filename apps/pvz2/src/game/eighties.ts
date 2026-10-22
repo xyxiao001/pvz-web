@@ -9,6 +9,8 @@ export class EightiesBattle {
  glitter=new Map<number,number>();
  trails=new Map<number,{x:number;row:number;at:number;fade:number|null;reversed:boolean}>();
  mc=new Map<number,{at:number;elapsed:number;event:number}>();
+ gargCountdown=new Map<number,number>();
+ waves:{id:number;x:number;row:number;direction:number;friendly:boolean}[]=[];
  private nextGlitterSound=0;
  lit=new Set<number>();
  heavy=new Map<number,number>();
@@ -17,7 +19,21 @@ export class EightiesBattle {
  constructor(private g:Game){}
  private play(p:Plant,animation:string,action:Plant['action']='idle'){p.animation=animation;p.action=action;p.actionAt=this.g.time;p.eventIndex=0;}
  add(p:Plant){if(p.kind==='thymewarp'){this.play(p,'Play','explode');p.hidden=true;this.warp();}if(p.kind==='phatbeet'){this.heavy.set(p.id,2);p.nextAction=this.g.time;this.play(p,'Idle');}if(p.kind==='cactus'){p.nextAction=this.g.time;this.play(p,'Idle');}}
- spawn(z:Zombie){if(z.kind==='eighties_punk')this.kicks.set(z.id,0);}
+ spawn(z:Zombie){if(z.kind==='eighties_punk')this.kicks.set(z.id,0);if(z.kind==='eighties_gargantuar')this.gargCountdown.set(z.id,4+1.5*this.g.random());}
+ gargReady(z:Zombie,dt:number){
+  if(this.jam!=='jam_metal'||z.x>=cellX(9))return false;
+  const left=this.gargCountdown.get(z.id)!-dt*(this.g.time<z.chilledUntil?.5:1);this.gargCountdown.set(z.id,left);return left<=0;
+ }
+ gargEvent(z:Zombie,name:string){
+  const g=this.g,metal=this.jam==='jam_metal'&&z.x<cellX(9);
+  if(name==='guitar'&&metal)g.beach.sounds.push('eightiesGargantuar/guitarSwingSounds');
+  if(name==='smash'){
+   this.gargCountdown.set(z.id,4+1.5*g.random());
+   if(metal){const direction=z.reversed?1:-1;this.waves.push({id:g.nextEntityId(),x:z.x+256.8475*.51*direction,row:z.row,direction,friendly:g.westFinale.allies.includes(z)});g.beach.sounds.push('eightiesGargantuar/guitarSmashSounds');}
+  }
+  const sound:Record<string,string>={swing:'swingSounds',smash:'smashSounds',afterSmash:'afterSmashSaySounds',impThrow:'ImpThrowSounds'};
+  if(sound[name])g.beach.sounds.push('eightiesGargantuar/'+sound[name]);
+ }
  food(p:Plant){this.play(p,'Food','food');}
  protected(z:Zombie){return this.warps.has(z.id)||this.g.time<(this.glitter.get(z.id)??0);}
  private clearBuff(z:Zombie){z.frozenUntil=z.chilledUntil=0;delete z.stunnedUntil;delete z.butteredUntil;delete z.poison;delete z.sappedUntil;delete z.perfumeUntil;delete z.heartDefence;}
@@ -130,6 +146,15 @@ export class EightiesBattle {
  }
  tick(dt:number){
   const g=this.g;
+  for(const w of this.waves){
+   const from=w.x;w.x+=w.direction*5.5*BOARD.cellWidth*dt;
+   const left=Math.min(from,w.x)-22,right=Math.max(from,w.x)+22;
+   const p=w.friendly?undefined:g.plants.filter(p=>p.hp>0&&p.row===w.row&&p.kind!=='thymewarp'&&p.action!=='explode'&&cellX(p.column)>=left&&cellX(p.column)<=right).sort((a,b)=>(a.column-b.column)*w.direction)[0];
+   const z=(w.friendly?g.zombies:g.westFinale.allies).find(z=>z.hp>0&&z.row===w.row&&z.x>=left&&z.x<=right);
+   if(p||z){const damage=g.props.projectiles.eighties_gargantuar_wave.Damage;if(p&&!g.kongfu.peach.protected(p)){const armor=Math.min(p.armor,damage);p.armor-=armor;p.hp-=(damage-armor)*g.future.plantDamageScale(p);}if(z)g.damage(z,damage);g.future.visual('metalHit','Play',w.x,rowY(w.row));g.beach.sounds.push('metalWave/PopSound');w.x=-1000;}
+  }
+  this.waves=this.waves.filter(w=>w.x>BOARD.left-100&&w.x<BOARD.width+100);
+  for(const id of this.gargCountdown.keys())if(![...g.zombies,...g.westFinale.allies].some(z=>z.id===id&&z.hp>0))this.gargCountdown.delete(id);
   for(const [id,w] of this.warps){
    const z=g.zombies.find(z=>z.id===id);if(!z){this.warps.delete(id);continue;}
    if(!w.moved&&g.time-w.at>=1+w.delay){w.moved=true;z.x=cellX(8);z.entry='walk';g.future.visual('thymeTeleport','Play',z.x,rowY(z.row));g.beach.sounds.push('thymewarp/teleportEndSound');}

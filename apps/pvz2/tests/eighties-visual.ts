@@ -13,7 +13,7 @@ let scene:Scene|undefined,game:Game|undefined,battle:ReturnType<typeof createBat
 const draw=()=>{scene!.sync(game!,0);scene!.render();status.textContent=`魔音${game!.level.day} ${game!.time.toFixed(1)}s ${game!.phase} 波次${game!.wave} 音乐${game!.eighties.jam}`;};
 const button=(label:string,run:()=>void|Promise<void>)=>{const b=document.createElement('button');b.textContent=label;b.onclick=()=>{Promise.resolve(run()).catch(e=>{status.textContent=String(e);console.error(e);});};controls.append(b);};
 async function clean(){if(battle){await battle.dispose();battle=undefined;}if(scene){await scene.dispose();scene=undefined;}host.replaceChildren();battleHost.hidden=true;host.hidden=true;}
-for(const day of [6,7,8,9,10]){
+for(const day of [11,12,13,14,15]){
  button(`进入${day}关`,async()=>{await clean();battleHost.hidden=false;battle=createBattle(battleHost,async()=>{await clean();},BATTLE_LEVELS[`eighties${day}`],progress);await battle.enter();status.textContent=`魔音${day}正式入口`;});
  button(`场景${day}`,async()=>{await clean();host.hidden=false;scene=new Scene();const config=BATTLE_LEVELS[`eighties${day}`],level=readLevel(await json<SourceLevel>(config.source));
  const groups=await Promise.all(['levels','campaign',...config.bundles!].map(name=>json<Properties>(name+'/properties.json'))),props=groups.reduce((a,b)=>({...a,...b,plants:{...a.plants,...b.plants},zombies:{...a.zombies,...b.zombies},armors:{...a.armors,...b.armors},projectiles:{...a.projectiles,...b.projectiles},plantAnimations:{...a.plantAnimations,...b.plantAnimations}}));props.zombies.mummy_flag=await json('battle/flag.json');
@@ -21,7 +21,7 @@ for(const day of [6,7,8,9,10]){
  await scene.init(host,()=>{},config,plants,level);game=new Game(level,props,scene.timing,z=>scene!.absorptionTarget(z),1234,false);scene.frameCombat();draw();});
 }
 for(const seconds of [.1,1,5])button(`推进${seconds}秒`,()=>{for(let i=0;i<seconds*60;i++){game!.tick(1/60);scene!.sync(game!,1/60);}draw();});
-button('闪光场景',()=>{game!.plants=[];game!.graves=[];game!.zombies=[];game!.addPlant('wallnut',2,3);game!.addPlant('magnetshroom',1,2);game!.spawnZombie('eighties_glitter',2,cellX(4));game!.spawnZombie('eighties_armor2',2,cellX(6));game!.spawnZombie('eighties_punk',1,cellX(4));game!.eighties.jam='jam_pop';draw();});
-button('MC场景',()=>{game!.plants=[];game!.graves=[];game!.zombies=[];game!.addPlant('wallnut',2,4);game!.addPlant('wallnut',1,5);game!.addPlant('spikerock',3,5);game!.spawnZombie('eighties_mc',2,cellX(5));game!.eighties.jam='jam_rap';draw();});
-button('逆时草',()=>{game!.addPlant('thymewarp',0,2);draw();});
-button('清场结算',()=>{if(game!.level.targetSun)game!.dropSun(400,200,game!.level.targetSun,'plant');for(let i=0;i<30000&&game!.phase==='playing';i++){game!.tick(1/60);for(const z of game!.zombies)game!.damage(z,100000,'water');}draw();});
+button('重金属场景',()=>{game!.plants=[];game!.graves=[];game!.zombies=[];game!.addPlant('wallnut',2,2);game!.addPlant('celerystalker',2,4);const z=game!.spawnZombie('eighties_gargantuar',2,cellX(7));game!.eighties.gargCountdown.set(z.id,.1);game!.eighties.jam='jam_metal';draw();});
+button('巨人投掷',()=>{game!.zombies.find(z=>z.kind==='eighties_gargantuar')!.hp=1700;draw();});
+button('15关对白',()=>{const step=scene!.art.campaign.narratives.EIGHTIES_15_OUTRO.find(s=>s.Lines)!;scene!.setNarrativeCast(['crazydave','winnie']);scene!.narrative(step.Character,step.Animation!);scene!.narrativeTick(.2);scene!.render();status.textContent=step.Lines!.zh;});
+button('清场结算',()=>{if(game!.preparing)game!.startLastStand();for(let i=0;i<30000&&game!.phase==='playing';i++){game!.tick(1/60);for(const z of game!.zombies)game!.damage(z,100000,'water');}draw();});
