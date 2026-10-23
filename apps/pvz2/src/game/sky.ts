@@ -1,3 +1,4 @@
+import {SkyEnemies} from './sky-enemies';
 import {SkyThunder} from './sky-thunder';
 import {SkyTwins} from './sky-twins';
 import {SkyAirRaid} from './sky-airraid';
@@ -14,12 +15,13 @@ export class SkyBattle {
  shield=0;
  drops:DropShip[]=[];
  bullets:{id:number;x:number;row:number}[]=[];
+ readonly enemies:SkyEnemies;
  readonly plants:SkyPlants;
  readonly thunder:SkyThunder;
  readonly twins:SkyTwins;
  readonly airRaid:SkyAirRaid;
  private serial=0;
- constructor(private g:Game){this.plants=new SkyPlants(g);this.thunder=new SkyThunder(g);this.twins=new SkyTwins(g);this.airRaid=new SkyAirRaid(g);}
+ constructor(private g:Game){this.enemies=new SkyEnemies(g);this.plants=new SkyPlants(g);this.thunder=new SkyThunder(g);this.twins=new SkyTwins(g);this.airRaid=new SkyAirRaid(g);}
  get edge(){return cellX(ship.EdgeX)+(this.shield>0?BOARD.cellWidth/3:0);}
  setShield(owned:boolean){this.shield=owned?ship.ToughnessShield:0;}
  canPlant(kind:PlantKind,column:number){return this.g.level.world!=='sky'||column<3||flyingPlants.includes(kind);}
@@ -49,6 +51,7 @@ export class SkyBattle {
  private play(z:Zombie,animation:string){z.sky!.animation=animation;z.sky!.elapsed=0;z.sky!.event=0;}
  zombie(z:Zombie,dt:number){
   if(this.g.level.airRaid)return this.airRaid.zombie(z,dt);
+  if(this.enemies.zombie(z,dt))return true;
   if(this.twins.zombie(z,dt))return true;
   if(!z.kind.startsWith('sky')||z.kind==='sky_imp')return false;
   const g=this.g,state=z.sky??(z.sky={animation:'Walk',elapsed:0,event:0,impHealth:390,speed:1});
@@ -92,7 +95,7 @@ export class SkyBattle {
   return false;
  }
  tick(dt:number){
-  const g=this.g;this.plants.tick(dt);this.thunder.tick(dt);this.airRaid.tick(dt);
+  const g=this.g;this.plants.tick(dt);this.thunder.tick(dt);this.airRaid.tick(dt);this.enemies.tick(dt);
   if(g.level.world==='sky'&&(g.plants.some(p=>p.hp>0&&p.kind==='blover'&&p.animation==='Blowing')||g.westFinale.winds.length>0))this.damageShip(ship.BloverDPS*dt,true);
   for(const d of this.drops){
    d.elapsed+=dt;const timeline=g.props.plantAnimations.skyDropShip[d.animation];

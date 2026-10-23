@@ -13,7 +13,7 @@ let scene:Scene|undefined,game:Game|undefined,battle:ReturnType<typeof createBat
 const draw=()=>{scene!.sync(game!,0);scene!.render();status.textContent=`云端${game!.level.day} ${game!.time.toFixed(1)}s ${game!.phase} 飞船${Math.ceil(game!.sky.health)} 护盾${Math.ceil(game!.sky.shield)} 运输机${game!.sky.drops.length} 僵尸${game!.zombies.length}`;};
 const button=(label:string,run:()=>void|Promise<void>)=>{const b=document.createElement('button');b.textContent=label;b.onclick=()=>{Promise.resolve(run()).catch(e=>{status.textContent=String(e);console.error(e);});};controls.append(b);};
 async function clean(){if(battle){await battle.dispose();battle=undefined;}if(scene){await scene.dispose();scene=undefined;}host.replaceChildren();battleHost.hidden=true;host.hidden=true;}
-for(const day of [1,2,3,4,5,6,7,8,9,10]){
+for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]){
  button(`进入${day}关`,async()=>{await clean();battleHost.hidden=false;battle=createBattle(battleHost,async()=>{await clean();},BATTLE_LEVELS[`sky${day}`],progress);await battle.enter();status.textContent=`云端${day}正式入口`;});
  button(`场景${day}`,async()=>{await clean();host.hidden=false;scene=new Scene();const config=BATTLE_LEVELS[`sky${day}`],level=readLevel(await json<SourceLevel>(config.source));
  const groups=await Promise.all(['levels','campaign',...config.bundles!].map(name=>json<Properties>(name+'/properties.json'))),props=groups.reduce((a,b)=>({...a,...b,plants:{...a.plants,...b.plants},zombies:{...a.zombies,...b.zombies},armors:{...a.armors,...b.armors},projectiles:{...a.projectiles,...b.projectiles},plantAnimations:{...a.plantAnimations,...b.plantAnimations}}));props.zombies.mummy_flag=await json('battle/flag.json');
@@ -28,3 +28,5 @@ button('受控结算',()=>{for(let i=0;i<30000&&game!.phase==='playing';i++){gam
 
 button('雷电双舱（场景10）',()=>{Object.assign(game!,{nextWave:Infinity});game!.plants=[];game!.zombies=[];game!.addPlant('anthurium',2,1);game!.addPlant('skyshooter',2,2);game!.addPlant('moonbean',3,3);game!.sky.thunder.add(2,2,1);game!.spawnZombie('sky_twin',2,cellX(7));draw();});
 button('空战移动',()=>{game!.sky.airRaid.move(500,400);draw();});
+
+button('电磁与巨人（场景14）',()=>{Object.assign(game!,{nextWave:Infinity});game!.plants=[];game!.zombies=[];game!.addPlant('skyshooter',1,3);game!.addPlant('anthurium',1,2);game!.spawnZombie('sky_electric',1,cellX(7));const z=game!.spawnZombie('sky_gargantuar',3,cellX(7));z.hp=2400;draw();});
