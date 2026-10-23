@@ -1,3 +1,4 @@
+import {ModernDusk} from './modern-dusk';
 import {ModernEnemies} from './modern-enemies';
 import {BOARD,cellX,rowY,type SpawnAction,type ZombieKind} from './level';
 import type {Game,Plant,Zombie} from './model';
@@ -6,6 +7,7 @@ export const modernArmor=(kind:ZombieKind)=>kind==='tutorial_armor1'?'modern_arm
 interface Portal {kind:NonNullable<SpawnAction['portal']>['kind'];id:number;row:number;column:number;born:number;next:number;ended:number|null;queue:ZombieKind[]}
 interface Leaves {left:number;reload:number;fooded:boolean;cycles:number}
 export class ModernBattle {
+ readonly dusk:ModernDusk;
  readonly leaves=new Map<number,Leaves>();
  readonly papers=new Map<number,{hp:number;angryAt:number;elapsed:number;sounded:boolean}>();
  readonly shrunk=new Map<number,{at:number;duration:number;damage:number;speed:number}>();
@@ -13,8 +15,8 @@ export class ModernBattle {
  portals:Portal[]=[];
  shots:{id:number;row:number;x:number;name:string;damage:number}[]=[];
  readonly enemies:ModernEnemies;
- constructor(private g:Game){this.enemies=new ModernEnemies(g);}
- shadowPlant(p:Plant){return ['moonflower','nightshade','shadowshroom'].includes(p.kind);}
+ constructor(private g:Game){this.dusk=new ModernDusk(g);this.enemies=new ModernEnemies(g);}
+ shadowPlant(p:Plant){return ['moonflower','nightshade','shadowshroom','dusklobber'].includes(p.kind);}
  powered(p:Plant){return p.kind==='moonflower'?this.g.plants.filter(q=>q.hp>0&&this.shadowPlant(q)&&Math.abs(q.row-p.row)<=1&&Math.abs(q.column-p.column)<=1).length>=4:this.g.time<(this.shadows.get(`${p.row}:${p.column}`)??0);}
  init(p:Plant){p.animation='Idle';p.eventIndex=0;if(p.kind==='nightshade')this.leaves.set(p.id,{left:this.g.props.plants.nightshade.MaxProjectiles,reload:0,fooded:false,cycles:0});}
  private play(p:Plant,animation:string,action:Plant['action']){p.animation=animation;p.action=action;p.actionAt=this.g.time;p.eventIndex=0;}
@@ -23,6 +25,7 @@ export class ModernBattle {
  private shrink(p:Plant,all:boolean){const g=this.g,prop=g.props.plants.shrinkingviolet;for(const z of g.zombies)if(z.hp>0&&!this.shrunk.has(z.id)&&!g.props.zombies[z.kind].ImmuneToShrinkingViolet&&(all||Math.abs(z.row-p.row)<=1&&Math.abs(z.x-cellX(p.column))<1.5*BOARD.cellWidth+20)){this.shrunk.set(z.id,{at:g.time,duration:prop.ShrinkTime,damage:prop.DamageMultiplier,speed:prop.SpeedScale});z.stunnedUntil=g.time+prop.ShrinkTime;if(g.props.zombies[z.kind].KilledByShrinkingViolet){z.hp=0;z.deathCause='toss';}g.future.visual('violetShrink','Play',z.x,rowY(z.row));}for(const sound of ['explode','shrink','wisp'])g.beach.sounds.push('shrinkingviolet/'+sound);}
  plant(p:Plant,dt:number){
   const g=this.g,props=g.props.plants[p.kind];
+  if(p.kind==='dusklobber'){this.dusk.plant(p);return;}
   if(p.kind==='nightshade'){
    const s=this.leaves.get(p.id)!;
    if(p.action!=='food'){
@@ -61,7 +64,7 @@ export class ModernBattle {
   g.beach.sounds.push('portal/start');
  }
  tick(dt:number){
-  const g=this.g;
+  const g=this.g;this.dusk.tick(dt);
   for(const p of g.plants)if(p.hp>0&&p.kind==='moonflower')for(let r=Math.max(0,p.row-1);r<=Math.min(4,p.row+1);r++)for(let c=Math.max(0,p.column-1);c<=Math.min(8,p.column+1);c++)this.shadows.set(`${r}:${c}`,g.time+20*dt);
   for(const p of this.portals)if(p.ended===null&&g.time>=p.next){const props=portalProps[p.kind];p.next=g.time+props.TimeBetween.Min+g.random()*(props.TimeBetween.Max-props.TimeBetween.Min);if(p.queue.length){const z=g.spawnZombie(p.queue.shift()!,p.row,cellX(p.column));z.landUntil=g.time+1;}else {p.ended=g.time;g.beach.sounds.push('portal/end');}}
   this.portals=this.portals.filter(p=>p.ended===null||g.time-p.ended<g.props.plantAnimations.portal.Die.duration);

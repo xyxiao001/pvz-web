@@ -242,7 +242,7 @@ export class Game {
     this.plants.push({ id: ++this.id, kind, row, column, hp: p.Toughness, armor: 0, age: 0, nextAction,
       action: 'idle', actionAt: this.time, fired: false, burst: 0, nextBurst: 0 });
     const plant=this.plants.at(-1)!;
-    if(kind==='nightshade'||kind==='shrinkingviolet')this.modern.init(plant);
+    if(kind==='dusklobber'||kind==='nightshade'||kind==='shrinkingviolet')this.modern.init(plant);
     if(plant.kind==='toadstool')this.toadstool.init(plant);this.lostcity.initPlant(plant);this.expedition.init(this.plants.at(-1)!);this.iceageCombat.init(plant);
     if(kind==='hotpotato')this.iceage.hot(plant);
     if(this.beachFinale.handles(kind))this.beachFinale.init(plant);
@@ -327,7 +327,7 @@ export class Game {
     this.eighties.skunk.stunned.delete(plant.id);
     if(!boost){this.food--;this.future.link(plant);} plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
-    if(plant.kind==='nightshade'||plant.kind==='shrinkingviolet')this.modern.food(plant);
+    if(plant.kind==='dusklobber'||plant.kind==='nightshade'||plant.kind==='shrinkingviolet')this.modern.food(plant);
     if(this.eighties.finale.handles(plant.kind)||plant.kind==='caulipower'||plant.kind==='sporeshroom'||plant.kind==='garlic'||plant.kind==='phatbeet'||plant.kind==='cactus')this.eighties.food(plant);
     if(plant.kind==='bulbkekengi'||plant.kind==='peacommando'||plant.kind==='moonbean'||plant.kind==='anthurium'||plant.kind==='skyshooter'||plant.kind==='asparagus')this.sky.food(plant);
     if(plant.kind==='explodeonut'){plant.hp=this.props.plants.explodeonut.Toughness;plant.animation='Food';plant.eventIndex=0;this.beach.sounds.push('explodeonut/foodSound');}
@@ -1040,7 +1040,7 @@ export class Game {
       if(p.kind==='toadstool'){this.toadstool.tick(p,dt);continue;}
       if((this.level.world==='kongfu'||this.level.world==='eighties'||this.level.world==='dino'||this.level.world==='modern')&&p.leap?.pushed){if(this.time-p.leap.at<(p.leap.duration??.5))continue;delete p.leap;}
       if(p.kind==='powerlily'){if(this.time-p.actionAt>=this.props.plantAnimations.powerlily.Attack.events.find(e=>e.name==='produce')!.at){this.pickups.push({id:this.nextEntityId(),kind:'food',x:cellX(p.column),y:rowY(p.row)-45,age:0});p.hp=0;}continue;}
-      if(p.kind==='nightshade'||p.kind==='shrinkingviolet'){this.modern.plant(p,dt);continue;}
+      if(p.kind==='dusklobber'||p.kind==='nightshade'||p.kind==='shrinkingviolet'){this.modern.plant(p,dt);continue;}
       if(p.kind==='bulbkekengi'||p.kind==='peacommando'||p.kind==='moonbean'||p.kind==='anthurium'||p.kind==='skyshooter'||p.kind==='asparagus'){this.sky.plant(p);continue;}
       if(p.kind==='explodeonut'){this.dino.plants.nut(p);continue;}
       if(p.kind==='goldbloom'||p.kind==='torchwood'){this.dino.plants.plant(p);continue;}

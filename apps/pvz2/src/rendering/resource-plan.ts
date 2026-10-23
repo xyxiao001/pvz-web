@@ -82,11 +82,12 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   if(portalEnemies.length)for(const n of ['darkHelmet','iceageHelmet','dinoHelmet','eightiesCone','eightiesBucket','shovelDrop','icePrepare','icePlant','iceZombie','icePlantBack','iceZombieBack','iceBreak','hotVapour','hotPuddle'])names.add(n);
   if(level.world==='modern')for(const t of level.powerTiles)for(const n of ['tile_'+t.group,'tile_'+t.group+'Flash','tile_'+t.group+'Dot'])names.add(n);
   if(level.goldTiles.length)names.add('goldtile');
-  if(level.world==='modern'&&level.day===1)names.add('zombossicon');
+  if(level.world==='modern'&&[1,16].includes(level.day))names.add('zombossicon');
   if(level.world==='modern')for(const n of ['modernLawn','modernCone','modernBucket','mower'])names.add(n);
   if(level.actions.flat().some(a=>a.portal))names.add('portal');
   if(enemies.includes('modern_newspaper')||enemies.includes('beghouled_newspaper'))names.add('paperDestroy');
   if(plants.includes('shrinkingviolet'))names.add('violetShrink');
+  if(plants.includes('dusklobber'))for(const n of ['duskShot','duskFood','duskSplat','duskFoodSplat'])names.add(n);
   if(plants.includes('nightshade'))for(const n of ['nightshadeShot','nightshadeFood','nightshadeMega','nightshadeFoodMega'])names.add(n);
   if(plants.includes('primalpotatomine'))names.add('spudowPrimal');
   if(level.world==='eighties'&&level.day===41)names.add('clearMissile');

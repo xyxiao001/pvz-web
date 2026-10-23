@@ -3,6 +3,7 @@ import '../src/style.css';
 import {WorldShell} from '../src/shell/controller';
 import {ProgressStore} from '../src/shell/progression';
 import {NAVIGATION_KEY} from '../src/shell/navigation';
+import {ENDLESS_LEVELS} from '../src/game/endless';
 import {BATTLE_LEVELS} from '../src/game/levels';
 import {Game} from '../src/game/model';
 import {createBattle} from '../src/battle';
@@ -11,6 +12,7 @@ import type {WorldMap} from '../src/shell/types';
 
 const data=new Map<string,string>(),storage={getItem:(k:string)=>data.get(k)??null,setItem:(k:string,v:string)=>{data.set(k,v);},removeItem:(k:string)=>{data.delete(k);}};
 const progress=new ProgressStore(storage),map=await json<WorldMap>('shell/maps/modern.json');
+(window as unknown as {modernProgress:ProgressStore}).modernProgress=progress;
 const day=Number(new URLSearchParams(location.search).get('day')??1);
 const node=map.islands.find(n=>n.levels.includes(`modern${day}`))!;
 storage.setItem(NAVIGATION_KEY,JSON.stringify({world:'modern',chooser:0,cameras:{modern:node.x}}));
@@ -28,11 +30,11 @@ Game.prototype.tick=function(dt:number){
 };
 const control=document.querySelector<HTMLButtonElement>('#control')!;
 control.onclick=()=>{controlled=!controlled;control.textContent=controlled?'关闭受控清场':'开启受控清场';};
-const status=()=>{document.querySelector('#status')!.textContent=JSON.stringify({completed:[...progress.completed(map)],plants:[...progress.ownedPlants()],rewards:progress.rewards(),campaign:progress.campaignRewards(),pending:progress.pending()});};
+const status=()=>{document.querySelector('#status')!.textContent=JSON.stringify({completed:[...progress.completed(map)],plants:[...progress.ownedPlants()],rewards:progress.rewards(),campaign:progress.campaignRewards(),endless:progress.endlessRun('modern'),pending:progress.pending()});};
 document.querySelector<HTMLButtonElement>('#snapshot')!.onclick=status;
 const host=document.querySelector<HTMLElement>('.world-shell')!,battleHost=document.querySelector<HTMLElement>('.battle-app')!;
 const shell=new WorldShell(host,async(id,p)=>{
- battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;await shell.resume();status();},BATTLE_LEVELS[id],p);
+ battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;await shell.resume();status();},BATTLE_LEVELS[id]??ENDLESS_LEVELS[id],p);
  await battle.enter();
 },storage);
 await shell.init();status();
