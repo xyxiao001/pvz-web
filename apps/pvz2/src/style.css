@@ -13,6 +13,12 @@ button{font:inherit;cursor:pointer;border:0;padding:0;background:transparent;col
 .battle-window.pause-window{width:52%;padding:.8cqw 2cqw 1.2cqw}
 .pause-window h2{margin:0;font-size:3cqw;line-height:1.2;color:#fff4ba;text-shadow:0 .18cqw #664322}
 .pause-window .pause-level{margin:.8cqw 0 1.8cqw;font-size:1.6cqw;line-height:1.4;color:#49301e}
+.pause-window .pause-help{display:none}
+@media (pointer:coarse),(max-width:650px){
+.battle-frame{width:min(100vw,calc(100dvh*12/7))}
+.battle-caption{display:none}
+.pause-window .pause-help{display:block;margin:0 0 1.2cqw;font:1.6cqw/1.5 "PingFang SC",sans-serif;color:#49301e}
+}
 .pause-window .audio-settings{padding:.4cqw 1.6cqw;border:.12cqw solid #7a4e2b;border-radius:1cqw;background:#ffe7ad30;box-shadow:inset 0 .12cqw #ffe1a44d}
 .pause-window .volume-option{margin:1.5cqw 0;font-size:1.8cqw}
 .pause-window .volume-option output{color:#49301e;font-size:1.4cqw}
