@@ -1,3 +1,4 @@
+import { BattleFactory } from './battle-factory';
 import { installFrameTicker } from '../frame-ticker';
 import { readFrameLimit } from '../frame-limit';
 import {isRack,rackDisplay} from '../game/kongfu-combat';
@@ -135,7 +136,7 @@ export class Scene {
   onPoint: (x: number, y: number) => void = () => {};
   onRelease:()=>void=()=>{};
   onHover: (x: number, y: number) => void = () => {};
-  private factory = new PixiFactory(null, false);
+  private factory = new BattleFactory(null, false);
   private actors = new Map<number, Actor>();
   private aliveActors = new Set<number>();
   private plantsById = new Map<number, Plant>();

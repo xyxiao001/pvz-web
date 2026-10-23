@@ -1,8 +1,9 @@
+import { BattleFactory } from './battle-factory';
 import { battleEffects } from './resource-plan';
 import type { BattleLevel } from '../game/levels';
 import type { ResourceScope } from '../assets/resource-pool';
 import { Container, Rectangle, Texture, type Application } from 'pixi.js';
-import { PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
+import { WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
 import { assetUrl, json, loadInBatches } from '../assets/load';
 import type { Level, PlantKind } from '../game/level';
 import type { SpriteArt } from '../shell/types';
@@ -16,7 +17,7 @@ export interface CampaignCatalog {actors:Record<string,Rig>;rigs:Record<string,R
 export class BattleArt {
   campaign!:CampaignCatalog;
   catalog!: BattleCatalog;
-  private factory = new PixiFactory(null, false);
+  private factory = new BattleFactory(null, false);
   readonly clock = new WorldClock();
   async init(app: Application, progress: (done:number,total:number)=>void,config:BattleLevel,plants:PlantKind[],level:Level,textures:ResourceScope<Texture>) {
     this.catalog = await json<BattleCatalog>('battle/catalog.json');

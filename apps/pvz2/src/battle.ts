@@ -102,6 +102,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   let deck: PlantKind[] = [];
   let packetId:number|undefined;
   let pointerDown=false;
+  let sceneDirty=true;
   let tipUntil=0;let bossMusicStage=-1;let pianoPlaying=false;let eightiesJam='jam_clear';let corralStreet=false,corralPan=0,corralPreview=-1;
   let foodTipShown=false;
   let narrativeLines:typeof scene.art.catalog.intro=[];
@@ -152,7 +153,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       },levelConfig,actorPlants,parsed);
       $('#performance-memory').textContent=`纹理估算 ${(scene.textureBytes/1024/1024).toFixed(1)} MiB`;
       updateJsMemory();
-      scene.onPoint=(x,y)=>{pointerDown=true;interact(x,y);};scene.onHover=hover;scene.onRelease=()=>{pointerDown=false;game?.releaseMower();if(game)game.cowboy.selected=null;if(game?.power)game.powerPointer(game.power.x,game.power.y,false);};scene.onTick=tick;
+      scene.onPoint=(x,y)=>{pointerDown=true;interact(x,y);};scene.onHover=hover;scene.onRelease=()=>{sceneDirty=true;pointerDown=false;game?.releaseMower();if(game)game.cowboy.selected=null;if(game?.power)game.powerPointer(game.power.x,game.power.y,false);};scene.onTick=tick;
       scene.onSound=sound;
       scene.onNPCEvent=(character,event)=>{
         const sounds:Record<string,string>={enter:'Enter',exit:'Exit',enter_brake:'Enter_Brake',exit_brake:'Exit_Brake',enter_shake:'Enter_Shake',exit_shake:'Exit_Shake'};
@@ -283,6 +284,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     $('#hud').hidden=true;$('#overlay').hidden=true;$('#seed-chooser').hidden=true;host.hidden=true;onReturn();
   }
   function updateHud() {
+    sceneDirty=true;
     if(selected){game.eighties.finale.cancel();game.escape.cancel();game.westFinale.cancel();game.kongfu.bamboozle.cancel();game.darkPlants.cancel();}
     if(game.level.airRaid){const ship=$('#ship-health'),raid=game.sky.airRaid;ship.hidden=false;text(ship,`得分 ${raid.score} / ${game.level.airRaid.target} · 生命 ${Math.max(0,Math.ceil(raid.player?.hp??0))} / 300${raid.current.threshold!==undefined?` · 下次升级 ${raid.current.threshold}`:''}`);}else if(game.level.world==='sky'){const ship=$('#ship-health');ship.hidden=false;text(ship,`飞船 ${Math.max(0,Math.ceil(game.sky.health))} / 20000${game.sky.shield>0?` · 护盾 ${Math.ceil(game.sky.shield)}`:''}`);}
     text(sunCount,String(game.sun));if(levelConfig.mode==='seedbank'||levelConfig.mode==='preset')updateDeck();
@@ -303,6 +305,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   }
   function hover(x: number,y: number) {
     if(screen!=='playing')return;
+    sceneDirty=true;
     if(game.level.airRaid){game.sky.airRaid.move(x,y);return;}
     if(game.power){game.powerPointer(x,y,pointerDown);return;}
     if(!selected&&pointerDown){game.mowerPointer(x,y,true);if(game.cowboy.move(Math.floor((y-BOARD.top)/BOARD.cellHeight))){game.westFinale.cancel();game.kongfu.bamboozle.cancel();}}
@@ -310,6 +313,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   }
   function interact(x: number,y: number) {
     if(screen!=='playing')return;
+    sceneDirty=true;
     if(game.level.airRaid){game.sky.airRaid.move(x,y);if(selected==='food'){game.sky.airRaid.food();selected=null;updateHud();}return;}
     if(game.level.cannon){game.pirate.fire(Math.floor((y-BOARD.top)/BOARD.cellHeight),Math.floor((x-BOARD.left)/BOARD.cellWidth));return;}
     if(!selected)game.mowerPointer(x,y,true,true);
@@ -374,7 +378,9 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       corralPan=Math.max(0,Math.min(1,corralPan+(corralStreet?1:-1)*dt/2));scene.frameCorral(cubicInOut(corralPan));
       $('#corral-view').textContent=corralStreet?'返回庭院':'查看僵尸';
     }
-    scene.sync(game,advanced);updateHud();
+    // On high-refresh displays, keep rendering without repeating an unchanged battle sync.
+    // Input marks the scene dirty so pointer/selection changes appear on the next frame.
+    if(advanced>0||sceneDirty){scene.sync(game,advanced);updateHud();sceneDirty=false;}
     for(const event of game.events) {
       if(event.type==='wave'&&game.level.corral&&game.wave>1)corralPreview=0;
       if(event.type==='flip')sound('camelTouch/flipSound');
