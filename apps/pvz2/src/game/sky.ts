@@ -1,3 +1,4 @@
+import {SkyBoss} from './sky-boss';
 import {SkySpecial} from './sky-special';
 import {SkyDrones} from './sky-drones';
 import {SkyEnemies} from './sky-enemies';
@@ -54,6 +55,7 @@ export class SkyBattle {
  }
  private play(z:Zombie,animation:string){z.sky!.animation=animation;z.sky!.elapsed=0;z.sky!.event=0;}
  zombie(z:Zombie,dt:number){
+  if(this.g.boss instanceof SkyBoss&&this.g.boss.batteryTick(z,dt))return true;
   if(this.g.level.airRaid)return this.airRaid.zombie(z,dt);
   if(this.special.zombie(z,dt))return true;
   if(this.drones.zombie(z,dt))return true;

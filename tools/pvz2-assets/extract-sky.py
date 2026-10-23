@@ -1,4 +1,4 @@
-"""Export Sky 1–30 from the pinned Cocos build."""
+"""Export Sky 1–32 from the pinned Cocos build."""
 import hashlib, importlib.util, json, math, io, copy
 from pathlib import Path
 from PIL import Image
@@ -18,9 +18,9 @@ def rig(path):
 def props(path,names):
     objs=e.read('json/Objects/'+path).objects[0]['json']['objects']
     return {n:next(o['objdata'] for o in objs if n in o.get('aliases',[])) for n in names}
-paths={'skyAirRaidArbiterX':'zombies/SkyAirRaidArbiterXZOMBIE','skyGargantuarThrower':'zombies/SkyGargantuarArmor2ThrowerZOMBIE','bulbkekengi':'plants/BulbkekengiPLANT','peacommando':'plants/PeaCommandoPLANT','skyArbiterX':'zombies/SkyArbiterXZOMBIE','skyDroneMaker':'zombies/SkyDroneMakerZOMBIE','skyDrone':'zombies/SkyDroneZOMBIE','skyAirRaidTwin':'zombies/SkyAirRaidTwinZOMBIE','skyElectric':'zombies/SkyElectricZOMBIE','skyGargantuar':'zombies/SkyGargantuarZOMBIE','moonbean':'plants/MoonBeanPLANT','anthurium':'plants/AnthuriumPLANT','skyTwinLower':'zombies/SkyTwinLowerZOMBIE','skyTwinUpper':'zombies/SkyTwinUpperZOMBIE','skyshooter':'plants/SkyshooterPLANT','asparagus':'plants/AsparagusPLANT','sky':'zombies/SkyBasicZOMBIE','skyFlag':'zombies/SkyFlagZOMBIE','skyImp':'zombies/SkyImpZOMBIE','skyBattlePlane':'zombies/SkyBattlePlaneZOMBIE','skyDropShip':'zombies/SkyDropShipZOMBIE'}
+paths={'boss':'zombies/SkyZombossMechZOMBIE','skyBattery':'zombies/SkyBatteryZOMBIE','skyBatteryLower':'zombies/SkyBatteryLowerZOMBIE','skyAirRaidArbiterX':'zombies/SkyAirRaidArbiterXZOMBIE','skyGargantuarThrower':'zombies/SkyGargantuarArmor2ThrowerZOMBIE','bulbkekengi':'plants/BulbkekengiPLANT','peacommando':'plants/PeaCommandoPLANT','skyArbiterX':'zombies/SkyArbiterXZOMBIE','skyDroneMaker':'zombies/SkyDroneMakerZOMBIE','skyDrone':'zombies/SkyDroneZOMBIE','skyAirRaidTwin':'zombies/SkyAirRaidTwinZOMBIE','skyElectric':'zombies/SkyElectricZOMBIE','skyGargantuar':'zombies/SkyGargantuarZOMBIE','moonbean':'plants/MoonBeanPLANT','anthurium':'plants/AnthuriumPLANT','skyTwinLower':'zombies/SkyTwinLowerZOMBIE','skyTwinUpper':'zombies/SkyTwinUpperZOMBIE','skyshooter':'plants/SkyshooterPLANT','asparagus':'plants/AsparagusPLANT','sky':'zombies/SkyBasicZOMBIE','skyFlag':'zombies/SkyFlagZOMBIE','skyImp':'zombies/SkyImpZOMBIE','skyBattlePlane':'zombies/SkyBattlePlaneZOMBIE','skyDropShip':'zombies/SkyDropShipZOMBIE'}
 actors={n:rig(p) for n,p in paths.items()}
-rigpaths={'skyFog':'be35545d-0525-43e9-85db-718415bf209d','commandoTrooper':'ebd0de12-669e-4dc0-9a0f-6c25ddc1c90e','commandoRay':'9563e790-bb00-4756-b309-bc1d121a1576','skyAirRaidStar':'projectiles/ShootingstarFoodPRJ','skyHelmet':'armors/SkyHelmetARMOR','skyBoltPositive':'projectiles/SkyBoltPositivePRJ','skyBoltNegative':'projectiles/SkyBoltNegativePRJ','skyBoltHitPositive':'0e18f96c-a237-4fd2-9f61-eefb043d6dab','skyBoltHitNegative':'c97f66f1-b418-4ff9-ade1-f10c4ad4eb92','airRaid0':'projectiles/AirRaid0PRJ','airRaid1':'projectiles/AirRaid1PRJ','anthuriumBolt':'projectiles/AnthuriumBoltPRJ','anthuriumBoltBig':'projectiles/AnthuriumBoltBigPRJ','moonRay':'7d1e180f-39b8-4591-beed-2cbd85b3b4c5','anthuriumLightning':'06be3526-5cb9-48f5-9a46-4aab440cc191','anthuriumLink':'b0971120-c2ab-46ef-8655-53c432487c30','skyCharge':'c2c4b103-a3d7-458b-b38c-551176983865','skyThunderPositive':'08a23eea-b37f-4f05-b988-0a108d9f3deb','skyThunderNegative':'40259c54-1114-457f-ab37-e9808bc32544','skyThunderLinkPositive':'52e48de6-5ebe-4e7e-a557-c29ae6832abd','skyThunderLinkNegative':'f033f80c-64d4-4bbd-92f1-bfefe4a021e5','skyThunderHitPositive':'a0727d9a-a7af-4535-8ccb-d75adf6b1635','skyThunderHitNegative':'b81ae882-7046-45a1-af0c-8c1bea7625ff','skyCone':'armors/SkyConeARMOR','skyBucket':'armors/SkyBucketARMOR','skyBullet':'projectiles/SkyBattlePlaneBulletPRJ','skyPea0':'projectiles/PeaSky0PRJ','skyPea1':'projectiles/PeaSky1PRJ','skyPea2':'projectiles/PeaSky2PRJ'}
+rigpaths={'skyStorm':'projectiles/SkyZombossStormPRJ','skyFog':'be35545d-0525-43e9-85db-718415bf209d','commandoTrooper':'ebd0de12-669e-4dc0-9a0f-6c25ddc1c90e','commandoRay':'9563e790-bb00-4756-b309-bc1d121a1576','skyAirRaidStar':'projectiles/ShootingstarFoodPRJ','skyHelmet':'armors/SkyHelmetARMOR','skyBoltPositive':'projectiles/SkyBoltPositivePRJ','skyBoltNegative':'projectiles/SkyBoltNegativePRJ','skyBoltHitPositive':'0e18f96c-a237-4fd2-9f61-eefb043d6dab','skyBoltHitNegative':'c97f66f1-b418-4ff9-ade1-f10c4ad4eb92','airRaid0':'projectiles/AirRaid0PRJ','airRaid1':'projectiles/AirRaid1PRJ','anthuriumBolt':'projectiles/AnthuriumBoltPRJ','anthuriumBoltBig':'projectiles/AnthuriumBoltBigPRJ','moonRay':'7d1e180f-39b8-4591-beed-2cbd85b3b4c5','anthuriumLightning':'06be3526-5cb9-48f5-9a46-4aab440cc191','anthuriumLink':'b0971120-c2ab-46ef-8655-53c432487c30','skyCharge':'c2c4b103-a3d7-458b-b38c-551176983865','skyThunderPositive':'08a23eea-b37f-4f05-b988-0a108d9f3deb','skyThunderNegative':'40259c54-1114-457f-ab37-e9808bc32544','skyThunderLinkPositive':'52e48de6-5ebe-4e7e-a557-c29ae6832abd','skyThunderLinkNegative':'f033f80c-64d4-4bbd-92f1-bfefe4a021e5','skyThunderHitPositive':'a0727d9a-a7af-4535-8ccb-d75adf6b1635','skyThunderHitNegative':'b81ae882-7046-45a1-af0c-8c1bea7625ff','skyCone':'armors/SkyConeARMOR','skyBucket':'armors/SkyBucketARMOR','skyBullet':'projectiles/SkyBattlePlaneBulletPRJ','skyPea0':'projectiles/PeaSky0PRJ','skyPea1':'projectiles/PeaSky1PRJ','skyPea2':'projectiles/PeaSky2PRJ'}
 for obj in walk(e.read('plants/AsparagusPLANT').objects):
     for key in ['hitParYellowPFB','hitParBluePFB','shootParYellowPFB','shootParBluePFB']:
         if key in obj:rigpaths['asparagus_'+key]=obj[key]['asset']
@@ -34,6 +34,7 @@ for co in e.read('lawns/SkyShiplessNightLAWN').objects:
 for arm in ['Back','Front']:
     rigs['airRaidShip'+arm]={'rig':e.rig('697c04b1-c1c7-4b49-986f-76bfc21eadb6','9d157db8-e850-4fd3-9509-88e2ef231ce4'),'armature':arm,'animation':'Idle','group':'sky'}
 rigs['skyDropShip']=actors['skyDropShip']
+rigs['skyBatteryLink']={**actors['skyBattery'],'armature':'BatteryLink','animation':'i'}
 for index,ref in enumerate(e.read('resouce_prefabs/ParticlesRP').objects[1]['_components'][0]['sky_shields']):
     rigs[f'skyShield{index}']=rig(ref['asset'])
 for co in walk(e.read('zombies/SkyBasicZOMBIE').objects):
@@ -48,7 +49,8 @@ skeleton=json.loads(plane.read_text())
 shared=json.loads(e.read('a8e1a224-cdc8-4f9b-b80b-7b9a454cd02e').objects[0]['_dragonBonesJson'])
 skeleton['armature'].append(copy.deepcopy(next(a for a in shared['armature'] if a['name']=='backFire_blue')))
 c.write_json(plane,skeleton)
-properties={'plants':props('PlantProps',['bulbkekengi','peacommando','skyshooter','asparagus','moonbean','anthurium']),'zombies':props('ZombieProps',['sky_airraid_arbiterx','sky_gargantuar_armor2_thrower','sky_arbiterx','sky_dronemaker','sky_drone','sky_airraid_twin','sky_electric','sky_gargantuar','sky','sky_flag','sky_armor1','sky_armor2','sky_imp','sky_battleplane','sky_dropship','sky_twin','sky_twin_upper']),'armors':props('ArmorProps',['sky_armor1','sky_armor2','sky_armor3']),'projectiles':props('ProjectileProps',['pea_commando','airraid_2','shootingstar_pf','sky_bolt_positive','sky_bolt_negative','pea_sky','pea_sky1','pea_sky2','sky_battleplane_bullet','anthurium_bolt','anthurium_bolt_big','airraid_0','airraid_1']),'plantAnimations':{}}
+properties={'plants':props('PlantProps',['bulbkekengi','peacommando','skyshooter','asparagus','moonbean','anthurium']),'zombies':props('ZombieProps',['zombossmech_sky','sky_battery','sky_airraid_arbiterx','sky_gargantuar_armor2_thrower','sky_arbiterx','sky_dronemaker','sky_drone','sky_airraid_twin','sky_electric','sky_gargantuar','sky','sky_flag','sky_armor1','sky_armor2','sky_imp','sky_battleplane','sky_dropship','sky_twin','sky_twin_upper']),'armors':props('ArmorProps',['sky_armor1','sky_armor2','sky_armor3']),'projectiles':props('ProjectileProps',['sky_zomboss_storm','pea_commando','airraid_2','shootingstar_pf','sky_bolt_positive','sky_bolt_negative','pea_sky','pea_sky1','pea_sky2','sky_battleplane_bullet','anthurium_bolt','anthurium_bolt_big','airraid_0','airraid_1']),'plantAnimations':{}}
+properties['zombies']['sky_battery_lower']=copy.deepcopy(properties['zombies']['sky_battery']) # Native ZombieType shares sky_battery props.
 properties['plants']['moonbean']['PlantfoodSunbombCount']=3 # MoonBean class default
 c.write_json(e.OUT/'flying-plants.json',[p['CODENAME'] for p in e.read('json/Features/PlantFeatures').objects[0]['json']['PLANTS'] if 'fly' in p['TAGS']])
 c.write_json(e.OUT/'ship.json',props('LevelModules',['SkyCityShipDefault'])['SkyCityShipDefault'])
@@ -61,7 +63,7 @@ for name,description in {**actors,**rigs}.items():
             frame+=f.get('duration',1)
         timelines[animation['name']]={'duration':animation.get('duration',1)/arm['frameRate'],'events':events}
     properties['plantAnimations'][name]=timelines
-for day in range(1,31):c.write_json(e.OUT/f'sky{day}.source.json',e.read(f'levels/sky{day}').objects[0]['json'])
+for day in range(1,33):c.write_json(e.OUT/f'sky{day}.source.json',e.read(f'levels/sky{day}').objects[0]['json'])
 # Loading image is the original deck texture; runtime composes the native sky, clouds and deck rigs.
 at=e.read('097b988c-e632-44a0-8075-a26e69fd3a8f');atlas=json.loads(at.objects[0]['_atlasJson']);rect=next(x for x in atlas['SubTexture'] if x['name']=='land')
 pixels=Image.open(io.BytesIO(c.native(at.data[1][at.rec[5][0]],'png')))
@@ -80,7 +82,7 @@ for name,path in {**paths,**rigpaths}.items():
             for key,value in obj['soundRes'].items():
                 if key not in ['type','volumeScale']:sound(name+'/'+key,value)
 npc=e.read('b697cdfd-e783-4f80-abbe-ac197db6cf97');narratives={}
-for name in ['SKYCITY_1_INTRO','SKYCITY_2_INTRO','SKYCITY_3_INTRO','SKYCITY_5_INTRO','SKYCITY_8_INTRO','SKYCITY_9_INTRO','SKYCITY_10_INTRO','SKYCITY_16_INTRO','SKYCITY_18_INTRO','SKYCITY_20_OUTRO','SKYCITY_21_INTRO','SKYCITY_25_INTRO']:
+for name in ['SKYCITY_INTRO_ZOMBOSS','SKYCITY_OUTRO_ZOMBOSS','SKYCITY_1_INTRO','SKYCITY_2_INTRO','SKYCITY_3_INTRO','SKYCITY_5_INTRO','SKYCITY_8_INTRO','SKYCITY_9_INTRO','SKYCITY_10_INTRO','SKYCITY_16_INTRO','SKYCITY_18_INTRO','SKYCITY_20_OUTRO','SKYCITY_21_INTRO','SKYCITY_25_INTRO']:
     flow=next(o['objdata']['Flow'] for o in e.read('json/Objects/NarrativeList').objects[0]['json']['objects'] if name in o.get('aliases',[]))
     for step in flow:
         if 'Lines' in step:
@@ -94,4 +96,4 @@ for name,path in [('music','sky/CYS_LP_Sky'),('minigame','sky/MG_Sky'),('ultimat
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{}})
 c.write_json(c.ROOT/'apps/pvz2/sky-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Sky 1–30')
+print('Exported Sky 1–32')

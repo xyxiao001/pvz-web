@@ -1,3 +1,4 @@
+import {SkyBoss} from './sky-boss';
 import {SkyBattle} from './sky';
 import {DinoBattle,dinoArmor} from './dino';
 import {EightiesBattle} from './eighties';
@@ -172,7 +173,7 @@ export class Game {
     if(level.world==='egypt'&&level.day===2&&tutorial)this.addPlant('peashooter',2,2);
     this.dark.initLevel();this.iceage.init();for(const t of level.goldTiles)this.beachFinale.tiles.push({...t,next:0,at:-Infinity});
     this.conveyorPlants=level.conveyor?level.conveyor.InitialPlantList.map(p=>({...p})):[];
-    if(level.boss)this.boss=level.boss.kind.startsWith('zombossmech_dino')?new DinoBoss(this):level.boss.kind.startsWith('zombossmech_eighties')?new EightiesBoss(this):level.boss.kind==='kongfu_boss_chi'?new KongfuChiBoss(this):level.boss.kind==='kongfu_boss_blade'?new KongfuBladeBoss(this):level.boss.kind==='kongfu_boss_explode'?new KongfuBoss(this):level.boss.kind.startsWith('zombossmech_lostcity')?new LostCityBoss(this):level.boss.kind.startsWith('zombossmech_iceage')?new IceageBoss(this):level.boss.kind.startsWith('zombossmech_beach')?new BeachBoss(this):level.boss.kind.startsWith('zombossmech_dark')?new DarkBoss(this):level.boss.kind.startsWith('zombossmech_future')?new FutureBoss(this):level.boss.kind.startsWith('zombossmech_cowboy')?new CowboyBoss(this):level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
+    if(level.boss)this.boss=level.boss.kind==='zombossmech_sky'?new SkyBoss(this):level.boss.kind.startsWith('zombossmech_dino')?new DinoBoss(this):level.boss.kind.startsWith('zombossmech_eighties')?new EightiesBoss(this):level.boss.kind==='kongfu_boss_chi'?new KongfuChiBoss(this):level.boss.kind==='kongfu_boss_blade'?new KongfuBladeBoss(this):level.boss.kind==='kongfu_boss_explode'?new KongfuBoss(this):level.boss.kind.startsWith('zombossmech_lostcity')?new LostCityBoss(this):level.boss.kind.startsWith('zombossmech_iceage')?new IceageBoss(this):level.boss.kind.startsWith('zombossmech_beach')?new BeachBoss(this):level.boss.kind.startsWith('zombossmech_dark')?new DarkBoss(this):level.boss.kind.startsWith('zombossmech_future')?new FutureBoss(this):level.boss.kind.startsWith('zombossmech_cowboy')?new CowboyBoss(this):level.boss.kind.startsWith('zombossmech_pirate')?new PirateBoss(this):new EgyptBoss(this);
     if(level.cannon){this.nextWave=4+RULES.normalWaveEntrance;level.cannon.RowHasCannon.forEach((has,row)=>{if(has)this.addPlant('coconutcannon',row,1);});}
   }
 

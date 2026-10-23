@@ -15,7 +15,7 @@ export class SkySpecial {
  private play(p:Plant,animation:string,action:Plant['action']){p.animation=animation;p.action=action;p.actionAt=this.g.time;p.eventIndex=0;}
  init(p:Plant){this.play(p,'Idle','idle');if(p.kind==='bulbkekengi'){this.lights.set(p.id,0);this.g.beach.sounds.push('bulbkekengi/spawn');}}
  food(p:Plant){if(p.kind==='bulbkekengi'){this.play(p,'Food','food');this.g.beach.sounds.push('bulbkekengi/food_light');}else {this.troopers=this.troopers.filter(t=>t.owner!==p.id);this.play(p,'AttackStart','food');this.g.beach.sounds.push('peacommando/attack');}}
- private target(){const g=this.g,count=(z:Zombie)=>this.troopers.filter(t=>t.target===z.id&&t.stage!=='done').length,candidates=g.zombies.filter(z=>z.hp>0&&z!==g.boss?.zombie&&z.x<cellX(9)&&!g.props.zombies[z.kind].IgnoredByHomingThistle);
+ private target(){const g=this.g,count=(z:Zombie)=>this.troopers.filter(t=>t.target===z.id&&t.stage!=='done').length,candidates=g.zombies.filter(z=>z.hp>0&&(z!==g.boss?.zombie||g.level.world==='sky')&&z.x<cellX(9)&&!g.props.zombies[z.kind].IgnoredByHomingThistle);
   return candidates.filter(z=>count(z)===0).sort((a,b)=>a.x-b.x)[0]??candidates.sort((a,b)=>(b.hp+b.armor)*(12-(b.x-BOARD.left)/BOARD.cellWidth)/count(b)**2-(a.hp+a.armor)*(12-(a.x-BOARD.left)/BOARD.cellWidth)/count(a)**2)[0];
  }
  plant(p:Plant){

@@ -11,6 +11,7 @@ import {KongfuBladeBoss} from '../game/kongfu-blade-boss';
 import {KongfuChiBoss} from '../game/kongfu-chi-boss';
 import {KongfuBoss} from '../game/kongfu-boss';
 import {dinoArmor} from '../game/dino';
+import {SkyBoss} from '../game/sky-boss';
 import {DinoBoss} from '../game/dino-boss';
 import {EightiesBoss} from '../game/eighties-boss';
 import {LostCityBoss} from '../game/lostcity-boss';
@@ -35,13 +36,14 @@ import { assetUrl, json, loadInBatches } from '../assets/load';
 import { BOARD, cellX, rowY, PLANT_KINDS, type AnimationTiming, type PlantKind, type ZombieKind, type Level } from '../game/level';
 import { isCamel, isMatchCamel, type DeathCause, Game, Plant, Zombie, ZombieDeath } from '../game/model';
 
-type RigName = PlantKind | 'skyAirRaidArbiterX'|'skyGargantuarThrower'| 'skyArbiterX'| 'skyDroneMaker'|'skyDrone'|'skyAirRaidTwin'| 'skyElectric'|'skyGargantuar'| 'skyTwinLower'|'skyTwinUpper'|'sky'|'skyFlag'|'skyImp'|'skyBattlePlane'|'skyDropShip'| 'dinoBullyVeteran'|'dinoBully'| 'dino'|'dinoFlag'|'dinoImp'|'dinoGargantuar'| 'eightiesPunkVeteran'|'eightiesSkunk'|'eightiesBoomBox'| 'eightiesArcade'|'eighties8Bit'|'eightiesBreakDancer'|'eightiesGargantuar'|'eightiesImp'|'eightiesGlitter'|'eightiesMC'|'eighties'|'eightiesFlag'|'eightiesPunk'|'abbotStaff'|'abbotFan'|'kongfuBronzeChi'|'abbot'|'abbotFlag'|'abbotTorch'|'abbotChi'|'abbotImp'|'monkDrink'|'kongfuHook'|'monk'|'monkFlag'|'monkBlade'|'monkNunchaku'|'monkTorch'|'monkImp'|'kongfuChi'|'kongfuBomb'|'kongfuDrink'|'kongfuGong'|'kongfuStatue'|'kongfuStrong'|'kongfuTorch'|'kongfuHammer'|'kongfuRocket'|'kongfu'|'kongfuFlag'|'zoybean'|'zoybeanGarg'|'lostPilotVeteran'|'lostCrystal'|'lostRelic'|'lostPorter'|'lostGargantuar'|'lostExcavator'|'lostJane'|'lostImp'|'lostcity'|'lostcityFlag'|'lostPilot'| 'iceageHunterVeteran'|'iceageTroglobiteVeteran'| 'iceageWeaselHoarder'|'iceageWeasel'|'iceageTroglobite'|'iceageDodo'|'iceageGargantuar'|'iceageHunter'|'iceageImp'|'iceage'|'iceageFlag'| 'beachFisher'|'beachOctopus'|'beachSurfer'|'beachSurferVeteran'|'beachSnorkel'|'beachGargantuar'|'beach'|'beachFemale'|'beachFlag'|'beachImp'| 'darkKingVeteran'| 'darkWizardVeteran'| 'darkKing'|'dragonImp'| 'darkWizard'| 'darkGargantuar'| 'dark'|'darkFlag'|'darkImp'|'darkJester'| 'jetpackVeteran'|'footballMech'|'futureGargantuar'|'discoMech'|'discoJetpack'|'future'|'futureFlag'|'futureJetpack'|'futureProtector'|'futureShield'|'futureImp'|'mechCone'| 'blackBull'|'bull'|'cowboyGargantuar'|'cowboyImp'|'chickenFarmer'|'chicken'|'chickenPumpkin'| 'cowboy'|'cowboyFlag'|'prospector'|'poncho'|'piano'| 'pirateCaptain'|'pirateParrot'| 'barrelroller'|'pirateBarrel'|'pirateGargantuar'|'pirateImp'|'impCannon'| 'pirate'|'pirateFlag'|'swashbuckler'|'seagull'|'pelican'| 'boss' | 'torchlight' | 'pharaohWeak' | 'mummy' | 'ra' | 'camel' | 'camelTouch' | 'gargantuar' | 'imp' | 'explorer' | 'tombraiser' | 'pharaoh' | 'pharaohInner';
+type RigName = PlantKind | 'skyBattery'|'skyBatteryLower'| 'skyAirRaidArbiterX'|'skyGargantuarThrower'| 'skyArbiterX'| 'skyDroneMaker'|'skyDrone'|'skyAirRaidTwin'| 'skyElectric'|'skyGargantuar'| 'skyTwinLower'|'skyTwinUpper'|'sky'|'skyFlag'|'skyImp'|'skyBattlePlane'|'skyDropShip'| 'dinoBullyVeteran'|'dinoBully'| 'dino'|'dinoFlag'|'dinoImp'|'dinoGargantuar'| 'eightiesPunkVeteran'|'eightiesSkunk'|'eightiesBoomBox'| 'eightiesArcade'|'eighties8Bit'|'eightiesBreakDancer'|'eightiesGargantuar'|'eightiesImp'|'eightiesGlitter'|'eightiesMC'|'eighties'|'eightiesFlag'|'eightiesPunk'|'abbotStaff'|'abbotFan'|'kongfuBronzeChi'|'abbot'|'abbotFlag'|'abbotTorch'|'abbotChi'|'abbotImp'|'monkDrink'|'kongfuHook'|'monk'|'monkFlag'|'monkBlade'|'monkNunchaku'|'monkTorch'|'monkImp'|'kongfuChi'|'kongfuBomb'|'kongfuDrink'|'kongfuGong'|'kongfuStatue'|'kongfuStrong'|'kongfuTorch'|'kongfuHammer'|'kongfuRocket'|'kongfu'|'kongfuFlag'|'zoybean'|'zoybeanGarg'|'lostPilotVeteran'|'lostCrystal'|'lostRelic'|'lostPorter'|'lostGargantuar'|'lostExcavator'|'lostJane'|'lostImp'|'lostcity'|'lostcityFlag'|'lostPilot'| 'iceageHunterVeteran'|'iceageTroglobiteVeteran'| 'iceageWeaselHoarder'|'iceageWeasel'|'iceageTroglobite'|'iceageDodo'|'iceageGargantuar'|'iceageHunter'|'iceageImp'|'iceage'|'iceageFlag'| 'beachFisher'|'beachOctopus'|'beachSurfer'|'beachSurferVeteran'|'beachSnorkel'|'beachGargantuar'|'beach'|'beachFemale'|'beachFlag'|'beachImp'| 'darkKingVeteran'| 'darkWizardVeteran'| 'darkKing'|'dragonImp'| 'darkWizard'| 'darkGargantuar'| 'dark'|'darkFlag'|'darkImp'|'darkJester'| 'jetpackVeteran'|'footballMech'|'futureGargantuar'|'discoMech'|'discoJetpack'|'future'|'futureFlag'|'futureJetpack'|'futureProtector'|'futureShield'|'futureImp'|'mechCone'| 'blackBull'|'bull'|'cowboyGargantuar'|'cowboyImp'|'chickenFarmer'|'chicken'|'chickenPumpkin'| 'cowboy'|'cowboyFlag'|'prospector'|'poncho'|'piano'| 'pirateCaptain'|'pirateParrot'| 'barrelroller'|'pirateBarrel'|'pirateGargantuar'|'pirateImp'|'impCannon'| 'pirate'|'pirateFlag'|'swashbuckler'|'seagull'|'pelican'| 'boss' | 'torchlight' | 'pharaohWeak' | 'mummy' | 'ra' | 'camel' | 'camelTouch' | 'gargantuar' | 'imp' | 'explorer' | 'tombraiser' | 'pharaoh' | 'pharaohInner';
 const RIGS: Record<RigName, { armature: string; idle: string; scale: number }> = {
   skyArbiterX:{armature:'ArbiterX',idle:'Idle',scale:.51},bulbkekengi:{armature:'Bulbkekengi',idle:'Idle',scale:.55},peacommando:{armature:'PeaCommando',idle:'Idle',scale:.55},
   skyAirRaidArbiterX:{armature:'AirRaid',idle:'Idle',scale:.6},skyGargantuarThrower:{armature:'SkyGargantuarArmor2',idle:'Idle',scale:.51},
   skyDroneMaker:{armature:'DroneMaker',idle:'Idle',scale:.51},skyDrone:{armature:'Drone',idle:'Idle_Fly',scale:.51},skyAirRaidTwin:{armature:'AirRaid',idle:'Idle',scale:.51},
   skyElectric:{armature:'SkyElectric',idle:'Idle',scale:.51},skyGargantuar:{armature:'SkyGargantuar',idle:'Idle',scale:.51},
   moonbean:{armature:'MoonBean',idle:'Idle',scale:.55},anthurium:{armature:'Anthurium',idle:'Idle',scale:.55},skyTwinLower:{armature:'Lower',idle:'Idle',scale:.51},skyTwinUpper:{armature:'Upper',idle:'Idle',scale:.51},
+  skyBattery:{armature:'BatteryThere',idle:'IdleSingle',scale:.51},skyBatteryLower:{armature:'BatteryHere',idle:'IdleSingle',scale:.51},
   skyshooter:{"armature": "Skyshooter", "idle": "Idle", "scale": 0.55},asparagus:{"armature": "Asparagus", "idle": "Idle", "scale": 0.55},sky:{"armature": "BasicZombie", "idle": "Idle", "scale": 0.51},skyFlag:{"armature": "FlagZombie", "idle": "Idle", "scale": 0.51},skyImp:{"armature": "Imp", "idle": "Walk", "scale": 0.51},skyBattlePlane:{"armature": "BattlePlane", "idle": "Idle", "scale": 0.51},skyDropShip:{"armature": "DropShip", "idle": "Idle", "scale": 0.51},
   explodeonut:{armature:'ExplodeONut',idle:'Idle1',scale:.55},dinoBullyVeteran:{armature:'BullyVeteran',idle:'Walk',scale:.51},
   dinoBully:{armature:'BullyZombie',idle:'Walk',scale:.51},
@@ -266,7 +268,7 @@ export class Scene {
   }
 
   private rig(name: RigName, armature = RIGS[name].armature) {
-    if(name==='boss'&&this.art.campaign.actors.boss.group==='kongfu'&&armature===RIGS.boss.armature)armature=this.art.campaign.actors.boss.armature;
+    if(name==='boss'&&['kongfu','sky'].includes(this.art.campaign.actors.boss.group!)&&armature===RIGS.boss.armature)armature=this.art.campaign.actors.boss.armature;
     if(name==='eighties'&&armature==='BricksDrop')armature='Bricks_drop';
     if(name==='lostcity'&&armature==='BricksDrop')armature='Bricks_Drop';
     if(name==='lostPilotVeteran'&&armature==='head')armature='head_v';
@@ -420,7 +422,7 @@ export class Scene {
         const boss=game.boss,actor=this.actors.get(z.id)??this.addActor(z.id,'boss');
         actor.root.position.set(z.x,boss.y-boss.height);actor.root.zIndex=boss.y+1;
         actor.rig.animation.timeScale=boss.rate;
-        this.animate(actor,boss.animation,boss.animationSerial,(boss.animation.startsWith('Idle_')||['Idle','SummonLoop','Summonning','Stunning','Leaping','StunLoop','CoughLoop','MagnetLoop','RushLoop','HoleLoop','LeapLoop'].includes(boss.animation))?0:1);
+        this.animate(actor,boss.animation,boss.animationSerial,(boss.animation.startsWith('Idle_')||['Idle','IdleShip','StunLoopShip','RushLoopShip','SummonLoop','Summonning','Stunning','Leaping','StunLoop','CoughLoop','MagnetLoop','RushLoop','HoleLoop','LeapLoop'].includes(boss.animation))?0:1);
         continue;
       }
       let actor=this.actors.get(z.id);
@@ -622,6 +624,7 @@ export class Scene {
     actor.root.position.set(z.x,zombieY(z)-(z.dinoCarry??0)-(z.parrot?.height??0));actor.root.zIndex=zombieY(z)+1;actor.rig.animation.timeScale=1;actor.rig.tint=0xffffff;if(actor.kind==='cowboy'||actor.kind==='cowboyFlag')actor.rig.armature.getSlot('hat_HEAD')!.displayIndex=-1;
     if(actor.mask){actor.root.mask=null;actor.mask.destroy();actor.mask=undefined;actor.rig.y=0;}
     if(death.cause==='blow'){if(z.kind==='future_imp'&&z.future!.animation==='Fall')actor.root.y=rowY(z.row)-600*Math.max(0,1-(death.at-z.entryAt))**2;actor.death={cause:'blow',elapsed:0,fadeAt:Infinity,fallAt:Infinity};return;}
+    if(actor.kind==='skyBattery'||actor.kind==='skyBatteryLower'){const animation=game.boss instanceof SkyBoss&&game.boss.batteries.get(z.id)!.partner?'DeathPaired':'DeathSingle';this.animate(actor,animation,0,1);actor.death={cause:death.cause,elapsed:0,fadeAt:game.props.plantAnimations.skyBattery[animation].duration,fallAt:Infinity};return;}
     if(death.cause==='water'||death.cause==='swallow'){this.removeActor(z.id,actor);return;}
     if(z.kind==='chicken'||z.kind==='chicken_pumpkin'){this.chickenFeathers(actor,-z.id,'PlayFloor');this.removeActor(z.id,actor);return;}
     if(z.kind==='cannon'&&z.pirate?.animation==='Explode'){this.removeActor(z.id,actor);return;}
@@ -916,6 +919,12 @@ export class Scene {
     for(const c of game.dino.bully.cracks){const age=game.time-c.at,rig=object(`bully-crack-${c.id}`,'dinoCrack',age<game.props.plantAnimations.dinoCrack.Spawn.duration?'Spawn':'Idle',cellX(c.column),rowY(c.row),.5);rig.zIndex=-10;rig.armature.getSlot('BG')!.displayIndex=0;const spark=object(`bully-crack-sparkle-${c.id}`,'dinoCrackSparkle','Idle',cellX(c.column),rowY(c.row),.5);for(const slot of spark.armature.getSlots())if(slot.name.includes('_P1'))slot.displayIndex=-1;}
     if(game.boss){
       if(!(game.boss instanceof LostCityBoss)&&(game.boss.animation==='Summonning'||game.boss.animation==='SummonStart'))object('boss-portal','bossPortal','Idle',game.boss.zombie.x-38.184,game.boss.y-44.147,.5);
+      if(game.boss instanceof SkyBoss){
+        const boss=game.boss;
+        for(const w of boss.storms)object(`sky-storm-${w.id}`,'skyStorm',w.deadAt===null?'i':'die',w.x,rowY(w.row),.51).animation.lastAnimationState!.playTimes=w.deadAt===null?0:1;
+        for(const b of boss.shots)object(`sky-boss-shot-${b.id}`,'skyBullet','i',b.x,b.y,.5);
+        for(const z of game.zombies)if(z.kind==='sky_battery_lower'&&z.hp>0){const p=boss.batteries.get(z.id)!.partner;if(p&&p.hp>0){const rig=object(`sky-battery-link-${z.id}`,'skyBatteryLink','i',z.x,rowY(z.row),.51);rig.scale.y=(rowY(z.row)-rowY(p.row))/445;}}
+      }
       if(game.boss instanceof DinoBoss){
         const boss=game.boss;
         for(const c of boss.cracks){const age=game.time-c.at,rig=object(`dino-crack-${c.id}`,'dinoCrack',age<game.props.plantAnimations.dinoCrack.Spawn.duration?'Spawn':'Idle',cellX(c.column),rowY(c.row),.5);rig.zIndex=-10;rig.armature.getSlot('BG')!.displayIndex=0;const sparkle=object(`dino-crack-sparkle-${c.id}`,'dinoCrackSparkle','Idle',cellX(c.column),rowY(c.row),.5);for(const slot of sparkle.armature.getSlots())if(slot.name.includes('_P1'))slot.displayIndex=-1;if(age<game.props.plantAnimations.dinoFire.Play.duration){const fire=object(`dino-fire-${c.id}`,'dinoFire','Play',cellX(c.column),rowY(c.row),.5);fire.animation.gotoAndStopByTime('Play',age);}}
