@@ -10,7 +10,7 @@ import { Tickets } from '../outer/tickets';
 import { readAudio, saveAudio, audioControls, updateVolumeControl } from '../audio';
 import { assetUrl, json } from '../assets/load';
 import { readTextureQuality, saveTextureQuality, type TextureQuality } from '../assets/quality';
-import { NAVIGATION_KEY, LEVEL_ROUTES, initialNavigation, islandStates, isWorldMigrated, type Navigation } from './navigation';
+import { NAVIGATION_KEY, LEVEL_ROUTES, levelRoute, initialNavigation, islandStates, isWorldMigrated, type Navigation } from './navigation';
 import { ProgressStore, completionEvents } from './progression';
 import type { Catalog, Island, World, WorldMap, ProgressionArt } from './types';
 import type { CostumePlant } from './costumes';
@@ -225,7 +225,7 @@ export class WorldShell {
   private async selectLevel(island: Island) {
     if (this.busy || !this.$('.map-modal').hidden) return;
     const state = islandStates(this.map!,this.completed(),this.progress.rewardNodes(this.map!.id),this.progress.temporaryUnlock).get(island.node)!;
-    const id=island.levels.find(id=>LEVEL_ROUTES[id]);
+    const id=levelRoute(island);
     // WorldMap.ts ignores locked nodes; there is no native locked-level window.
     if (state === 'locked') return;
     if(island.kind===2){await this.openGift(island);return;}

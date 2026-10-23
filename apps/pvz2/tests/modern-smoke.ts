@@ -14,7 +14,8 @@ const data=new Map<string,string>(),storage={getItem:(k:string)=>data.get(k)??nu
 const progress=new ProgressStore(storage),map=await json<WorldMap>('shell/maps/modern.json');
 (window as unknown as {modernProgress:ProgressStore}).modernProgress=progress;
 const day=Number(new URLSearchParams(location.search).get('day')??1);
-const node=map.islands.find(n=>n.levels.includes(`modern${day}`))!;
+const requested=new URLSearchParams(location.search).get('level');
+const node=map.islands.find(n=>n.levels.includes(requested??`modern${day}`))!;
 storage.setItem(NAVIGATION_KEY,JSON.stringify({world:'modern',chooser:0,cameras:{modern:node.x}}));
 storage.setItem('pvz2-web:unlocked-worlds',JSON.stringify(['modern']));
 if(day!==1)progress.temporaryUnlock=true;
@@ -34,6 +35,7 @@ const status=()=>{document.querySelector('#status')!.textContent=JSON.stringify(
 document.querySelector<HTMLButtonElement>('#snapshot')!.onclick=status;
 const host=document.querySelector<HTMLElement>('.world-shell')!,battleHost=document.querySelector<HTMLElement>('.battle-app')!;
 const shell=new WorldShell(host,async(id,p)=>{
+ if(requested&&map.islands.find(n=>n.levels.includes(id))!.levels.includes(requested))id=requested;
  battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;await shell.resume();status();},BATTLE_LEVELS[id]??ENDLESS_LEVELS[id],p);
  await battle.enter();
 },storage);

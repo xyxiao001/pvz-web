@@ -38,7 +38,7 @@ export class FutureBattle {
   private blockShield(z:Zombie,dt:number){const p=this.shieldAt(z);if(!p)return false;z.eating=true;if(z.future)this.animateIf(z,'Eat');this.hurtShield(p,this.#game.props.zombies[z.kind].EatDPS*dt*(this.#game.time<z.chilledUntil?.5:1));return true;}
   private footballTarget(z:Zombie){return this.#game.plants.filter(p=>p.hp>0&&!p.hidden&&!p.leap&&p.action!=='explode'&&p.row===z.row&&z.x>=cellX(p.column)-22&&z.x<=cellX(p.column)+65&&!['spikeweed','spikerock','iceweed','iceburg','potatomine','blover','empea','stallia','hurrikale'].includes(p.kind)).sort((a,b)=>b.column-a.column)[0];}
   pushPlant(p:Plant,damage:number):boolean{
-    const g=this.#game,plants=g.plants.filter(q=>q.row===p.row&&q.column===p.column&&q.hp>0&&q.kind!=='powerplant'&&q.kind!=='powerplant_alpha'&&q.kind!=='powerplant_beta');
+    const g=this.#game,plants=g.plants.filter(q=>q.row===p.row&&q.column===p.column&&q.hp>0&&q.kind!=='powerplant'&&q.kind!=='powerplant_alpha'&&q.kind!=='powerplant_beta'&&q.kind!=='powerplant_gamma');
     if(plants.some(q=>q.action==='food'||q.leap||g.props.plants[q.kind].CannotBePushedByFootballMech)){if(damage&&p.action!=='food')p.hp-=damage*this.plantDamageScale(p);return false;}
     let column=p.column-1;while(column>=0&&(g.level.mold.some(t=>t.row===p.row&&t.column===column)||g.graves.some(t=>t.row===p.row&&t.column===column)))column--;
     const ahead=plants.length&&g.plants.find(q=>q.hp>0&&q.row===p.row&&q.column===column);
@@ -56,9 +56,9 @@ export class FutureBattle {
   private bombs:{props:NonNullable<import('./level').Level['sunBomb']>;x:number;y:number;at:number;hit:boolean}[]=[];
   readonly finale:FutureFinalPlants;
   constructor(g:Game){this.#game=g;this.finale=new FutureFinalPlants(g);}
-  handles(kind:PlantKind){return this.finale.handles(kind)||['pinkstarfruit','redstinger','starfruit','holonut','laser_bean','blover','citron','empea','powerplant','powerplant_alpha','powerplant_beta'].includes(kind);}
+  handles(kind:PlantKind){return this.finale.handles(kind)||['pinkstarfruit','redstinger','starfruit','holonut','laser_bean','blover','citron','empea','powerplant','powerplant_alpha','powerplant_beta','powerplant_gamma'].includes(kind);}
   private play(p:Plant,animation:string,action:Plant['action']='idle'){p.animation=animation;p.action=action;p.actionAt=this.#game.time;p.eventIndex=0;}
-  init(p:Plant){if(this.finale.handles(p.kind)){this.finale.init(p);return;}if(p.kind==='redstinger'){this.redStates.set(p.id,{rate:1,rayUntil:0});this.play(p,this.redIdle(p));return;}if(p.kind==='starfruit'||p.kind==='pinkstarfruit'){p.nextAction=0;this.play(p,'Idle');return;}if(p.kind==='holonut'){this.holonuts.set(p.id,{health:p.hp,faded:false,recover:Infinity,shield:0,shieldAt:0,column:p.column});this.play(p,'Appear','grow');this.sounds.push('holonut/appearSounds');return;}if(p.kind==='powerplant'||p.kind==='powerplant_alpha'||p.kind==='powerplant_beta'){this.play(p,'Dig','explode');this.sounds.push(p.kind+'/digSounds');return;}if(p.kind==='citron'){this.charge(p);return;}if(p.kind==='empea'){this.play(p,'Attack','explode');return;}this.play(p,p.kind==='blover'?'BlowStart':'Idle',p.kind==='blover'?'shoot':'idle');if(p.kind==='blover')this.sounds.push('blover/windSound');}
+  init(p:Plant){if(this.finale.handles(p.kind)){this.finale.init(p);return;}if(p.kind==='redstinger'){this.redStates.set(p.id,{rate:1,rayUntil:0});this.play(p,this.redIdle(p));return;}if(p.kind==='starfruit'||p.kind==='pinkstarfruit'){p.nextAction=0;this.play(p,'Idle');return;}if(p.kind==='holonut'){this.holonuts.set(p.id,{health:p.hp,faded:false,recover:Infinity,shield:0,shieldAt:0,column:p.column});this.play(p,'Appear','grow');this.sounds.push('holonut/appearSounds');return;}if(p.kind==='powerplant'||p.kind==='powerplant_alpha'||p.kind==='powerplant_beta'||p.kind==='powerplant_gamma'){this.play(p,'Dig','explode');this.sounds.push(p.kind+'/digSounds');return;}if(p.kind==='citron'){this.charge(p);return;}if(p.kind==='empea'){this.play(p,'Attack','explode');return;}this.play(p,p.kind==='blover'?'BlowStart':'Idle',p.kind==='blover'?'shoot':'idle');if(p.kind==='blover')this.sounds.push('blover/windSound');}
   food(p:Plant){if(this.finale.handles(p.kind)){this.finale.food(p);return;}if(p.kind==='redstinger'){p.hp=this.#game.props.plants.redstinger.Toughness;this.redStates.get(p.id)!.rate=1;this.play(p,'FoodStart','food');return;}if(p.kind==='starfruit'||p.kind==='pinkstarfruit'){this.play(p,'FoodStart','food');return;}if(p.kind==='holonut'){this.recoverNut(p);this.play(p,'Food','food');return;}if(p.kind==='citron'){this.play(p,'Food','food');this.visual('citronLightning','Play',cellX(p.column),rowY(p.row));this.sounds.push('citron/foodSounds');return;}this.play(p,'FoodStart','food');this.lasers.set(p.id,{hits:new Set(),lastX:cellX(p.column),nextDirt:cellX(p.column)});this.sounds.push('laser_bean/foodSound');}
   link(p:Plant){
     const g=this.#game,t=g.level.powerTiles.find(t=>t.row===p.row&&t.column===p.column);if(!t)return;
@@ -68,7 +68,7 @@ export class FutureBattle {
   visual(name:string,animation:string,x:number,y:number){const g=this.#game;this.visuals.push({id:++this.serial,name,animation,x,y,at:g.time,duration:g.props.plantAnimations[name][animation].duration});}
   tickPlant(p:Plant,dt:number){
     const g=this.#game,props=g.props.plants[p.kind];p.age+=dt;if(this.finale.handles(p.kind)){if(p.hp>0)this.finale.tickPlant(p,dt);return;}if(p.kind==='redstinger'){if(p.hp>0)this.tickRed(p,dt);return;}if(p.kind==='starfruit'||p.kind==='pinkstarfruit'){this.tickStar(p);return;}if(p.kind==='holonut'){if(p.hp>0)this.tickNut(p);return;}
-    if(p.kind==='citron'||p.kind==='empea'||p.kind==='powerplant'||p.kind==='powerplant_alpha'||p.kind==='powerplant_beta'){this.tickNewPlant(p);return;}
+    if(p.kind==='citron'||p.kind==='empea'||p.kind==='powerplant'||p.kind==='powerplant_alpha'||p.kind==='powerplant_beta'||p.kind==='powerplant_gamma'){this.tickNewPlant(p);return;}
     if(p.kind==='laser_bean'&&p.action==='idle'&&g.time>=p.nextAction&&g.zombies.some(z=>z.hp>0&&g.inLane(z,p.row)&&z.x>cellX(p.column)-20)){
       this.play(p,'Shoot','shoot');p.nextAction=g.time+props.ShootInterval+g.random()*props.ShootIntervalAdditional;this.sounds.push('laser_bean/shootSound');this.visual('laserBeam','Play',cellX(p.column),rowY(p.row)-50);
     }
@@ -201,14 +201,14 @@ export class FutureBattle {
       if(s.animation==='Rise'||s.animation==='Land'){
         s.elapsed+=dt;const timeline=g.props.plantAnimations[z.kind==='future_jetpack_veteran'?'jetpackVeteran':z.kind==='future_jetpack'?'futureJetpack':'discoJetpack'][s.animation];if(s.elapsed<timeline.duration)return true;this.animate(z,s.high?'Walk_High':'Walk');
       }
-      const plant=g.plants.find(p=>p.hp>0&&!p.hidden&&p.row===z.row&&Math.abs(z.x-cellX(p.column))<55&&!['blover','spikeweed','spikerock','iceweed','potatomine','empea','powerplant','powerplant_alpha','powerplant_beta'].includes(p.kind));
+      const plant=g.plants.find(p=>p.hp>0&&!p.hidden&&p.row===z.row&&Math.abs(z.x-cellX(p.column))<55&&!['blover','spikeweed','spikerock','iceweed','potatomine','empea','powerplant','powerplant_alpha','powerplant_beta','powerplant_gamma'].includes(p.kind));
       const high=!!plant&&plant.kind!=='tallnut';
       if(high!==s.high){s.high=high;this.animate(z,high?'Rise':'Land');return true;}
       if(high){z.eating=false;z.x-=g.props.zombies[z.kind].WalkSPS*BOARD.cellWidth*dt*(g.time<z.chilledUntil?.5:1);return true;}
     }
     if(z.kind==='future_imp'){
       if(s.animation==='Fall'){this.animate(z,'Land');this.sounds.push('futureImp/landSound');}
-      const plant=g.plants.find(p=>p.hp>0&&!p.hidden&&p.row===z.row&&Math.abs(z.x-cellX(p.column))<38&&!['blover','spikeweed','spikerock','iceweed','empea','powerplant','powerplant_alpha','powerplant_beta'].includes(p.kind));
+      const plant=g.plants.find(p=>p.hp>0&&!p.hidden&&p.row===z.row&&Math.abs(z.x-cellX(p.column))<38&&!['blover','spikeweed','spikerock','iceweed','empea','powerplant','powerplant_alpha','powerplant_beta','powerplant_gamma'].includes(p.kind));
       if(plant&&s.animation!=='Land'){this.animateIf(z,'Eat');return false;}
       if(s.animation==='Eat'){this.animate(z,'Walk');s.hop=false;}
       s.elapsed+=dt;
@@ -232,7 +232,7 @@ export class FutureBattle {
     const timeline=g.props.plantAnimations[p.kind][p.animation!],elapsed=(g.time-p.actionAt)*this.rate(p);
     while(p.eventIndex!<timeline.events.length&&elapsed>=timeline.events[p.eventIndex!].at){
       const event=timeline.events[p.eventIndex!++].name;
-      if(event==='tile'){const group=p.kind==='powerplant'?'epsilon':p.kind==='powerplant_alpha'?'alpha':'beta';g.level.powerTiles.push({group,row:p.row,column:p.column,delay:1});this.visual('tile_'+group+'Flash','Play',cellX(p.column),rowY(p.row));p.hp=0;p.transformed=true;return;}
+      if(event==='tile'){const group=p.kind==='powerplant'?'epsilon':p.kind==='powerplant_alpha'?'alpha':p.kind==='powerplant_gamma'?'gamma':'beta';g.level.powerTiles.push({group,row:p.row,column:p.column,delay:1});this.visual('tile_'+group+'Flash','Play',cellX(p.column),rowY(p.row));p.hp=0;p.transformed=true;return;}
       if(event==='explode'){
         for(const z of g.zombies)if(z.hp>0){const dx=Math.abs(z.x-cellX(p.column)),dy=Math.abs(z.row-p.row);if(dy<=1&&dx<=2.5*BOARD.cellWidth||dy<=2&&dx<=1.5*BOARD.cellWidth)this.emp(z,g.props.plants.empea.StunDuration);}
         g.eighties.arcade.emp(p,g.props.plants.empea.StunDuration);
@@ -285,7 +285,7 @@ export class FutureBattle {
       if(event==='push'){const shield=this.shieldAt(z),target=this.footballTarget(z);if(shield)this.hurtShield(shield,g.props.zombies.future_infinut_shield.Toughness/3);else if(target)this.pushPlant(target,props.PushFailDamage);this.sounds.push(rig+'/pushSounds');}
       if(event==='smash'){
         const shield=this.shieldAt(z);if(shield){this.hurtShield(shield,props.SmashDamage);this.sounds.push(rig+'/smashSounds');continue;}
-        const target=g.plants.filter(p=>p.hp>0&&!p.hidden&&p.row===z.row&&Math.abs(cellX(p.column)-(z.x-35))<70&&!['empea','blover','iceburg','cherry_bomb','powerplant','powerplant_alpha','powerplant_beta'].includes(p.kind)).sort((a,b)=>b.column-a.column)[0];
+        const target=g.plants.filter(p=>p.hp>0&&!p.hidden&&p.row===z.row&&Math.abs(cellX(p.column)-(z.x-35))<70&&!['empea','blover','iceburg','cherry_bomb','powerplant','powerplant_alpha','powerplant_beta','powerplant_gamma'].includes(p.kind)).sort((a,b)=>b.column-a.column)[0];
         if(target){const absorbed=Math.min(target.armor,props.SmashDamage);target.armor-=absorbed;target.hp-=(props.SmashDamage-absorbed)*this.plantDamageScale(target);}this.sounds.push(rig+'/smashSounds');
       }
       if(event==='throw'&&s.imp){
@@ -304,7 +304,7 @@ export class FutureBattle {
     if(s.empUntil!==undefined||s.animation==='StunEnd')return true;
     if(s.animation==='ShootLoop'){
       const b=s.beam!,t=Math.min(1,s.elapsed/props.EyeLaserSweepTime);b.x=b.from.x+(b.to.x-b.from.x)*t;b.y=b.from.y+(b.to.y-b.from.y)*t;
-      for(const p of g.plants)if(p.hp>0&&p.kind!=='powerplant'&&p.kind!=='powerplant_alpha'&&p.kind!=='powerplant_beta'&&Math.abs(cellX(p.column)-b.x)<35&&Math.abs(rowY(p.row)-40-b.y)<50){const amount=props.EyeLaserTotalDamage*dt,armor=Math.min(p.armor,amount);p.armor-=armor;p.hp-=(amount-armor)*this.plantDamageScale(p);}
+      for(const p of g.plants)if(p.hp>0&&p.kind!=='powerplant'&&p.kind!=='powerplant_alpha'&&p.kind!=='powerplant_beta'&&p.kind!=='powerplant_gamma'&&Math.abs(cellX(p.column)-b.x)<35&&Math.abs(rowY(p.row)-40-b.y)<50){const amount=props.EyeLaserTotalDamage*dt,armor=Math.min(p.armor,amount);p.armor-=armor;p.hp-=(amount-armor)*this.plantDamageScale(p);}
       for(const p of g.plants)if(this.holonuts.get(p.id)?.shield!>0&&Math.abs(cellX(p.column)-b.x)<35&&b.y>rowY(0)-90&&b.y<rowY(4))this.hurtShield(p,props.EyeLaserTotalDamage*dt);
       for(const other of g.zombies)if(other!==z&&other.hp>0&&Math.abs(other.x-b.x)<35&&Math.abs(rowY(other.row)-40-b.y)<50)g.damage(other,props.EyeLaserTotalDamage*dt);
       for(const tomb of g.graves)if(Math.abs(cellX(tomb.column)-b.x)<35&&Math.abs(rowY(tomb.row)-40-b.y)<50)tomb.hp-=props.EyeLaserTotalDamage*dt;
@@ -317,7 +317,7 @@ export class FutureBattle {
     if(z.kind==='football_mech'&&(this.shieldAt(z)||this.footballTarget(z))){z.eating=false;this.animate(z,'Push');return true;}
     if(z.kind==='future_gargantuar'){
       if(s.imp&&z.hp<props.Toughness/2&&z.x>cellX(2)){this.animate(z,'Throw');return true;}
-      if(this.shieldAt(z)||g.plants.some(p=>p.hp>0&&!p.hidden&&p.row===z.row&&z.x-cellX(p.column)>-22&&z.x-cellX(p.column)<65&&!['empea','blover','iceburg','cherry_bomb','powerplant','powerplant_alpha','powerplant_beta'].includes(p.kind))){this.animate(z,'Smash');return true;}
+      if(this.shieldAt(z)||g.plants.some(p=>p.hp>0&&!p.hidden&&p.row===z.row&&z.x-cellX(p.column)>-22&&z.x-cellX(p.column)<65&&!['empea','blover','iceburg','cherry_bomb','powerplant','powerplant_alpha','powerplant_beta','powerplant_gamma'].includes(p.kind))){this.animate(z,'Smash');return true;}
       if(z.x>cellX(props.EyeLaserMinDistance)){s.next!-=dt;if(s.next!<=0){this.animate(z,'ShootStart');this.sounds.push(rig+'/shootStartSound',rig+'/rayStartSound');return true;}}
     }
     if(z.kind==='disco_mech'){s.next!-=dt;if(s.next!<=0){this.animate(z,'SummonStart');if(!this.discoPlayed){this.discoPlayed=true;this.discoMusicAt=g.time;this.sounds.push(rig+'/musicClip');}else if(g.time-this.discoMusicAt>=2.899592*1.5){this.discoMusicAt=g.time;this.sounds.push(rig+'/musicClipWeak');}return true;}}

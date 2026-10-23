@@ -34,7 +34,7 @@ export class KongfuTurnip {
    if(plants.length)this.push(plants[0],duration);
   }
  }
- private push(p:Plant,duration:number):boolean {const g=this.g,plants=g.plants.filter(q=>q.hp>0&&q.row===p.row&&q.column===p.column&&!['powerplant','powerplant_alpha','powerplant_beta'].includes(q.kind));
+ private push(p:Plant,duration:number):boolean {const g=this.g,plants=g.plants.filter(q=>q.hp>0&&q.row===p.row&&q.column===p.column&&!['powerplant','powerplant_alpha','powerplant_beta','powerplant_gamma'].includes(q.kind));
   if(plants.some(q=>q.action==='food'||q.leap||g.props.plants[q.kind].CannotBePushedByFootballMech))return false;
   let column=p.column+1;while(column<9&&(g.level.mold.some(c=>c.row===p.row&&c.column===column)||g.graves.some(t=>t.hp>0&&t.row===p.row&&t.column===column)||g.level.boss&&column>=9-g.level.boss.reserved))column++;
   const ahead=g.plants.find(q=>q.hp>0&&q.row===p.row&&q.column===column);

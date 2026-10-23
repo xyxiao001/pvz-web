@@ -197,9 +197,9 @@ export class Game {
 
   plant(kind: PlantKind, row: number, column: number, packetId?:number): boolean {
     const p = this.props.plants[kind];
-    const tilePlant=kind==='hotpotato'||kind==='goldleaf'||kind==='powerplant'||kind==='powerplant_alpha'||kind==='powerplant_beta';
+    const tilePlant=kind==='hotpotato'||kind==='goldleaf'||kind==='powerplant'||kind==='powerplant_alpha'||kind==='powerplant_beta'||kind==='powerplant_gamma';
     // Native powertile tags use tilePutable: ordinary plants may share the square.
-    if(tilePlant&&(this.level.powerTiles.some(t=>t.row===row&&t.column===column)||this.plants.some(p=>p.row===row&&p.column===column&&(p.endangered||p.kind==='powerplant'||p.kind==='powerplant_alpha'||p.kind==='powerplant_beta'))))return false;
+    if(tilePlant&&(this.level.powerTiles.some(t=>t.row===row&&t.column===column)||this.plants.some(p=>p.row===row&&p.column===column&&(p.endangered||p.kind==='powerplant'||p.kind==='powerplant_alpha'||p.kind==='powerplant_beta'||p.kind==='powerplant_gamma'))))return false;
     const placementKind=kind==='imitater'?this.imitateKind:kind;
     if(placementKind==='intensivecarrot'&&!this.eighties.carrot.at(row,column))return false;
     const pot=this.plants.find(p=>p.row===row&&p.column===column&&p.kind==='floawerPot');
@@ -323,7 +323,7 @@ export class Game {
     if(plant?.kind==='cactus'&&this.eighties.lit.has(plant.id))return false;
     if((plant?.kind==='tallnut'||plant?.kind==='primalwallnut')&&plant.armor>0)return false;
     if(plant?.kind==='escaperoot'&&(!plant.rootGrown||plant.action!=='idle'||plant.animation!=='Idle'))return false;
-    if (!plant || plant.leap?.pushed || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['goldbloom','loquat','hollybarrierleaf','hollybarrierleafplantfood','thymewarp','powerlily','goldleaf','hotpotato','powerplant','powerplant_alpha','powerplant_beta','empea','blover','gravebuster','imitater','perfumeshroom','grapeshot','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
+    if (!plant || plant.leap?.pushed || !boost&&this.food === 0 || this.phase !== 'playing' || plant.action === 'food' || ['goldbloom','loquat','hollybarrierleaf','hollybarrierleafplantfood','thymewarp','powerlily','goldleaf','hotpotato','powerplant','powerplant_alpha','powerplant_beta','powerplant_gamma','empea','blover','gravebuster','imitater','perfumeshroom','grapeshot','cherry_bomb','jalapeno'].includes(plant.kind)) return false;
     this.eighties.skunk.stunned.delete(plant.id);
     if(!boost){this.food--;this.future.link(plant);} plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });

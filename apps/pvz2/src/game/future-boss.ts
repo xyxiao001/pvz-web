@@ -33,7 +33,7 @@ export class FutureBoss extends EgyptBoss {
   protected override impact(missile:{row:number;column:number}){
     const g=this.game;
     // Native zombossMissile burns the impact cell and removes its power tile; no splash to plants.
-    for(const p of g.plants)if(p.row===missile.row&&p.column===missile.column&&p.action!=='food'&&!['powerplant','powerplant_alpha','powerplant_beta'].includes(p.kind))g.future.burn(p);
+    for(const p of g.plants)if(p.row===missile.row&&p.column===missile.column&&p.action!=='food'&&!['powerplant','powerplant_alpha','powerplant_beta','powerplant_gamma'].includes(p.kind))g.future.burn(p);
     const hit=(t:{row:number;column:number})=>t.row===missile.row&&t.column===missile.column;
     g.level.powerTiles=g.level.powerTiles.filter(t=>!hit(t));
     g.future.links=g.future.links.filter(link=>!hit(link.to)&&(!hit(link.from)||g.time>=link.at));

@@ -1,3 +1,4 @@
+import {MODERN_BOSS_GROUPS} from '../game/worlds/modern';
 import {newEndlessRun, type EndlessWorld, type EndlessRun} from '../game/endless';
 import { GARDEN_KEY, type GardenData } from '../outer/garden';
 import { LocalStore } from './store';
@@ -22,7 +23,7 @@ export class ProgressStore {
   endlessRun(world:EndlessWorld):EndlessRun|null { const saved=this.storage.getItem(`pvz2-web:endless:${world}`);return saved===null?null:JSON.parse(saved); }
   saveEndless(world:EndlessWorld,run:EndlessRun) { this.storage.setItem(`pvz2-web:endless:${world}`,JSON.stringify(run)); }
   startEndless(world:EndlessWorld,seed=Date.now()>>>0) { const run=newEndlessRun(world,seed,this.endlessRun(world)?.best??0);this.saveEndless(world,run);return run; }
-  isComplete(level: string) { return this.storage.getItem(completionKey(level)) === '1'; }
+  isComplete(level: string) { const group=MODERN_BOSS_GROUPS.find(ids=>ids.includes(level));return group?group.some(id=>this.storage.getItem(completionKey(id))==='1'):this.storage.getItem(completionKey(level))==='1'; }
   completed(map: WorldMap) { return new Set(map.islands.flatMap(n => n.levels).filter(id => this.isComplete(id))); }
   rewards(): MapReward[] {
     const saved = this.storage.getItem(REWARDS_KEY);

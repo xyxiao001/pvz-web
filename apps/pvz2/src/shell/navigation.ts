@@ -3,6 +3,10 @@ import type { Island, WorldMap } from './types';
 
 export const NAVIGATION_KEY = 'pvz2-web:world-navigation';
 export const LEVEL_ROUTES: Readonly<Record<string,string>> = Object.fromEntries(Object.keys(BATTLE_LEVELS).map(id=>[id,id]));
+export function levelRoute(island:Island,random=Math.random){
+  const choices=island.levels.filter(id=>LEVEL_ROUTES[id]);
+  return choices.length>1?choices[Math.floor(random()*choices.length)]:choices[0];
+}
 const migratedWorlds = new Set(Object.values(BATTLE_LEVELS).map(level=>level.world));
 export const isWorldMigrated = (world: string) => migratedWorlds.has(world);
 export interface Navigation { world: string | null; chooser: number; cameras: Record<string, number> }

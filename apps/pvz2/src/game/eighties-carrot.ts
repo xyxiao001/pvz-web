@@ -11,7 +11,7 @@ export class EightiesCarrot {
  blocked(p:Plant){return this.g.time<(this.opening.get(p.id)??0);}
  remember(p:Plant){
   // Consumed instants and transformations use die(), not dieOnLnC().
-  if(!['eighties','modern'].includes(this.g.level.world)||p.transformed||p.action==='explode'||['grimrose','cherry_bomb','jalapeno','bamboobusket','powerlily','goldleaf','hotpotato','thymewarp','empea','blover','stallia','hurrikale','iceburg','gravebuster','sunbean','chilibean','tanglekelp','stunion','lavaguava','ghostpepper','powerplant','powerplant_alpha','powerplant_beta'].includes(p.kind))return;
+  if(!['eighties','modern'].includes(this.g.level.world)||p.transformed||p.action==='explode'||['grimrose','cherry_bomb','jalapeno','bamboobusket','powerlily','goldleaf','hotpotato','thymewarp','empea','blover','stallia','hurrikale','iceburg','gravebuster','sunbean','chilibean','tanglekelp','stunion','lavaguava','ghostpepper','powerplant','powerplant_alpha','powerplant_beta','powerplant_gamma'].includes(p.kind))return;
   this.cells.set(`${p.row}:${p.column}`,{row:p.row,column:p.column,kind:p.kind});
  }
  revive(row:number,column:number){
