@@ -1,3 +1,4 @@
+import {Beghouled} from './beghouled';
 import {ModernBattle,modernArmor} from './modern';
 import {SkyBoss} from './sky-boss';
 import {SkyBattle} from './sky';
@@ -154,8 +155,10 @@ export class Game {
   private pending: {airRaidType?:string;cargo?:ZombieKind;fallTime?:number;kind:ZombieKind;at:number;row:number;x:number;mode:SpawnAction['mode'];food:boolean}[] = [];
 
   readonly modern=new ModernBattle(this);
+  readonly beghouled=new Beghouled(this);
   constructor(readonly level: Level, readonly props: Properties, readonly timing: AnimationTiming, readonly raTarget: (zombie: Zombie) => {x:number;y:number}, private seed = 1, tutorial=true) {
     this.cowboy=new CowboyBattle(this);this.kongfu.init();
+    if(level.beghouled)this.beghouled.init();
     if(level.corral)this.nextWave=0;
     if(level.lastStand){this.preparing=true;this.sun=level.lastStand.sun;this.food=level.lastStand.food;this.nextWave=4+RULES.normalWaveEntrance;}
     this.graves=level.graves.map(g=>({...g,id:++this.id,hp:isRack(g.kind)?rackHP(g.kind!):props.grave.Toughness,stage:0}));
@@ -999,6 +1002,7 @@ export class Game {
     this.pending = this.pending.filter(s => s.at > this.time);
 
     if(this.corralWaiting)return;
+    if(this.level.beghouled)this.beghouled.tick(dt);
     this.modern.tick(dt);this.sky.tick(dt);this.dino.tick(dt);this.eighties.tick(dt);this.kongfu.tick(dt);this.lostcity.tickTraps(dt);this.lostcity.tickTents();this.lostcity.tickShots();this.expedition.tick(dt);this.iceageCombat.tick(dt);this.iceage.tick(dt);this.beachFinale.tick(dt);this.beach.tick(dt);this.darkFinale.tick(dt);this.darkMemory.tick();this.dark.tick(dt);this.darkPlants.tick(dt);
     this.cowboy.tick(dt);
     for(const z of [...this.zombies,...this.westFinale.allies]){
@@ -1244,6 +1248,7 @@ export class Game {
     for(const p of this.plants)if(p.hp<=0)this.eighties.carrot.remember(p);
     const protectedPlantDied=this.plants.some(p=>p.endangered&&p.hp<=0);
     if(this.level.airRaid&&this.sky.airRaid.player&&this.sky.airRaid.player.hp<=0&&this.phase==='playing'){this.phase='lost';this.lossReason='airRaid';this.events.push({type:'lose'});}
+    if(this.level.beghouled)this.beghouled.recordDeaths();
     this.plants = this.plants.filter(p => p.hp > 0);
     this.checkChallenges();
     // Beach 40 keeps the source count of 5 for 3 plants; native protection checks on death.
@@ -1270,6 +1275,6 @@ export class Game {
         this.nextWave = this.time + (this.level.corral?0:(this.wave + 1) % this.level.flagInterval === 0 ? RULES.flagWaveEntrance : RULES.normalWaveEntrance);
       }
     }
-    if ((this.boss?this.boss.defeated:this.wave === this.level.waves.length && !this.pending.length &&!this.modern.pending&&!this.pendingGraveSpawns.length&& !this.zombies.some(z=>!z.droneMaker&&!z.drone&&!z.airRaid?.props.IgnoredInWaves) && !this.cowboy.chickenThrowers.length && !this.iceageCombat.weaselThrowers.length && !this.pendingPharaohs.length&&!this.lostcity.porterDrops.size&&!this.sky.drops.length&&!this.sky.thunder.pending.length) && (!this.level.memory||this.darkMemory.complete) && this.phase === 'playing') {if(this.level.airRaid&&this.sky.airRaid.score<this.level.airRaid.target){this.phase='lost';this.lossReason='score';this.events.push({type:'lose'});}else if(this.level.killChallenge&&!this.killChallengeComplete){this.phase='lost';this.lossReason='killChallenge';this.events.push({type:'lose'});}else if(this.level.targetSun!==null&&this.sunProduced<this.level.targetSun){this.phase='lost';this.lossReason='sunProduced';this.events.push({type:'lose'});}else if(this.level.cannon&&this.pirate.score<this.level.cannon.MinScore){this.phase='lost';this.lossReason='score';this.events.push({type:'lose'});}else {this.phase = 'won';this.eighties.arcade.finish();this.eighties.speaker.finish(); this.events.push({ type: 'win' });} }
+    if (!this.level.beghouled && (this.boss?this.boss.defeated:this.wave === this.level.waves.length && !this.pending.length &&!this.modern.pending&&!this.pendingGraveSpawns.length&& !this.zombies.some(z=>!z.droneMaker&&!z.drone&&!z.airRaid?.props.IgnoredInWaves) && !this.cowboy.chickenThrowers.length && !this.iceageCombat.weaselThrowers.length && !this.pendingPharaohs.length&&!this.lostcity.porterDrops.size&&!this.sky.drops.length&&!this.sky.thunder.pending.length) && (!this.level.memory||this.darkMemory.complete) && this.phase === 'playing') {if(this.level.airRaid&&this.sky.airRaid.score<this.level.airRaid.target){this.phase='lost';this.lossReason='score';this.events.push({type:'lose'});}else if(this.level.killChallenge&&!this.killChallengeComplete){this.phase='lost';this.lossReason='killChallenge';this.events.push({type:'lose'});}else if(this.level.targetSun!==null&&this.sunProduced<this.level.targetSun){this.phase='lost';this.lossReason='sunProduced';this.events.push({type:'lose'});}else if(this.level.cannon&&this.pirate.score<this.level.cannon.MinScore){this.phase='lost';this.lossReason='score';this.events.push({type:'lose'});}else {this.phase = 'won';this.eighties.arcade.finish();this.eighties.speaker.finish(); this.events.push({ type: 'win' });} }
   }
 }

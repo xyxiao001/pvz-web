@@ -20,9 +20,10 @@ let controlled=false,battle:ReturnType<typeof createBattle>|undefined;
 const tick=Game.prototype.tick;
 // Fixture-only control: keep the production battle, ending, dialogue and reward UI.
 Game.prototype.tick=function(dt:number){
+ (window as unknown as {modernGame:Game}).modernGame=this;
  for(let i=0;i<(controlled?30:1);i++){
   tick.call(this,dt);
-  if(controlled)for(const z of this.zombies)this.damage(z,100000,'swallow');
+  if(controlled){for(const z of this.zombies)this.damage(z,100000,'swallow');if(this.level.targetSun!==null&&this.sunProduced<this.level.targetSun)this.dropSun(0,0,this.level.targetSun,'plant');if(this.level.beghouled&&this.time>=this.beghouled.settleAt){const move=this.beghouled.moves()[0];if(move)this.beghouled.swap(...move);}}
  }
 };
 const control=document.querySelector<HTMLButtonElement>('#control')!;

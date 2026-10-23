@@ -39,7 +39,7 @@ export class ModernBattle {
   }
   if(elapsed>=timeline.duration){if(p.kind==='nightshade'&&p.action==='food'&&++this.leaves.get(p.id)!.cycles<props.PlantfoodTime)this.play(p,'Food','food');else this.play(p,'Idle','idle');}
  }
- spawn(z:Zombie){this.enemies.spawn(z);if(z.kind==='modern_newspaper')this.papers.set(z.id,{hp:this.g.props.zombies[z.kind].NewspaperHealth,angryAt:Infinity,elapsed:0,sounded:false});}
+ spawn(z:Zombie){this.enemies.spawn(z);if((z.kind==='modern_newspaper'||z.kind==='beghouled_newspaper'))this.papers.set(z.id,{hp:this.g.props.zombies[z.kind].NewspaperHealth,angryAt:Infinity,elapsed:0,sounded:false});}
  paperDamage(z:Zombie,amount:number){const s=this.papers.get(z.id);if(!s||s.hp<=0)return amount;const hit=Math.min(s.hp,amount);s.hp-=hit;this.g.beach.sounds.push('modernNewspaper/hitSounds');if(s.hp===0){s.angryAt=this.g.time;this.g.future.visual('paperDestroy','Play',z.x,rowY(z.row));this.g.beach.sounds.push('modernNewspaper/destroySounds');}return amount-hit;}
  zombie(z:Zombie,dt:number){if(this.enemies.tick(z,dt))return true;const s=this.papers.get(z.id);if(!s||s.hp>0)return false;const t=this.g.props.plantAnimations.modernNewspaper.GetAngry;if(s.elapsed>=t.events.find(e=>e.name==='switchingFalse')!.at)return false;s.elapsed+=dt;z.eating=false;if(!s.sounded&&s.elapsed>=t.events.find(e=>e.name==='speedup')!.at){s.sounded=true;this.g.beach.sounds.push('modernNewspaper/speedupSounds','modernNewspaper/angrySounds');}return true;}
  animation(z:Zombie){const special=this.enemies.animation(z);if(special)return special;const s=this.papers.get(z.id);return s&&s.hp<=0?(s.elapsed<this.g.props.plantAnimations.modernNewspaper.GetAngry.events.find(e=>e.name==='switchingFalse')!.at?'GetAngry':z.eating?'Eat_Angry':'Walk_Angry'):null;}

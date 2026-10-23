@@ -171,6 +171,7 @@ export class Scene {
   private pointer:readonly [number,number]=[0,0];
   carrotPreview=false;
   private highlight = new Graphics();
+  private beghouledMarks=new Graphics();
   private observer!: ResizeObserver;
   private scale = 1;
   private tick = (ticker: Ticker) => this.onTick(ticker.deltaMS / 1000);
@@ -211,6 +212,7 @@ export class Scene {
     }
     if(config.world==='dark'){const lawn=this.art.build('darkLawn','Idle');lawn.scale.set(.5);lawn.position.set(449.645,344);this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
     if(config.world==='sky'){for(const name of (config.mode==='airraid'?['airRaidSky','airRaidClouds']:['skySky','skyClouds','skyLawn'])){const lawn=this.art.build(name,'Idle');lawn.scale.set(.5);if(config.mode==='airraid'){lawn.tint=name==='airRaidSky'?0x273a61:0x00080c;lawn.animation.timeScale=-.4;}lawn.position.set(449.645,344);this.world.addChildAt(lawn,this.lawnRigs.length);this.lawnRigs.push(lawn);}}
+    if(level.beghouled)this.world.addChild(this.beghouledMarks);
     if(config.world==='modern'){const lawn=this.art.build('modernLawn','row5');lawn.scale.set(.5);lawn.position.set(449.645,344);if(config.night)lawn.tint=0x7884ba;this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
     if(config.world==='dino'){const lawn=this.art.build('dinoLawn','Idle');lawn.scale.set(.5);lawn.position.set(449.645,344);this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
     if(config.world==='eighties'){const lawn=this.art.build('eightiesLawn','Idle');lawn.scale.set(.5);lawn.position.set(449.645,344);this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
@@ -392,6 +394,7 @@ export class Scene {
       if(!this.rootLocator){this.rootLocator=this.rig('escaperoot','Locator');this.rootLocator.scale.set(.55);this.rootLocator.animation.play('Idle',0);this.rootLocator.zIndex=2000;this.actorLayer.addChild(this.rootLocator);}
       this.rootLocator.visible=true;this.rootLocator.position.set(...this.pointer);
     }else if(this.rootLocator)this.rootLocator.visible=false;
+    if(game.level.beghouled){const marks=this.beghouledMarks.clear();for(const key of game.beghouled.holes){const [r,c]=key.split(':').map(Number);marks.ellipse(cellX(c),rowY(r)-25,25,12).fill(0x332018);}for(const p of [...game.beghouled.hint,...(game.beghouled.selected?[game.beghouled.selected]:[])])marks.rect(cellX(p.column)-30,rowY(p.row)-65,60,65).stroke({width:3,color:0xf5e34b});}
     const alive = this.aliveActors; alive.clear();
     const plantsById = this.plantsById; plantsById.clear();
     const zombiesById = this.zombiesById; zombiesById.clear();
@@ -451,7 +454,7 @@ export class Scene {
       const potionScale=game.modern.scale(z)*game.dark.scale(z)*game.eighties.warpScale(z)*(game.level.airRaid?.8:1);actor.root.scale.set((z.reversed?-1:1)*potionScale,potionScale);
       actor.root.position.set(z.x, (z.loquatY!==undefined?z.loquatY:game.eighties.skunk.lanes.has(z.id)?game.eighties.skunk.y(z):game.iceage.slides.has(z.id)?game.iceage.y(z):zombieY(z))-(z.dinoCarry??0)-(z.parrot?.height??0)); actor.root.zIndex = zombieY(z) + 1;
       if(z.kind==='modern_superfanimp')for(const slot of actor.rig.armature.getSlots())if(slot.name.includes('SPK'))slot.displayIndex=game.modern.enemies.states.get(z.id)!.ignited?0:-1;
-      if(z.kind==='modern_newspaper'){const paper=game.modern.papers.get(z.id)!,slot=actor.rig.armature.getSlot('paper')!.childArmature!.getSlot('MAIN')!;slot.displayIndex=paper.hp>0?3-Math.ceil(paper.hp/game.props.zombies.modern_newspaper.NewspaperHealth*3):-1;for(const slot of actor.rig.armature.getSlots())if(slot.name.includes('FIRE'))slot.displayIndex=-1;}
+      if((z.kind==='modern_newspaper'||z.kind==='beghouled_newspaper')){const paper=game.modern.papers.get(z.id)!,slot=actor.rig.armature.getSlot('paper')!.childArmature!.getSlot('MAIN')!;slot.displayIndex=paper.hp>0?3-Math.ceil(paper.hp/game.props.zombies[z.kind].NewspaperHealth*3):-1;for(const slot of actor.rig.armature.getSlots())if(slot.name.includes('FIRE'))slot.displayIndex=-1;}
       if(z.parrot){
         if(z.parrot.capture>0&&!actor.capturing)this.onSound('pirateParrot/captureSound');actor.capturing=z.parrot.capture>0;
         const p=z.parrot.carrying;if(p){alive.add(p.id);const carried=this.actors.get(p.id)??this.addActor(p.id,p.kind);carried.captured=true;carried.root.position.set(z.x,z.parrot.y-z.parrot.height+50);carried.root.zIndex=z.parrot.y;carried.rig.animation.timeScale=0;}
@@ -665,7 +668,7 @@ export class Scene {
       }else this.removeActor(z.id,actor);
       return;
     }
-    const animation=z.balloon?'Death_Fly':z.kind==='modern_newspaper'&&game.modern.papers.get(z.id)!.hp===0?'Death_Angry':z.kind==='abbot_3section_staff'&&game.kongfu.staff.states.get(z.id)!.broken?'Death_B':z.kind==='monk_imp'&&z.kongfu!.flying?'Death_Floating':z.kind==='kongfu_drink'&&z.kongfu!.drunk?'Death_Drunk':actor.kind==='lostPorter'&&game.lostcity.tenting.has(z.id)?'Tent':actor.kind==='lostExcavator'&&actor.animation!=='Walk'&&actor.animation!=='Eat'&&actor.animation!=='Lose'?'Death_Shovel':z.pilot?.hanging?'Death_Hang':z.weasel?.hidden?'Death_Hidden':actor.kind==='iceageDodo'&&death.cause==='electric'?'Shock':z.fisher?.deathAnimation??z.surfer?.deathAnimation??(actor.kind==='pirateParrot'?'Die':'Death'),timeline=animationTimeline(this.skeletons.get(actor.kind)!,actor.rig.armature.name,animation);
+    const animation=z.balloon?'Death_Fly':(z.kind==='modern_newspaper'||z.kind==='beghouled_newspaper')&&game.modern.papers.get(z.id)!.hp===0?'Death_Angry':z.kind==='abbot_3section_staff'&&game.kongfu.staff.states.get(z.id)!.broken?'Death_B':z.kind==='monk_imp'&&z.kongfu!.flying?'Death_Floating':z.kind==='kongfu_drink'&&z.kongfu!.drunk?'Death_Drunk':actor.kind==='lostPorter'&&game.lostcity.tenting.has(z.id)?'Tent':actor.kind==='lostExcavator'&&actor.animation!=='Walk'&&actor.animation!=='Eat'&&actor.animation!=='Lose'?'Death_Shovel':z.pilot?.hanging?'Death_Hang':z.weasel?.hidden?'Death_Hidden':actor.kind==='iceageDodo'&&death.cause==='electric'?'Shock':z.fisher?.deathAnimation??z.surfer?.deathAnimation??(actor.kind==='pirateParrot'?'Die':'Death'),timeline=animationTimeline(this.skeletons.get(actor.kind)!,actor.rig.armature.name,animation);
     const shock=(actor.kind==='bull'||actor.kind==='blackBull')&&death.cause==='electric';
     this.animate(actor,shock?'Shock':animation,z.swing?.at??0,1);if(shock)this.onSound('zombieShock');
     actor.death={cause:death.cause,elapsed:0,fadeAt:timeline.events.die+(shock?animationTimeline(this.skeletons.get(actor.kind)!,RIGS[actor.kind].armature,'Shock').events.playDeath:0),fallAt:['abbotStaff','abbotFan','abbot','abbotFlag','abbotTorch','abbotChi','abbotImp','monkDrink','monk','monkFlag','monkBlade','monkNunchaku','monkTorch','monkImp','kongfuChi','kongfuBomb','kongfuDrink','kongfuGong','kongfuTorch','kongfuHammer','kongfuRocket','zoybean','zoybeanGarg','lostPorter','lostExcavator','lostJane','lostImp','lostPilot','iceageTroglobiteVeteran','iceageWeasel','iceageWeaselHoarder','iceageTroglobite','iceageDodo','beachFisher','darkKing','dragonImp','darkJester','footballMech','futureGargantuar','discoMech','futureProtector','futureShield','futureImp','mechCone'].includes(actor.kind)?Infinity:actor.kind==='bull'||actor.kind==='blackBull'||actor.kind==='pirateParrot'?Infinity:(actor.kind==='kongfuBronzeChi'||actor.kind==='kongfuHook'||actor.kind==='kongfuStatue'||actor.kind==='kongfuStrong'||actor.kind==='lostGargantuar'||actor.kind==='iceageGargantuar'||actor.kind==='darkGargantuar'||actor.kind==='gargantuar'||actor.kind==='pirateGargantuar'||actor.kind==='cowboyGargantuar')?timeline.events.deathFall:timeline.events.fall};

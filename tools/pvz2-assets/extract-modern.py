@@ -1,4 +1,4 @@
-"""Export Modern 1–5 from the pinned Cocos build."""
+"""Export Modern 1–10 from the pinned Cocos build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -23,9 +23,10 @@ actors={n:rig(p) for n,p in paths.items()}
 rigpaths={'modernLawn':'lawns/ModernLAWN','mower':'projectiles/ModernMowerPRJ','modernCone':'armors/BasicConeARMOR','modernBucket':'armors/BasicBucketARMOR','portal':'acc6bcdd-f971-4507-9c1e-9874201050fe','violetShrink':'254f65cc-953f-4577-a233-4c4c93b35fc0','paperDestroy':'588e78a8-3802-40e1-9a56-65a6cd515efe','nightshadeShot':'projectiles/NightShadeStartPRJ','nightshadeFood':'projectiles/NightShadeFoodPRJ','nightshadeMega':'projectiles/NightShadeStartMegaPRJ','nightshadeFoodMega':'projectiles/NightShadeFoodMegaPRJ'}
 rigs={n:rig(p) for n,p in rigpaths.items()}
 properties={'plants':props('PlantProps',['nightshade','shrinkingviolet']),'zombies':props('ZombieProps',['tutorial','tutorial_flag','tutorial_armor1','tutorial_armor2','tutorial_imp','tutorial_gargantuar']),'armors':props('ArmorProps',['modern_armor1','modern_armor2']),'projectiles':props('ProjectileProps',['nightshade','nightshade_mega','nightshade_pf','nightshade_pf_mega']),'plantAnimations':{}}
+properties['zombies'].update(props('ZombieProps',['beghouled_newspaper']))
 properties['zombies']['modern_newspaper']=props('ZombieProps',['newspaper'])['newspaper']
 properties['zombies'].update(props('ZombieProps',['iceage_troglobite_1block','iceage_troglobite_2block']))
-c.write_json(e.OUT/'portals.json',props('PortalProps',['egypt','pirate','future','beach']))
+c.write_json(e.OUT/'portals.json',props('PortalProps',['egypt','pirate','future','beach','dark','iceage','dino']))
 for name,description in {**actors,**rigs}.items():
     sk=json.loads((e.OUT/'rigs'/description['rig']/'skeleton.json').read_text());arm=next(a for a in sk['armature'] if a['name']==description['armature']);timelines={}
     for animation in arm['animation']:
@@ -35,7 +36,7 @@ for name,description in {**actors,**rigs}.items():
             frame+=f.get('duration',1)
         timelines[animation['name']]={'duration':animation.get('duration',1)/arm['frameRate'],'events':events}
     properties['plantAnimations'][name]=timelines
-for day in range(1,6):c.write_json(e.OUT/f'modern{day}.source.json',e.read(f'levels/modern{day}').objects[0]['json'])
+for day in range(1,11):c.write_json(e.OUT/f'modern{day}.source.json',e.read(f'levels/modern{day}').objects[0]['json'])
 co=next(x for x in walk(e.read('lawns/ModernLAWN').objects) if x.get('type')=='dragonBones.ArmatureDisplay')
 at=e.read(co['_dragonAtlasAsset']['asset']);atlas=json.loads(at.objects[0]['_atlasJson']);rect=next(x for x in atlas['SubTexture'] if x['name']=='Lawn')
 pixels=Image.open(io.BytesIO(c.native(at.data[1][at.rec[5][0]],'png')))
@@ -54,8 +55,10 @@ for name,path in {**paths,**rigpaths}.items():
             for key,value in obj['soundRes'].items():
                 if key not in ['type','volumeScale']:sound(name+'/'+key,value)
 for name,uuid in [('start','9b3a66eb-d069-4b95-ba98-a86c967db9fc'),('loop','b25ae004-cd9f-4c4f-a748-b6625077e79e'),('end','d754eacb-9686-4463-a852-3735d64a7369')]:sound('portal/'+name,{'asset':uuid})
+common=e.read('resouce_prefabs/SoundsRP').objects[1]['_components'][0]
+for name in ['beghouledMatch','beghouledMatchFail','beghouledShovel','beghouledRefresh']:sound(name,common[name])
 npc=e.read('b697cdfd-e783-4f80-abbe-ac197db6cf97');narratives={}
-for name in ['MODERN_1_INTRO','MODERN_2_INTRO','MODERN_3_INTRO','MODERN_5_INTRO']:
+for name in ['MODERN_1_INTRO','MODERN_2_INTRO','MODERN_3_INTRO','MODERN_5_INTRO','BEGHOULED_INTRO','MODERN_9_INTRO']:
     flow=next(o['objdata']['Flow'] for o in e.read('json/Objects/NarrativeList').objects[0]['json']['objects'] if name in o.get('aliases',[]))
     for step in flow:
         if 'Lines' in step:
@@ -66,7 +69,9 @@ for name in ['MODERN_1_INTRO','MODERN_2_INTRO','MODERN_3_INTRO','MODERN_5_INTRO'
     narratives[name]=flow
 for name,path in [('music','modern/CYS_LP_Modern'),('minigame','modern/MG_Modern')]:
     (e.OUT/(name+'.mp3')).write_bytes(c.native(c.config['uuids'][c.path_index['music/inGame/'+path]],'mp3'))
+# Native upgrade prices are distinct from ordinary seed costs.
+c.write_json(e.OUT/'beghouled-costs.json',{n:d['BeghouledCost'] for n,d in props('PlantProps',['firepeashooter','repeater','threepeater','tallnut','endurian','pepperpult','melonpult','wintermelon','coldsnapdragon','laser_bean']).items()})
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{}})
 c.write_json(c.ROOT/'apps/pvz2/modern-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Modern 1–5')
+print('Exported Modern 1–10')
