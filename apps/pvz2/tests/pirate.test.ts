@@ -757,3 +757,18 @@ test('the second Pirate endless trophy uses its native shared reward animation',
  const battle=read<{rigs:Record<string,{rig:string;armature:string}>}>('battle/catalog.json'),reward=battle.rigs.reward;
  const skeleton=read<Skeleton>(`battle/rigs/${reward.rig}/skeleton.json`);assert.equal(BATTLE_LEVELS.pirate33.firstReward.animation,c.rewards.dangerroom_pirate2.SPRITENAME);assert.ok(skeleton.armature.find(a=>a.name===reward.armature)!.animation.some(a=>a.name===c.rewards.dangerroom_pirate2.SPRITENAME));
 });
+
+
+test('cannon impact keeps the authored pause for surviving birds in the hit spawn group',()=>{
+ const g=create(3);g['nextWave']=Infinity;g.random=()=>.5;
+ const target=g.spawnZombie('seagull',2,500);target.frozenUntil=100;
+ const follower=g.spawnZombie('seagull',2,1000),other=g.spawnZombie('seagull',0,1000);
+ g.pirate.fire(2,1);
+ for(let i=0;i<120&&g.pirate.score===0;i++)g.tick(1/60);
+ assert.equal(g.pirate.combo,1);
+ assert.equal(follower.stunnedUntil,g.time+g.level.cannon!.SlowdownMovementRate*.5/60);
+ assert.equal(other.stunnedUntil,undefined);
+ const x=follower.x,otherX=other.x;
+ tick(g,.2);assert.equal(follower.x,x);assert.notEqual(other.x,otherX);
+ tick(g,.3);assert.notEqual(follower.x,x);
+});

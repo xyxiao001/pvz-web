@@ -133,6 +133,7 @@ export class Scene {
   private mowerHolds=new Map<number,{root:Container;mask:Graphics}>();
   private mowerHoldTexture!:Texture;
   private objects = new Map<string, PixiArmatureDisplay>();
+  private cannonBirdPool = new Map<RigName, Actor[]>();
   timing!: AnimationTiming;
   onTick: (dt: number) => void = () => {};
   onPoint: (x: number, y: number) => void = () => {};
@@ -305,6 +306,13 @@ export class Scene {
   }
 
   private addActor(id: number, name: RigName, flag = false) {
+    const cached=this.cannonBirdPool.get(name)?.pop();
+    if(cached){
+      cached.animation='';cached.actionAt=-1;cached.armLost=false;
+      cached.rig.armature.getSlot('Seagull')!.childArmature!.animation.play('Idle',0);
+      cached.rig.armature.clock=this.clock;this.actorLayer.addChild(cached.root);
+      this.actors.set(id,cached);return cached;
+    }
     const root = new Container();
     const shade = new Graphics().ellipse(0, 2, name === 'mummy' || name === 'ra' ? 23 : 25, 8).fill({ color: '#302d20', alpha: .2 });
     const rig = this.rig(name, flag ? 'EgyptFlagZombie' : RIGS[name].armature); rig.scale.set(RIGS[name].scale);
@@ -637,14 +645,23 @@ export class Scene {
     if(z.kind==='cannon'&&z.pirate?.animation==='Explode'){this.removeActor(z.id,actor);return;}
     if(z.swing?.failure){this.removeActor(z.id,actor);return;}
     if((actor.kind==='seagull'||actor.kind==='pelican')){
-      actor.rig.armature.getSlot('Seagull')!.childArmature!.animation.play(death.cause==='potato'?'Explode':z.butteredUntil!==undefined?'Death':'Escape',1);
+      // Explosive kills remove the body before rendering; only the feather rig is visible.
+      if(death.cause!=='potato')actor.rig.armature.getSlot('Seagull')!.childArmature!.animation.play(z.butteredUntil!==undefined?'Death':'Escape',1);
       if(z.butteredUntil!==undefined||death.cause==='potato')this.onSound(actor.kind+'/seagullButteredSounds');
       if(death.cause==='potato'){const feathers=this.rig(actor.kind,'ParticleSeagull');feathers.scale.set(.51);feathers.position.copyFrom(actor.root.position);feathers.animation.play('Play',1);feathers.zIndex=actor.root.zIndex;this.actorLayer.addChild(feathers);this.particles.set(-z.id,feathers);}
     }
     if(!(z.kind==='eighties_punk'&&z.magnetized)&&!(actor.kind==='lostPorter'&&game.lostcity.tenting.has(z.id))&&!['skyAirRaidArbiterX','skyArbiterX','eightiesPunkVeteran','eightiesSkunk','kongfuBronzeChi','kongfuHook','kongfuStatue','kongfuStrong','zoybean','zoybeanGarg','iceageWeasel','iceageDodo','beachFisher','darkKing','darkKingVeteran','footballMech','futureGargantuar','discoMech','futureProtector','futureShield','futureImp','mechCone','blackBull','bull','pirateParrot','pirateBarrel','impCannon','seagull','pelican','camel','camelTouch','pharaoh','pharaohWeak'].includes(actor.kind))this.dropFragment(actor,'head');if(actor.kind!=='bull'&&actor.kind!=='blackBull')this.onSound(actor.kind==='pirateParrot'?'pirateParrot/deathSound':'zombieLimbPop');
     if(actor.armor?.visible){this.dropFragment(actor,z.knighted||((z.kind==='kongfu_armor3'||z.kind==='monk_armor3'||z.kind==='abbot_armor3')||z.kind==='dark_armor3'||z.kind==='dino_armor3'||z.kind==='iceage_armor3')?'Helmet':z.kind.endsWith('_armor4')?'Bricks':(z.kind.endsWith('_armor2')||z.airRaid?.props.StartingArmors?.includes('sky_armor2'))?'Bucket':'Cone');actor.armor.visible=false;}
     if(death.cause==='match'&&actor.plank){actor.plank.removeFromParent();actor.plank.dispose();actor.plank=undefined;}
-    if(death.cause==='potato'&&!z.surfer?.surfing&&actor.kind!=='bull'&&actor.kind!=='blackBull'){this.removeActor(z.id,actor);return;}
+    if(death.cause==='potato'&&!z.surfer?.surfing&&actor.kind!=='bull'&&actor.kind!=='blackBull'){
+      if(game.level.cannon&&(actor.kind==='seagull'||actor.kind==='pelican')){
+        // Reuse cannon-wave birds instead of destroying every bone on the impact frame.
+        actor.root.removeFromParent();actor.rig.armature.clock=null;this.actors.delete(z.id);
+        if(!this.cannonBirdPool.has(actor.kind))this.cannonBirdPool.set(actor.kind,[]);
+        this.cannonBirdPool.get(actor.kind)!.push(actor);
+      }else this.removeActor(z.id,actor);
+      return;
+    }
     const animation=z.kind==='modern_newspaper'&&game.modern.papers.get(z.id)!.hp===0?'Death_Angry':z.kind==='abbot_3section_staff'&&game.kongfu.staff.states.get(z.id)!.broken?'Death_B':z.kind==='monk_imp'&&z.kongfu!.flying?'Death_Floating':z.kind==='kongfu_drink'&&z.kongfu!.drunk?'Death_Drunk':actor.kind==='lostPorter'&&game.lostcity.tenting.has(z.id)?'Tent':actor.kind==='lostExcavator'&&actor.animation!=='Walk'&&actor.animation!=='Eat'&&actor.animation!=='Lose'?'Death_Shovel':z.pilot?.hanging?'Death_Hang':z.weasel?.hidden?'Death_Hidden':actor.kind==='iceageDodo'&&death.cause==='electric'?'Shock':z.fisher?.deathAnimation??z.surfer?.deathAnimation??(actor.kind==='pirateParrot'?'Die':'Death'),timeline=animationTimeline(this.skeletons.get(actor.kind)!,actor.rig.armature.name,animation);
     const shock=(actor.kind==='bull'||actor.kind==='blackBull')&&death.cause==='electric';
     this.animate(actor,shock?'Shock':animation,z.swing?.at??0,1);if(shock)this.onSound('zombieShock');
@@ -1181,6 +1198,8 @@ export class Scene {
     this.stop();this.conveyorLayer.visible=false;
     if(this.rootLocator){this.rootLocator.removeFromParent();this.rootLocator.dispose();this.rootLocator=undefined;}
     for (const [id,actor] of this.actors)this.removeActor(id,actor);
+    for(const birds of this.cannonBirdPool.values())for(const actor of birds)this.removeActor(-1,actor);
+    this.cannonBirdPool.clear();
     for(const hold of this.mowerHolds.values())hold.root.destroy({children:true});this.mowerHolds.clear();
     for (const rig of this.objects.values()) {rig.removeFromParent();rig.dispose();} this.objects.clear();
     for(const rig of this.npcs.values()){rig.removeFromParent();rig.dispose();}this.npcs.clear();
