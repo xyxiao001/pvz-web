@@ -7,8 +7,8 @@ const MODERN_DAYS:Readonly<Record<string,BattleLevel>>=Object.fromEntries(Array.
 }));
 
 export const MODERN_BOSS_GROUPS=[['modern_zomboss_01_egypt','modern_zomboss_02_pirate','modern_zomboss_03_cowboy'],['modern_zomboss_04_future','modern_zomboss_05_dark','modern_zomboss_06_beach'],['modern_zomboss_07_iceage','modern_zomboss_08_lostcity','modern_zomboss_09_eighties','modern_zomboss_10_dino']];
-export const MODERN_LEVELS:Readonly<Record<string,BattleLevel>>={...MODERN_DAYS,...Object.fromEntries(['egypt','pirate','cowboy','future'].map((world,index)=>{
- const id=`modern_zomboss_0${index+1}_${world}`,day=index<3?32:33,base=MODERN_DAYS.modern31;
- const level:BattleLevel={...base,id,day,source:`modern/${id}.source.json`,bundles:[...base.bundles!,world==='egypt'?'campaign':world,`modern/boss-${world}`],presentation:{lawn:world==='egypt'?'egypt/lawn.webp':`${world}/lawn.webp`,loading:'modern/lawn.webp',music:'campaign/boss0.mp3'},mode:'conveyor',narrative:`MODERN_${day}_INTRO`,outro:`MODERN_${day}_OUTRO`,firstReward:{image:'',label:''}};
+export const MODERN_LEVELS:Readonly<Record<string,BattleLevel>>={...MODERN_DAYS,...Object.fromEntries(['egypt','pirate','cowboy','future','dark','beach','iceage','lostcity','eighties'].map((world,index)=>{
+ const id=`modern_zomboss_0${index+1}_${world}`,day=index<3?32:index<6?33:34,base=MODERN_DAYS.modern31;
+ const level:BattleLevel={...base,id,day,source:`modern/${id}.source.json`,bundles:[...base.bundles!,world==='egypt'?'campaign':world,`modern/boss-${world}`],presentation:{lawn:world==='egypt'?'egypt/lawn.webp':`${world}/lawn.webp`,loading:'modern/lawn.webp',music:world==='eighties'?'eighties/music.mp3':'campaign/boss0.mp3'},night:world==='dark'||world==='eighties',mode:'conveyor',narrative:`MODERN_${day}_INTRO`,outro:`MODERN_${day}_OUTRO`,firstReward:day===34?{image:'worldtrophy_modern',animation:'modern',label:'摩登世界奖杯'}:{image:'',label:''}};
  return [id,level];
 }))};

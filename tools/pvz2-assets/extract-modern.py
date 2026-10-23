@@ -1,4 +1,4 @@
-"""Export Modern 1–31 and the first four Modern boss variants from the pinned Cocos build."""
+"""Export Modern 1–31 and the first nine Modern boss variants from the pinned Cocos build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -41,7 +41,7 @@ for name,description in {**actors,**rigs}.items():
     properties['plantAnimations'][name]=timelines
 for day in range(1,32):c.write_json(e.OUT/f'modern{day}.source.json',e.read(f'levels/modern{day}').objects[0]['json'])
 # Native Modern variants use the original mech class with distinct stage properties.
-for number,world in enumerate(['egypt','pirate','cowboy','future'],1):
+for number,world in enumerate(['egypt','pirate','cowboy','future','dark','beach','iceage','lostcity','eighties'],1):
     name=f'modern_zomboss_{number:02}_{world}'
     c.write_json(e.OUT/f'{name}.source.json',e.read('levels/'+name).objects[0]['json'])
     key='zombossmech_'+world
@@ -70,7 +70,7 @@ for name,uuid in [('start','9b3a66eb-d069-4b95-ba98-a86c967db9fc'),('loop','b25a
 common=e.read('resouce_prefabs/SoundsRP').objects[1]['_components'][0]
 for name in ['beghouledMatch','beghouledMatchFail','beghouledShovel','beghouledRefresh']:sound(name,common[name])
 npc=e.read('b697cdfd-e783-4f80-abbe-ac197db6cf97');narratives={}
-for name in ['MODERN_1_INTRO','MODERN_2_INTRO','MODERN_3_INTRO','MODERN_5_INTRO','BEGHOULED_INTRO','MODERN_9_INTRO','MODERN_11_INTRO','MODERN_15_OUTRO','MODERN_16_INTRO','MODERN_17_INTRO','MODERN_19_INTRO','MODERN_OUTRO_DANGER_ROOM_KEY','MODERN_21_INTRO','MODERN_22_INTRO','MODERN_23_INTRO','MODERN_24_INTRO','MODERN_32_INTRO','MODERN_32_OUTRO','MODERN_33_INTRO','MODERN_33_OUTRO']:
+for name in ['MODERN_1_INTRO','MODERN_2_INTRO','MODERN_3_INTRO','MODERN_5_INTRO','BEGHOULED_INTRO','MODERN_9_INTRO','MODERN_11_INTRO','MODERN_15_OUTRO','MODERN_16_INTRO','MODERN_17_INTRO','MODERN_19_INTRO','MODERN_OUTRO_DANGER_ROOM_KEY','MODERN_21_INTRO','MODERN_22_INTRO','MODERN_23_INTRO','MODERN_24_INTRO','MODERN_32_INTRO','MODERN_32_OUTRO','MODERN_33_INTRO','MODERN_33_OUTRO','MODERN_34_INTRO','MODERN_34_OUTRO']:
     flow=next(o['objdata']['Flow'] for o in e.read('json/Objects/NarrativeList').objects[0]['json']['objects'] if name in o.get('aliases',[]))
     for step in flow:
         if 'Lines' in step:
@@ -89,4 +89,4 @@ c.write_json(e.OUT/'beghouled-costs.json',costs)
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{}})
 c.write_json(c.ROOT/'apps/pvz2/modern-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Modern 1–31 and the first four Modern boss variants')
+print('Exported Modern 1–31 and the first nine Modern boss variants')

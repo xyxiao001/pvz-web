@@ -196,7 +196,7 @@ export class Scene {
       for(let row=0;row<5;row++){lawn.armature.getSlot(`DECKSHADE${row}`)!.displayIndex=level.planks!.includes(row)?0:-1;const deck=this.art.build('pirateLawn',level.planks!.includes(row)?'On':'Off',`Deck${row}`);deck.scale.set(.5);deck.position.set(449.645,344-[15.248,15.248,18.739,18.739,22.227][row]*.5);this.world.addChildAt(deck,row+1);this.lawnRigs.push(deck);}
       if(level.cannon){const guide=this.art.build('pirateLawn','Idle','CannonGuide');guide.scale.set(.5);guide.position.set(449.645,344);this.world.addChildAt(guide,6);this.lawnRigs.push(guide);}
     }
-    if(config.world==='beach'){
+    if(level.world==='beach'){
       const lawn=this.art.build('beachLawn','Idle');lawn.scale.set(.5);lawn.position.set(449.645,344);this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);
       const water=new Container(),mask=new Graphics().rect(BOARD.left,BOARD.top,1200-BOARD.left,BOARD.rows*BOARD.cellHeight).fill(0xffffff);
       this.beachEdge=this.art.build('tide','Idle','waterUpper');this.beachEdge.scale.set(.5);water.addChild(this.beachWater,this.beachEdge,mask);water.mask=mask;const x=BOARD.left+level.tide!.start*BOARD.cellWidth;this.beachWater.rect(x,BOARD.top,Math.max(0,1200-x),BOARD.rows*BOARD.cellHeight).fill({color:0x29b9ce,alpha:.55});this.beachEdge.position.set(x,rowY(2)-35);this.world.addChildAt(water,1);this.lawnRigs.push(this.beachEdge);
@@ -210,15 +210,15 @@ export class Scene {
         const sign=this.art.build('bowlingSign','Idle');sign.scale.set(.2);sign.position.set(x,BOARD.top+14);this.world.addChildAt(sign,3);this.lawnRigs.push(sign);
       }
     }
-    if(config.world==='dark'){const lawn=this.art.build('darkLawn','Idle');lawn.scale.set(.5);lawn.position.set(449.645,344);this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
+    if(level.world==='dark'){const lawn=this.art.build('darkLawn','Idle');lawn.scale.set(.5);lawn.position.set(449.645,344);this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
     if(config.world==='sky'){for(const name of (config.mode==='airraid'?['airRaidSky','airRaidClouds']:['skySky','skyClouds','skyLawn'])){const lawn=this.art.build(name,'Idle');lawn.scale.set(.5);if(config.mode==='airraid'){lawn.tint=name==='airRaidSky'?0x273a61:0x00080c;lawn.animation.timeScale=-.4;}lawn.position.set(449.645,344);this.world.addChildAt(lawn,this.lawnRigs.length);this.lawnRigs.push(lawn);}}
     if(level.beghouled)this.world.addChild(this.beghouledMarks);
     if(level.world==='modern'){const lawn=this.art.build('modernLawn','row5');lawn.scale.set(.5);lawn.position.set(449.645,344);if(config.night)lawn.tint=0x7884ba;this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
     if(config.world==='dino'){const lawn=this.art.build('dinoLawn','Idle');lawn.scale.set(.5);lawn.position.set(449.645,344);this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
-    if(config.world==='eighties'){const lawn=this.art.build('eightiesLawn','Idle');lawn.scale.set(.5);lawn.position.set(449.645,344);this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
+    if(level.world==='eighties'){const lawn=this.art.build('eightiesLawn','Idle');lawn.scale.set(.5);lawn.position.set(449.645,344);this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
     if(config.world==='kongfu'){const lawn=this.art.build('kongfuLawn','Idle');lawn.scale.set(.5);lawn.position.set(449.645,344);this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
-    if(config.world==='lostcity'){const lawn=this.art.build(config.night?'lostcityNightLawn':'lostcityLawn','Idle');lawn.scale.set(.5);lawn.position.set(449.645,344);this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
-    if(config.world==='iceage'){const lawn=this.art.build('iceageLawn','Idle');lawn.scale.set(.5);lawn.position.set(449.645,344);this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
+    if(level.world==='lostcity'){const lawn=this.art.build(config.night?'lostcityNightLawn':'lostcityLawn','Idle');lawn.scale.set(.5);lawn.position.set(449.645,344);this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
+    if(level.world==='iceage'){const lawn=this.art.build('iceageLawn','Idle');lawn.scale.set(.5);lawn.position.set(449.645,344);this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
     if(level.world==='future'){const lawn=this.art.build(config.night?'futureNightLawn':'futureLawn','Idle');lawn.scale.set(.5);lawn.position.set(449.645,344);this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
     if(level.world==='west'){const lawn=this.art.build('cowboyLawn','Idle');lawn.scale.set(.5);lawn.position.set(449.645,344);this.world.addChildAt(lawn,0);this.lawnRigs.push(lawn);}
     this.mowerHoldTexture=await this.textures.load(assetUrl(this.art.catalog.ui.mowerHold.image));

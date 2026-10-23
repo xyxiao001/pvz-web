@@ -12,7 +12,7 @@ import {islandStates,LEVEL_ROUTES} from '../src/shell/navigation';
 import type {WorldMap} from '../src/shell/types';
 const quiet=()=>{const g=create(17);Object.assign(g,{nextWave:Infinity});return g;};
 test('Modern 16–20 preserve conveyor changes, portals, night, gold tiles and rewards',()=>{
- assert.equal(Object.keys(BATTLE_LEVELS).length,493);
+ assert.equal(Object.keys(BATTLE_LEVELS).length,498);
  for(let day=16;day<=20;day++)assert.equal(LEVEL_ROUTES[`modern${day}`],`modern${day}`);
  assert.deepEqual([16,17,18,19,20].map(n=>level(n).waves.length),[12,10,10,10,10]);
  assert.equal(level(16).mowers,false);assert.deepEqual(level(16).conveyor!.InitialPlantList.map(p=>p.PlantType),['primalpotatomine','wintermelon']);assert.equal(BATTLE_LEVELS.modern16.night,true);assert.equal(BATTLE_LEVELS.modern19.night,true);

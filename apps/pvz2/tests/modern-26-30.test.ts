@@ -11,7 +11,7 @@ import {islandStates,LEVEL_ROUTES} from '../src/shell/navigation';
 import type {WorldMap} from '../src/shell/types';
 
 test('Modern 26–30 preserve authored modes, jams, dinosaurs, grids and targets',()=>{
- assert.equal(Object.keys(BATTLE_LEVELS).length,493);
+ assert.equal(Object.keys(BATTLE_LEVELS).length,498);
  for(let day=26;day<=30;day++)assert.equal(LEVEL_ROUTES[`modern${day}`],`modern${day}`);
  assert.deepEqual([26,27,28,29,30].map(n=>level(n).waves.length),[12,0,10,12,12]);
  assert.equal(create(26).eighties.jam,'jam_metal');assert.equal(create(29).eighties.jam,'jam_rap');

@@ -11,7 +11,7 @@ import {islandStates,LEVEL_ROUTES} from '../src/shell/navigation';
 import type {WorldMap} from '../src/shell/types';
 
 test('Modern 11–15 retain original chooser, modes, waves, dinosaurs and objectives',()=>{
- assert.equal(Object.keys(BATTLE_LEVELS).length,493);
+ assert.equal(Object.keys(BATTLE_LEVELS).length,498);
  for(let day=11;day<=15;day++){assert.equal(LEVEL_ROUTES[`modern${day}`],`modern${day}`);assert.ok(BATTLE_LEVELS[`modern${day}`].plants.some(p=>p.kind==='shadowshroom'));}
  assert.deepEqual([11,12,13,14,15].map(n=>level(n).waves.length),[10,10,0,10,10]);
  assert.deepEqual(level(11).chooserPlants,['shadowshroom','garlic']);assert.equal(level(12).maxPlantsLost,10);
