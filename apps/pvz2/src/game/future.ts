@@ -53,7 +53,7 @@ export class FutureBattle {
   private starFood=new Map<number,{at:number;count:number}>();
   private lasers=new Map<number,{hits:Set<number>;lastX:number;nextDirt:number}>();
   private blows=new Map<number,number>();
-  private bombs:{x:number;y:number;at:number;hit:boolean}[]=[];
+  private bombs:{props:NonNullable<import('./level').Level['sunBomb']>;x:number;y:number;at:number;hit:boolean}[]=[];
   readonly finale:FutureFinalPlants;
   constructor(g:Game){this.#game=g;this.finale=new FutureFinalPlants(g);}
   handles(kind:PlantKind){return this.finale.handles(kind)||['pinkstarfruit','redstinger','starfruit','holonut','laser_bean','blover','citron','empea','powerplant','powerplant_alpha','powerplant_beta'].includes(kind);}
@@ -324,7 +324,7 @@ export class FutureBattle {
     return false;
   }
 
-  collectBomb(sun:Sun){this.visual('sunbombBlast','Play',sun.x,sun.y);this.bombs.push({x:sun.x,y:sun.y,at:this.#game.time,hit:false});this.sounds.push('sunbomb/explodeSound');this.endRay(sun);}
+  collectBomb(sun:Sun){this.visual('sunbombBlast','Play',sun.x,sun.y);this.bombs.push({props:sun.bombProps?sun.bombProps:this.#game.level.sunBomb!,x:sun.x,y:sun.y,at:this.#game.time,hit:false});this.sounds.push('sunbomb/explodeSound');this.endRay(sun);}
   endRay(sun:Sun){this.visual('sunbombRay','Die',sun.x,sun.y);}
   defuse(sun:Sun){sun.bomb=false;sun.defusedAt=this.#game.time;this.endRay(sun);this.sounds.push('sunbomb/defuseSound');}
   tick(dt:number){
@@ -344,7 +344,7 @@ export class FutureBattle {
       if(z.kind==='future_protector'&&z.future!.shield!==undefined&&(z.hp<=0||z.leap||z.reversed))this.killShields(z);
     }
     for(const bomb of this.bombs)if(!bomb.hit&&g.time-bomb.at>=g.props.plantAnimations.sunbombBlast.Play.events.find(e=>e.name==='expl')!.at){
-      bomb.hit=true;const props=g.level.sunBomb!,zr=props.ZombieBombExplosionRadius*BOARD.cellWidth/80,pr=props.PlantBombExplosionRadius*BOARD.cellWidth/80;
+      bomb.hit=true;const props=bomb.props,zr=props.ZombieBombExplosionRadius*BOARD.cellWidth/80,pr=props.PlantBombExplosionRadius*BOARD.cellWidth/80;
       for(const z of g.zombies)if(z.hp>0&&Math.abs(z.x-bomb.x)<=zr+20&&Math.abs(rowY(z.row)-45-bomb.y)<=zr+45)g.damage(z,props.ZombieDamage);
       for(const p of g.plants)if(Math.abs(cellX(p.column)-bomb.x)<=pr+20&&Math.abs(rowY(p.row)-40-bomb.y)<=pr+35){const armor=Math.min(p.armor,props.PlantDamage);p.armor-=armor;p.hp-=props.PlantDamage-armor;}
       for(const t of g.graves)if(Math.abs(cellX(t.column)-bomb.x)<=zr+20&&Math.abs(rowY(t.row)-40-bomb.y)<=zr+40)t.hp-=props.ZombieDamage;

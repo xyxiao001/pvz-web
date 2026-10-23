@@ -1,3 +1,6 @@
+import {SkyThunder} from './sky-thunder';
+import {SkyTwins} from './sky-twins';
+import {SkyAirRaid} from './sky-airraid';
 import ship from '../../public/assets/sky/ship.json';
 import flyingPlants from '../../public/assets/sky/flying-plants.json';
 import {BOARD,cellX,rowY,type PlantKind,type SpawnAction} from './level';
@@ -12,16 +15,19 @@ export class SkyBattle {
  drops:DropShip[]=[];
  bullets:{id:number;x:number;row:number}[]=[];
  readonly plants:SkyPlants;
+ readonly thunder:SkyThunder;
+ readonly twins:SkyTwins;
+ readonly airRaid:SkyAirRaid;
  private serial=0;
- constructor(private g:Game){this.plants=new SkyPlants(g);}
+ constructor(private g:Game){this.plants=new SkyPlants(g);this.thunder=new SkyThunder(g);this.twins=new SkyTwins(g);this.airRaid=new SkyAirRaid(g);}
  get edge(){return cellX(ship.EdgeX)+(this.shield>0?BOARD.cellWidth/3:0);}
  setShield(owned:boolean){this.shield=owned?ship.ToughnessShield:0;}
  canPlant(kind:PlantKind,column:number){return this.g.level.world!=='sky'||column<3||flyingPlants.includes(kind);}
  initPlant(p:Plant){this.plants.init(p);}
- food(p:Plant){this.plants.food(p);}
- plant(p:Plant){this.plants.plant(p);}
+ food(p:Plant){if(p.kind==='moonbean'||p.kind==='anthurium')this.thunder.food(p);else this.plants.food(p);}
+ plant(p:Plant){if(p.kind==='moonbean'||p.kind==='anthurium')this.thunder.plant(p);else this.plants.plant(p);}
  damageShip(amount:number,bypass=false){
-  const g=this.g;if(g.level.world!=='sky'||g.phase!=='playing')return;
+  const g=this.g;if(g.level.world!=='sky'||g.level.airRaid||g.phase!=='playing')return;
   if(this.shield>0&&!bypass)this.shield-=amount;
   else this.health-=amount;
   if(this.health<=0){g.phase='lost';g.lossReason='ship';g.events.push({type:'lose'});}
@@ -42,6 +48,8 @@ export class SkyBattle {
  }
  private play(z:Zombie,animation:string){z.sky!.animation=animation;z.sky!.elapsed=0;z.sky!.event=0;}
  zombie(z:Zombie,dt:number){
+  if(this.g.level.airRaid)return this.airRaid.zombie(z,dt);
+  if(this.twins.zombie(z,dt))return true;
   if(!z.kind.startsWith('sky')||z.kind==='sky_imp')return false;
   const g=this.g,state=z.sky??(z.sky={animation:'Walk',elapsed:0,event:0,impHealth:390,speed:1});
   const name=z.kind==='sky_battleplane'?'skyBattlePlane':z.kind==='sky_flag'?'skyFlag':'sky';
@@ -84,7 +92,7 @@ export class SkyBattle {
   return false;
  }
  tick(dt:number){
-  const g=this.g;this.plants.tick(dt);
+  const g=this.g;this.plants.tick(dt);this.thunder.tick(dt);this.airRaid.tick(dt);
   if(g.level.world==='sky'&&(g.plants.some(p=>p.hp>0&&p.kind==='blover'&&p.animation==='Blowing')||g.westFinale.winds.length>0))this.damageShip(ship.BloverDPS*dt,true);
   for(const d of this.drops){
    d.elapsed+=dt;const timeline=g.props.plantAnimations.skyDropShip[d.animation];
