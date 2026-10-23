@@ -68,10 +68,10 @@ export class WesternFinale {
   private banana(kind:'banana'|'missiletoe',row:number,column:number){this.shots.push({id:++this.serial,kind,row,column,x:cellX(column),y:rowY(row)-550,age:0,distance:0});}
   private visual(name:string,animation:string,x:number,y:number){this.visuals.push({id:++this.serial,name,animation,x,y,at:this.#game.time,duration:this.#game.props.plantAnimations[name][animation].duration});}
   private poisonDamage(z:Zombie,damage:number){const g=this.#game;if(z===g.boss?.zombie)g.damage(z,damage);else {z.hp-=damage;g.cowboy.damaged(z);}}
-  private poison(z:Zombie){const g=this.#game,p=g.props.plants.shadowshroom;z.poison={until:g.time+p.PoisonDuration,dps:p.PoisonDPS};}
+  private poison(z:Zombie,infective=false){const g=this.#game,p=g.props.plants.shadowshroom;z.poison={until:g.time+p.PoisonDuration,dps:p.PoisonDPS,infective:infective||!!z.poison?.infective};}
   eaten(p:Plant,z:Zombie){
     const g=this.#game;
-    if(p.kind==='shadowshroom'){this.poison(z);this.visual('shadowExpl','Play',cellX(p.column),rowY(p.row));this.sounds.push('shadowshroom/deathExplodeSounds');}
+    if(p.kind==='shadowshroom'){this.poison(z,this.#game.modern.powered(p));this.visual('shadowExpl','Play',cellX(p.column),rowY(p.row));this.sounds.push('shadowshroom/deathExplodeSounds');}
     if(p.kind!=='hypnoshroom')return;
     g.kills++;
     if(z.food){g.pickups.push({id:-100000-z.id,kind:'food',x:z.x,y:rowY(z.row)-45,age:0});z.food=false;}
@@ -172,7 +172,14 @@ export class WesternFinale {
   tick(dt:number){
     const g=this.#game;
     if(this.selected!==null&&!g.plants.some(p=>p.id===this.selected&&p.hp>0))this.selected=null;
-    for(const z of g.zombies){if(z.poison&&z.poison.until>g.time)this.poisonDamage(z,z.poison.dps*dt);else delete z.poison;}
+    for(const z of g.zombies){
+      if(z.poison&&z.poison.until>g.time){
+        this.poisonDamage(z,z.poison.dps*dt);
+        // Native shadow poison spreads on body contact within the same lane,
+        // carrying the remaining duration instead of restarting the timer.
+        if(z.poison.infective&&z.hp>0)for(const other of g.zombies)if(other.hp>0&&other.row===z.row&&Math.abs(other.x-z.x)<40&&!(other.poison&&other.poison.until>g.time))other.poison={...z.poison};
+      }else delete z.poison;
+    }
     for(const wind of this.winds)if(g.time<wind.until)for(const z of g.zombies)if(z.hp>0&&z.row===wind.row&&z!==g.boss?.zombie){z.x=Math.min(BOARD.left+9*BOARD.cellWidth,z.x+2*BOARD.cellWidth*dt);g.chill(z,8);}
     this.winds=this.winds.filter(w=>g.time<w.until);
     this.currents();

@@ -11,7 +11,7 @@ export interface BattleLevel {
   bundles?:string[];
   presentation:{lawn:string;loading:string;music:string};
   plants: { id: number; kind: PlantKind }[];
-  firstReward: { image: string; label: string; plant?:PlantKind; animation?:string; armature?:string };
+  firstReward: { image: string; label: string; plant?:PlantKind; animation?:string; armature?:string; textOnly?:boolean };
   mode:'beghouled'|'airraid'|'seedbank'|'conveyor'|'powerups'|'match'|'preset'|'cannon';
   night:boolean;
   actors:PlantKind[];
