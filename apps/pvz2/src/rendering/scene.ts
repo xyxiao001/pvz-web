@@ -1,4 +1,5 @@
 import {isRack,rackDisplay} from '../game/kongfu-combat';
+import { estimateTextureBytes } from '../performance';
 import {kongfuArmor} from '../game/kongfu';
 import {lostcityArmor} from '../game/lostcity';
 import {iceageArmor} from '../game/iceage';
@@ -107,6 +108,7 @@ interface Actor {knighted?:boolean; rootGrown?:boolean;rootCharged?:boolean; cap
 interface Fragment {rig:PixiArmatureDisplay;x:number;y:number;ground:number;vx:number;vy:number;spin:number;age:number;landed:number}
 
 export class Scene {
+  textureBytes = 0;
   costumes:Record<string,number> = {};
   private textures=textureScope();
   readonly app = new Application();
@@ -156,6 +158,8 @@ export class Scene {
     this.bossView=!!level?.boss;
     await this.app.init({ width: BOARD.width, height: BOARD.height, background: '#b5924c', antialias: true,
       resolution: Math.min(window.devicePixelRatio, 2), autoDensity: true, autoStart: false });
+    // Simulation advances at 60 Hz; avoid duplicate animation/render work on high-refresh screens.
+    this.app.ticker.maxFPS = 60;
     host.append(this.app.canvas);
     this.app.canvas.setAttribute('aria-label', `${config.worldName}战场，五行九列。选择植物后点击地块种植。`);
     this.app.stage.eventMode = 'none';
@@ -215,6 +219,7 @@ export class Scene {
       skeletons.set(name, skeleton); progress(++done, total);
     });
     this.skeletons=skeletons;
+    this.textureBytes=estimateTextureBytes(await this.textures.values());
     const shoot=animationTimeline(skeletons.get('peashooter')!,'Peashooter','Shoot'),produce=animationTimeline(skeletons.get('sunflower')!,'Sunflower','Produce');
     const grow=animationTimeline(skeletons.get('potatomine')!,'PotatoMine','Grow'),mine=animationTimeline(skeletons.get('potatomine')!,'PotatoMine','Charging');
     this.timing = { wallnutArmor:animationTimeline(skeletons.get('wallnut')!,'Wall-nut','Food').events.wearArmor,wallnutFoodEnd:animationTimeline(skeletons.get('wallnut')!,'Wall-nut','Food').events.foodEnd,shoot:shoot.events.Shoot,shootDuration:shoot.duration,produce:produce.events.Produce,produceDuration:produce.duration,mineGrow:grow.events.activate,mineExplode:mine.events.explode,mineDeath:mine.events.die,

@@ -1,4 +1,5 @@
 import { playAudio } from './audio';
+import { FrameRate } from './performance';
 import './style.css';
 import './audio-controls.css';
 import { plantReward } from './plant-reward';
@@ -46,7 +47,10 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     <div id="hud" hidden>
       <div class="sun-counter"><img alt="阳光"><b id="sun-count">50</b></div>
       <div class="seed-bank">${Array.from({length:seedSlots},(_,i)=>`<button class="seed" data-slot="${i}" aria-label="空卡槽" disabled><img alt=""><span class="seed-price"></span><span class="seed-cooldown"></span></button>`).join('')}</div>
-      <button id="auto-sun" class="battle-button" aria-label="自动收集阳光" aria-pressed="true">自动阳光：开</button>
+      <div class="battle-tools">
+        <button id="auto-sun" aria-label="自动收集阳光" aria-pressed="true"><span>自动阳光</span><span class="auto-sun-state" aria-hidden="true">开</span></button>
+        <div id="performance-hud" aria-label="战斗性能"><span id="performance-fps">FPS —</span><span id="performance-memory"></span></div>
+      </div>
       <button id="speed" class="battle-icon" aria-label="切换二倍速" aria-pressed="false"></button>
       <button id="pause" class="battle-icon" aria-label="暂停游戏"></button>
       <button id="shovel" class="battle-icon" aria-label="使用铲子"><img alt="铲子"></button>
@@ -71,12 +75,15 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     <div id="overlay" hidden></div>
   </section><div class="battle-caption"><span>${title}</span><span>${levelConfig.mode==='seedbank'||levelConfig.mode==='preset'?`1–${seedSlots} 选卡 · 点击阳光收集`:touchHelp} · 空格暂停</span></div>`;
   const seedViews = Array.from(host.querySelectorAll<HTMLButtonElement>('[data-slot]'), button => ({
-    button, image:button.querySelector<HTMLImageElement>('img')!,
+    button, kind:null as PlantKind | undefined | null, image:button.querySelector<HTMLImageElement>('img')!,
     price:button.querySelector<HTMLElement>('.seed-price')!, cooldown:button.querySelector<HTMLElement>('.seed-cooldown')!,
   }));
   const sunCount=$('#sun-count'),foodCount=$('#plant-food b'),waveLabel=$('#wave-label'),waveFill=$('#wave-fill');
   const powerButtons=Array.from(host.querySelectorAll<HTMLButtonElement>('[data-power]'));
   const powerTime=$<HTMLProgressElement>('#power-time'),gameTip=$('#game-tip'),announcement=$('#battle-announcement');
+  const performanceHud=$('#performance-hud'),fpsLabel=$('#performance-fps');
+  const frameRate=new FrameRate();
+  let showPerformance=true;
   // Keep unchanged HUD values out of the DOM; card images are large data URLs.
   const text = (element:HTMLElement,value:string) => {if(element.textContent!==value)element.textContent=value;};
 
@@ -135,6 +142,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
         $('#load-status').textContent=`正在准备植物与庭院 ${done} / ${total}`;
         const progress=$<HTMLProgressElement>('#load-progress');progress.max=total;progress.value=done;
       },levelConfig,actorPlants,parsed);
+      $('#performance-memory').textContent=`纹理估算 ${(scene.textureBytes/1024/1024).toFixed(1)} MiB`;
       scene.onPoint=(x,y)=>{pointerDown=true;interact(x,y);};scene.onHover=hover;scene.onRelease=()=>{pointerDown=false;game?.releaseMower();if(game)game.cowboy.selected=null;if(game?.power)game.powerPointer(game.power.x,game.power.y,false);};scene.onTick=tick;
       scene.onSound=sound;
       scene.onNPCEvent=(character,event)=>{
@@ -203,7 +211,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   }
   function updateDeck() {
     for (let i=0;i<seedSlots;i++) {
-      const {button,image,price,cooldown}=seedViews[i],kind=deck[i];
+      const view=seedViews[i],{button,image,price,cooldown}=view,kind=deck[i];
       const refresh=!!kind&&selected==='food'&&game.plantfoodRefresh&&!game.preparing&&game.food>0&&game.cooldowns[kind]>0;
       const disabled=screen==='choosing'?!kind||!!game.level.chooserPlants?.includes(kind):!kind||!refresh&&(game.sun<game.seedCost(kind)||!game.preparing&&game.cooldowns[kind]>0);
       if(button.disabled!==disabled)button.disabled=disabled;
@@ -211,8 +219,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       button.classList.toggle('empty',!kind);button.classList.toggle('selected',selected===kind);
       const label=kind?`${screen==='choosing'?'移除':'选择'}${plantLabels[kind]}`:'空卡槽';
       if(button.getAttribute('aria-label')!==label)button.setAttribute('aria-label',label);
-      if(image.hidden!==!kind)image.hidden=!kind;
-      if(kind&&image.getAttribute('src')!==cards.get(kind))image.src=cards.get(kind)!;
+      if(view.kind!==kind){view.kind=kind;image.hidden=!kind;if(kind)image.src=cards.get(kind)!;}
       text(price,kind?kind==='imitater'&&game.imitateKind===null?'':String(game.seedCost(kind)):'');
       const height=kind&&screen!=='choosing'?`${game.cooldowns[kind]/game.seedCooldown(kind)*100}%`:'0%';
       if(cooldown.style.height!==height)cooldown.style.height=height;
@@ -227,6 +234,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     }
   }
   function chooseSeeds() {
+    frameRate.reset();text(fpsLabel,'FPS —');
     prepareGame();
     scene.preview(game.level.waves.flat(),game.graves,game.plants,game.level);scene.setCamera(scene.art.catalog.presentation.seedChoosingCameraX);scene.start();openChooser();
   }
@@ -310,6 +318,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     updateHud();
   }
   function tick(dt: number) {
+    if(showPerformance){const fps=frameRate.sample(performance.now());if(fps!==null)text(fpsLabel,`FPS ${fps}`);}
     if(screen==='npc-enter'||screen==='npc-exit') {
       if(scene.narrativeTick(dt)){if(screen==='npc-enter')nextNarrative();else if(outro){outro=false;finish();}else survey();}return;
     }
@@ -386,11 +395,13 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   function pause() {
     if(screen!=='playing')return;
     game.releaseMower();pointerDown=false;game.phase='paused';screen='pause';scene.stop();music.pause();sound('pause');
-    panel('暂停',`<p class="pause-level">${title}</p><p class="pause-help">${touchHelp}</p>${audioControls(preferences)}<div class="pause-actions"><button id="exit" class="battle-button">退出地图</button><button id="restart" class="battle-button">重新开始</button><button id="resume" class="battle-button">继续</button></div>`);
+    frameRate.reset();
+    panel('暂停',`<p class="pause-level">${title}</p><p class="pause-help">${touchHelp}</p>${audioControls(preferences)}<label class="performance-option"><span>显示性能<span class="performance-description">FPS · 纹理内存估算</span></span><input id="show-performance" type="checkbox"${showPerformance?' checked':''}></label><div class="pause-actions"><button id="exit" class="battle-button">退出地图</button><button id="restart" class="battle-button">重新开始</button><button id="resume" class="battle-button">继续</button></div>`);
     $('.battle-window').classList.add('pause-window');
+    $<HTMLInputElement>('#show-performance').onchange=event=>{showPerformance=(event.currentTarget as HTMLInputElement).checked;performanceHud.hidden=!showPerformance;frameRate.reset();text(fpsLabel,'FPS —');};
     $('#resume').onclick=resume;$('#restart').onclick=chooseSeeds;$('#exit').onclick=menu;bindAudio();
   }
-  function resume() {game.phase='playing';screen='playing';accumulator=0;$('#overlay').hidden=true;playMusic();scene.start();}
+  function resume() {game.phase='playing';screen='playing';accumulator=0;frameRate.reset();text(fpsLabel,'FPS —');$('#overlay').hidden=true;playMusic();scene.start();}
   function finish() {
     screen='result';scene.stop();scene.render();music.pause();$('#battle-announcement').hidden=true;
     if(game.phase==='won') {
@@ -411,7 +422,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   $('#narrative').onclick=nextNarrative;
   $('#laststand-start').onclick=()=>{game.startLastStand();screen='countdown';host.dataset.screen=screen;countdown=0;$('#laststand-start').hidden=true;$('#battle-announcement').hidden=false;$('#battle-announcement').textContent='准备…';sound('readySetPlant');};
   $('#pause').onclick=pause;$('#start').onclick=prepareStart;$('#ready-back').onclick=menu;
-  $('#auto-sun').onclick=()=>{autoCollectSun=!autoCollectSun;game.autoCollectSun=autoCollectSun;$('#auto-sun').setAttribute('aria-pressed',String(autoCollectSun));$('#auto-sun').textContent=`自动阳光：${autoCollectSun?'开':'关'}`;};
+  $('#auto-sun').onclick=()=>{autoCollectSun=!autoCollectSun;game.autoCollectSun=autoCollectSun;$('#auto-sun').setAttribute('aria-pressed',String(autoCollectSun));$('.auto-sun-state').textContent=autoCollectSun?'开':'关';};
   $('#speed').onclick=()=>{if(screen==='playing'){speed=speed===1?2:1;$('#speed').setAttribute('aria-pressed',String(speed===2));}};
   $('#shovel').onclick=()=>{if(screen==='playing'){selected=selected==='shovel'?null:'shovel';updateHud();}};
   for(let i=0;i<seedSlots;i++)$(`[data-slot="${i}"]`).onclick=()=>{

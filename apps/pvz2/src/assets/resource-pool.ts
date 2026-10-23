@@ -24,5 +24,6 @@ export class ResourceScope<T>{
     return this.owned.get(path)!;
   }
   release(path:string){this.owned.delete(path);return this.pool.release(path);}
+  values(){return Promise.all(this.owned.values());}
   async dispose(){await Promise.all([...this.owned.keys()].map(path=>this.release(path)));}
 }

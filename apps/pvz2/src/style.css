@@ -110,5 +110,20 @@ button{font:inherit;cursor:pointer;border:0;padding:0;background:transparent;col
 .plant-reward-window .battle-button{width:70%;margin:0 auto;font-size:1.8cqw;color:#fff8db}
 @keyframes reward-arrive{from{opacity:0;transform:translateY(1cqw) scale(.94)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.plant-reward-art img{animation:none}}
-#auto-sun{position:absolute;right:1%;top:14%;min-width:0;padding:.5cqw 1cqw;font:1.4cqw "PingFang SC",sans-serif}#auto-sun[aria-pressed=true]{color:#f8ffad}:scope[data-screen=choosing] #auto-sun,:scope[data-mode=cannon] #auto-sun,:scope[data-mode=match] #auto-sun,:scope[data-mode=powerups] #auto-sun{display:none}
+.battle-tools{position:absolute;right:1%;top:14%;display:flex;align-items:center;gap:.7cqw}
+#auto-sun{display:flex;align-items:center;gap:.6cqw;min-height:24px;padding:.55cqw .8cqw;border:.16cqw solid #e1cba5;border-radius:.7cqw;background:linear-gradient(#7956a1,#4e326f);box-shadow:0 .18cqw .3cqw #23132f66,inset 0 .12cqw #ffffff30;color:#fff4d8;font:clamp(9px,1.25cqw,16px)/1.4 "PingFang SC",sans-serif;white-space:nowrap}
+#auto-sun:active{transform:translateY(.1cqw)}
+.auto-sun-state{padding:.1cqw .5cqw;border-radius:.4cqw;background:#392a4d;color:#dacde6;font-size:.9em}
+#auto-sun[aria-pressed=true] .auto-sun-state{background:#cae77c;color:#304315}
+#performance-hud{display:flex;flex-direction:column;gap:.2cqw;padding:.45cqw .65cqw;border:1px solid #f4e5bc44;border-radius:.55cqw;background:#18221ddd;color:#eff5de;font:clamp(8px,1cqw,13px)/1.25 ui-monospace,Menlo,"PingFang SC",monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+#performance-fps{color:#d4ef96}
+.performance-option{display:flex;align-items:center;justify-content:space-between;margin:1.2cqw 1.6cqw;color:#49301e;font:1.8cqw/1.4 "PingFang SC",sans-serif;text-align:left;cursor:pointer}
+.performance-description{display:block;font-size:1.2cqw;color:#654c2d}
+.performance-option input{appearance:none;width:4cqw;height:2.2cqw;min-width:30px;min-height:17px;margin:0;border:.12cqw solid #715033;border-radius:2cqw;background:#7a6956;position:relative;cursor:pointer}
+.performance-option input::after{content:"";position:absolute;top:12%;left:7%;width:42%;height:76%;border-radius:50%;background:#fff3cf;box-shadow:0 .1cqw .2cqw #0004}
+.performance-option input:checked{background:#719a32}
+.performance-option input:checked::after{left:51%}
+.performance-option input:focus-visible{outline:2px solid #fff4b2;outline-offset:2px}
+:scope[data-screen=choosing] .battle-tools{display:none}
+:scope[data-mode=cannon] #auto-sun,:scope[data-mode=match] #auto-sun,:scope[data-mode=powerups] #auto-sun{display:none}
 }
