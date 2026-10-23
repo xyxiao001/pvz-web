@@ -16,7 +16,7 @@ import type {WorldMap} from '../src/shell/types';
 const ids=['modern_zomboss_01_egypt','modern_zomboss_02_pirate','modern_zomboss_03_cowboy','modern_zomboss_04_future'];
 const store=()=>{const data=new Map<string,string>();return new ProgressStore({getItem:k=>data.get(k)??null,setItem:(k,v)=>{data.set(k,v);},removeItem:k=>{data.delete(k);}});};
 test('Modern 31 and four boss configurations retain map ownership and native stage data',()=>{
- assert.equal(Object.keys(BATTLE_LEVELS).length,498);const l=level(31);assert.equal(l.waves.length,10);assert.deepEqual(l.chooserPlants,['escaperoot']);assert.deepEqual(l.sliders.map(t=>[t.column,t.row,t.up]),[[6,1,true],[5,2,true],[4,3,true]]);
+ assert.equal(Object.keys(BATTLE_LEVELS).length,509);const l=level(31);assert.equal(l.waves.length,10);assert.deepEqual(l.chooserPlants,['escaperoot']);assert.deepEqual(l.sliders.map(t=>[t.column,t.row,t.up]),[[6,1,true],[5,2,true],[4,3,true]]);
  const classes=[EgyptBoss,PirateBoss,CowboyBoss,FutureBoss],hp=[22500,31500,45000,39000];
  ids.forEach((id,i)=>{const c=BATTLE_LEVELS[id],g=create(id);assert.equal(c.world,'modern');assert.equal(c.day,i<3?32:33);assert.equal(g.level.world,['egypt','pirate','west','future'][i]);assert.ok(g.boss instanceof classes[i]);assert.equal(g.boss!.zombie.hp,hp[i]);assert.equal(g.level.sunDrops,false);assert.equal(g.level.mowers,true);assert.equal(g.level.conveyor!.InitialPlantList.length,[7,7,3,5][i]);assert.equal(g.level.boss!.kind,['zombossmech_egypt','zombossmech_pirate','zombossmech_cowboy','zombossmech_future'][i]);assert.equal(c.firstReward.image,'');});
  assert.equal(create(ids[0]).graves.length,3);assert.equal(create(ids[2]).cowboy.carts.length,2);assert.deepEqual(level(ids[1]).planks,[0,1,2,3,4]);
