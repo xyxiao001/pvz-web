@@ -20,7 +20,7 @@ export class SkyPlants {
    if(g.time-p.actionAt>=2){this.play(p,this.idle(p),'idle');p.nextAction=g.time+props.ShootInterval;}return;
   }
   if(p.action==='idle'&&g.time>=p.nextAction){
-   const targets=g.zombies.filter(z=>z.hp>0&&!z.leap&&Math.abs(z.row-p.row)<=(p.kind==='asparagus'?1:0)&&z.x>=x-15&&z.x<1150).sort((a,b)=>a.x-b.x);
+   const targets=g.zombies.filter(z=>z.hp>0&&!z.leap&&(g.inLane(z,p.row)||p.kind==='asparagus'&&Math.abs(z.row-p.row)<=1)&&z.x>=x-15&&z.x<1150).sort((a,b)=>a.x-b.x);
    if(p.kind==='asparagus'&&(this.clips.get(p.id)===0||!targets.length&&this.clips.get(p.id)!<=props.IdleReloadClips)){this.clips.set(p.id,props.MaxClips);this.play(p,'Reload','grow');}
    else if(targets.length){
     this.play(p,p.kind==='skyshooter'?(this.floating(p)?'Shoot_Sky':'Shoot'):'Shoot'+(targets[0].row<p.row?'U':targets[0].row>p.row?'D':'M'));

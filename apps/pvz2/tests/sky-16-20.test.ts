@@ -69,7 +69,7 @@ test('Sky 16 and 20 award campaign items once and expose native trophy art',asyn
   for(const e of completionEvents(map,id,p.completed(map),p.rewardNodes('sky')))if(e.action==='reward')p.award('sky',map.islands.find((n:{node:number})=>n.node===e.node)!);
   p.finishPresentation();const before=JSON.stringify(p.campaignRewards());p.finish('sky',id);assert.equal(JSON.stringify(p.campaignRewards()),before);
  }
- assert.deepEqual(p.campaignRewards().filter(r=>['sky16','sky20'].includes(r.level)).map(r=>r.id),['worldkey','dangerroom_sky']);assert.equal(Object.keys(BATTLE_LEVELS).length,446);
+ assert.deepEqual(p.campaignRewards().filter(r=>['sky16','sky20'].includes(r.level)).map(r=>r.id),['worldkey','dangerroom_sky']);assert.equal(Object.keys(BATTLE_LEVELS).length,451);
 });
 
 test('Drone factory landing clears its cell, blocks planting, and does not hold final victory',()=>{

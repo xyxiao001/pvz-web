@@ -41,14 +41,14 @@ export class SkyDrones {
    if(host&&this.move(z,host.x,host.row,dt)){host.armor=source.armors.sky_armor3.Toughness;host.skyHelmet=true;s.carrying=false;s.rest=this.range(p.TimeBeforeFirst);this.play(s,'Rest_Carry');}
    else if(!host){z.x-=p.FlyingSpeed*BOARD.cellWidth*dt;if(z.x<-80)z.hp=0;}
   }else {
-   const plant=g.plants.find(q=>q.id===s.plant&&q.hp>0&&q.action!=='food'&&!q.hidden&&!g.kongfu.peach.protected(q));
+   const plant=g.plants.find(q=>q.id===s.plant&&q.hp>0&&q.kind!=='bulbkekengi'&&q.action!=='food'&&!q.hidden&&!g.kongfu.peach.protected(q));
    if(plant){
     if(this.move(z,cellX(plant.column),plant.row,dt)){plant.hp-=p.EatDPS*dt;z.eating=true;if(s.animation!=='Eat')this.play(s,'Eat');}
    }else if(s.plant){s.plant=0;s.returning=true;z.eating=false;this.play(s,'Fly');}
    else if(s.returning){if(this.move(z,host!.x,host!.row,dt)){s.returning=false;s.rest=this.range(p.TimeBetween);this.play(s,'Rest');}}
    else {
     z.x=host!.x;z.row=host!.row;s.rest-=dt;
-    if(s.rest<=0){const candidates=g.plants.filter(q=>q.hp>0&&q.action!=='food'&&!q.hidden&&!q.leap&&cellX(q.column)<z.x&&!g.kongfu.peach.protected(q)&&!['iceburg','spikeweed','spikerock','iceweed','potatomine','goldleaf'].includes(q.kind)).sort((a,b)=>Number(p.LowPriorityPlantTypes.includes(a.kind))-Number(p.LowPriorityPlantTypes.includes(b.kind))||b.column-a.column);
+    if(s.rest<=0){const candidates=g.plants.filter(q=>q.hp>0&&q.kind!=='bulbkekengi'&&q.action!=='food'&&!q.hidden&&!q.leap&&cellX(q.column)<z.x&&!g.kongfu.peach.protected(q)&&!['iceburg','spikeweed','spikerock','iceweed','potatomine','goldleaf'].includes(q.kind)).sort((a,b)=>Number(p.LowPriorityPlantTypes.includes(a.kind))-Number(p.LowPriorityPlantTypes.includes(b.kind))||b.column-a.column);
      if(candidates.length){s.plant=candidates[0].id;this.play(s,'Fly');}
     }
    }

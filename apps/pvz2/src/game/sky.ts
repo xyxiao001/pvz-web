@@ -1,3 +1,4 @@
+import {SkySpecial} from './sky-special';
 import {SkyDrones} from './sky-drones';
 import {SkyEnemies} from './sky-enemies';
 import {SkyThunder} from './sky-thunder';
@@ -16,6 +17,7 @@ export class SkyBattle {
  shield=0;
  drops:DropShip[]=[];
  bullets:{id:number;x:number;row:number}[]=[];
+ readonly special:SkySpecial;
  readonly drones:SkyDrones;
  readonly enemies:SkyEnemies;
  readonly plants:SkyPlants;
@@ -23,13 +25,13 @@ export class SkyBattle {
  readonly twins:SkyTwins;
  readonly airRaid:SkyAirRaid;
  private serial=0;
- constructor(private g:Game){this.drones=new SkyDrones(g);this.enemies=new SkyEnemies(g);this.plants=new SkyPlants(g);this.thunder=new SkyThunder(g);this.twins=new SkyTwins(g);this.airRaid=new SkyAirRaid(g);}
+ constructor(private g:Game){this.special=new SkySpecial(g);this.drones=new SkyDrones(g);this.enemies=new SkyEnemies(g);this.plants=new SkyPlants(g);this.thunder=new SkyThunder(g);this.twins=new SkyTwins(g);this.airRaid=new SkyAirRaid(g);}
  get edge(){return cellX(ship.EdgeX)+(this.shield>0?BOARD.cellWidth/3:0);}
  setShield(owned:boolean){this.shield=owned&&!this.g.level.skyForceUnshielded?ship.ToughnessShield:0;}
- canPlant(kind:PlantKind,column:number,row:number){return (this.g.level.world!=='sky'||column<3||flyingPlants.includes(kind))&&!this.g.zombies.some(z=>z.droneMaker&&z.hp>0&&z.row===row&&Math.round((z.x-BOARD.left)/BOARD.cellWidth-.5)===column&&kind!=='ghostpepper');}
- initPlant(p:Plant){this.plants.init(p);}
- food(p:Plant){if(p.kind==='moonbean'||p.kind==='anthurium')this.thunder.food(p);else this.plants.food(p);}
- plant(p:Plant){if(p.kind==='moonbean'||p.kind==='anthurium')this.thunder.plant(p);else this.plants.plant(p);}
+ canPlant(kind:PlantKind,column:number,row:number){return (this.g.level.world!=='sky'||column<3||kind==='floawerPot'||flyingPlants.includes(kind)||this.g.plants.some(p=>p.kind==='floawerPot'&&p.hp>0&&p.row===row&&p.column===column))&&!this.g.zombies.some(z=>z.droneMaker&&z.hp>0&&z.row===row&&Math.round((z.x-BOARD.left)/BOARD.cellWidth-.5)===column&&kind!=='ghostpepper');}
+ initPlant(p:Plant){if(p.kind==='bulbkekengi'||p.kind==='peacommando')this.special.init(p);else this.plants.init(p);}
+ food(p:Plant){if(p.kind==='bulbkekengi'||p.kind==='peacommando')this.special.food(p);else if(p.kind==='moonbean'||p.kind==='anthurium')this.thunder.food(p);else this.plants.food(p);}
+ plant(p:Plant){if(p.kind==='bulbkekengi'||p.kind==='peacommando')this.special.plant(p);else if(p.kind==='moonbean'||p.kind==='anthurium')this.thunder.plant(p);else this.plants.plant(p);}
  damageShip(amount:number,bypass=false){
   const g=this.g;if(g.level.world!=='sky'||g.level.airRaid||g.phase!=='playing')return;
   if(this.shield>0&&!bypass)this.shield-=amount;
@@ -53,6 +55,7 @@ export class SkyBattle {
  private play(z:Zombie,animation:string){z.sky!.animation=animation;z.sky!.elapsed=0;z.sky!.event=0;}
  zombie(z:Zombie,dt:number){
   if(this.g.level.airRaid)return this.airRaid.zombie(z,dt);
+  if(this.special.zombie(z,dt))return true;
   if(this.drones.zombie(z,dt))return true;
   if(this.enemies.zombie(z,dt))return true;
   if(this.twins.zombie(z,dt))return true;
@@ -60,7 +63,7 @@ export class SkyBattle {
   const g=this.g,state=z.sky??(z.sky={animation:'Walk',elapsed:0,event:0,impHealth:390,speed:1});
   const name=z.kind==='sky_battleplane'?'skyBattlePlane':z.kind==='sky_flag'?'skyFlag':'sky';
   const chilled=g.time<z.chilledUntil?.5:1;dt*=chilled;
-  const target=g.plants.filter(p=>p.hp>0&&!p.hidden&&p.row===z.row&&Math.abs(z.x-cellX(p.column))<40).sort((a,b)=>b.column-a.column)[0];
+  const target=g.plants.filter(p=>p.hp>0&&p.kind!=='bulbkekengi'&&!p.hidden&&p.row===z.row&&Math.abs(z.x-cellX(p.column))<40).sort((a,b)=>b.column-a.column)[0];
   if(z.kind==='sky_battleplane'){
    if(state.animation==='FleeStart'||state.animation==='FleeEnd'){
     state.elapsed+=dt;
@@ -75,7 +78,7 @@ export class SkyBattle {
     return true;
    }
    state.speed=state.impHealth>0?Math.max(1,state.speed-dt):Math.min(2,state.speed+dt);
-   const shooting=state.impHealth>0&&(g.level.world==='sky'||g.plants.some(p=>p.hp>0&&!p.hidden&&p.row===z.row&&cellX(p.column)<z.x));
+   const shooting=state.impHealth>0&&(g.level.world==='sky'||g.plants.some(p=>p.hp>0&&p.kind!=='bulbkekengi'&&!p.hidden&&p.row===z.row&&cellX(p.column)<z.x));
    const animation=state.impHealth<=0?'Walk_Dead':shooting?'Walk_Shoot':'Walk';
    if(state.animation!==animation)this.play(z,animation);
    state.elapsed+=dt;const timeline=g.props.plantAnimations[name][animation];
@@ -98,7 +101,7 @@ export class SkyBattle {
   return false;
  }
  tick(dt:number){
-  const g=this.g;this.plants.tick(dt);this.thunder.tick(dt);this.airRaid.tick(dt);this.enemies.tick(dt);
+  const g=this.g;if(g.level.world==='sky'&&!g.level.airRaid)for(const p of g.plants)if(p.column>=3&&p.kind!=='floawerPot'&&!flyingPlants.includes(p.kind)&&!g.plants.some(q=>q.kind==='floawerPot'&&q.hp>0&&q.row===p.row&&q.column===p.column))p.hp=0;this.special.tick(dt);this.plants.tick(dt);this.thunder.tick(dt);this.airRaid.tick(dt);this.enemies.tick(dt);
   if(g.level.world==='sky'&&(g.plants.some(p=>p.hp>0&&p.kind==='blover'&&p.animation==='Blowing')||g.westFinale.winds.length>0))this.damageShip(ship.BloverDPS*dt,true);
   for(const d of this.drops){
    d.elapsed+=dt;const timeline=g.props.plantAnimations.skyDropShip[d.animation];

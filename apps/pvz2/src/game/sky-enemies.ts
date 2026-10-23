@@ -7,7 +7,7 @@ export class SkyEnemies {
  constructor(private g:Game){}
  private range(r:{Min:number;Max:number}){return r.Min+this.g.random()*(r.Max-r.Min);}
  private play(s:SkyEnemyState,animation:string){s.animation=animation;s.elapsed=0;s.event=0;}
- private targets(z:Zombie){return this.g.plants.filter(p=>p.hp>0&&!p.hidden&&!p.leap&&p.sheep===undefined&&p.row===z.row&&!['iceburg','spikeweed','spikerock','iceweed','potatomine','primalpotatomine','goldleaf','goldbloom','stallia','perfumeshroom'].includes(p.kind));}
+ private targets(z:Zombie){return this.g.plants.filter(p=>p.hp>0&&p.kind!=='bulbkekengi'&&!p.hidden&&!p.leap&&p.sheep===undefined&&p.row===z.row&&!['iceburg','spikeweed','spikerock','iceweed','potatomine','primalpotatomine','goldleaf','goldbloom','stallia','perfumeshroom'].includes(p.kind));}
  private smash(p:Plant){
   const g=this.g;if(p.action==='food'||g.kongfu.peach.protected(p))return;
   if(p.kind==='primalwallnut')g.dino.smashNut(p);
@@ -57,7 +57,7 @@ export class SkyEnemies {
   const g=this.g;
   for(const b of this.bolts){
    const old=b.x;b.x-=6*BOARD.cellWidth*dt*b.direction;
-   const target=g.plants.filter(p=>p.hp>0&&!p.hidden&&p.row===b.row&&cellX(p.column)>=Math.min(old,b.x)-20&&cellX(p.column)<=Math.max(old,b.x)+20).sort((a,b)=>b.column-a.column)[0];
+   const target=g.plants.filter(p=>p.hp>0&&p.kind!=='bulbkekengi'&&!p.hidden&&p.row===b.row&&cellX(p.column)>=Math.min(old,b.x)-20&&cellX(p.column)<=Math.max(old,b.x)+20).sort((a,b)=>b.column-a.column)[0];
    if(target){
     if(!g.props.plants[target.kind].ImmuneToLightningCharge&&target.action!=='food')g.sky.thunder.add(target.row,target.column,b.sign);
     const suffix=b.sign>0?'Positive':'Negative';g.sky.thunder.effects.push({id:g.nextEntityId(),rig:'skyBoltHit'+suffix,animation:'Play',x:b.x,y:rowY(b.row)-40,at:g.time});g.beach.sounds.push('skyBolt'+suffix+'/PopSound');b.x=-1000;

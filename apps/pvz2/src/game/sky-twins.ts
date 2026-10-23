@@ -24,7 +24,7 @@ export class SkyTwins {
   if(!z.reversed&&z.x-80*.6<=g.sky.edge){s.crash={at:g.time,x:z.x};g.beach.sounds.push('skyTwinLower/PreCrashSounds');return true;}
   for(const member of [z,partner]){
    member.twin!.cut=Math.max(0,member.twin!.cut-dt);
-   for(const p of g.plants)if(p.hp>0&&!p.hidden&&p.row===member.row&&Math.abs(cellX(p.column)-member.x)<45){if(!member.twin!.paralyzed){const damage=g.props.zombies[member.kind].EatDPS*dt,armor=Math.min(p.armor,damage);p.armor-=armor;p.hp-=damage-armor;}member.twin!.cut=.5;}
+   for(const p of g.plants)if(p.hp>0&&p.kind!=='bulbkekengi'&&!p.hidden&&p.row===member.row&&Math.abs(cellX(p.column)-member.x)<45){if(!member.twin!.paralyzed){const damage=g.props.zombies[member.kind].EatDPS*dt,armor=Math.min(p.armor,damage);p.armor-=armor;p.hp-=damage-armor;}member.twin!.cut=.5;}
   }
   const speed=g.props.zombies[z.kind].WalkSPS*(s.paralyzed||partner.twin!.paralyzed?.67:1)*(1-2*Math.max(s.cut,partner.twin!.cut));
   z.x+=(z.reversed?1:-1)*speed*BOARD.cellWidth*dt;partner.x=z.x;partner.row=z.row-1;partner.reversed=z.reversed;
