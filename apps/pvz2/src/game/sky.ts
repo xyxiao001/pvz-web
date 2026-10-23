@@ -1,3 +1,4 @@
+import {SkyDrones} from './sky-drones';
 import {SkyEnemies} from './sky-enemies';
 import {SkyThunder} from './sky-thunder';
 import {SkyTwins} from './sky-twins';
@@ -15,16 +16,17 @@ export class SkyBattle {
  shield=0;
  drops:DropShip[]=[];
  bullets:{id:number;x:number;row:number}[]=[];
+ readonly drones:SkyDrones;
  readonly enemies:SkyEnemies;
  readonly plants:SkyPlants;
  readonly thunder:SkyThunder;
  readonly twins:SkyTwins;
  readonly airRaid:SkyAirRaid;
  private serial=0;
- constructor(private g:Game){this.enemies=new SkyEnemies(g);this.plants=new SkyPlants(g);this.thunder=new SkyThunder(g);this.twins=new SkyTwins(g);this.airRaid=new SkyAirRaid(g);}
+ constructor(private g:Game){this.drones=new SkyDrones(g);this.enemies=new SkyEnemies(g);this.plants=new SkyPlants(g);this.thunder=new SkyThunder(g);this.twins=new SkyTwins(g);this.airRaid=new SkyAirRaid(g);}
  get edge(){return cellX(ship.EdgeX)+(this.shield>0?BOARD.cellWidth/3:0);}
- setShield(owned:boolean){this.shield=owned?ship.ToughnessShield:0;}
- canPlant(kind:PlantKind,column:number){return this.g.level.world!=='sky'||column<3||flyingPlants.includes(kind);}
+ setShield(owned:boolean){this.shield=owned&&!this.g.level.skyForceUnshielded?ship.ToughnessShield:0;}
+ canPlant(kind:PlantKind,column:number,row:number){return (this.g.level.world!=='sky'||column<3||flyingPlants.includes(kind))&&!this.g.zombies.some(z=>z.droneMaker&&z.hp>0&&z.row===row&&Math.round((z.x-BOARD.left)/BOARD.cellWidth-.5)===column&&kind!=='ghostpepper');}
  initPlant(p:Plant){this.plants.init(p);}
  food(p:Plant){if(p.kind==='moonbean'||p.kind==='anthurium')this.thunder.food(p);else this.plants.food(p);}
  plant(p:Plant){if(p.kind==='moonbean'||p.kind==='anthurium')this.thunder.plant(p);else this.plants.plant(p);}
@@ -51,6 +53,7 @@ export class SkyBattle {
  private play(z:Zombie,animation:string){z.sky!.animation=animation;z.sky!.elapsed=0;z.sky!.event=0;}
  zombie(z:Zombie,dt:number){
   if(this.g.level.airRaid)return this.airRaid.zombie(z,dt);
+  if(this.drones.zombie(z,dt))return true;
   if(this.enemies.zombie(z,dt))return true;
   if(this.twins.zombie(z,dt))return true;
   if(!z.kind.startsWith('sky')||z.kind==='sky_imp')return false;
