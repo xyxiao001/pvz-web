@@ -1,3 +1,4 @@
+import {ModernBattle,modernArmor} from './modern';
 import {SkyBoss} from './sky-boss';
 import {SkyBattle} from './sky';
 import {DinoBattle,dinoArmor} from './dino';
@@ -152,6 +153,7 @@ export class Game {
   private threshold = 0;
   private pending: {airRaidType?:string;cargo?:ZombieKind;fallTime?:number;kind:ZombieKind;at:number;row:number;x:number;mode:SpawnAction['mode'];food:boolean}[] = [];
 
+  readonly modern=new ModernBattle(this);
   constructor(readonly level: Level, readonly props: Properties, readonly timing: AnimationTiming, readonly raTarget: (zombie: Zombie) => {x:number;y:number}, private seed = 1, tutorial=true) {
     this.cowboy=new CowboyBattle(this);this.kongfu.init();
     if(level.corral)this.nextWave=0;
@@ -209,6 +211,7 @@ export class Game {
     if(kind==='imitater'&&this.imitateKind===null)return false;
     if(!this.beach.canPlant(placementKind!,row,column))return false;
     if(!this.sky.canPlant(placementKind!,column,row))return false;
+    if(this.modern.blocked(row,column))return false;
     if(this.level.boss&&column>=BOARD.columns-this.level.boss.reserved)return false;
     if(this.dino.bully.cracks.some(c=>c.row===row&&c.column===column))return false;
     if(this.boss instanceof DinoBoss&&this.boss.cracks.some(c=>c.row===row&&c.column===column&&c.until>this.time))return false;
@@ -236,6 +239,7 @@ export class Game {
     this.plants.push({ id: ++this.id, kind, row, column, hp: p.Toughness, armor: 0, age: 0, nextAction,
       action: 'idle', actionAt: this.time, fired: false, burst: 0, nextBurst: 0 });
     const plant=this.plants.at(-1)!;
+    if(kind==='nightshade'||kind==='shrinkingviolet')this.modern.init(plant);
     if(plant.kind==='toadstool')this.toadstool.init(plant);this.lostcity.initPlant(plant);this.expedition.init(this.plants.at(-1)!);this.iceageCombat.init(plant);
     if(kind==='hotpotato')this.iceage.hot(plant);
     if(this.beachFinale.handles(kind))this.beachFinale.init(plant);
@@ -320,6 +324,7 @@ export class Game {
     this.eighties.skunk.stunned.delete(plant.id);
     if(!boost){this.food--;this.future.link(plant);} plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
+    if(plant.kind==='nightshade'||plant.kind==='shrinkingviolet')this.modern.food(plant);
     if(this.eighties.finale.handles(plant.kind)||plant.kind==='caulipower'||plant.kind==='sporeshroom'||plant.kind==='garlic'||plant.kind==='phatbeet'||plant.kind==='cactus')this.eighties.food(plant);
     if(plant.kind==='bulbkekengi'||plant.kind==='peacommando'||plant.kind==='moonbean'||plant.kind==='anthurium'||plant.kind==='skyshooter'||plant.kind==='asparagus')this.sky.food(plant);
     if(plant.kind==='explodeonut'){plant.hp=this.props.plants.explodeonut.Toughness;plant.animation='Food';plant.eventIndex=0;this.beach.sounds.push('explodeonut/foodSound');}
@@ -434,7 +439,8 @@ export class Game {
     // Pharaoh's coffin protects its inner zombie: breaking it does not carry excess damage through.
     if(zombie.kind==='pharaoh'||zombie.kind==='pharaoh_weak'){const excess=Math.max(0,amount-zombie.armor),weak=zombie.kind==='pharaoh_weak';zombie.armor=Math.max(0,zombie.armor-amount);if(zombie.armor===0){zombie.kind='pharaoh_inner';zombie.landUntil=this.time+80/30;if(weak){zombie.hp-=excess;if(zombie.hp<=0)zombie.deathCause=cause;}}return;}
     if(zombie.kind==='beach_gargantuar'&&!this.beach.inWater(zombie))amount*=this.props.zombies[zombie.kind].TakingDamageScaleOnLand;
-    amount=this.kongfu.damageScale(zombie)*this.cowboy.damage(zombie,amount)*Math.pow(.85,zombie.dark?.toughness??0);
+    amount=this.modern.damageScale(zombie)*this.kongfu.damageScale(zombie)*this.cowboy.damage(zombie,amount)*Math.pow(.85,zombie.dark?.toughness??0);
+    amount=this.modern.paperDamage(zombie,amount);
     const armorDamage = Math.min(zombie.armor, amount); zombie.armor -= armorDamage; zombie.hp -= amount - armorDamage;this.cowboy.damaged(zombie);this.iceageCombat.damaged(zombie);
     if(isCamel(zombie.kind)&&!isMatchCamel(zombie.kind)&&zombie.armor===0){zombie.kind='mummy';}
     if (zombie.hp<=0)zombie.deathCause=cause;
@@ -493,6 +499,7 @@ export class Game {
       if(action.thunder){this.sky.thunder.queue(action.thunder);continue;}
       if(action.dropShip){this.sky.addDropShip(action.dropShip);continue;}
       if(action.dinosaur){this.dino.add(action.dinosaur);continue;}
+      if(action.portal)this.modern.portal(action.portal);
       if(action.jams)for(const jam of action.jams)this.eighties.jam=jam;
       if(action.mode==='chiHole'){this.kongfu.holes.spawn(action.chiHole!);continue;}
       if(action.mode==='frost'){this.iceage.wind(action.winds!);continue;}
@@ -539,7 +546,7 @@ export class Game {
       if(action.mode==='raid')this.events.push({type:'raid'});
       if(action.mode==='storm')this.events.push({type:'storm'});
     }
-    if(!this.level.suppressFlag&&(this.wave+1)%this.level.flagInterval===0)this.pending.unshift({kind:this.level.world==='sky'?'sky_flag':this.level.world==='dino'?'dino_flag':this.level.world==='eighties'?'eighties_flag':this.level.world==='kongfu'?(this.level.day>=33?'abbot_flag':this.level.day>=17?'monk_flag':'kongfu_flag'):this.level.world==='lostcity'?'lostcity_flag':this.level.world==='iceage'?'iceage_flag':this.level.world==='beach'?'beach_flag':this.level.world==='pirate'?'pirate_flag':this.level.world==='west'?'cowboy_flag':this.level.world==='dark'?'dark_flag':this.level.world==='future'?'future_flag':'mummy_flag',row:this.level.planks===null?Math.floor(this.random()*5):this.level.planks[Math.floor(this.random()*this.level.planks.length)],x:1070,mode:'walk',at:this.time,food:false});
+    if(!this.level.suppressFlag&&(this.wave+1)%this.level.flagInterval===0)this.pending.unshift({kind:this.level.world==='modern'?'tutorial_flag':this.level.world==='sky'?'sky_flag':this.level.world==='dino'?'dino_flag':this.level.world==='eighties'?'eighties_flag':this.level.world==='kongfu'?(this.level.day>=33?'abbot_flag':this.level.day>=17?'monk_flag':'kongfu_flag'):this.level.world==='lostcity'?'lostcity_flag':this.level.world==='iceage'?'iceage_flag':this.level.world==='beach'?'beach_flag':this.level.world==='pirate'?'pirate_flag':this.level.world==='west'?'cowboy_flag':this.level.world==='dark'?'dark_flag':this.level.world==='future'?'future_flag':'mummy_flag',row:this.level.planks===null?Math.floor(this.random()*5):this.level.planks[Math.floor(this.random()*this.level.planks.length)],x:1070,mode:'walk',at:this.time,food:false});
     this.wave++;this.nextWave=Infinity;this.waveIds.clear();
     this.waveDeadline=this.time+RULES.waveDelay+this.random()*RULES.waveDelayRange;
     this.waveDamageDeadline=this.time+RULES.waveDamageDelay+this.random()*RULES.waveDamageRange;
@@ -568,9 +575,9 @@ export class Game {
   spawnZombie(kind:ZombieKind,row:number,x:number,entry:SpawnAction['mode']='walk',airRaidType?:string) {
     const camel=isCamel(kind),match=isMatchCamel(kind);
     const z:Zombie={id:++this.id,kind,row,x,hp:camel?this.props.zombies.mummy.Toughness:(kind==='pharaoh'||kind==='pharaoh_weak')?this.props.zombies.pharaoh_inner.Toughness:this.props.zombies[kind].Toughness,
-      armor:kind==='sky_armor1'||kind==='sky_armor2'?this.props.armors[kind].Toughness:dinoArmor(kind)?this.props.armors[dinoArmor(kind)!].Toughness:(kind==='eighties_8bit_armor1'||kind==='eighties_8bit_armor2'||kind==='eighties_armor1'||kind==='eighties_armor2'||kind==='eighties_armor4')?this.props.armors[kind].Toughness:kongfuArmor(kind)?this.props.armors[kongfuArmor(kind)!].Toughness:lostcityArmor(kind)?this.props.armors[lostcityArmor(kind)!].Toughness:iceageArmor(kind)?this.props.armors[iceageArmor(kind)!].Toughness:beachArmor(kind)?this.props.armors[beachArmor(kind)!].Toughness:darkArmor(kind)?this.props.armors[darkArmor(kind)!].Toughness:futureArmor(kind)?this.props.armors[futureArmor(kind)!].Toughness:cowboyArmor(kind)?this.props.armors[cowboyArmor(kind)!].Toughness:pirateArmor(kind)?this.props.armors[pirateArmor(kind)!].Toughness:(kind==='pharaoh'||kind==='pharaoh_weak')?this.props.zombies[kind].Toughness:camel&&!match?this.props.zombies[kind].Toughness:kind==='mummy_armor1'?this.props.armors.egypt_armor1.Toughness:kind==='mummy_armor2'?this.props.armors.egypt_armor2.Toughness:kind==='mummy_armor4'?this.props.armors.egypt_armor4.Toughness:0,
+      armor:modernArmor(kind)?this.props.armors[modernArmor(kind)!].Toughness:kind==='sky_armor1'||kind==='sky_armor2'?this.props.armors[kind].Toughness:dinoArmor(kind)?this.props.armors[dinoArmor(kind)!].Toughness:(kind==='eighties_8bit_armor1'||kind==='eighties_8bit_armor2'||kind==='eighties_armor1'||kind==='eighties_armor2'||kind==='eighties_armor4')?this.props.armors[kind].Toughness:kongfuArmor(kind)?this.props.armors[kongfuArmor(kind)!].Toughness:lostcityArmor(kind)?this.props.armors[lostcityArmor(kind)!].Toughness:iceageArmor(kind)?this.props.armors[iceageArmor(kind)!].Toughness:beachArmor(kind)?this.props.armors[beachArmor(kind)!].Toughness:darkArmor(kind)?this.props.armors[darkArmor(kind)!].Toughness:futureArmor(kind)?this.props.armors[futureArmor(kind)!].Toughness:cowboyArmor(kind)?this.props.armors[cowboyArmor(kind)!].Toughness:pirateArmor(kind)?this.props.armors[pirateArmor(kind)!].Toughness:(kind==='pharaoh'||kind==='pharaoh_weak')?this.props.zombies[kind].Toughness:camel&&!match?this.props.zombies[kind].Toughness:kind==='mummy_armor1'?this.props.armors.egypt_armor1.Toughness:kind==='mummy_armor2'?this.props.armors.egypt_armor2.Toughness:kind==='mummy_armor4'?this.props.armors.egypt_armor4.Toughness:0,
       eating:false,absorbed:0,absorbUntil:0,absorbState:'idle',absorbAt:0,deathCause:'normal',frozenUntil:0,chilledUntil:0,food:false,entry,entryAt:this.time,entryX:x,camelPart:0,team:0,leap:null};
-    this.zombies.push(z);this.sky.twins.spawn(z);this.sky.special.spawn(z);this.sky.airRaid.spawn(z,airRaidType);this.sky.drones.spawn(z);this.eighties.spawn(z);this.kongfu.spawn(z);this.lostcity.spawn(z);this.iceageCombat.spawn(z);this.beach.fishers.spawn(z);this.beach.surfers.spawn(z);this.beach.octopuses.spawn(z);this.dark.spawn(z);this.future.spawn(z);this.cowboy.spawn(z);if(this.level.world==='pirate')this.pirate.spawn(z);
+    this.zombies.push(z);this.modern.spawn(z);this.sky.twins.spawn(z);this.sky.special.spawn(z);this.sky.airRaid.spawn(z,airRaidType);this.sky.drones.spawn(z);this.eighties.spawn(z);this.kongfu.spawn(z);this.lostcity.spawn(z);this.iceageCombat.spawn(z);this.beach.fishers.spawn(z);this.beach.surfers.spawn(z);this.beach.octopuses.spawn(z);this.dark.spawn(z);this.future.spawn(z);this.cowboy.spawn(z);if(this.level.world==='pirate'||this.level.world==='modern')this.pirate.spawn(z);
     if(match)this.camelCards.set(z.id,{face:Math.floor(this.random()*this.level.match!.types),state:'back',at:this.time,removeAt:Infinity});
     if(['egypt_gargantuar','explorer','explorer_veteran','tomb_raiser'].includes(kind))this.specialZombies.set(z.id,{action:'walk',at:this.time,elapsed:0,fired:false,next:kind==='tomb_raiser'?this.props.zombies.tomb_raiser.TimeBetweenGroups+this.random()*this.props.zombies.tomb_raiser.TimeBetweenGroupsAdditional:0,imp:true,torch:kind==='explorer'||kind==='explorer_veteran'});
     if(entry==='ground')this.effect('ground',x,rowY(row));
@@ -992,7 +999,7 @@ export class Game {
     this.pending = this.pending.filter(s => s.at > this.time);
 
     if(this.corralWaiting)return;
-    this.sky.tick(dt);this.dino.tick(dt);this.eighties.tick(dt);this.kongfu.tick(dt);this.lostcity.tickTraps(dt);this.lostcity.tickTents();this.lostcity.tickShots();this.expedition.tick(dt);this.iceageCombat.tick(dt);this.iceage.tick(dt);this.beachFinale.tick(dt);this.beach.tick(dt);this.darkFinale.tick(dt);this.darkMemory.tick();this.dark.tick(dt);this.darkPlants.tick(dt);
+    this.modern.tick(dt);this.sky.tick(dt);this.dino.tick(dt);this.eighties.tick(dt);this.kongfu.tick(dt);this.lostcity.tickTraps(dt);this.lostcity.tickTents();this.lostcity.tickShots();this.expedition.tick(dt);this.iceageCombat.tick(dt);this.iceage.tick(dt);this.beachFinale.tick(dt);this.beach.tick(dt);this.darkFinale.tick(dt);this.darkMemory.tick();this.dark.tick(dt);this.darkPlants.tick(dt);
     this.cowboy.tick(dt);
     for(const z of [...this.zombies,...this.westFinale.allies]){
       if(z.entry==='storm'&&this.time-z.entryAt<=1)z.x=z.entryX+(1070-z.entryX)*(1-(this.time-z.entryAt));
@@ -1010,7 +1017,7 @@ export class Game {
           z.row=flight.toRow;this.cowboy.landed(z);
           if(z.kind==='lostcity_imp')z.landUntil=this.time+this.props.plantAnimations.lostImp.Land.duration;
           if(z.kind==='sky_imp'){z.landUntil=this.time+this.props.plantAnimations.skyImp.Parachute_End.duration;}
-          if(z.kind==='dino_imp'||z.kind==='eighties_imp'||z.kind==='iceage_imp'||z.kind==='dark_imp'||z.kind==='egypt_imp'||z.kind==='pirate_imp'||z.kind==='west_bullrider')z.landUntil=this.time+(z.west?.bullThrown?this.props.plantAnimations.cowboyImp.LandVerticle.events.find(e=>e.name==='switchingFalse')!.at:14/30);
+          if(z.kind==='tutorial_imp'||z.kind==='dino_imp'||z.kind==='eighties_imp'||z.kind==='iceage_imp'||z.kind==='dark_imp'||z.kind==='egypt_imp'||z.kind==='pirate_imp'||z.kind==='west_bullrider')z.landUntil=this.time+(z.west?.bullThrown?this.props.plantAnimations.cowboyImp.LandVerticle.events.find(e=>e.name==='switchingFalse')!.at:14/30);
           if(z.west?.bullThrown){z.west.animation='LandVerticle';z.west.at=this.time;this.cowboy.sounds.push('cowboyImp/landSounds');}
           if(this.level.world==='pirate'&&seaCell(this.level.planks,z.row,Math.floor((z.x-BOARD.left)/BOARD.cellWidth))&&!isFlying(z)){z.hp=0;z.deathCause='water';}z.leap=null;
         }
@@ -1027,8 +1034,9 @@ export class Game {
       if(this.iceage.blocked(p))continue;
       if(p.sheep!==undefined){p.actionAt+=dt;p.nextAction+=dt;p.nextBurst+=dt;continue;}
       if(p.kind==='toadstool'){this.toadstool.tick(p,dt);continue;}
-      if((this.level.world==='kongfu'||this.level.world==='eighties'||this.level.world==='dino')&&p.leap?.pushed){if(this.time-p.leap.at<(p.leap.duration??.5))continue;delete p.leap;}
+      if((this.level.world==='kongfu'||this.level.world==='eighties'||this.level.world==='dino'||this.level.world==='modern')&&p.leap?.pushed){if(this.time-p.leap.at<(p.leap.duration??.5))continue;delete p.leap;}
       if(p.kind==='powerlily'){if(this.time-p.actionAt>=this.props.plantAnimations.powerlily.Attack.events.find(e=>e.name==='produce')!.at){this.pickups.push({id:this.nextEntityId(),kind:'food',x:cellX(p.column),y:rowY(p.row)-45,age:0});p.hp=0;}continue;}
+      if(p.kind==='nightshade'||p.kind==='shrinkingviolet'){this.modern.plant(p,dt);continue;}
       if(p.kind==='bulbkekengi'||p.kind==='peacommando'||p.kind==='moonbean'||p.kind==='anthurium'||p.kind==='skyshooter'||p.kind==='asparagus'){this.sky.plant(p);continue;}
       if(p.kind==='explodeonut'){this.dino.plants.nut(p);continue;}
       if(p.kind==='goldbloom'||p.kind==='torchwood'){this.dino.plants.plant(p);continue;}
@@ -1173,11 +1181,11 @@ export class Game {
     for (const z of this.zombies) {
       if(z.dinoCarry||z===this.boss?.zombie||z.hp<=0||this.eighties.warps.has(z.id)||z.weasel?.exploding||z.leap||z.landUntil!==undefined&&this.time<z.landUntil||this.time<z.frozenUntil||z.stunnedUntil!==undefined&&this.time<z.stunnedUntil||z.butteredUntil!==undefined&&this.time<z.butteredUntil||(z.entry!=='walk'&&this.time-z.entryAt<(z.entry==='ground'?1.35:1)))continue;
       const statusDt=dt*(z.scaredByTyranno?4:1)*Math.pow(1.5,z.dark?.speed??0)*(this.time<(z.perfumeUntil??0)?.5:1);
-      if(this.sky.zombie(z,statusDt)||this.dino.bully.zombie(z,statusDt)||this.eighties.zombie(z,statusDt)||this.kongfu.zombie(z,statusDt)||this.lostcity.crystal(z,statusDt)||this.lostcity.porter(z)||this.lostcity.tickBug(z)||this.lostcity.excavate(z,statusDt)||this.lostcity.tick(z,statusDt)||this.iceage.tickZombie(z)||this.iceageCombat.hunter(z,statusDt)||this.iceageCombat.dodo(z,statusDt)||this.iceageCombat.troglobite(z,statusDt))continue;
+      if(this.modern.zombie(z,statusDt)||this.sky.zombie(z,statusDt)||this.dino.bully.zombie(z,statusDt)||this.eighties.zombie(z,statusDt)||this.kongfu.zombie(z,statusDt)||this.lostcity.crystal(z,statusDt)||this.lostcity.porter(z)||this.lostcity.tickBug(z)||this.lostcity.excavate(z,statusDt)||this.lostcity.tick(z,statusDt)||this.iceage.tickZombie(z)||this.iceageCombat.hunter(z,statusDt)||this.iceageCombat.dodo(z,statusDt)||this.iceageCombat.troglobite(z,statusDt))continue;
       if(this.beach.fishers.tickZombie(z,statusDt)||this.beach.octopuses.tickZombie(z,statusDt)||this.beach.surfers.tickZombie(z,statusDt)||this.future.tickZombie(z,statusDt)||this.cowboy.tickZombie(z,statusDt)||this.pirate.tickZombie(z,dt)||this.tickSpecialZombie(z,dt))continue;
       if(this.beachFinale.block(z,statusDt)||this.westFinale.blockEnemy(z,statusDt)||this.dark.movement(z)===0)continue;
       if(this.dark.eatPotion(z))continue;
-      const target = this.plants.filter(p => !z.dodo?.flying && (!(z.bug&&z.bug.hp>0)||p.kind==='tallnut') && p.hp > 0 && !(p.kind==='primalpotatomine'&&(p.rootGrown||p.leap)) && p.kind!=='bulbkekengi'&&p.kind!=='goldbloom'&&p.kind!=='thymewarp'&&p.kind!=='bambooshoot'&&p.kind!=='lavaguava'&&p.kind!=='stunion'&&p.kind!=='ghostpepper'&&p.kind!=='goldleaf'&&p.kind!=='hotpotato'&&p.kind!=='tanglekelp' && (p.kind!=='lilypad'||!this.beach.occupant(p)) && p.sheep===undefined && !this.eighties.carrot.blocked(p) && (p.kind!=='floawerPot'||!this.darkPlants.occupant(p)) && !p.leap?.pushed && !((p.kind==='chilibean'||p.kind==='turnip')&&p.leap) && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='empea'&&p.kind!=='blover'&&p.kind!=='hurrikale'&&p.kind!=='stallia'&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='perfumeshroom'&&p.kind!=='grapeshot'&&p.kind!=='cherry_bomb'&&p.kind!=='jalapeno'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column||Number(b.kind==='bamboobusket')-Number(a.kind==='bamboobusket'))[0];
+      const target = this.plants.filter(p => !z.dodo?.flying && (!(z.bug&&z.bug.hp>0)||p.kind==='tallnut') && p.hp > 0 && !(p.kind==='primalpotatomine'&&(p.rootGrown||p.leap)) && p.kind!=='shrinkingviolet'&&p.kind!=='bulbkekengi'&&p.kind!=='goldbloom'&&p.kind!=='thymewarp'&&p.kind!=='bambooshoot'&&p.kind!=='lavaguava'&&p.kind!=='stunion'&&p.kind!=='ghostpepper'&&p.kind!=='goldleaf'&&p.kind!=='hotpotato'&&p.kind!=='tanglekelp' && (p.kind!=='lilypad'||!this.beach.occupant(p)) && p.sheep===undefined && !this.eighties.carrot.blocked(p) && (p.kind!=='floawerPot'||!this.darkPlants.occupant(p)) && !p.leap?.pushed && !((p.kind==='chilibean'||p.kind==='turnip')&&p.leap) && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='empea'&&p.kind!=='blover'&&p.kind!=='hurrikale'&&p.kind!=='stallia'&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='perfumeshroom'&&p.kind!=='grapeshot'&&p.kind!=='cherry_bomb'&&p.kind!=='jalapeno'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column||Number(b.kind==='bamboobusket')-Number(a.kind==='bamboobusket'))[0];
       z.eating = !!target;
       if(target&&this.eighties.crush(z,target)){}
       else if(target&&this.eighties.finale.eaten(target)){}
@@ -1185,9 +1193,9 @@ export class Game {
       else if(target&&this.kongfu.peach.protected(target)){}
       else if(target&&(z.kongfu?.torch||(z.kind==='explorer'||z.kind==='explorer_veteran')&&this.specialZombies.get(z.id)!.torch)){target.hp=0;target.armor=0;}
       else if(target&&target.kind==='garlic'&&this.eighties.eatGarlic(target,z)){}
-      else if (target) { const amount = (z.kind==='egypt_imp'?100:this.props.zombies[z.kind].EatDPS) * (z.kongfu?.drunk?2:1)*statusDt*(this.time<z.chilledUntil?.5:1), armor = Math.min(target.armor, amount); target.armor -= armor; target.hp -= (amount - armor)*this.future.plantDamageScale(target);if(target.hp<=0){this.cowboy.eaten(target,z);this.westFinale.eaten(target,z);this.dark.eaten(target,z);}if(target.hp<=0&&target.kind==='parsnip')this.launchParsnip(target,false); }
+      else if (target) { const amount = (z.kind==='egypt_imp'?100:this.props.zombies[z.kind].EatDPS) * this.modern.bite(z) * (z.kongfu?.drunk?2:1)*statusDt*(this.time<z.chilledUntil?.5:1), armor = Math.min(target.armor, amount); target.armor -= armor; target.hp -= (amount - armor)*this.future.plantDamageScale(target);if(target.hp<=0){this.cowboy.eaten(target,z);this.westFinale.eaten(target,z);this.dark.eaten(target,z);}if(target.hp<=0&&target.kind==='parsnip')this.launchParsnip(target,false); }
       else if(blockedCamels.has(z.team))continue;
-      else if (!z.pilot?.hanging&&this.time >= z.absorbUntil) z.x -= this.eighties.speed(z)*this.kongfu.speed(z)*this.beach.speed(z)*this.dark.movement(z)*(z.reversed?-1:1)* (this.time<z.chilledUntil?.5:1)*(this.time<(z.sappedUntil??0)?.5:1)*(z.kind==='piano'&&z.x>=cellX(9)?4:1)*(z.west?.animation==='Rush'?this.props.zombies[z.kind].RushSPS:(z.bug&&z.bug.hp>0?this.props.zombies[z.kind].BuggedSPS:z.memoryRunner?this.level.memory!.enemySpeed:this.props.zombies[z.kind].WalkSPS)) * BOARD.cellWidth * statusDt;
+      else if (!z.pilot?.hanging&&this.time >= z.absorbUntil) z.x -= this.modern.speed(z)*this.eighties.speed(z)*this.kongfu.speed(z)*this.beach.speed(z)*this.dark.movement(z)*(z.reversed?-1:1)* (this.time<z.chilledUntil?.5:1)*(this.time<(z.sappedUntil??0)?.5:1)*(z.kind==='piano'&&z.x>=cellX(9)?4:1)*(z.west?.animation==='Rush'?this.props.zombies[z.kind].RushSPS:(z.bug&&z.bug.hp>0?this.props.zombies[z.kind].BuggedSPS:z.memoryRunner?this.level.memory!.enemySpeed:this.props.zombies[z.kind].WalkSPS)) * BOARD.cellWidth * statusDt;
       if (z.kind === 'ra' && z.x<BOARD.left+BOARD.columns*BOARD.cellWidth) {
         let reserved=z.absorbed+this.suns.filter(s=>s.absorber===z.id).reduce((sum,s)=>sum+s.value,0);
         for(const sun of this.suns)if(sun.absorber===null&&sun.y>=BOARD.top&&sun.x>=BOARD.left&&sun.x<=BOARD.left+BOARD.columns*BOARD.cellWidth&&reserved+sun.value<=this.props.zombies.ra.MaxAbsorbValue){sun.absorber=z.id;sun.absorbAge=0;reserved+=sun.value;}
@@ -1202,7 +1210,7 @@ export class Game {
       if(this.level.flowerLine!==null&&Math.abs(z.x-(BOARD.left+this.level.flowerLine*BOARD.cellWidth))<10&&!z.eating&&!z.reversed&&!z.leap&&this.phase==='playing'){this.lossReason='flowers';this.phase='lost';this.events.push({type:'lose'});}
       if (z.x < BOARD.left - 100) { this.phase = 'lost'; this.events.push({ type: 'lose' }); }
     }
-    if(this.level.world==='pirate'||this.level.world==='west'||this.level.world==='dark')this.pirate.tick(dt);
+    if(this.level.world==='modern'||this.level.world==='pirate'||this.level.world==='west'||this.level.world==='dark')this.pirate.tick(dt);
     for (const mower of this.mowers) if (mower.active) {
       if(mower.starting>0)mower.starting=Math.max(0,mower.starting-dt);
       else mower.x += 600 * dt;
@@ -1216,7 +1224,7 @@ export class Game {
     for (const z of this.zombies) if (z!==this.boss?.zombie&&z.hp <= 0&&!z.weasel?.exploding) {
       if(z.airRaid?.escaped)continue;
       if(this.level.airRaid)this.sky.airRaid.killed(z);
-      if(this.level.world==='pirate')this.pirate.die(z);
+      if(this.level.world==='pirate'||this.level.world==='modern')this.pirate.die(z);
       this.eighties.die(z);this.lostcity.die(z);this.beach.fishers.die(z);this.beach.surfers.die(z);this.cowboy.die(z);this.future.die(z);
       if(z.kind!=='future_protector_shield')this.kills++;
       if(this.level.killChallenge&&!this.killChallengeComplete){this.recentKills.push(this.time);if(this.recentKills.length>=this.level.killChallenge.count)this.killChallengeComplete=true;}
@@ -1262,6 +1270,6 @@ export class Game {
         this.nextWave = this.time + (this.level.corral?0:(this.wave + 1) % this.level.flagInterval === 0 ? RULES.flagWaveEntrance : RULES.normalWaveEntrance);
       }
     }
-    if ((this.boss?this.boss.defeated:this.wave === this.level.waves.length && !this.pending.length &&!this.pendingGraveSpawns.length&& !this.zombies.some(z=>!z.droneMaker&&!z.drone&&!z.airRaid?.props.IgnoredInWaves) && !this.cowboy.chickenThrowers.length && !this.iceageCombat.weaselThrowers.length && !this.pendingPharaohs.length&&!this.lostcity.porterDrops.size&&!this.sky.drops.length&&!this.sky.thunder.pending.length) && (!this.level.memory||this.darkMemory.complete) && this.phase === 'playing') {if(this.level.airRaid&&this.sky.airRaid.score<this.level.airRaid.target){this.phase='lost';this.lossReason='score';this.events.push({type:'lose'});}else if(this.level.killChallenge&&!this.killChallengeComplete){this.phase='lost';this.lossReason='killChallenge';this.events.push({type:'lose'});}else if(this.level.targetSun!==null&&this.sunProduced<this.level.targetSun){this.phase='lost';this.lossReason='sunProduced';this.events.push({type:'lose'});}else if(this.level.cannon&&this.pirate.score<this.level.cannon.MinScore){this.phase='lost';this.lossReason='score';this.events.push({type:'lose'});}else {this.phase = 'won';this.eighties.arcade.finish();this.eighties.speaker.finish(); this.events.push({ type: 'win' });} }
+    if ((this.boss?this.boss.defeated:this.wave === this.level.waves.length && !this.pending.length &&!this.modern.pending&&!this.pendingGraveSpawns.length&& !this.zombies.some(z=>!z.droneMaker&&!z.drone&&!z.airRaid?.props.IgnoredInWaves) && !this.cowboy.chickenThrowers.length && !this.iceageCombat.weaselThrowers.length && !this.pendingPharaohs.length&&!this.lostcity.porterDrops.size&&!this.sky.drops.length&&!this.sky.thunder.pending.length) && (!this.level.memory||this.darkMemory.complete) && this.phase === 'playing') {if(this.level.airRaid&&this.sky.airRaid.score<this.level.airRaid.target){this.phase='lost';this.lossReason='score';this.events.push({type:'lose'});}else if(this.level.killChallenge&&!this.killChallengeComplete){this.phase='lost';this.lossReason='killChallenge';this.events.push({type:'lose'});}else if(this.level.targetSun!==null&&this.sunProduced<this.level.targetSun){this.phase='lost';this.lossReason='sunProduced';this.events.push({type:'lose'});}else if(this.level.cannon&&this.pirate.score<this.level.cannon.MinScore){this.phase='lost';this.lossReason='score';this.events.push({type:'lose'});}else {this.phase = 'won';this.eighties.arcade.finish();this.eighties.speaker.finish(); this.events.push({ type: 'win' });} }
   }
 }

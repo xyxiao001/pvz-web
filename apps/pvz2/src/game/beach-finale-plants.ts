@@ -45,7 +45,7 @@ export class BeachFinalePlants {
     const animation=p.animation!,timeline=g.props.plantAnimations[p.kind][animation],elapsed=g.time-p.actionAt;
     while(p.eventIndex!<timeline.events.length&&elapsed>=timeline.events[p.eventIndex!].at){const event=timeline.events[p.eventIndex!++].name;
       if(p.kind==='moonflower'){
-        if(event==='Produce'){const count=g.plants.filter(q=>q.hp>0&&q.kind==='moonflower'&&Math.abs(q.row-p.row)<=1&&Math.abs(q.column-p.column)<=1).length;g.dropSun(cellX(p.column),rowY(p.row)-60,props.SunValueList[Math.min(3,count-1)],'plant');}
+        if(event==='Produce'){const count=g.plants.filter(q=>q.hp>0&&g.modern.shadowPlant(q)&&Math.abs(q.row-p.row)<=1&&Math.abs(q.column-p.column)<=1).length;g.dropSun(cellX(p.column),rowY(p.row)-60,props.SunValueList[Math.min(3,count-1)],'plant');}
         if(event==='produceSound')g.beach.sounds.push('moonflower/produceSound');
         if(event==='foodEnd'){this.shields=this.shields.filter(s=>s.plant!==p.id);for(const dr of [-1,0,1])for(const dc of [-1,1])if(p.row+dr>=0&&p.row+dr<5)this.shields.push({id:g.nextEntityId(),plant:p.id,row:p.row+dr,column:p.column+dc,hp:5000});}
       }

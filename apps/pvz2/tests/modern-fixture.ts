@@ -1,0 +1,10 @@
+import {props as previousProps,read} from './sky-fixture';
+import {timing} from './future-fixture';
+import {Game} from '../src/game/model';
+import {readLevel,rowY,type Properties} from '../src/game/level';
+export {read};
+const extra=read('modern/properties.json');
+export const props:Properties={...previousProps,projectiles:{...previousProps.projectiles,...extra.projectiles},plants:{...previousProps.plants,...extra.plants},zombies:{...previousProps.zombies,...extra.zombies},armors:{...previousProps.armors,...extra.armors},plantAnimations:{...previousProps.plantAnimations,...extra.plantAnimations}};
+export const level=(day:number)=>readLevel(read(`modern/modern${day}.source.json`));
+export const create=(day:number)=>new Game(level(day),props,timing,z=>({x:z.x,y:rowY(z.row)-95}),1234,false);
+export const tick=(g:Game,seconds:number)=>{for(let i=0;i<seconds*60;i++)g.tick(1/60);};
