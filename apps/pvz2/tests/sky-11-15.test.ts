@@ -64,5 +64,5 @@ test('Sky map unlocks through fifteen and grants native Anthurium display exactl
   for(const e of events)if(e.action==='reward')p.award('sky',map.islands.find((n:{node:number})=>n.node===e.node)!);
   assert.equal(JSON.stringify(p.rewards()),rewards);
  }
- assert.ok(p.ownedPlants().has(201));assert.ok(read('shell/progression.json').plants[201].some((d:{kind:string})=>d.kind==='rig'));assert.equal(Object.keys(BATTLE_LEVELS).length,451);
+ assert.ok(p.ownedPlants().has(201));assert.ok(read('shell/progression.json').plants[201].some((d:{kind:string})=>d.kind==='rig'));assert.equal(Object.keys(BATTLE_LEVELS).length,456);
 });

@@ -13,7 +13,7 @@ let scene:Scene|undefined,game:Game|undefined,battle:ReturnType<typeof createBat
 const draw=()=>{scene!.sync(game!,0);scene!.render();status.textContent=`云端${game!.level.day} ${game!.time.toFixed(1)}s ${game!.phase} 飞船${Math.ceil(game!.sky.health)} 护盾${Math.ceil(game!.sky.shield)} 运输机${game!.sky.drops.length} 僵尸${game!.zombies.length}`;};
 const button=(label:string,run:()=>void|Promise<void>)=>{const b=document.createElement('button');b.textContent=label;b.onclick=()=>{Promise.resolve(run()).catch(e=>{status.textContent=String(e);console.error(e);});};controls.append(b);};
 async function clean(){if(battle){await battle.dispose();battle=undefined;}if(scene){await scene.dispose();scene=undefined;}host.replaceChildren();battleHost.hidden=true;host.hidden=true;}
-for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]){
+for(const day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]){
  button(`进入${day}关`,async()=>{await clean();battleHost.hidden=false;battle=createBattle(battleHost,async()=>{await clean();},BATTLE_LEVELS[`sky${day}`],progress);await battle.enter();status.textContent=`云端${day}正式入口`;});
  button(`场景${day}`,async()=>{await clean();host.hidden=false;scene=new Scene();const config=BATTLE_LEVELS[`sky${day}`],level=readLevel(await json<SourceLevel>(config.source));
  const groups=await Promise.all(['levels','campaign',...config.bundles!].map(name=>json<Properties>(name+'/properties.json'))),props=groups.reduce((a,b)=>({...a,...b,plants:{...a.plants,...b.plants},zombies:{...a.zombies,...b.zombies},armors:{...a.armors,...b.armors},projectiles:{...a.projectiles,...b.projectiles},plantAnimations:{...a.plantAnimations,...b.plantAnimations}}));props.zombies.mummy_flag=await json('battle/flag.json');
@@ -44,3 +44,9 @@ button('突击队能量豆',()=>{game!.food=1;game!.plantFood(2,3);draw();});
 button('花盆（场景21）',()=>{Object.assign(game!,{nextWave:Infinity});game!.plants=[];game!.zombies=[];game!.addPlant('floawerPot',2,5);game!.addPlant('repeater',2,5);game!.spawnZombie('sky_armor2',2,cellX(7));draw();});
 
 button('击落迷雾飞机',()=>{for(const z of game!.zombies)if(z.kind==='sky_arbiterx')game!.damage(z,30000);game!.tick(1/60);draw();});
+
+button('空战28制导队',()=>{game!.sky.airRaid.choose(1);draw();});
+button('空战28近战队',()=>{game!.sky.airRaid.choose(2);draw();});
+button('空战28升级',()=>{const raid=game!.sky.airRaid;raid.score=10000;const z=game!.spawnZombie('sky',0,1200,'walk','sky_t');raid.killed(z);z.hp=0;game!.zombies=game!.zombies.filter(q=>q!==z);draw();});
+button('空战28巨人与弹幕',()=>{Object.assign(game!,{nextWave:Infinity});game!.zombies=[];game!.sky.airRaid.move(150,650);game!.spawnZombie('sky_airraid_arbiterx',2,850,'walk','sky_airraid_arbiterx1_t');game!.spawnZombie('sky_gargantuar_armor2_thrower',0,850,'walk','sky_gargantuar_t');draw();});
+button('空战28近战靶',()=>{Object.assign(game!,{nextWave:Infinity});game!.zombies=[];const p=game!.sky.airRaid.player!;const z=game!.spawnZombie('sky_armor2',p.row,cellX(p.column)+100,'walk','sky_armor2_t');z.hp=20000;z.frozenUntil=Infinity;draw();});

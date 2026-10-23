@@ -37,11 +37,14 @@ export class SkySpecial {
   }
  }
  spawn(z:Zombie){if(z.kind==='sky_arbiterx'){z.row=Math.max(1,Math.min(3,z.row));z.arbiter={animation:z.entry==='ground'?'Spawn':'Idle',elapsed:0};}}
+ emitFog(z:Zombie){const p=source.zombies.sky_arbiterx;
+  if(!z.reversed){const column=Math.floor((z.x+BOARD.cellWidth-BOARD.left)/BOARD.cellWidth);
+   for(let c=column+1;c<12;c++)for(let row=Math.max(0,Math.round(z.row)-2);row<=Math.min(4,Math.round(z.row)+2);row++){const distance=Math.abs(row-Math.round(z.row)),life=distance===0?p.FogLifeSpanMiddle:distance===1?p.FogLifeSpanSide1:p.FogLifeSpanSide2;let fog=this.fog.find(f=>f.row===row&&f.column===c);if(!fog){fog={row,column:c,life:0,light:0,alpha:0};this.fog.push(fog);}fog.life=Math.max(fog.life,life);}
+  }
+ }
  zombie(z:Zombie,dt:number){
   if(!z.arbiter)return false;const g=this.g,s=z.arbiter,p=source.zombies.sky_arbiterx;dt*=g.time<z.chilledUntil?.5:1;s.elapsed+=dt;
-  if(!z.reversed){const column=Math.floor((z.x+BOARD.cellWidth-BOARD.left)/BOARD.cellWidth);
-   for(let c=column+1;c<12;c++)for(let row=Math.max(0,z.row-2);row<=Math.min(4,z.row+2);row++){const distance=Math.abs(row-z.row),life=distance===0?p.FogLifeSpanMiddle:distance===1?p.FogLifeSpanSide1:p.FogLifeSpanSide2;let fog=this.fog.find(f=>f.row===row&&f.column===c);if(!fog){fog={row,column:c,life:0,light:0,alpha:0};this.fog.push(fog);}fog.life=Math.max(fog.life,life);}
-  }
+  this.emitFog(z);
   if(s.animation==='Spawn'||s.animation==='Hit'){const timeline=g.props.plantAnimations.skyArbiterX[s.animation];if(s.elapsed>=timeline.events.find(e=>e.name==='switchingFalse')!.at){s.animation='Idle';s.elapsed=0;}return true;}
   if(s.crash){const c=s.crash,half=p.CrashBackwardTime,t=s.elapsed;z.x=c.x+(t<half?t/half:1-(c.ship?1.5:1)*(t-half)/half)*BOARD.cellWidth*(z.reversed?-1:1);
    if(t>=half*2){g.beach.sounds.push('skyArbiterX/HitSounds');if(c.ship){g.sky.damageShip(p.CrashDamageToShip);z.hp=0;g.beach.sounds.push('skyArbiterX/CrashSounds');}else {const plant=g.plants.find(q=>q.id===c.target&&q.hp>0);if(plant&&!g.kongfu.peach.protected(plant)&&plant.action!=='food'){const armor=Math.min(plant.armor,p.CrashDamage);plant.armor-=armor;plant.hp-=p.CrashDamage-armor;}s.animation='Hit';s.elapsed=0;}delete s.crash;}return true;

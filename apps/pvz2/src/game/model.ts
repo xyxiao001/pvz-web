@@ -485,7 +485,9 @@ export class Game {
   private startWave() {
     const actions=this.level.actions[this.wave];
     this.pending=[];
+    if(this.level.airRaid)this.sky.airRaid.startWave(this.wave);
     for(const action of actions){
+      if(action.airRaidSchedule){this.sky.airRaid.schedule(action.airRaidSchedule);continue;}
       if(action.mode==='qigong'){for(const q of action.qigong!)this.pending.push({kind:q.Type,row:q.Rows[Math.floor(this.random()*q.Rows.length)],x:cellX(q.Columns[Math.floor(this.random()*q.Columns.length)]),mode:'ground',at:this.time+q.Delay,food:false});continue;}
       if(action.thunder){this.sky.thunder.queue(action.thunder);continue;}
       if(action.dropShip){this.sky.addDropShip(action.dropShip);continue;}
@@ -1255,10 +1257,10 @@ export class Game {
     this.effects = this.effects.filter(e => e.age < .65);
     if (!this.level.memory && this.wave > 0 && !this.pending.length &&!this.pendingGraveSpawns.length&& this.wave < this.level.waves.length && this.nextWave === Infinity) {
       const health = this.zombies.filter(z => this.waveIds.has(z.id)).reduce((n, z) => n + (z.kind==='pharaoh'||z.kind==='pharaoh_weak'?z.armor:z.hp), 0);
-      if (!(this.level.airRaid&&this.level.actions[this.wave-1].some(a=>a.mustKillAll)&&this.zombies.some(z=>z.hp>0))&&!this.kongfu.holes.suppressesWave && this.time >= this.waveDamageDeadline && (health <= this.waveHealth * this.threshold || this.time >= this.waveDeadline)) {
+      if (!(this.level.airRaid&&this.level.actions[this.wave-1].some(a=>a.mustKillAll)&&this.zombies.some(z=>z.hp>0&&!z.airRaid?.props.IgnoredInWaves))&&!this.kongfu.holes.suppressesWave && this.time >= this.waveDamageDeadline && (health <= this.waveHealth * this.threshold || this.time >= this.waveDeadline)) {
         this.nextWave = this.time + (this.level.corral?0:(this.wave + 1) % this.level.flagInterval === 0 ? RULES.flagWaveEntrance : RULES.normalWaveEntrance);
       }
     }
-    if ((this.boss?this.boss.defeated:this.wave === this.level.waves.length && !this.pending.length &&!this.pendingGraveSpawns.length&& !this.zombies.some(z=>!z.droneMaker&&!z.drone) && !this.cowboy.chickenThrowers.length && !this.iceageCombat.weaselThrowers.length && !this.pendingPharaohs.length&&!this.lostcity.porterDrops.size&&!this.sky.drops.length&&!this.sky.thunder.pending.length) && (!this.level.memory||this.darkMemory.complete) && this.phase === 'playing') {if(this.level.airRaid&&this.sky.airRaid.score<this.level.airRaid.target){this.phase='lost';this.lossReason='score';this.events.push({type:'lose'});}else if(this.level.killChallenge&&!this.killChallengeComplete){this.phase='lost';this.lossReason='killChallenge';this.events.push({type:'lose'});}else if(this.level.targetSun!==null&&this.sunProduced<this.level.targetSun){this.phase='lost';this.lossReason='sunProduced';this.events.push({type:'lose'});}else if(this.level.cannon&&this.pirate.score<this.level.cannon.MinScore){this.phase='lost';this.lossReason='score';this.events.push({type:'lose'});}else {this.phase = 'won';this.eighties.arcade.finish();this.eighties.speaker.finish(); this.events.push({ type: 'win' });} }
+    if ((this.boss?this.boss.defeated:this.wave === this.level.waves.length && !this.pending.length &&!this.pendingGraveSpawns.length&& !this.zombies.some(z=>!z.droneMaker&&!z.drone&&!z.airRaid?.props.IgnoredInWaves) && !this.cowboy.chickenThrowers.length && !this.iceageCombat.weaselThrowers.length && !this.pendingPharaohs.length&&!this.lostcity.porterDrops.size&&!this.sky.drops.length&&!this.sky.thunder.pending.length) && (!this.level.memory||this.darkMemory.complete) && this.phase === 'playing') {if(this.level.airRaid&&this.sky.airRaid.score<this.level.airRaid.target){this.phase='lost';this.lossReason='score';this.events.push({type:'lose'});}else if(this.level.killChallenge&&!this.killChallengeComplete){this.phase='lost';this.lossReason='killChallenge';this.events.push({type:'lose'});}else if(this.level.targetSun!==null&&this.sunProduced<this.level.targetSun){this.phase='lost';this.lossReason='sunProduced';this.events.push({type:'lose'});}else if(this.level.cannon&&this.pirate.score<this.level.cannon.MinScore){this.phase='lost';this.lossReason='score';this.events.push({type:'lose'});}else {this.phase = 'won';this.eighties.arcade.finish();this.eighties.speaker.finish(); this.events.push({ type: 'win' });} }
   }
 }

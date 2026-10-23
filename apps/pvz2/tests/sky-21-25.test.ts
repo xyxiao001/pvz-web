@@ -53,7 +53,7 @@ test('Sky map through 25 awards both new rewards once with native display rigs',
  const {ProgressStore,completionEvents}=await import('../src/shell/progression'),{islandStates}=await import('../src/shell/navigation');const map=read('shell/maps/sky.json'),store=new Map<string,string>(),p=new ProgressStore({getItem:k=>store.get(k)??null,setItem:(k,v)=>{store.set(k,v);},removeItem:k=>{store.delete(k);}});
  for(let day=1;day<=25;day++){const id=`sky${day}`,node=map.islands.find((n:{levels:string[]})=>n.levels.includes(id))!;assert.equal(islandStates(map,p.completed(map),p.rewardNodes('sky')).get(node.node),'open');p.finish('sky',id);for(const e of completionEvents(map,id,p.completed(map),p.rewardNodes('sky')))if(e.action==='reward')p.award('sky',map.islands.find((n:{node:number})=>n.node===e.node)!);p.finishPresentation();const before=JSON.stringify(p.rewards());p.finish('sky',id);assert.equal(JSON.stringify(p.rewards()),before);}
  for(const id of [202,203]){assert.ok(p.ownedPlants().has(id));const draws=read('shell/progression.json').plants[id];assert.ok(draws.length);for(const d of draws)if(d.kind==='rig')assert.ok(read(`shell/rigs/${d.rig}/skeleton.json`).armature.some((a:{name:string})=>a.name===d.armature));}
- assert.equal(Object.keys(BATTLE_LEVELS).length,451);
+ assert.equal(Object.keys(BATTLE_LEVELS).length,456);
 });
 
 test('Arbiter cannot be carried by Loquanado',()=>{

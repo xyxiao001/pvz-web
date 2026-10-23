@@ -1,14 +1,20 @@
-import {BOARD,cellX,rowY,type AirRaidStyle,type AirRaidEnemy} from './level';
+import source from '../../public/assets/sky/properties.json';
+import {BOARD,cellX,rowY,type AirRaidStyle,type AirRaidEnemy,type SpawnAction} from './level';
 import type {Game,Plant,Zombie} from './model';
-type Shot={target?:number;splash?:number;emissions?:{Type:string;Count:number}[];id:number;x:number;y:number;vx:number;vy:number;damage:number;rig:string;animation:string;hits:number[];pierce:number;life:number};
+type Shot={scale?:number;radius?:number;target?:number;splash?:number;emissions?:{Type:string;Count:number}[];id:number;x:number;y:number;vx:number;vy:number;damage:number;rig:string;animation:string;hits:number[];pierce:number;life:number};
 export class SkyAirRaid {
  rays:{id:number;x:number;y:number;toX:number;toY:number;at:number}[]=[];
  score=0;team=0;member=0;player:Plant|null=null;
  shots:Shot[]=[];bullets:Shot[]=[];keys=new Set<string>();
  private twins=new Map<number,{style:number;left:number;next:number;angle:number}[]>();
+ private schedules:{data:NonNullable<SpawnAction['airRaidSchedule']>;next:number;left:number}[]=[];
+ private giants=new Map<number,number>();
  private poweredCactus=false;private foodShots=0;private foodCount=0;
  private next=0;private foodUntil=0;private foodNext=0;private angles=new Map<number,number>();
  constructor(private g:Game){}
+ startWave(index:number){this.schedules=this.schedules.filter(s=>s.data.ending!==index);}
+ schedule(data:NonNullable<SpawnAction['airRaidSchedule']>){const repeat=Math.floor(this.range(data.repeat));this.schedules.push({data,next:this.g.time+this.range(data.first),left:repeat===0?Infinity:repeat});}
+ private scheduled(){const g=this.g;for(const s of this.schedules)if(s.left>0&&g.time>=s.next){const group=s.data.groups[Math.floor(g.random()*s.data.groups.length)];for(const z of group)g.spawnZombie(z.kind,z.row,cellX(z.column),'ground',z.type);s.left--;s.next=g.time+this.range(s.data.between);}}
  get current(){return this.g.level.airRaid!.teams[this.team].members[this.member];}
  choose(team:number){this.team=team;this.member=0;this.score=0;this.evolve();}
  private evolve(){
@@ -19,37 +25,40 @@ export class SkyAirRaid {
  move(x:number,y:number){if(!this.player)return;this.player.column=(Math.max(0,Math.min(1200,x))-BOARD.left)/BOARD.cellWidth-.5;this.player.row=(Math.max(0,Math.min(700,y))-rowY(0))/BOARD.cellHeight;}
  food(){
   if(!this.player||!this.g.food||this.g.time<this.foodUntil||this.player.kind==='cactus'&&this.poweredCactus)return false;
-  const p=this.player,props={...this.g.props.plants[p.kind],...this.current.props};this.g.food--;this.foodUntil=this.g.time+(p.kind==='fumeshroom'?props.PlantfoodDuration:2);this.foodNext=this.g.time;this.foodShots=0;
-  this.foodCount=p.kind==='bloomerang'?props.PlantfoodBoomerangCount:['laser_bean','cactus','coconutcannon','citron'].includes(p.kind)?1:p.kind==='lightningreed'?30:p.kind==='fumeshroom'?60:props.PlantfoodPeaCount;
+  const p=this.player,props={...this.g.props.plants[p.kind],...this.current.props};this.g.food--;this.foodUntil=this.g.time+(['fumeshroom','wasabiwhip'].includes(p.kind)?props.PlantfoodDuration:p.kind==='bonkchoy'?props.PlantfoodHitCount*.08:2);this.foodNext=this.g.time;this.foodShots=0;
+  this.foodCount=p.kind==='bonkchoy'?props.PlantfoodHitCount:p.kind==='wasabiwhip'?props.PlantfoodDuration*20:p.kind==='bloomerang'?props.PlantfoodBoomerangCount:['laser_bean','cactus','coconutcannon','citron'].includes(p.kind)?1:p.kind==='lightningreed'?30:p.kind==='fumeshroom'?60:props.PlantfoodPeaCount;
   if(p.kind==='cactus')this.poweredCactus=true;
-  p.action='food';p.animation=p.kind==='starfruit'||p.kind==='pinkstarfruit'||p.kind==='homingthistle'?'Fooding':'Food';p.actionAt=this.g.time;this.g.events.push({type:'food'});return true;
+  p.action='food';p.animation=p.kind==='wasabiwhip'?'FoodStart':p.kind==='starfruit'||p.kind==='pinkstarfruit'||p.kind==='homingthistle'?'Fooding':'Food';p.actionAt=this.g.time;this.g.events.push({type:'food'});return true;
  }
  killed(z:Zombie){this.score+=z.airRaid!.props.WavePointCost;if(this.current.threshold!==undefined&&this.score>=this.current.threshold){this.member++;this.evolve();}}
  private range(r:{Min:number;Max:number}){return r.Min+this.g.random()*(r.Max-r.Min);}
  spawn(z:Zombie,variant?:string){
   if(!this.g.level.airRaid)return;const props={...this.g.props.zombies[z.kind],...(variant===undefined?this.g.level.airRaid.enemies[z.kind]!:this.g.level.airRaid.variants[variant])} as AirRaidEnemy;
   if(props.Toughness!==undefined)z.hp=props.Toughness;
-  z.airRaid={next:this.g.time+(z.kind==='sky_battleplane'||z.kind==='sky_airraid_twin'?0:this.range(props.TimeBeforeFirst)),escaped:false,props};
-  z.sky={animation:z.kind==='sky_airraid_twin'?'Idle':z.kind==='sky_battleplane'?'Walk_Shoot':'Walk',elapsed:0,event:0,impHealth:390,speed:1};
+  if(props.StartingArmors)z.armor=props.StartingArmors.reduce((hp,name)=>hp+this.g.props.armors[name].Toughness,0);
+  z.airRaid={next:this.g.time+(['sky_gargantuar_armor2_thrower','sky_airraid_arbiterx','sky_battleplane','sky_airraid_twin'].includes(z.kind)?0:this.range(props.TimeBeforeFirst)),escaped:false,props};
+  z.sky={animation:z.kind==='sky_gargantuar_armor2_thrower'?'Idle':z.kind==='sky_airraid_arbiterx'?'Walk':z.kind==='sky_airraid_twin'?'Idle':z.kind==='sky_battleplane'?'Walk_Shoot':'Walk',elapsed:0,event:0,impHealth:390,speed:1};
+  if(z.kind==='sky_gargantuar_armor2_thrower')this.giants.set(z.id,0);
   if(props.WalkingRoute){const route=props.WalkingRoute;z.route={spawnLane:z.row,spawnWave:this.g.wave,index:0,y:rowY(z.row),angle:Math.PI,points:Array.from({length:route.LoopTime},()=>route.SplinePoints.map(p=>({x:BOARD.left+(p.x-200)/64*BOARD.cellWidth,y:rowY(0)-BOARD.cellHeight/2+(p.y-160)/76*BOARD.cellHeight}))).flat()};z.sky.speed=this.range(route.Speed);}
  }
  private projectile(type:string){
   const level=this.g.level.airRaid!,local=level.projectiles[type];
-  if(local)return {damage:local.props.Damage,rig:local.base==='shootingstar_pf'?'skyAirRaidStar':'skyBullet',animation:local.base==='shootingstar_pf'?'Idle':'i',emissions:local.props.ProjectileEmissions};
+  if(local)return {damage:local.props.DamageToShip===undefined?local.props.Damage:local.props.DamageToShip,rig:local.base==='shootingstar_pf'?'skyAirRaidStar':local.base==='airraid_0'?'airRaid0':local.base==='airraid_1'?'airRaid1':'skyBullet',animation:local.base==='shootingstar_pf'?'Idle':'i',emissions:local.props.ProjectileEmissions,scale:local.props.SpawnedScale,radius:local.props.Size?Math.max(local.props.Size.w,local.props.Size.h)/2:undefined};
   if(type==='airraid_bolt_positive'||type==='airraid_bolt_negative')return {damage:this.g.props.projectiles.airraid_2.Damage,rig:type.endsWith('positive')?'skyBoltPositive':'skyBoltNegative',animation:'Idle'};
-  return {damage:this.g.props.projectiles[type].Damage,rig:type==='airraid_1'?'airRaid1':'airRaid0',animation:'i'};
+  return {damage:this.g.props.projectiles[type].Damage,rig:type==='airraid_1'||type==='airraid_2'?'airRaid1':'airRaid0',animation:'i'};
  }
  private twinShot(z:Zombie,p:AirRaidEnemy,dt:number){
-  let states=this.twins.get(z.id);if(!states){states=[0,1].map(()=>({style:-1,left:0,next:0,angle:0}));this.twins.set(z.id,states);}
-  for(const [index,styles] of [p.UpperStyles,p.LowerStyles].entries()){
+  let states=this.twins.get(z.id);if(!states){states=(z.kind==='sky_airraid_arbiterx'?[0]:[0,1]).map(()=>({style:-1,left:0,next:0,angle:0}));this.twins.set(z.id,states);}
+  for(const [index,styles] of (z.kind==='sky_airraid_arbiterx'?[p.ShootingStyles]:[p.UpperStyles,p.LowerStyles]).entries()){
    const s=states[index];
    if(s.left===0){const choices=styles.map((style,i)=>({style,i})).filter(v=>v.i!==s.style),sum=choices.reduce((n,v)=>n+v.style.Weight,0);let r=this.g.random()*sum;const selected=choices.find(v=>(r-=v.style.Weight)<0)!;s.style=selected.i;s.left=Math.floor(this.range(selected.style.Repeat));s.next=this.range(selected.style.ShootInterval);if(selected.style.ClearAngleOnStarted)s.angle=0;}
-   s.next-=dt;if(s.next>0)continue;const style=styles[s.style],count=Math.floor(this.range(style.BulletCountPerShot)),art=this.projectile(style.BulletType),y=rowY(z.row)+(index===0?-85:5);
+   s.next-=dt;if(s.next>0)continue;const style=styles[s.style],count=Math.floor(this.range(style.BulletCountPerShot)),art=this.projectile(style.BulletType),y=rowY(z.row)+(z.kind==='sky_airraid_arbiterx'?-45:index===0?-85:5);
    const base=style.TowardsAirRaidPlant&&this.player?Math.atan2(rowY(this.player.row)-35-y,cellX(this.player.column)-z.x):Math.PI+s.angle;
    const sector=this.range(style.ShootingSectorAngle)*Math.PI/180;
    for(let i=0;i<count;i++){const a=base+(style.IsShootingSector?(count===1?0:-sector/2+sector*i/(count-1)):2*Math.PI*i/count),speed=this.range(style.BulletSpeed)*BOARD.cellWidth,life=this.range(style.BulletSelfExplodeTime);
     this.bullets.push({id:this.g.nextEntityId(),x:z.x-30,y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,...art,hits:[],pierce:1,life:life>0?life:10});
    }
+   if(z.kind==='sky_airraid_arbiterx')this.g.beach.sounds.push('skyAirRaidArbiterX/shootSounds');
    s.angle+=this.range(style.DeltaAnglePerShot)*Math.PI/180;s.left--;s.next+=this.range(style.ShootInterval);
   }
  }
@@ -60,27 +69,50 @@ export class SkyAirRaid {
   }
   if(plane)this.angles.set(z.id,angle+p.ShootingDeltaAngle*Math.PI/180);
  }
+ private giant(z:Zombie,dt:number){
+  const g=this.g,p=z.airRaid!.props,s=z.sky!,pilot=this.player!,count=this.giants.get(z.id)!,native=source.zombies.sky_gargantuar_armor2_thrower;
+  const contact=Math.abs(z.x-cellX(pilot.column))<65&&Math.abs(rowY(z.row)-rowY(pilot.row))<65;
+  if(s.animation==='Idle'){
+   if(count<2&&z.hp<p.Toughness!*(count===0?native.HealthPercentThrowImp0:native.HealthPercentThrowImp1)){s.animation='Throw';s.elapsed=0;s.event=0;}
+   else if(contact){s.animation='Smash';s.elapsed=0;s.event=0;}
+   else {const dx=cellX(pilot.column)-z.x,dy=rowY(pilot.row)-rowY(z.row),distance=Math.hypot(dx,dy),move=Math.min(distance,p.WalkSPS*BOARD.cellWidth*dt);z.x+=dx/distance*move;z.row+=dy/distance*move/BOARD.cellHeight;}
+  }
+  s.elapsed+=dt;const timeline=g.props.plantAnimations.skyGargantuarThrower[s.animation];
+  while(s.event<timeline.events.length&&s.elapsed>=timeline.events[s.event].at){const event=timeline.events[s.event++].name;
+   if(event==='impThrow'){const imp=g.spawnZombie('sky',z.row,z.x,'walk',p.ImpType);imp.reversed=true;const col=native.ImpColumns[Math.floor(g.random()*native.ImpColumns.length)];imp.leap={fromX:z.x,fromY:rowY(z.row)-190,toX:cellX(col),toRow:z.row,at:g.time,duration:2};this.giants.set(z.id,count+1);g.beach.sounds.push('skyGargantuarThrower/throwSounds');}
+   if(event==='smash'){if(contact&&g.time>=this.foodUntil)pilot.hp-=native.SmashDamage;g.beach.sounds.push('skyGargantuarThrower/smashSounds');}
+  }
+  if(s.elapsed>=timeline.duration){s.animation='Idle';s.elapsed=0;s.event=0;}return true;
+ }
  zombie(z:Zombie,dt:number){
   const g=this.g,p=z.airRaid!.props,s=z.sky!;dt*=g.time<z.chilledUntil?.5:1;
-  if(z.kind==='sky_airraid_twin')this.twinShot(z,p,dt);
-  if(z.kind!=='sky_airraid_twin'&&z.kind!=='sky_battleplane'&&g.time>=z.airRaid!.next&&s.animation==='Walk'){s.animation=z.kind==='sky_electric'?(p.ProjectileType.endsWith('positive')?'Shoot_Positive':'Shoot_Negative'):'Shoot';s.elapsed=0;s.event=0;z.airRaid!.next=g.time+this.range(p.TimeBetween);}
-  s.elapsed+=dt;const timeline=g.props.plantAnimations[z.kind==='sky_airraid_twin'?'skyAirRaidTwin':z.kind==='sky_electric'?'skyElectric':z.kind==='sky_battleplane'?'skyBattlePlane':z.kind==='sky_flag'?'skyFlag':'sky'][s.animation];
-  while(s.event<timeline.events.length&&s.elapsed>=timeline.events[s.event].at){const event=timeline.events[s.event++].name;if(event==='bullet'||event==='shoot_positive'||event==='shoot_negative'||event==='shoot'&&z.kind!=='sky_battleplane')this.bullet(z,p);}
+  if(z.kind==='sky_gargantuar_armor2_thrower')return this.giant(z,dt);
+  if(z.kind==='sky_airraid_arbiterx')g.sky.special.emitFog(z);
+  if(z.kind==='sky_airraid_twin'||z.kind==='sky_airraid_arbiterx')this.twinShot(z,p,dt);
+  if(z.kind!=='sky_airraid_arbiterx'&&z.kind!=='sky_airraid_twin'&&z.kind!=='sky_battleplane'&&g.time>=z.airRaid!.next&&s.animation==='Walk'){s.animation=z.kind==='sky_electric'?(p.ProjectileType.endsWith('positive')?'Shoot_Positive':'Shoot_Negative'):'Shoot';s.elapsed=0;s.event=0;z.airRaid!.next=g.time+this.range(p.TimeBetween);}
+  s.elapsed+=dt;const timeline=g.props.plantAnimations[z.kind==='sky_airraid_arbiterx'?'skyAirRaidArbiterX':z.kind==='sky_airraid_twin'?'skyAirRaidTwin':z.kind==='sky_electric'?'skyElectric':z.kind==='sky_battleplane'?'skyBattlePlane':z.kind==='sky_flag'?'skyFlag':'sky'][s.animation];
+  while(s.event<timeline.events.length&&s.elapsed>=timeline.events[s.event].at){const event=timeline.events[s.event++].name;if(event==='bullet'||event==='shoot_positive'||event==='shoot_negative'||event==='shoot'&&z.kind!=='sky_battleplane'&&z.kind!=='sky_airraid_arbiterx')this.bullet(z,p);}
   if(s.elapsed>=timeline.duration){s.elapsed-=timeline.duration;s.event=0;if(s.animation.startsWith('Shoot'))s.animation='Walk';}
   if(z.route){const r=z.route,point=r.points[r.index],buffer=p.WalkingRoute!.BufferDistance/64*BOARD.cellWidth,speed=s.speed*BOARD.cellWidth;
    if(point){const dx=point.x-z.x,dy=point.y-r.y,target=Math.atan2(dy,dx),turn=Math.atan2(Math.sin(target-r.angle),Math.cos(target-r.angle));r.angle+=Math.sign(turn)*Math.min(Math.abs(turn),speed/buffer*dt);if(Math.hypot(dx,dy)<=buffer)r.index++;}
    z.x+=Math.cos(r.angle)*speed*dt;r.y+=Math.sin(r.angle)*speed*dt;z.row=(r.y-rowY(0))/BOARD.cellHeight;
   }else if(s.animation==='Walk')z.x-=p.WalkSPS*BOARD.cellWidth*dt;
-  if(z.x<-80){z.airRaid!.escaped=true;z.hp=0;}
-  if(this.player&&Math.abs(z.x-cellX(this.player.column))<40&&Math.abs(z.row-this.player.row)*BOARD.cellHeight<50)this.player.hp-=g.props.zombies[z.kind].EatDPS*dt;
+  if(z.x<-80||z.x>1300&&p.WalkSPS<0){z.airRaid!.escaped=true;z.hp=0;}
+  if(z.kind!=='sky_airraid_arbiterx'&&this.player&&Math.abs(z.x-cellX(this.player.column))<40&&Math.abs(z.row-this.player.row)*BOARD.cellHeight<50)this.player.hp-=p.EatDPS*dt;
   return true;
  }
  private shoot(food:boolean){
   const p=this.player!,g=this.g,kind=p.kind,x=cellX(p.column)+30,y=rowY(p.row)-40;
   const emit=(angle:number,dy=0,rig='pea',damage=20,pierce=1,animation='Idle')=>this.shots.push({id:g.nextEntityId(),x,y:y+dy,vx:Math.cos(angle)*8*BOARD.cellWidth,vy:Math.sin(angle)*8*BOARD.cellWidth,rig,animation,damage,hits:[],pierce,life:3});
   switch(kind){
+   case 'bonkchoy':case 'wasabiwhip':{const props={...g.props.plants[kind],...this.current.props},cx=cellX(p.column),cy=rowY(p.row),width=food?1.5:kind==='bonkchoy'?props.ZombieDetectorWidth/2:props.MaxDistance,targets=g.zombies.filter(z=>z.hp>0&&Math.abs(z.x-cx)<width*BOARD.cellWidth&&Math.abs(rowY(z.row)-cy)<(food?1.5:.5)*BOARD.cellHeight).sort((a,b)=>Math.abs(a.x-cx)-Math.abs(b.x-cx));
+    if(food){for(const z of targets)g.damage(z,kind==='bonkchoy'?props.DamagePlantfood:props.PlantfoodDPS*.05);}
+    else if(targets.length){const z=targets[0];p.facing=z.x<cx?-1:1;p.heavy=kind==='bonkchoy'&&z.hp+z.armor<props.DamageHeavy;g.damage(z,kind==='bonkchoy'?(p.heavy?props.DamageHeavy:props.Damage):props.AttackDamage);if(kind==='wasabiwhip')for(const other of targets.slice(1))if(Math.abs(other.x-z.x)<BOARD.cellWidth)g.damage(other,props.AttackSplashSamage);}
+    break;}
+   case 'seashooter':{if(food)emit((g.random()-.5)*Math.PI/3,0,'seaPea',g.props.projectiles.sea_pea.Damage);else {emit(0,0,'seaPea',g.props.projectiles.sea_pea.Damage);for(const sign of [-1,1]){const target=g.zombies.filter(z=>z.hp>0&&z.x>x&&(rowY(z.row)-rowY(p.row))*sign>=0).sort((a,b)=>a.x-b.x)[0];emit(target?Math.atan2(rowY(target.row)-40-y,target.x-x):0,sign*8,'seaPea',g.props.projectiles.sea_pea.Damage);}}break;}
+
    case 'lightningreed':{const props={...g.props.plants.lightningreed,...this.current.props},targets=g.zombies.filter(z=>z.hp>0).sort((a,b)=>Math.hypot(a.x-x,rowY(a.row)-y)-Math.hypot(b.x-x,rowY(b.row)-y)).slice(0,1+props.SplashCount);let from={x,y};for(const [i,z] of targets.entries()){g.damage(z,food?props.PlantfoodDPS*.1:i===0?props.Damage:props.SplashDamage,'electric');this.rays.push({id:g.nextEntityId(),x:from.x,y:from.y,toX:z.x,toY:rowY(z.row)-40,at:g.time});from={x:z.x,y:rowY(z.row)-40};}break;}
-   case 'homingthistle':{const target=g.zombies.filter(z=>z.hp>0).sort((a,b)=>a.x-b.x)[0];emit(target?Math.atan2(rowY(target.row)-40-y,target.x-x):0,0,food?'thistleFood':'thistle',g.props.projectiles[food?'homing_thistle_pf':'homing_thistle'].Damage,1,'Idle');this.shots.at(-1)!.target=target?.id;break;}
+   case 'homingthistle':{const target=g.zombies.filter(z=>z.hp>0&&!z.airRaid!.props.IgnoredByHomingThistle).sort((a,b)=>a.x-b.x)[0];emit(target?Math.atan2(rowY(target.row)-40-y,target.x-x):0,0,food?'thistleFood':'thistle',g.props.projectiles[food?'homing_thistle_pf':'homing_thistle'].Damage,1,'Idle');this.shots.at(-1)!.target=target?.id;break;}
    case 'coconutcannon':case 'citron':{const key=kind==='coconutcannon'?'coconut':'citron',props=g.props.projectiles[key+(food?'_pf':'')];emit(0,0,key+(food?'Food':key==='citron'?'Shot':''),props.Damage,food&&kind==='citron'?Infinity:1,'Idle');this.shots.at(-1)!.splash=props.SplashDamage[0].Damage;break;}
 
    case 'xshot':for(const a of [-Math.PI/4,Math.PI/4,3*Math.PI/4,5*Math.PI/4])emit(a,0,food?'rotobagaFood':'rotobaga',g.props.projectiles[food?'rotobaga_pf':'rotobaga'].Damage,1,'Idle');break;
@@ -96,16 +128,17 @@ export class SkyAirRaid {
    case 'laser_bean':emit(0,0,'laserBeam',food?g.props.plants.laser_bean.DamagePlantfood:g.props.plants.laser_bean.Damage,Infinity,'Play');break;
    case 'peashooter':emit(0);break;
   }
-  p.animation=food?(kind==='starfruit'||kind==='pinkstarfruit'||kind==='homingthistle'?'Fooding':'Food'):kind==='lightningreed'?'Attack':kind==='splitpea'?'ShootRL':kind==='threepeater'?'Shoot111':kind==='pinkstarfruit'?'Shoot2':'Shoot';p.action=food?'food':'shoot';p.actionAt=g.time;g.events.push({type:'shot'});
+  p.animation=food?(kind==='wasabiwhip'?(g.time-p.actionAt<2/3?'FoodStart':'FoodLoop'):kind==='bonkchoy'?(g.time-p.actionAt<g.timing.bonk!.foodStart?'FoodStart':'Food'):(kind==='starfruit'||kind==='pinkstarfruit'||kind==='homingthistle'?'Fooding':'Food')):kind==='wasabiwhip'?(p.facing===-1?'AttackL':'AttackR'):kind==='bonkchoy'?(p.heavy?'Defeat':'Attack'):kind==='lightningreed'?'Attack':kind==='splitpea'?'ShootRL':kind==='threepeater'?'Shoot111':kind==='pinkstarfruit'?'Shoot2':'Shoot';p.action=food?'food':'shoot';if(!food||!['bonkchoy','wasabiwhip'].includes(kind))p.actionAt=g.time;g.events.push({type:'shot'});
  }
  tick(dt:number){
   const g=this.g;if(!g.level.airRaid||!this.player)return;
+  this.scheduled();
   const p=this.player;if(p.hp<=0){g.phase='lost';g.lossReason='airRaid';g.events.push({type:'lose'});return;}
   const dx=Number(this.keys.has('ArrowRight')||this.keys.has('KeyD'))-Number(this.keys.has('ArrowLeft')||this.keys.has('KeyA')),dy=Number(this.keys.has('ArrowDown')||this.keys.has('KeyS'))-Number(this.keys.has('ArrowUp')||this.keys.has('KeyW'));
   if(dx||dy){const scale=6*BOARD.cellWidth*dt/Math.hypot(dx,dy);this.move(cellX(p.column)+dx*scale,rowY(p.row)+dy*scale);}
-  if(g.time<this.foodUntil){if(this.foodShots<this.foodCount&&g.time>=this.foodNext){this.shoot(true);this.foodShots++;this.foodNext+=(p.kind==='fumeshroom'?3:2)/this.foodCount;}}
-  else if(g.time>=this.next){this.shoot(false);this.next=g.time+(p.kind==='coconutcannon'?this.current.props.RestTime!:p.kind==='citron'?this.current.props.ChargeTime!:p.kind==='lightningreed'?this.current.props.AttackInterval!:this.current.props.ShootInterval!);}
-  for(const b of this.bullets){b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;if(Math.hypot(b.x-cellX(p.column),b.y-(rowY(p.row)-35))<25){if(g.time>=this.foodUntil)p.hp-=b.damage;b.life=0;}}
+  if(g.time<this.foodUntil){if(this.foodShots<this.foodCount&&g.time>=this.foodNext){this.shoot(true);this.foodShots++;this.foodNext+=(p.kind==='wasabiwhip'?g.props.plants.wasabiwhip.PlantfoodDuration:p.kind==='bonkchoy'?g.props.plants.bonkchoy.PlantfoodHitCount*.08:p.kind==='fumeshroom'?3:2)/this.foodCount;}}
+  else if(g.time>=this.next){this.shoot(false);this.next=g.time+(p.kind==='coconutcannon'?this.current.props.RestTime!:p.kind==='citron'?this.current.props.ChargeTime!:['lightningreed','bonkchoy','wasabiwhip'].includes(p.kind)?this.current.props.AttackInterval!:this.current.props.ShootInterval!);}
+  for(const b of this.bullets){b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;if(Math.hypot(b.x-cellX(p.column),b.y-(rowY(p.row)-35))<25+(b.radius===undefined?0:b.radius)){if(g.time>=this.foodUntil)p.hp-=b.damage;b.life=0;}}
   for(const b of this.bullets.filter(b=>b.life<=0&&b.emissions))for(const emission of b.emissions!){const art=this.projectile(emission.Type),speed=Math.hypot(b.vx,b.vy),rotation=g.random()*2*Math.PI;for(let i=0;i<emission.Count;i++){const angle=rotation+i*2*Math.PI/emission.Count;this.bullets.push({id:g.nextEntityId(),x:b.x,y:b.y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,...art,hits:[],pierce:1,life:10});}}
   for(const s of this.shots){if(s.target!==undefined){const target=g.zombies.find(z=>z.id===s.target&&z.hp>0);if(target){const angle=Math.atan2(rowY(target.row)-40-s.y,target.x-s.x),speed=Math.hypot(s.vx,s.vy);s.vx=Math.cos(angle)*speed;s.vy=Math.sin(angle)*speed;}}const ox=s.x,oy=s.y;s.x+=s.vx*dt;s.y+=s.vy*dt;s.life-=dt;if(s.rig==='boomerang'&&(s.hits.length>=s.pierce||s.x>1160)){s.vx=-Math.abs(s.vx);s.hits=[];s.pierce=Infinity;}
    for(const z of g.zombies){if(z.hp<=0||s.hits.includes(z.id))continue;const dx=s.x-ox,dy=s.y-oy,t=Math.max(0,Math.min(1,((z.x-ox)*dx+(rowY(z.row)-45-oy)*dy)/(dx*dx+dy*dy)));
