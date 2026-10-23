@@ -2,6 +2,7 @@ import type { PlantKind } from './level';
 
 export interface BattleLevel {
   id: string;
+  endless?:import("./endless").EndlessWorld;
   world: string;
   worldName: string;
   day: number;

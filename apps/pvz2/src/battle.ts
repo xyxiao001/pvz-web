@@ -1,3 +1,5 @@
+import {generateEndless} from './game/endless-generator';
+import {offerEndlessPlants,advanceEndless,ENDLESS_WORLDS} from './game/endless';
 import { playAudio } from './audio';
 import { FrameRate, jsHeapBytes } from './performance';
 import { readFrameLimit, saveFrameLimit, frameLimitControl, type FrameLimit } from './frame-limit';
@@ -40,7 +42,9 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   const bonuses = progress.battleBonuses(), seedSlots = bonuses.seedSlots;
   host.style.setProperty('--seed-slots', String(seedSlots));
   host.dataset.mode=levelConfig.mode;
-  const title = `${levelConfig.worldName} - 第${levelConfig.day}天`;
+  const endless=levelConfig.endless,run=endless?progress.endlessRun(endless)!:null;
+  if(endless&&run){offerEndlessPlants(endless,run,new Set(availablePlants(levelConfig,progress.ownedPlants())));progress.saveEndless(endless,run);}
+  const title = run?`${levelConfig.worldName} · 无尽第 ${run.round} 轮`:`${levelConfig.worldName} - 第${levelConfig.day}天`;
   const touchHelp = levelConfig.mode==='cannon'?'点击椰子加农炮开火 · 连击获得更多分数':levelConfig.mode==='match'?'翻开骆驼牌 · 配对相同图案':levelConfig.mode==='powerups'?'选择道具 · 按住或拖动攻击':levelConfig.mode==='conveyor'?'点击传送带植物 · 点击地块种植':'点击卡片选植物 · 点击地块种植 · 点击阳光收集';
   let cardOrder: PlantKind[] = [];
   const $ = <T extends HTMLElement>(selector: string) => host.querySelector<T>(selector)!;
@@ -133,17 +137,17 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     host.hidden=false; screen='loading'; host.dataset.screen=screen; preferences=readAudio();
     $('#overlay').innerHTML = `<section class="battle-loading" aria-label="${title}加载中">
       <img class="loading-scenery" src="${assetUrl(levelConfig.presentation.loading)}" alt="">
-      <div class="loading-destination"><span class="loading-chapter">时空之旅</span><h2>${levelConfig.worldName}</h2><span class="loading-day">第${levelConfig.day}天</span></div>
+      <div class="loading-destination"><span class="loading-chapter">时空之旅</span><h2>${levelConfig.worldName}</h2><span class="loading-day">${run?`无尽第 ${run.round} 轮`:`第${levelConfig.day}天`}</span></div>
       <div class="loading-progress"><p id="load-status" role="status">正在准备庭院…</p><progress id="load-progress" aria-label="关卡资源加载进度" max="7" value="0"></progress></div>
     </section>`;
     $('#overlay').hidden = false;
-    cardOrder=availablePlants(levelConfig,progress.ownedPlants());
+    cardOrder=run?[...run.plants,...run.choices]:availablePlants(levelConfig,progress.ownedPlants());
 
     if (!scene) {
       const [{ Scene },props,level,flag,campaign] = await Promise.all([import('./rendering/scene'),json<Properties>('levels/properties.json'),json<SourceLevel>(levelConfig.source),json<ZombieProperties>('battle/flag.json'),levelConfig.assets==='campaign'?json<Properties>('campaign/properties.json'):Promise.resolve(null)]);
       if(campaign){Object.assign(props.plants,campaign.plants);Object.assign(props.zombies,campaign.zombies);Object.assign(props.armors,campaign.armors);Object.assign(props,{grave:campaign.grave,projectiles:campaign.projectiles,powerups:campaign.powerups,plantAnimations:campaign.plantAnimations});}
       for(const bundle of levelConfig.bundles??[]){const extra=await json<Properties>(`${bundle}/properties.json`);for(const key of ['plants','zombies','armors','projectiles','plantAnimations'] as const)Object.assign(props[key],extra[key]);}
-      properties=props; properties.zombies.mummy_flag=flag; source=level; scene=new Scene();scene.costumes=progress.equippedCostumes();
+      properties=props; properties.zombies.mummy_flag=flag; source=run?generateEndless(level,run.round,run.seed):level; scene=new Scene();scene.costumes=progress.equippedCostumes();
       const parsed=readLevel(source);
       cardOrder=[...new Set([...cardOrder,...(parsed.chooserPlants??[])])].filter(kind=>!parsed.blacklist.includes(kind));
       const actorPlants=[...new Set([...(parsed.preset??(parsed.conveyor?parsed.conveyor.InitialPlantList.map(p=>p.PlantType):parsed.match||parsed.powerups||parsed.cannon?[]:cardOrder)),...parsed.actions.flat().flatMap(a=>a.add?.map(p=>p.PlantType)??[]),...(parsed.memory?['gravebuster' as const]:[]),...parsed.initialPlants.map(p=>p.kind),...parsed.protectedPlants.map(p=>p.kind),...(parsed.cannon?['coconutcannon' as const]:[]),...(parsed.airRaid?parsed.airRaid.teams.flatMap(t=>t.members.map(m=>m.kind)):[])])];
@@ -173,11 +177,17 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
 
       }
     }
-    cardOrder = [...new Set([...availablePlants(levelConfig,progress.ownedPlants()),...(readLevel(source).chooserPlants??[])])].filter(kind=>!readLevel(source).blacklist.includes(kind));
+    cardOrder = [...new Set([...(run?[...run.plants,...run.choices]:availablePlants(levelConfig,progress.ownedPlants())),...(readLevel(source).chooserPlants??[])])].filter(kind=>!readLevel(source).blacklist.includes(kind));
     $('.chooser-cards').innerHTML = cardOrder.map(kind=>`<button data-choose="${kind}" class="seed choose-card${progress.gardenBoosts()[kind]>0?' boosted':''}" aria-label="选择${plantLabels[kind]}${progress.gardenBoosts()[kind]>0?'（爆发）':''}" aria-pressed="false"><img alt="${plantLabels[kind]}" src="${cards.get(kind)!}"><span class="seed-price">${kind==='imitater'?'':kind==='powerplant'?properties.plants.powerplant.SunCostList[0]:properties.plants[kind].SunCost}</span></button>`).join('');
     for(const kind of cardOrder)$(`[data-choose="${kind}"]`).onclick=()=>{
       describe(kind);const index=deck.indexOf(kind);if(index===-1&&deck.length<seedSlots){deck.push(kind);sound('cardChosen');}else if(index!==-1){deck.splice(index,1);sound('cardCancel');}updateDeck();
     };
+    if(endless&&run&&!run.chosen){
+      screen='choosing';host.dataset.screen='draft';
+      panel(`无尽第 ${run.round} 轮 · 选择新植物`,`<p>选择一株植物加入本次挑战，后续轮次都可以使用。</p><div class="endless-draft">${run.choices.map(kind=>`<button class="battle-button" data-draft="${kind}"><img src="${cards.get(kind)!}" alt="${plantLabels[kind]}"><span>${plantLabels[kind]}</span></button>`).join('')}</div>`);
+      for(const button of host.querySelectorAll<HTMLButtonElement>('[data-draft]'))button.onclick=()=>{const kind=button.dataset.draft as PlantKind;run.plants.push(kind);run.choices=[];run.chosen=true;progress.saveEndless(endless,run);cardOrder=[...run.plants];for(const card of host.querySelectorAll<HTMLElement>('[data-choose]'))card.hidden=!cardOrder.includes(card.dataset.choose as PlantKind);survey();};
+      return;
+    }
     $('#overlay').hidden=true;
     narrativeLines=levelConfig.narrative===null?[]:levelConfig.id==='egypt1'?scene.art.catalog.intro:scene.art.campaign.narratives[levelConfig.id==='egypt5'&&progress.isComplete(levelConfig.id)?'POWERUPS_TUTORIAL_REPEAT':levelConfig.narrative];
     if(!narrativeLines.length||progress.isComplete(levelConfig.id)&&levelConfig.id!=='egypt5')survey();else {narrativeIndex=0;screen='npc-enter';host.dataset.screen=screen;scene.enterNarrative(narrativeCast(0));}
@@ -200,7 +210,8 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   function prepareGame(){
     settleBoosts();
     bossMusicStage=-1;eightiesJam='jam_clear';
-    game=new Game(readLevel(source),properties,scene.timing,zombie=>scene.absorptionTarget(zombie),Date.now()>>>0,!progress.isComplete(levelConfig.id));
+    game=new Game(readLevel(source),properties,scene.timing,zombie=>scene.absorptionTarget(zombie),run?run.seed:Date.now()>>>0,!progress.isComplete(levelConfig.id));
+    if(run){game.food=run.food;game.mowers.forEach((m,i)=>{m.spent=!game.level.mowers||!run.mowers[i];});}
     game.autoCollectSun=autoCollectSun;
     if(game.level.world==='sky')game.sky.setShield(progress.ownedUpgrades().has(13));
     game.boosts=new Set(Object.entries(progress.gardenBoosts()).filter(([,count])=>count>0).map(([kind])=>kind as PlantKind));
@@ -430,12 +441,17 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   function resume() {game.phase='playing';screen='playing';accumulator=0;frameRate.reset();text(fpsLabel,'FPS —');$('#overlay').hidden=true;playMusic();scene.start();}
   function finish() {
     screen='result';scene.stop();scene.render();music.pause();$('#battle-announcement').hidden=true;
+    if(endless&&run){
+      if(game.phase==='won'){const cleared=run.round;advanceEndless(run,game.food,game.mowers.map(m=>!m.spent&&!m.active));progress.saveEndless(endless,run);panel(`第 ${cleared} 轮完成`,`<p>已保存至第 ${run.round} 轮。</p><p>能量豆 ${run.food} · 剩余割草机 ${run.mowers.filter(Boolean).length}</p><button id="result-map" class="battle-button">保存并返回地图</button>`);$('#result-map').onclick=menu;}
+      else {run.food=Math.max(run.food,game.food);progress.saveEndless(endless,run);panel('本轮挑战失败',`<p>保留第 ${run.round} 轮进度，可重新挑战。</p><button id="again" class="battle-button">重试本轮</button><button id="result-map" class="battle-button">返回地图</button>`);$('#again').onclick=chooseSeeds;$('#result-map').onclick=menu;}
+      return;
+    }
     if(game.phase==='won') {
       const first=!progress.isComplete(levelConfig.id)&&!!(levelConfig.firstReward.image||levelConfig.firstReward.plant);
       const reward=levelConfig.firstReward;
       const rewardImage=first?(reward.plant?cards.get(reward.plant)!:reward.animation?scene.art.image(scene.app,'reward',reward.animation,reward.armature):reward.image.startsWith('note_')?assetUrl(scene.art.catalog.ui[`note-${levelConfig.world}`].image):scene.art.image(scene.app,'reward',levelConfig.day===4?'powerups':[6,11,15,22,27,30,34].includes(levelConfig.day)?'Pinata':(levelConfig.day===25?'egypt':[23,31].includes(levelConfig.day)?'dangerroom_egypt':reward.image),[6,11,15,22,27,30,34].includes(levelConfig.day)?'Upgrades':[17,21].includes(levelConfig.day)?'Upgrades':[10,14,16,18,20].includes(levelConfig.day)?'CoinBag':undefined)):'';
       const sprouts=game.sprouts+game.pickups.filter(p=>p.kind==='sprout').length;
-      panel(first&&reward.plant?'获得新植物':'关卡完成',`${first&&reward.plant?plantReward(rewardImage,reward.label,DESCRIPTIONS[reward.plant]):first?`<img class="map-reward" src="${rewardImage}" alt="${levelConfig.firstReward.label}"><p>获得${levelConfig.firstReward.label}</p>${reward.image.startsWith('dangerroom_')?'<p>无尽模式尚未开放，暂无入口；领取后会保存奖励。</p>':''}`:`<p>${title}</p>`}${sprouts>0?`<p>植物幼苗 × ${sprouts}</p>`:''}<button id="result-map" class="battle-button">继续</button>`);
+      panel(first&&reward.plant?'获得新植物':'关卡完成',`${first&&reward.plant?plantReward(rewardImage,reward.label,DESCRIPTIONS[reward.plant]):first?`<img class="map-reward" src="${rewardImage}" alt="${levelConfig.firstReward.label}"><p>获得${levelConfig.firstReward.label}</p>${ENDLESS_WORLDS.some(w=>reward.image===`dangerroom_${w}`)?'<p>领取后，返回本世界地图，点击“无尽挑战”进入。</p>':reward.image.startsWith('dangerroom_')?'<p>此特殊无尽尚未开放；标准无尽可从世界地图进入。</p>':''}`:`<p>${title}</p>`}${sprouts>0?`<p>植物幼苗 × ${sprouts}</p>`:''}<button id="result-map" class="battle-button">继续</button>`);
       if(first&&reward.plant){$('.battle-window').classList.add('plant-reward-window');$('#result-map').textContent='领取并继续';}
       $('#result-map').onclick=()=>{progress.finish(levelConfig.world,levelConfig.id,sprouts);menu();};
     } else {

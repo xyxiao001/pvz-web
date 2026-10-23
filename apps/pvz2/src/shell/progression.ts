@@ -1,3 +1,4 @@
+import {newEndlessRun, type EndlessWorld, type EndlessRun} from '../game/endless';
 import { GARDEN_KEY, type GardenData } from '../outer/garden';
 import { LocalStore } from './store';
 import { availableCostumes, type CostumePlant, type CostumeReward } from './costumes';
@@ -17,6 +18,10 @@ export class ProgressStore {
     else this.storage.removeItem(FREE_PLAY_KEY);
   }
   constructor(private storage: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>) {}
+  endlessUnlocked(world:EndlessWorld) { return this.temporaryUnlock||this.campaignRewards().some(r=>r.id===`dangerroom_${world}`); }
+  endlessRun(world:EndlessWorld):EndlessRun|null { const saved=this.storage.getItem(`pvz2-web:endless:${world}`);return saved===null?null:JSON.parse(saved); }
+  saveEndless(world:EndlessWorld,run:EndlessRun) { this.storage.setItem(`pvz2-web:endless:${world}`,JSON.stringify(run)); }
+  startEndless(world:EndlessWorld,seed=Date.now()>>>0) { const run=newEndlessRun(world,seed,this.endlessRun(world)?.best??0);this.saveEndless(world,run);return run; }
   isComplete(level: string) { return this.storage.getItem(completionKey(level)) === '1'; }
   completed(map: WorldMap) { return new Set(map.islands.flatMap(n => n.levels).filter(id => this.isComplete(id))); }
   rewards(): MapReward[] {

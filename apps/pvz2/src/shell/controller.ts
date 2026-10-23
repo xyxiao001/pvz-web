@@ -1,3 +1,4 @@
+import {ENDLESS_UNLOCK, type EndlessWorld} from '../game/endless';
 import { readFrameLimit, saveFrameLimit, frameLimitControl, type FrameLimit } from '../frame-limit';
 import '../frame-limit.css';
 import '../audio-controls.css';
@@ -45,7 +46,7 @@ export class WorldShell {
     host.innerHTML = `<div class="world-frame"><div class="map-canvas"></div><div class="map-controls"></div>
       <div class="world-labels"></div><div class="map-level-targets"></div>
       <button class="map-arrow map-arrow-left" aria-label="向左浏览"><span></span></button><button class="map-arrow map-arrow-right" aria-label="向右浏览"><span></span></button>
-      <div class="map-modal" hidden></div><div class="map-loading" role="status"><span class="loading-flower">✿</span><span>正在准备世界地图…</span></div></div>
+      <button class="endless-entry native-button">无尽挑战</button><div class="map-modal" hidden></div><div class="map-loading" role="status"><span class="loading-flower">✿</span><span>正在准备世界地图…</span></div></div>
       <div class="world-caption"><a href="/">‹ 植物大战僵尸 1</a><span class="map-caption">世界地图</span><span></span></div>`;
     this.music.loop = true; this.music.preload = 'none'; this.music.volume = this.audio.music;
   }
@@ -66,6 +67,7 @@ export class WorldShell {
     this.renderer.onCamera = camera => { if (this.map) this.navigation.cameras[this.map.id] = camera; };
     this.renderer.onFrame = (camera, carousel) => this.layoutTargets(camera, carousel);
     this.makeControls();
+    this.$('.endless-entry').onclick=()=>this.endless();
     for (const [name, path] of Object.entries(catalog.sounds)) {
       const clip = new Audio(); clip.preload = 'none'; clip.src = assetUrl(path); this.clickSounds.set(name, clip);
     }
@@ -211,6 +213,14 @@ export class WorldShell {
       label.style.left=`${(512+x)/10.24}%`;label.style.opacity=String(Math.max(0,1-Math.abs(x)/150));
     }
     }
+  }
+  private endless() {
+    const world=this.currentWorld.id as EndlessWorld,unlocked=this.progress.endlessUnlocked(world),run=this.progress.endlessRun(world);
+    this.modal(`${this.currentWorld.name} · 无尽挑战`,unlocked?`<p>每轮选择一株新植物，僵尸会逐渐增强。</p><p>轮次、植物、能量豆和剩余割草机会保存；退出后从本轮开头继续。</p>${run?`<p>当前第 ${run.round} 轮 · 最高通过 ${run.best} 轮</p>`:''}<button class="native-button" data-endless-play>${run?'继续挑战':'开始挑战'}</button>${run?'<button class="native-button" data-endless-reset>从第 1 轮重新挑战</button>':''}`:`<p>通关${this.currentWorld.name}第 ${ENDLESS_UNLOCK[world]} 天并领取无尽挑战奖励后解锁。</p><button class="native-button close-dialog">返回地图</button>`);
+    if(!unlocked)return;
+    const play=async()=>{this.closeModal();this.save();this.renderer.stop();if(this.musicPlay)await this.musicPlay;this.music.pause();this.musicPlay=null;this.host.hidden=true;await this.play(`endless_${world}`,this.progress);};
+    this.$('[data-endless-play]').onclick=()=>{if(!run)this.progress.startEndless(world);void play();};
+    if(run)this.$('[data-endless-reset]').onclick=()=>{this.progress.startEndless(world);void play();};
   }
   private async selectLevel(island: Island) {
     if (this.busy || !this.$('.map-modal').hidden) return;

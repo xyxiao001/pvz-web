@@ -129,3 +129,7 @@ button{font:inherit;cursor:pointer;border:0;padding:0;background:transparent;col
 }
 
 .battle-app #ship-health{position:absolute;right:2%;bottom:2%;padding:.25em .7em;border-radius:1em;background:#253c4de6;color:#fff;font-size:clamp(9px,1.3vw,16px);pointer-events:none}
+
+.endless-draft {display:flex;gap:12px;justify-content:center;margin:24px 0}
+.endless-draft button {display:flex;flex-direction:column;align-items:center;min-width:0;white-space:normal}
+.endless-draft img {width:clamp(50px,8vw,100px);max-height:130px;object-fit:contain}

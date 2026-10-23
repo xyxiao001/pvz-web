@@ -1,3 +1,4 @@
+import {ENDLESS_LEVELS} from './game/endless';
 import './shell/style.css';
 import './cursor.css';
 import './errors.css';
@@ -15,7 +16,7 @@ let battle: ReturnType<typeof import('./battle').createBattle>|undefined;
 const shell = new WorldShell(host, async (level, progress) => {
   await battle?.dispose();
   const { createBattle } = await import('./battle');
-  battle = createBattle(battleHost, async () => { await battle!.dispose();battle=undefined;await shell.resume(); }, BATTLE_LEVELS[level], progress);
+  battle = createBattle(battleHost, async () => { await battle!.dispose();battle=undefined;await shell.resume(); }, (BATTLE_LEVELS[level]??ENDLESS_LEVELS[level]), progress);
   await battle.enter();
 });
 void shell.init();

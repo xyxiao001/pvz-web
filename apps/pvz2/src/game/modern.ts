@@ -1,6 +1,7 @@
+import {ModernEnemies} from './modern-enemies';
 import {BOARD,cellX,rowY,type SpawnAction,type ZombieKind} from './level';
 import type {Game,Plant,Zombie} from './model';
-import portalProps from '../../public/assets/modern/portals.json';
+import {modernPortals as portalProps} from './modern-portals';
 export const modernArmor=(kind:ZombieKind)=>kind==='tutorial_armor1'?'modern_armor1':kind==='tutorial_armor2'?'modern_armor2':null;
 interface Portal {kind:NonNullable<SpawnAction['portal']>['kind'];id:number;row:number;column:number;born:number;next:number;ended:number|null;queue:ZombieKind[]}
 interface Leaves {left:number;reload:number;fooded:boolean;cycles:number}
@@ -11,7 +12,8 @@ export class ModernBattle {
  readonly shadows=new Map<string,number>();
  portals:Portal[]=[];
  shots:{id:number;row:number;x:number;name:string;damage:number}[]=[];
- constructor(private g:Game){}
+ readonly enemies:ModernEnemies;
+ constructor(private g:Game){this.enemies=new ModernEnemies(g);}
  shadowPlant(p:Plant){return ['moonflower','nightshade','shadowshroom'].includes(p.kind);}
  powered(p:Plant){return p.kind==='moonflower'?this.g.plants.filter(q=>q.hp>0&&this.shadowPlant(q)&&Math.abs(q.row-p.row)<=1&&Math.abs(q.column-p.column)<=1).length>=4:this.g.time<(this.shadows.get(`${p.row}:${p.column}`)??0);}
  init(p:Plant){p.animation='Idle';p.eventIndex=0;if(p.kind==='nightshade')this.leaves.set(p.id,{left:this.g.props.plants.nightshade.MaxProjectiles,reload:0,fooded:false,cycles:0});}
@@ -37,11 +39,11 @@ export class ModernBattle {
   }
   if(elapsed>=timeline.duration){if(p.kind==='nightshade'&&p.action==='food'&&++this.leaves.get(p.id)!.cycles<props.PlantfoodTime)this.play(p,'Food','food');else this.play(p,'Idle','idle');}
  }
- spawn(z:Zombie){if(z.kind==='modern_newspaper')this.papers.set(z.id,{hp:this.g.props.zombies[z.kind].NewspaperHealth,angryAt:Infinity,elapsed:0,sounded:false});}
+ spawn(z:Zombie){this.enemies.spawn(z);if(z.kind==='modern_newspaper')this.papers.set(z.id,{hp:this.g.props.zombies[z.kind].NewspaperHealth,angryAt:Infinity,elapsed:0,sounded:false});}
  paperDamage(z:Zombie,amount:number){const s=this.papers.get(z.id);if(!s||s.hp<=0)return amount;const hit=Math.min(s.hp,amount);s.hp-=hit;this.g.beach.sounds.push('modernNewspaper/hitSounds');if(s.hp===0){s.angryAt=this.g.time;this.g.future.visual('paperDestroy','Play',z.x,rowY(z.row));this.g.beach.sounds.push('modernNewspaper/destroySounds');}return amount-hit;}
- zombie(z:Zombie,dt:number){const s=this.papers.get(z.id);if(!s||s.hp>0)return false;const t=this.g.props.plantAnimations.modernNewspaper.GetAngry;if(s.elapsed>=t.events.find(e=>e.name==='switchingFalse')!.at)return false;s.elapsed+=dt;z.eating=false;if(!s.sounded&&s.elapsed>=t.events.find(e=>e.name==='speedup')!.at){s.sounded=true;this.g.beach.sounds.push('modernNewspaper/speedupSounds','modernNewspaper/angrySounds');}return true;}
- animation(z:Zombie){const s=this.papers.get(z.id);return s&&s.hp<=0?(s.elapsed<this.g.props.plantAnimations.modernNewspaper.GetAngry.events.find(e=>e.name==='switchingFalse')!.at?'GetAngry':z.eating?'Eat_Angry':'Walk_Angry'):null;}
- speed(z:Zombie){return (this.shrunk.get(z.id)?.speed??1)*(this.papers.get(z.id)?.hp===0?this.g.props.zombies[z.kind].EnragedSpeedScale:1);}
+ zombie(z:Zombie,dt:number){if(this.enemies.tick(z,dt))return true;const s=this.papers.get(z.id);if(!s||s.hp>0)return false;const t=this.g.props.plantAnimations.modernNewspaper.GetAngry;if(s.elapsed>=t.events.find(e=>e.name==='switchingFalse')!.at)return false;s.elapsed+=dt;z.eating=false;if(!s.sounded&&s.elapsed>=t.events.find(e=>e.name==='speedup')!.at){s.sounded=true;this.g.beach.sounds.push('modernNewspaper/speedupSounds','modernNewspaper/angrySounds');}return true;}
+ animation(z:Zombie){const special=this.enemies.animation(z);if(special)return special;const s=this.papers.get(z.id);return s&&s.hp<=0?(s.elapsed<this.g.props.plantAnimations.modernNewspaper.GetAngry.events.find(e=>e.name==='switchingFalse')!.at?'GetAngry':z.eating?'Eat_Angry':'Walk_Angry'):null;}
+ speed(z:Zombie){return this.enemies.speed(z)*(this.shrunk.get(z.id)?.speed??1)*(this.papers.get(z.id)?.hp===0?this.g.props.zombies[z.kind].EnragedSpeedScale:1);}
  bite(z:Zombie){return this.papers.get(z.id)?.hp===0?this.g.props.zombies[z.kind].EnragedDamageScale:1;}
  damageScale(z:Zombie){return this.shrunk.get(z.id)?.damage??1;}
  scale(z:Zombie){const s=this.shrunk.get(z.id);return s?1-.5*Math.min(1,(this.g.time-s.at)/s.duration):1;}
@@ -50,6 +52,7 @@ export class ModernBattle {
  portal(action:NonNullable<SpawnAction['portal']>){
   const g=this.g,props=portalProps[action.kind],pool=[...props.ZombieTypesToSpawn],queue:ZombieKind[]=[];
   while(pool.length){let roll=g.random()*pool.reduce((n,z)=>n+z.Weight,0),index=0;for(;index<pool.length-1;index++){roll-=pool[index].Weight;if(roll<0)break;}queue.push(pool.splice(index,1)[0].ZombieTypeName as ZombieKind);}
+  if(action.count!==undefined)queue.length=action.count;
   this.portals.push({kind:action.kind,id:g.nextEntityId(),row:action.row,column:action.column,born:g.time,next:g.time+props.TimeBeforeFirst.Min+g.random()*(props.TimeBeforeFirst.Max-props.TimeBeforeFirst.Min),ended:null,queue});
   for(const p of g.plants.filter(p=>p.hp>0&&p.row===action.row&&p.column===action.column)){
    const candidates=Array.from({length:45},(_,i)=>({row:Math.floor(i/9),column:i%9})).filter(c=>!this.blocked(c.row,c.column)&&!g.plants.some(q=>q.hp>0&&q.row===c.row&&q.column===c.column)&&!g.graves.some(t=>t.hp>0&&t.row===c.row&&t.column===c.column)).sort((a,b)=>Math.max(Math.abs(a.row-p.row),Math.abs(a.column-p.column))-Math.max(Math.abs(b.row-p.row),Math.abs(b.column-p.column)));

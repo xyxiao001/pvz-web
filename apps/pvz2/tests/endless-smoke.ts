@@ -1,0 +1,24 @@
+import '../src/shell/style.css';
+import '../src/style.css';
+import {WorldShell} from '../src/shell/controller';
+import {ProgressStore} from '../src/shell/progression';
+import {NAVIGATION_KEY} from '../src/shell/navigation';
+import {BATTLE_LEVELS} from '../src/game/levels';
+import {ENDLESS_LEVELS,type EndlessWorld} from '../src/game/endless';
+import {Game} from '../src/game/model';
+import {createBattle} from '../src/battle';
+const params=new URLSearchParams(location.search),world=(params.get('world')??'pirate') as EndlessWorld;
+const data=new Map<string,string>(),storage={getItem:(k:string)=>data.get(k)??null,setItem:(k:string,v:string)=>{data.set(k,v);},removeItem:(k:string)=>{data.delete(k);}},progress=new ProgressStore(storage);
+storage.setItem(NAVIGATION_KEY,JSON.stringify({world,chooser:0,cameras:{[world]:0}}));
+storage.setItem('pvz2-web:unlocked-worlds',JSON.stringify([world]));
+if(params.get('locked')!=='1')storage.setItem('pvz2-web:campaign-rewards',JSON.stringify([{level:world+'4',type:'worldtrophy',id:'dangerroom_'+world,count:1}]));
+if(params.has('round')){const run=progress.startEndless(world,8521);run.round=Number(params.get('round'));progress.saveEndless(world,run);}
+let controlled=false,battle:ReturnType<typeof createBattle>|undefined;
+const original=Game.prototype.tick;
+Game.prototype.tick=function(dt:number){(window as unknown as {endlessGame:Game}).endlessGame=this;for(let i=0;i<(controlled?60:1);i++){original.call(this,dt);if(controlled)for(const z of this.zombies)this.damage(z,1000000,'swallow');}};
+const control=document.querySelector<HTMLButtonElement>('#control')!;control.onclick=()=>{controlled=!controlled;control.textContent=controlled?'关闭受控清场':'开启受控清场';};
+const status=()=>{document.querySelector('#status')!.textContent=JSON.stringify({run:progress.endlessRun(world),campaign:progress.campaignRewards(),pending:progress.pending()});};
+document.querySelector<HTMLButtonElement>('#snapshot')!.onclick=status;
+const host=document.querySelector<HTMLElement>('.world-shell')!,battleHost=document.querySelector<HTMLElement>('.battle-app')!;
+const shell=new WorldShell(host,async(id,p)=>{battle=createBattle(battleHost,async()=>{await battle!.dispose();battle=undefined;await shell.resume();status();},BATTLE_LEVELS[id]??ENDLESS_LEVELS[id],p);await battle.enter();status();},storage);
+await shell.init();status();
