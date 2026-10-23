@@ -87,6 +87,8 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   if(level.actions.flat().some(a=>a.portal))names.add('portal');
   if(enemies.includes('modern_newspaper')||enemies.includes('beghouled_newspaper'))names.add('paperDestroy');
   if(plants.includes('shrinkingviolet'))names.add('violetShrink');
+  if(plants.includes('grimrose'))for(const n of ['grimBeam','grimFoot','grimFade'])names.add(n);
+  if(level.world==='modern'&&level.sliders.length)for(const n of ['modernSliderUp','modernSliderDown','modernSliderUpBack','modernSliderDownBack'])names.add(n);
   if(plants.includes('dusklobber'))for(const n of ['duskShot','duskFood','duskSplat','duskFoodSplat'])names.add(n);
   if(plants.includes('nightshade'))for(const n of ['nightshadeShot','nightshadeFood','nightshadeMega','nightshadeFoodMega'])names.add(n);
   if(plants.includes('primalpotatomine'))names.add('spudowPrimal');

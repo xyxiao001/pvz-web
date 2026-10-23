@@ -9,6 +9,7 @@ export class IceageBattle {
   winds:{id:number;row:number;left:boolean;at:number;step:number}[]=[];
   slides=new Map<number,{from:number;to:number;at:number;column:number}>();
   passed=new Map<number,Set<number>>();
+  modernSliders=new Map<number,{animation:string;at:number;event:number}>();
   effects:{id:number;name:string;animation:string;row:number;column:number;at:number}[]=[];
   constructor(private g:Game){}
   init(){for(const p of this.g.level.frozenPlants)this.freeze(p.row,p.column);for(const z of this.g.level.frozenZombies){const zombie=this.g.spawnZombie(z.kind,z.row,cellX(z.column));this.freeze(z.row,z.column,zombie);}}
@@ -41,6 +42,11 @@ export class IceageBattle {
     b.column=column;if(b.zombie)b.zombie.x=cellX(column);
   }
   tick(dt:number){const g=this.g;
+    if(g.level.world==='modern')for(const [i,t] of g.level.sliders.entries()){const active=[...this.slides.values()].some(s=>s.column===t.column&&s.from===t.row),name=t.up?'modernSliderUp':'modernSliderDown',state=this.modernSliders.get(i)??{animation:'Idle',at:g.time,event:0};this.modernSliders.set(i,state);const change=(animation:string)=>{state.animation=animation;state.at=g.time;state.event=0;};
+      if(state.animation==='Idle'&&active)change('ActiveStart');else if(state.animation==='ActiveLoop'&&!active)change('ActiveEnd');
+      const timeline=g.props.plantAnimations[name][state.animation];while(state.event<timeline.events.length&&g.time-state.at>=timeline.events[state.event].at){g.beach.sounds.push(name+'/'+timeline.events[state.event++].name);}
+      if(state.animation==='ActiveStart'&&g.time-state.at>=timeline.duration)change(active?'ActiveLoop':'ActiveEnd');else if(state.animation==='ActiveEnd'&&g.time-state.at>=timeline.duration)change(active?'ActiveStart':'Idle');
+    }
     for(const w of this.winds){while(w.step<9&&g.time>=w.at+.15*(w.step+2)){const col=w.left?w.step:8-w.step;w.step++;const plants=g.plants.filter(p=>p.hp>0&&p.row===w.row&&p.column===col);if(!plants.length||plants.some(p=>g.props.plants[p.kind].ImmuneToIceblock))continue;const block=this.blocks.find(b=>b.row===w.row&&b.column===col&&b.hp>0);if(block){block.hp=Math.min(600,block.hp+300);continue;}const key=w.row+':'+col,cold=(this.cold.get(key)??0)+2;if(cold>2){this.freeze(w.row,col);this.cold.delete(key);}else this.cold.set(key,cold);}}
     this.winds=this.winds.filter(w=>g.time-w.at<3);
     for(const b of this.blocks)if(b.meltAt!==undefined&&g.time>=b.meltAt)b.hp=0;

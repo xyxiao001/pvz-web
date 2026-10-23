@@ -157,7 +157,7 @@ export class Game {
   readonly modern=new ModernBattle(this);
   readonly beghouled=new Beghouled(this);
   constructor(readonly level: Level, readonly props: Properties, readonly timing: AnimationTiming, readonly raTarget: (zombie: Zombie) => {x:number;y:number}, private seed = 1, tutorial=true) {
-    this.cowboy=new CowboyBattle(this);this.kongfu.init();
+    this.cowboy=new CowboyBattle(this);this.kongfu.init();if(level.initialJam)this.eighties.jam=level.initialJam;
     if(level.beghouled)this.beghouled.init();
     if(level.corral)this.nextWave=0;
     if(level.lastStand){this.preparing=true;this.sun=level.lastStand.sun;this.food=level.lastStand.food;this.nextWave=4+RULES.normalWaveEntrance;}
@@ -242,7 +242,7 @@ export class Game {
     this.plants.push({ id: ++this.id, kind, row, column, hp: p.Toughness, armor: 0, age: 0, nextAction,
       action: 'idle', actionAt: this.time, fired: false, burst: 0, nextBurst: 0 });
     const plant=this.plants.at(-1)!;
-    if(kind==='dusklobber'||kind==='nightshade'||kind==='shrinkingviolet')this.modern.init(plant);
+    if(kind==='grimrose'||kind==='dusklobber'||kind==='nightshade'||kind==='shrinkingviolet')this.modern.init(plant);
     if(plant.kind==='toadstool')this.toadstool.init(plant);this.lostcity.initPlant(plant);this.expedition.init(this.plants.at(-1)!);this.iceageCombat.init(plant);
     if(kind==='hotpotato')this.iceage.hot(plant);
     if(this.beachFinale.handles(kind))this.beachFinale.init(plant);
@@ -327,7 +327,7 @@ export class Game {
     this.eighties.skunk.stunned.delete(plant.id);
     if(!boost){this.food--;this.future.link(plant);} plant.action = 'food'; plant.actionAt = this.time; plant.fired = false;
     this.effect('food', cellX(column), rowY(row) - 35); this.events.push({ type: 'food' });
-    if(plant.kind==='dusklobber'||plant.kind==='nightshade'||plant.kind==='shrinkingviolet')this.modern.food(plant);
+    if(plant.kind==='grimrose'||plant.kind==='dusklobber'||plant.kind==='nightshade'||plant.kind==='shrinkingviolet')this.modern.food(plant);
     if(this.eighties.finale.handles(plant.kind)||plant.kind==='caulipower'||plant.kind==='sporeshroom'||plant.kind==='garlic'||plant.kind==='phatbeet'||plant.kind==='cactus')this.eighties.food(plant);
     if(plant.kind==='bulbkekengi'||plant.kind==='peacommando'||plant.kind==='moonbean'||plant.kind==='anthurium'||plant.kind==='skyshooter'||plant.kind==='asparagus')this.sky.food(plant);
     if(plant.kind==='explodeonut'){plant.hp=this.props.plants.explodeonut.Toughness;plant.animation='Food';plant.eventIndex=0;this.beach.sounds.push('explodeonut/foodSound');}
@@ -640,7 +640,7 @@ export class Game {
   private tickSpecialZombie(z:Zombie,dt:number) {
     const state=this.specialZombies.get(z.id);if(!state)return false;
     const step=dt*(this.time<z.chilledUntil?.5:1),t=this.timing.special!;
-    const target=this.plants.filter(p=>p.hp>0&&p.row===z.row&&z.x>=cellX(p.column)-22&&z.x<=cellX(p.column)+75).sort((a,b)=>b.column-a.column)[0];
+    const target=this.plants.filter(p=>p.hp>0&&p.kind!=='grimrose'&&p.row===z.row&&z.x>=cellX(p.column)-22&&z.x<=cellX(p.column)+75).sort((a,b)=>b.column-a.column)[0];
     const grave=this.graves.find(g=>g.row===z.row&&Math.abs(z.x-cellX(g.column))<75);
     if((z.kind==='explorer'||z.kind==='explorer_veteran')&&state.torch&&grave&&!target){grave.hp-=this.props.zombies[z.kind].FireDPS*step;z.eating=true;return true;}
     if(z.kind==='egypt_gargantuar'&&state.action==='walk'){
@@ -969,6 +969,7 @@ export class Game {
   }
   tick(dt: number) {
     if (this.phase !== 'playing'||this.preparing||this.corralWaiting) return;
+    if(this.time===0&&this.level.initialCarrot)for(const p of this.plants){p.hp=0;this.effect('remove',cellX(p.column),rowY(p.row));}
     this.time += dt;
     if(this.heldMower!==null){
       const mower=this.mowers[this.heldMower];
@@ -1040,7 +1041,7 @@ export class Game {
       if(p.kind==='toadstool'){this.toadstool.tick(p,dt);continue;}
       if((this.level.world==='kongfu'||this.level.world==='eighties'||this.level.world==='dino'||this.level.world==='modern')&&p.leap?.pushed){if(this.time-p.leap.at<(p.leap.duration??.5))continue;delete p.leap;}
       if(p.kind==='powerlily'){if(this.time-p.actionAt>=this.props.plantAnimations.powerlily.Attack.events.find(e=>e.name==='produce')!.at){this.pickups.push({id:this.nextEntityId(),kind:'food',x:cellX(p.column),y:rowY(p.row)-45,age:0});p.hp=0;}continue;}
-      if(p.kind==='dusklobber'||p.kind==='nightshade'||p.kind==='shrinkingviolet'){this.modern.plant(p,dt);continue;}
+      if(p.kind==='grimrose'||p.kind==='dusklobber'||p.kind==='nightshade'||p.kind==='shrinkingviolet'){this.modern.plant(p,dt);continue;}
       if(p.kind==='bulbkekengi'||p.kind==='peacommando'||p.kind==='moonbean'||p.kind==='anthurium'||p.kind==='skyshooter'||p.kind==='asparagus'){this.sky.plant(p);continue;}
       if(p.kind==='explodeonut'){this.dino.plants.nut(p);continue;}
       if(p.kind==='goldbloom'||p.kind==='torchwood'){this.dino.plants.plant(p);continue;}
@@ -1189,7 +1190,7 @@ export class Game {
       if(this.beach.fishers.tickZombie(z,statusDt)||this.beach.octopuses.tickZombie(z,statusDt)||this.beach.surfers.tickZombie(z,statusDt)||this.future.tickZombie(z,statusDt)||this.cowboy.tickZombie(z,statusDt)||this.pirate.tickZombie(z,dt)||this.tickSpecialZombie(z,dt))continue;
       if(this.beachFinale.block(z,statusDt)||this.westFinale.blockEnemy(z,statusDt)||this.dark.movement(z)===0)continue;
       if(this.dark.eatPotion(z))continue;
-      const target = this.plants.filter(p => (!z.balloon||p.kind==='tallnut') && !z.dodo?.flying && (!(z.bug&&z.bug.hp>0)||p.kind==='tallnut') && p.hp > 0 && !(p.kind==='primalpotatomine'&&(p.rootGrown||p.leap)) && p.kind!=='shrinkingviolet'&&p.kind!=='bulbkekengi'&&p.kind!=='goldbloom'&&p.kind!=='thymewarp'&&p.kind!=='bambooshoot'&&p.kind!=='lavaguava'&&p.kind!=='stunion'&&p.kind!=='ghostpepper'&&p.kind!=='goldleaf'&&p.kind!=='hotpotato'&&p.kind!=='tanglekelp' && (p.kind!=='lilypad'||!this.beach.occupant(p)) && p.sheep===undefined && !this.eighties.carrot.blocked(p) && (p.kind!=='floawerPot'||!this.darkPlants.occupant(p)) && !p.leap?.pushed && !((p.kind==='chilibean'||p.kind==='turnip')&&p.leap) && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='empea'&&p.kind!=='blover'&&p.kind!=='hurrikale'&&p.kind!=='stallia'&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='perfumeshroom'&&p.kind!=='grapeshot'&&p.kind!=='cherry_bomb'&&p.kind!=='jalapeno'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column||Number(b.kind==='bamboobusket')-Number(a.kind==='bamboobusket'))[0];
+      const target = this.plants.filter(p => (!z.balloon||p.kind==='tallnut') && !z.dodo?.flying && (!(z.bug&&z.bug.hp>0)||p.kind==='tallnut') && p.hp > 0 && !(p.kind==='primalpotatomine'&&(p.rootGrown||p.leap)) && p.kind!=='grimrose'&&p.kind!=='shrinkingviolet'&&p.kind!=='bulbkekengi'&&p.kind!=='goldbloom'&&p.kind!=='thymewarp'&&p.kind!=='bambooshoot'&&p.kind!=='lavaguava'&&p.kind!=='stunion'&&p.kind!=='ghostpepper'&&p.kind!=='goldleaf'&&p.kind!=='hotpotato'&&p.kind!=='tanglekelp' && (p.kind!=='lilypad'||!this.beach.occupant(p)) && p.sheep===undefined && !this.eighties.carrot.blocked(p) && (p.kind!=='floawerPot'||!this.darkPlants.occupant(p)) && !p.leap?.pushed && !((p.kind==='chilibean'||p.kind==='turnip')&&p.leap) && (!isFlying(z)||p.kind!=='potatomine')&&(p.kind!=='escaperoot'||!p.rootGrown)&&p.kind!=='empea'&&p.kind!=='blover'&&p.kind!=='hurrikale'&&p.kind!=='stallia'&&p.kind!=='iceburg'&&p.kind!=='iceweed'&&p.kind!=='spikeweed'&&p.kind!=='spikerock'&&(p.kind!=='springbean'||!['Ready','Idle_Ready'].includes(p.animation!)) &&p.kind!=='imitater'&&p.kind!=='perfumeshroom'&&p.kind!=='grapeshot'&&p.kind!=='cherry_bomb'&&p.kind!=='jalapeno'&&!p.hidden&& p.action!=='explode' && p.row === z.row && z.x >= cellX(p.column) - 22 && z.x <= cellX(p.column) + 38).sort((a, b) => b.column - a.column||Number(b.kind==='bamboobusket')-Number(a.kind==='bamboobusket'))[0];
       z.eating = !!target;
       if(target&&this.eighties.crush(z,target)){}
       else if(target&&this.eighties.finale.eaten(target)){}

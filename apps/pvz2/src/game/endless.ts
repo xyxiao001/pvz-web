@@ -18,7 +18,7 @@ export function offerEndlessPlants(world:EndlessWorld,run:EndlessRun,owned:Reado
 export function advanceEndless(run:EndlessRun,food:number,mowers:boolean[]){run.best=Math.max(run.best,run.round);run.round++;run.seed=(Math.imul(run.seed,1664525)+1013904223)>>>0;run.chosen=false;run.choices=[];run.food=food;run.mowers=mowers;}
 export function endlessLevel(world:EndlessWorld):BattleLevel {
  const base=Object.values(BATTLE_LEVELS).find(l=>l.world===world)!;
- const plants=BATTLE_LEVELS.modern20.plants;
+ const plants=BATTLE_LEVELS.modern25.plants;
  return {...base,id:`endless_${world}`,day:666,endless:world,source:`endless/${world}.source.json`,assets:'campaign',bundles:[...BATTLE_LEVELS.modern5.bundles!.filter(b=>b!==world),world==='egypt'?'campaign':world,'endless'],plants,actors:plants.map(p=>p.kind),mode:'seedbank',night:world==='dark',narrative:null,outro:undefined,firstReward:{image:'',label:''}};
 }
 export const ENDLESS_LEVELS:Readonly<Record<string,BattleLevel>>=Object.fromEntries(ENDLESS_WORLDS.map(w=>[`endless_${w}`,endlessLevel(w)]));

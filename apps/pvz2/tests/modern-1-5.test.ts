@@ -11,7 +11,7 @@ import {islandStates,LEVEL_ROUTES} from '../src/shell/navigation';
 import type {WorldMap} from '../src/shell/types';
 const idle=(day=5)=>{const g=create(day);Object.assign(g,{nextWave:Infinity});return g;};
 test('Modern 1–5 preserve source modes, waves, rewards and preset chooser',()=>{
- assert.equal(Object.keys(BATTLE_LEVELS).length,478);
+ assert.equal(Object.keys(BATTLE_LEVELS).length,483);
  for(let day=1;day<=5;day++){const c=BATTLE_LEVELS[`modern${day}`],l=level(day),raw=read(c.source);assert.equal(LEVEL_ROUTES[c.id],c.id);assert.equal(l.world,'modern');assert.ok(l.mowers);assert.equal(l.waves.length,raw.objects.find((o:{objclass:string})=>o.objclass==='WaveManagerProperties').objdata.Waves.length);assert.equal(c.mode==='conveyor',day===3);assert.equal(c.night,day===3);}
  assert.deepEqual(level(3).conveyor!.InitialPlantList.map(p=>p.PlantType),['lightningreed','shrinkingviolet','snapdragon']);assert.ok(level(5).chooserPlants!.includes('nightshade'));assert.equal(BATTLE_LEVELS.modern1.firstReward.plant,'moonflower');assert.equal(BATTLE_LEVELS.modern4.firstReward.plant,'nightshade');assert.ok(BATTLE_LEVELS.modern2.plants.some(p=>p.id===27&&p.kind==='moonflower'));
  assert.equal(props.zombies.iceage_troglobite_1block.NumberOfIceblocksToSpawnWith,1);assert.equal(props.zombies.iceage_troglobite_2block.NumberOfIceblocksToSpawnWith,2);

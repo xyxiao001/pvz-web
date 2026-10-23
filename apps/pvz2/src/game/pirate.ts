@@ -152,7 +152,7 @@ export class PirateBattle {
       if(state.elapsed>=timeline.duration){if(state.animation==='Explode'){z.hp=0;}else {start('Idle');state.next=g.props.zombies.cannon.ShootInterval+g.random()*g.props.zombies.cannon.ShootIntervalAdditional;}}
       return true;
     }
-    const target=g.plants.filter(p=>p.hp>0&&!(p.kind==='escaperoot'&&p.rootGrown)&&p.row===z.row&&Math.abs(cellX(p.column)-z.x)<75&&!(p.kind==='springbean'&&['Ready','Idle_Ready'].includes(p.animation!))).sort((a,b)=>b.column-a.column)[0];
+    const target=g.plants.filter(p=>p.hp>0&&p.kind!=='grimrose'&&!(p.kind==='escaperoot'&&p.rootGrown)&&p.row===z.row&&Math.abs(cellX(p.column)-z.x)<75&&!(p.kind==='springbean'&&['Ready','Idle_Ready'].includes(p.animation!))).sort((a,b)=>b.column-a.column)[0];
     if(state.animation==='Walk'){
       if(state.imp&&z.hp<g.props.zombies[z.kind].Toughness/2&&z.x>cellX(2))start('Throw');
       else if(target)start('Smash');else return false;
