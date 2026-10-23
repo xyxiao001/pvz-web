@@ -10,7 +10,7 @@ import {islandStates,LEVEL_ROUTES} from '../src/shell/navigation';
 import type {WorldMap} from '../src/shell/types';
 import type {PlantKind} from '../src/game/level';
 test('Modern 6–10 preserve modes, authored grids, objectives, portals and rewards',()=>{
- assert.equal(Object.keys(BATTLE_LEVELS).length,483);
+ assert.equal(Object.keys(BATTLE_LEVELS).length,488);
  for(let day=6;day<=10;day++)assert.equal(LEVEL_ROUTES[`modern${day}`],`modern${day}`);
  assert.deepEqual([6,7,8,9,10].map(n=>level(n).waves.length),[10,12,0,12,12]);
  assert.equal(level(6).targetSun,4000);assert.equal(level(6).goldTiles.length,7);assert.equal(level(8).beghouled!.MatchesToWin,100);assert.equal(level(8).mowers,false);assert.equal(BATTLE_LEVELS.modern8.night,true);assert.equal(level(9).graves.length,8);assert.deepEqual(level(9).preset,['moonflower','nightshade','gravebuster','thymewarp']);assert.equal(level(10).powerTiles.length,6);assert.equal(BATTLE_LEVELS.modern10.firstReward.plant,'shadowshroom');

@@ -145,6 +145,7 @@ export function battleEffects(level:Level,plants:readonly PlantKind[]){
   if(level.corral)for(const name of ['fenceHere','fenceThere'])names.add(name);
   if(level.world==='west')for(const name of ['cowboyLawn','mower','cowboyCone','cowboyBucket','rail','cart','prospectorSmoke','prospectorTail','ponchoBreak','plateDrop','cowboyHat'])names.add(name);
   if((level.world==='west'||level.world==='future'||level.world==='kongfu')&&level.day===8)names.add('zombossicon');
+  if(enemies.includes('prospector'))for(const name of ['prospectorSmoke','prospectorTail'])names.add(name);
   if(enemies.includes('chicken_farmer')||level.boss?.kind.startsWith('zombossmech_cowboy'))names.add('chickenAsh');
   if((level.world==='pirate'||level.world==='egypt')&&level.day===8)names.add('zombossicon');
   if(level.world==='pirate')for(const name of ['pirateLawn','mower','pirateCone','pirateBucket','seaSplash'])names.add(name);

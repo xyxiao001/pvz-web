@@ -1,4 +1,4 @@
-"""Export Modern 1–25 from the pinned Cocos build."""
+"""Export Modern 1–30 from the pinned Cocos build."""
 import hashlib, importlib.util, json, math, io
 from pathlib import Path
 from PIL import Image
@@ -39,7 +39,7 @@ for name,description in {**actors,**rigs}.items():
             frame+=f.get('duration',1)
         timelines[animation['name']]={'duration':animation.get('duration',1)/arm['frameRate'],'events':events}
     properties['plantAnimations'][name]=timelines
-for day in range(1,26):c.write_json(e.OUT/f'modern{day}.source.json',e.read(f'levels/modern{day}').objects[0]['json'])
+for day in range(1,31):c.write_json(e.OUT/f'modern{day}.source.json',e.read(f'levels/modern{day}').objects[0]['json'])
 co=next(x for x in walk(e.read('lawns/ModernLAWN').objects) if x.get('type')=='dragonBones.ArmatureDisplay')
 at=e.read(co['_dragonAtlasAsset']['asset']);atlas=json.loads(at.objects[0]['_atlasJson']);rect=next(x for x in atlas['SubTexture'] if x['name']=='Lawn')
 pixels=Image.open(io.BytesIO(c.native(at.data[1][at.rec[5][0]],'png')))
@@ -75,11 +75,11 @@ for name in ['MODERN_1_INTRO','MODERN_2_INTRO','MODERN_3_INTRO','MODERN_5_INTRO'
 for name,path in [('music','modern/CYS_LP_Modern'),('minigame','modern/MG_Modern')]:
     (e.OUT/(name+'.mp3')).write_bytes(c.native(c.config['uuids'][c.path_index['music/inGame/'+path]],'mp3'))
 # Native upgrade prices are distinct from ordinary seed costs.
-costs={n:d['BeghouledCost'] for n,d in props('PlantProps',['firepeashooter','repeater','threepeater','tallnut','endurian','pepperpult','melonpult','wintermelon','coldsnapdragon','laser_bean','primalpeashooter','fumeshroom']).items()}
+costs={n:d['BeghouledCost'] for n,d in props('PlantProps',['firepeashooter','repeater','threepeater','tallnut','endurian','pepperpult','melonpult','wintermelon','coldsnapdragon','laser_bean','primalpeashooter','fumeshroom','applemortar']).items()}
 # Electric blueberry omits this field; the native PlantProps constructor sets 500.
 costs['electricblueberry']=500
 c.write_json(e.OUT/'beghouled-costs.json',costs)
 c.write_json(e.OUT/'properties.json',properties)
 c.write_json(e.OUT/'catalog.json',{'actors':actors,'rigs':rigs,'sounds':sounds,'narratives':narratives,'ui':{}})
 c.write_json(c.ROOT/'apps/pvz2/modern-provenance.json',{'repository':'https://github.com/Gzh0821/pvzge_web','commit':c.COMMIT,'sources':c.SOURCES,'outputs':{str(p.relative_to(c.OUT)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(e.OUT.rglob('*')) if p.is_file()}})
-print('Exported Modern 1–25')
+print('Exported Modern 1–30')

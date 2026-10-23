@@ -12,7 +12,7 @@ import {islandStates,LEVEL_ROUTES} from '../src/shell/navigation';
 import type {WorldMap} from '../src/shell/types';
 const quiet=()=>{const g=create(23);Object.assign(g,{nextWave:Infinity});return g;};
 test('Modern 21–25 keep authored modes, portal rows, music, tiles, initial deaths and rewards',()=>{
- assert.equal(Object.keys(BATTLE_LEVELS).length,483);for(let n=21;n<=25;n++)assert.equal(LEVEL_ROUTES[`modern${n}`],`modern${n}`);
+ assert.equal(Object.keys(BATTLE_LEVELS).length,488);for(let n=21;n<=25;n++)assert.equal(LEVEL_ROUTES[`modern${n}`],`modern${n}`);
  assert.deepEqual([21,22,23,24,25].map(n=>level(n).waves.length),[12,0,10,10,10]);
  assert.deepEqual(level(21).actions.flat().filter(a=>a.portal).map(a=>[a.portal!.kind,a.portal!.row,a.portal!.column]),[['eighties',2,5],['egypt',3,3],['eighties',0,4],['beach',4,3]]);
  assert.equal(create(21).eighties.jam,'jam_rap');assert.equal(create(25).eighties.jam,'jam_punk');
