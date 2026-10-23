@@ -1,3 +1,5 @@
+import { installFrameTicker } from '../frame-ticker';
+import { readFrameLimit } from '../frame-limit';
 import { rewardPlantArt } from './reward-art';
 import { applyCostume, type CostumePlant } from './costumes';
 import { reportError } from '../errors';
@@ -54,6 +56,7 @@ export class MapRenderer {
   constructor(private host: HTMLElement, readonly catalog: Catalog) { this.grey.desaturate(); }
   async init() {
     await this.app.init({ width: 1024, height: 640, background: '#00c6d3', resolution: Math.min(devicePixelRatio, 2), autoDensity: true, antialias: true, autoStart: false });
+    installFrameTicker(this.app,readFrameLimit(localStorage));
     this.host.append(this.app.canvas); this.app.canvas.setAttribute('aria-label', '原生世界地图');
     this.app.stage.eventMode = 'none'; this.app.stage.addChild(this.root); this.root.addChild(this.layer, this.toolbar);
     await this.load([this.catalog.background]);
@@ -367,6 +370,6 @@ export class MapRenderer {
   }
   private setCamera(x: number) { this.hoverIsland(null); this.camera = clampCamera(this.map!, x); this.positionMap(); }
   moveBy(delta: number) { this.velocity = 0; this.setCamera(this.camera + delta); }
-  start() { this.app.start(); }
+  start() { this.app.ticker.maxFPS=readFrameLimit(localStorage); this.app.start(); }
   stop() { this.hoverIsland(null); this.app.stop(); this.velocity = 0; }
 }

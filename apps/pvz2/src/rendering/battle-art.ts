@@ -46,6 +46,7 @@ export class BattleArt {
   build(name: string, animation?: string, armature?: string) {
     const spec = this.catalog.rigs[name];
     const rig = this.factory.buildArmatureDisplay(armature ?? spec.armature, spec.rig)!;
+    rig.armature.cacheFrameRate = 60;
     rig.armature.clock = this.clock;
     rig.animation.play(animation ?? spec.animation, 0);
     rig.armature.advanceTime(.001);

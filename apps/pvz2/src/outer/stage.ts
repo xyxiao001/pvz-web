@@ -1,3 +1,5 @@
+import { installFrameTicker } from '../frame-ticker';
+import { readFrameLimit } from '../frame-limit';
 import 'pixi.js/prepare';
 import { Application, Container, Sprite, Rectangle } from 'pixi.js';
 import { PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
@@ -22,6 +24,7 @@ export class NativeStage {
     await this.app.init({width:1024,height:640,resolution:Math.min(devicePixelRatio,2),autoDensity:true,antialias:true,backgroundAlpha:0,autoStart:false});
     this.host.append(this.app.canvas);this.app.stage.addChild(this.root);this.app.stage.eventMode='none';
     this.observer=new ResizeObserver(()=>{const scale=this.host.clientWidth/1024;this.root.scale.set(scale);this.app.renderer.resize(this.host.clientWidth,640*scale);this.app.render();});this.observer.observe(this.host);
+    installFrameTicker(this.app,readFrameLimit(localStorage));
     this.app.ticker.add(t=>{this.clock.advanceTime(Math.min(t.deltaMS/1000,.05));PixiFactory.advanceTime(0);});this.app.start();
   }
   async load(spec:Rig){

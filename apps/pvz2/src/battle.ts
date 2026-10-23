@@ -1,5 +1,7 @@
 import { playAudio } from './audio';
-import { FrameRate } from './performance';
+import { FrameRate, jsHeapBytes } from './performance';
+import { readFrameLimit, saveFrameLimit, frameLimitControl, type FrameLimit } from './frame-limit';
+import './frame-limit.css';
 import './style.css';
 import './audio-controls.css';
 import { plantReward } from './plant-reward';
@@ -49,7 +51,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
       <div class="seed-bank">${Array.from({length:seedSlots},(_,i)=>`<button class="seed" data-slot="${i}" aria-label="空卡槽" disabled><img alt=""><span class="seed-price"></span><span class="seed-cooldown"></span></button>`).join('')}</div>
       <div class="battle-tools">
         <button id="auto-sun" aria-label="自动收集阳光" aria-pressed="true"><span>自动阳光</span><span class="auto-sun-state" aria-hidden="true">开</span></button>
-        <div id="performance-hud" aria-label="战斗性能"><span id="performance-fps">FPS —</span><span id="performance-memory"></span></div>
+        <div id="performance-hud" aria-label="战斗性能"><span id="performance-fps">FPS —</span><span id="performance-memory"></span><span id="performance-js-memory" hidden></span></div>
       </div>
       <button id="speed" class="battle-icon" aria-label="切换二倍速" aria-pressed="false"></button>
       <button id="pause" class="battle-icon" aria-label="暂停游戏"></button>
@@ -82,9 +84,14 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
   const sunCount=$('#sun-count'),foodCount=$('#plant-food b'),waveLabel=$('#wave-label'),waveFill=$('#wave-fill');
   const powerButtons=Array.from(host.querySelectorAll<HTMLButtonElement>('[data-power]'));
   const powerTime=$<HTMLProgressElement>('#power-time'),gameTip=$('#game-tip'),announcement=$('#battle-announcement');
-  const performanceHud=$('#performance-hud'),fpsLabel=$('#performance-fps');
+  const performanceHud=$('#performance-hud'),fpsLabel=$('#performance-fps'),jsMemoryLabel=$('#performance-js-memory');
   const frameRate=new FrameRate();
   let showPerformance=true;
+  function updateJsMemory() {
+    const bytes=jsHeapBytes(performance as Performance & {memory?:{usedJSHeapSize:number}});
+    jsMemoryLabel.hidden=bytes===undefined;
+    if(bytes!==undefined)text(jsMemoryLabel,`JS 堆 ${(bytes/1024/1024).toFixed(1)} MiB`);
+  }
   // Keep unchanged HUD values out of the DOM; card images are large data URLs.
   const text = (element:HTMLElement,value:string) => {if(element.textContent!==value)element.textContent=value;};
 
@@ -144,6 +151,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
         const progress=$<HTMLProgressElement>('#load-progress');progress.max=total;progress.value=done;
       },levelConfig,actorPlants,parsed);
       $('#performance-memory').textContent=`纹理估算 ${(scene.textureBytes/1024/1024).toFixed(1)} MiB`;
+      updateJsMemory();
       scene.onPoint=(x,y)=>{pointerDown=true;interact(x,y);};scene.onHover=hover;scene.onRelease=()=>{pointerDown=false;game?.releaseMower();if(game)game.cowboy.selected=null;if(game?.power)game.powerPointer(game.power.x,game.power.y,false);};scene.onTick=tick;
       scene.onSound=sound;
       scene.onNPCEvent=(character,event)=>{
@@ -329,7 +337,7 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     updateHud();
   }
   function tick(dt: number) {
-    if(showPerformance){const fps=frameRate.sample(performance.now());if(fps!==null)text(fpsLabel,`FPS ${fps}`);}
+    if(showPerformance){const fps=frameRate.sample(performance.now());if(fps!==null){text(fpsLabel,`FPS ${fps}`);updateJsMemory();}}
     if(screen==='npc-enter'||screen==='npc-exit') {
       if(scene.narrativeTick(dt)){if(screen==='npc-enter')nextNarrative();else if(outro){outro=false;finish();}else survey();}return;
     }
@@ -407,8 +415,9 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     if(screen!=='playing')return;
     game.sky.airRaid.keys.clear();game.releaseMower();pointerDown=false;game.phase='paused';screen='pause';scene.stop();music.pause();sound('pause');
     frameRate.reset();
-    panel('暂停',`<p class="pause-level">${title}</p><p class="pause-help">${touchHelp}</p>${audioControls(preferences)}<label class="performance-option"><span>显示性能<span class="performance-description">FPS · 纹理内存估算</span></span><input id="show-performance" type="checkbox"${showPerformance?' checked':''}></label><div class="pause-actions"><button id="exit" class="battle-button">退出地图</button><button id="restart" class="battle-button">重新开始</button><button id="resume" class="battle-button">继续</button></div>`);
+    panel('暂停',`<p class="pause-level">${title}</p><p class="pause-help">${touchHelp}</p>${audioControls(preferences)}${frameLimitControl(readFrameLimit(localStorage))}<label class="performance-option"><span>显示性能<span class="performance-description">FPS · 纹理估算 · JS 堆（支持时）</span></span><input id="show-performance" type="checkbox"${showPerformance?' checked':''}></label><div class="pause-actions"><button id="exit" class="battle-button">退出地图</button><button id="restart" class="battle-button">重新开始</button><button id="resume" class="battle-button">继续</button></div>`);
     $('.battle-window').classList.add('pause-window');
+    $<HTMLSelectElement>('[data-frame-limit]').onchange=event=>{const limit=Number((event.currentTarget as HTMLSelectElement).value) as FrameLimit;saveFrameLimit(localStorage,limit);scene.app.ticker.maxFPS=limit;};
     $<HTMLInputElement>('#show-performance').onchange=event=>{showPerformance=(event.currentTarget as HTMLInputElement).checked;performanceHud.hidden=!showPerformance;frameRate.reset();text(fpsLabel,'FPS —');};
     $('#resume').onclick=resume;$('#restart').onclick=chooseSeeds;$('#exit').onclick=menu;bindAudio();
   }

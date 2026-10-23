@@ -1,3 +1,5 @@
+import { installFrameTicker } from '../frame-ticker';
+import { readFrameLimit } from '../frame-limit';
 import {isRack,rackDisplay} from '../game/kongfu-combat';
 import { estimateTextureBytes } from '../performance';
 import {kongfuArmor} from '../game/kongfu';
@@ -133,6 +135,11 @@ export class Scene {
   onHover: (x: number, y: number) => void = () => {};
   private factory = new PixiFactory(null, false);
   private actors = new Map<number, Actor>();
+  private aliveActors = new Set<number>();
+  private plantsById = new Map<number, Plant>();
+  private zombiesById = new Map<number, Zombie>();
+  private liveZombiesById = new Map<number, Zombie>();
+  private syncZombies: Zombie[] = [];
   private world = new Container();
   private conveyorLayer=new Container();
   private actorLayer = new Container();
@@ -164,8 +171,8 @@ export class Scene {
     this.bossView=!!level?.boss;
     await this.app.init({ width: BOARD.width, height: BOARD.height, background: '#b5924c', antialias: true,
       resolution: Math.min(window.devicePixelRatio, 2), autoDensity: true, autoStart: false });
-    // Simulation advances at 60 Hz; avoid duplicate animation/render work on high-refresh screens.
-    this.app.ticker.maxFPS = 60;
+    // Render cadence is configurable; battle simulation keeps its fixed 60 Hz step.
+    installFrameTicker(this.app,readFrameLimit(localStorage));
     host.append(this.app.canvas);
     this.app.canvas.setAttribute('aria-label', `${config.worldName}战场，五行九列。选择植物后点击地块种植。`);
     this.app.stage.eventMode = 'none';
@@ -269,6 +276,7 @@ export class Scene {
     if((name==='monk'||name==='abbot')&&['Cone','Bucket','Helmet','Cone_Drop','Bucket_Drop','Helmet_Drop'].includes(armature))name='kongfu';
     if(name==='dark'&&armature==='Cone')armature='Corn';
     const rig = this.factory.buildArmatureDisplay(armature, name)!;
+    rig.armature.cacheFrameRate = 60;
     rig.armature.clock = this.clock; return rig;
   }
 
@@ -368,7 +376,14 @@ export class Scene {
       if(!this.rootLocator){this.rootLocator=this.rig('escaperoot','Locator');this.rootLocator.scale.set(.55);this.rootLocator.animation.play('Idle',0);this.rootLocator.zIndex=2000;this.actorLayer.addChild(this.rootLocator);}
       this.rootLocator.visible=true;this.rootLocator.position.set(...this.pointer);
     }else if(this.rootLocator)this.rootLocator.visible=false;
-    const alive = new Set<number>();
+    const alive = this.aliveActors; alive.clear();
+    const plantsById = this.plantsById; plantsById.clear();
+    const zombiesById = this.zombiesById; zombiesById.clear();
+    const liveZombiesById = this.liveZombiesById; liveZombiesById.clear();
+    const zombies = this.syncZombies; zombies.length = 0;
+    for(const p of game.plants)plantsById.set(p.id,p);
+    for(const z of game.zombies){zombies.push(z);zombiesById.set(z.id,z);liveZombiesById.set(z.id,z);}
+    for(const z of game.westFinale.allies){zombies.push(z);zombiesById.set(z.id,z);}
     for (const p of game.plants) {
       alive.add(p.id);
       const actor = this.actors.get(p.id) ?? this.addActor(p.id, p.kind);
@@ -399,7 +414,7 @@ export class Scene {
       actor.root.position.set(cellX(bomb.column),rowY(bomb.row));actor.root.zIndex=rowY(bomb.row);
       this.animate(actor,bomb.animation,bomb.at,1);
     }
-    for (const z of [...game.zombies,...game.westFinale.allies]) {
+    for (const z of zombies) {
       alive.add(z.id);
       if(game.boss?.zombie===z){
         const boss=game.boss,actor=this.actors.get(z.id)??this.addActor(z.id,'boss');
@@ -509,45 +524,47 @@ export class Scene {
     for(const [id,actor] of this.actors){
       if(Object.hasOwn(this.costumes,actor.kind))applyCostume(actor.rig.armature.getSlots(),this.costumes[actor.kind]);
       const state=game.specialZombies.get(id);
-      if(actor.kind==='puffshroom'&&!actor.death){const p=game.plants.find(p=>p.id===id)!,life=game.westFinale.states.get(id)!.life;actor.rig.armature.getSlot('head')!.displayIndex=life>40?0:life>20?1:2;actor.root.alpha=p.action!=='food'&&life<10&&life>0&&Math.floor(4*life)%4===1?100/255:1;}
+      const plant=plantsById.get(id),zombie=zombiesById.get(id),liveZombie=liveZombiesById.get(id);
+      const hideCostume=!Object.hasOwn(this.costumes,actor.kind)&&(game.darkPlants.handles(actor.kind as PlantKind)||actor.kind==='fumeshroom'||game.future.handles(actor.kind as PlantKind)||game.western.handles(actor.kind as PlantKind)||game.westFinale.handles(actor.kind as PlantKind));
+      if(actor.kind==='puffshroom'&&!actor.death){const p=plant!,life=game.westFinale.states.get(id)!.life;actor.rig.armature.getSlot('head')!.displayIndex=life>40?0:life>20?1:2;actor.root.alpha=p.action!=='food'&&life<10&&life>0&&Math.floor(4*life)%4===1?100/255:1;}
       if(actor.kind==='chomper'&&!actor.death){const count=game.darkPlants.states.get(id)!.chews.length;for(const slot of actor.rig.armature.getSlots()){if(['ARM1','ARM1_','HAND1','HAND1_'].includes(slot.name))slot.displayIndex=count>=1?0:-1;if(['ARM2','ARM2_','HAND2','HAND2_'].includes(slot.name))slot.displayIndex=count>=2?0:-1;}}
       for(const slot of actor.rig.armature.getSlots()){
         if(actor.kind==='bowlingbulb'&&!actor.death){const ball=/_B([012])_([MH])/.exec(slot.name);if(ball){const loaded=game.beach.bowling.states.get(id)!.loaded[Number(ball[1])];slot.displayIndex=(ball[2]==='M'?loaded:!loaded)?0:-1;}}
-        if(actor.kind==='beachFisher'&&!actor.death&&slot.name.endsWith('_HK')){const z=game.zombies.find(z=>z.id===id)!;if(z.fisher!.hook)slot.displayIndex=-1;}
-        if((actor.kind==='beachSurfer'||actor.kind==='beachSurferVeteran')&&!actor.death&&slot.name.includes('BOARD')&&slot.childArmature){const state=[...game.zombies,...game.westFinale.allies].find(z=>z.id===id)!.surfer!;for(const part of slot.childArmature.getSlots())part.displayIndex=state.board>0?game.beach.surfers.stage(state.board,actor.kind==='beachSurferVeteran'):-1;}
+        if(actor.kind==='beachFisher'&&!actor.death&&slot.name.endsWith('_HK')){const z=liveZombie!;if(z.fisher!.hook)slot.displayIndex=-1;}
+        if((actor.kind==='beachSurfer'||actor.kind==='beachSurferVeteran')&&!actor.death&&slot.name.includes('BOARD')&&slot.childArmature){const state=zombie!.surfer!;for(const part of slot.childArmature.getSlots())part.displayIndex=state.board>0?game.beach.surfers.stage(state.board,actor.kind==='beachSurferVeteran'):-1;}
         if(actor.kind==='laser_bean'&&slot.name.endsWith('_FS')&&slot.childArmature&&slot.childArmature.animation.lastAnimationName!=='Floor')slot.childArmature.animation.play('Floor',0);
-        if(!Object.hasOwn(this.costumes,actor.kind)&&(game.darkPlants.handles(actor.kind as PlantKind)||actor.kind==='fumeshroom'||game.future.handles(actor.kind as PlantKind)||game.western.handles(actor.kind as PlantKind)||game.westFinale.handles(actor.kind as PlantKind))&&slot.name.startsWith('COS'))slot.displayIndex=-1;
-        if(actor.kind==='bull'||actor.kind==='blackBull'){const z=game.zombies.find(z=>z.id===id)??game.deaths.find(d=>d.zombie.id===id)?.zombie;if(z){if(slot.name.includes('_IMP')&&!z.west!.imp)slot.displayIndex=-1;if(slot.name.includes('_bp1'))slot.displayIndex=z.hp<=game.props.zombies[z.kind].Toughness*2/3&&z.hp>game.props.zombies[z.kind].Toughness/3?0:-1;if(slot.name.includes('_bp2'))slot.displayIndex=z.hp<=game.props.zombies[z.kind].Toughness/3?0:-1;}}
-        if((actor.kind==='dinoGargantuar'||actor.kind==='eightiesGargantuar'||actor.kind==='lostGargantuar'||actor.kind==='beachGargantuar'||actor.kind==='darkGargantuar'||actor.kind==='cowboyGargantuar')&&[...game.zombies,...game.westFinale.allies].find(z=>z.id===id)?.west?.imp===false&&slot.name.includes('_IMP'))slot.displayIndex=-1;
+        if(hideCostume&&slot.name.startsWith('COS'))slot.displayIndex=-1;
+        if(actor.kind==='bull'||actor.kind==='blackBull'){const z=liveZombie??game.deaths.find(d=>d.zombie.id===id)?.zombie;if(z){if(slot.name.includes('_IMP')&&!z.west!.imp)slot.displayIndex=-1;if(slot.name.includes('_bp1'))slot.displayIndex=z.hp<=game.props.zombies[z.kind].Toughness*2/3&&z.hp>game.props.zombies[z.kind].Toughness/3?0:-1;if(slot.name.includes('_bp2'))slot.displayIndex=z.hp<=game.props.zombies[z.kind].Toughness/3?0:-1;}}
+        if((actor.kind==='dinoGargantuar'||actor.kind==='eightiesGargantuar'||actor.kind==='lostGargantuar'||actor.kind==='beachGargantuar'||actor.kind==='darkGargantuar'||actor.kind==='cowboyGargantuar')&&zombie?.west?.imp===false&&slot.name.includes('_IMP'))slot.displayIndex=-1;
         if(actor.kind==='lostGargantuar'&&slot.name.includes('FIRE')&&!game.lostcity.torches.get(id))slot.displayIndex=-1;
-        if(actor.kind==='lostcity'&&!actor.death&&slot.name.includes('_BP')){const b=game.zombies.find(z=>z.id===id)!.bug;if(b)slot.displayIndex=b.hp>0&&slot.name.includes(b.hp>game.props.zombies[game.zombies.find(z=>z.id===id)!.kind].BugToughness/2?'_BP0':'_BP1')?0:-1;}
-        if(actor.kind==='iceageGargantuar'&&!actor.death){const z=game.zombies.find(z=>z.id===id)!;const imp=/_IM([012])/.exec(slot.name);if(imp&&Number(imp[1])<z.west!.iceageHeld!)slot.displayIndex=-1;}
-        if(actor.kind==='iceageDodo'&&!actor.death){const z=game.zombies.find(z=>z.id===id)!;if(slot.name.includes('_bp0'))slot.displayIndex=z.hp<=game.props.zombies[z.kind].Toughness*2/3?0:-1;if(slot.name.includes('_bp1'))slot.displayIndex=z.hp<=game.props.zombies[z.kind].Toughness/3?0:-1;}
-        if(actor.kind==='chickenFarmer'&&slot.name.includes('_CHICK')&&[...game.zombies,...game.westFinale.allies].find(z=>z.id===id)?.west?.chickens===false)slot.displayIndex=-1;
-        if(actor.kind==='pirateCaptain'&&slot.name.includes('Parrot'))slot.displayIndex=game.zombies.find(z=>z.id===id)?.captain?.parrot?0:-1;
+        if(actor.kind==='lostcity'&&!actor.death&&slot.name.includes('_BP')){const b=liveZombie!.bug;if(b)slot.displayIndex=b.hp>0&&slot.name.includes(b.hp>game.props.zombies[liveZombie!.kind].BugToughness/2?'_BP0':'_BP1')?0:-1;}
+        if(actor.kind==='iceageGargantuar'&&!actor.death){const z=liveZombie!;const imp=/_IM([012])/.exec(slot.name);if(imp&&Number(imp[1])<z.west!.iceageHeld!)slot.displayIndex=-1;}
+        if(actor.kind==='iceageDodo'&&!actor.death){const z=liveZombie!;if(slot.name.includes('_bp0'))slot.displayIndex=z.hp<=game.props.zombies[z.kind].Toughness*2/3?0:-1;if(slot.name.includes('_bp1'))slot.displayIndex=z.hp<=game.props.zombies[z.kind].Toughness/3?0:-1;}
+        if(actor.kind==='chickenFarmer'&&slot.name.includes('_CHICK')&&zombie?.west?.chickens===false)slot.displayIndex=-1;
+        if(actor.kind==='pirateCaptain'&&slot.name.includes('Parrot'))slot.displayIndex=liveZombie?.captain?.parrot?0:-1;
         if((actor.kind==='lostExcavator'&&slot.name==='shovel'||actor.kind==='lostJane'&&slot.name.includes('Umbrella'))&&slot.childArmature){const at=game.lostcity.blocks.get(id);if(at!==undefined&&game.time-at<.1)slot.childArmature.animation.play('Play',1);}
         if(actor.kind==='gatling'&&slot.name.includes('_GUN'))slot.displayIndex=game.expedition.gunned.has(id)?0:-1;
-        if(actor.kind==='endurian'&&!actor.death&&slot.name.includes('ARMOR')){const p=game.plants.find(p=>p.id===id)!,stage=p.armor>2000?0:p.armor>1000?1:p.armor>0?2:3;slot.displayIndex=stage<3&&slot.name.includes('ARMOR'+stage)?0:-1;}
-        if((actor.kind==='explodeonut'||actor.kind==='wallnut'||actor.kind==='primalwallnut'||actor.kind==='tallnut')&&slot.name==='ARMOR'){const p=game.plants.find(p=>p.id===id);slot.displayIndex=p&&p.armor>0?Math.max(0,2-Math.floor(p.armor/game.props.plants[actor.kind as 'explodeonut'|'wallnut'|'primalwallnut'|'tallnut'].ArmorToughness*3)):-1;}
-        if((actor.kind==='gargantuar'&&state&&!state.imp||actor.kind==='pirateGargantuar'&&game.zombies.find(z=>z.id===id)?.pirate?.imp===false)&&slot.name.includes('_IMP'))slot.displayIndex=-1;
+        if(actor.kind==='endurian'&&!actor.death&&slot.name.includes('ARMOR')){const p=plant!,stage=p.armor>2000?0:p.armor>1000?1:p.armor>0?2:3;slot.displayIndex=stage<3&&slot.name.includes('ARMOR'+stage)?0:-1;}
+        if((actor.kind==='explodeonut'||actor.kind==='wallnut'||actor.kind==='primalwallnut'||actor.kind==='tallnut')&&slot.name==='ARMOR'){const p=plant;slot.displayIndex=p&&p.armor>0?Math.max(0,2-Math.floor(p.armor/game.props.plants[actor.kind as 'explodeonut'|'wallnut'|'primalwallnut'|'tallnut'].ArmorToughness*3)):-1;}
+        if((actor.kind==='gargantuar'&&state&&!state.imp||actor.kind==='pirateGargantuar'&&liveZombie?.pirate?.imp===false)&&slot.name.includes('_IMP'))slot.displayIndex=-1;
         if(actor.kind==='gargantuar'&&game.pharaohs.has(id)&&slot.name.includes('PHARAOH'))slot.displayIndex=-1;
-        if((actor.kind==='pharaoh'||actor.kind==='pharaohWeak')&&slot.name==='armor'){const z=game.zombies.find(z=>z.id===id);if(z)slot.displayIndex=z.armor<game.props.zombies.pharaoh.Toughness/3?2:z.armor<game.props.zombies.pharaoh.Toughness*2/3?1:0;}
+        if((actor.kind==='pharaoh'||actor.kind==='pharaohWeak')&&slot.name==='armor'){const z=liveZombie;if(z)slot.displayIndex=z.armor<game.props.zombies.pharaoh.Toughness/3?2:z.armor<game.props.zombies.pharaoh.Toughness*2/3?1:0;}
         if(actor.kind==='boss'&&game.boss){const part=slot.name.match(/_BP([0-3])/);if(part)slot.displayIndex=(game.boss.zombie.hp<=0?3:game.boss.stage)>=Math.max(1,Number(part[1]))?0:-1;}
-        if(actor.kind==='peapod'){const p=game.plants.find(p=>p.id===id);if(p){const head=slot.name.match(/_(?:HEAD|UH)([0-4])$/);if(head)slot.displayIndex=Number(head[1])<p.heads!?0:-1;}}
+        if(actor.kind==='peapod'){const p=plant;if(p){const head=slot.name.match(/_(?:HEAD|UH)([0-4])$/);if(head)slot.displayIndex=Number(head[1])<p.heads!?0:-1;}}
         if(actor.kind==='escaperoot'&&['PM','PPM','CB','GS'].includes(slot.name)){
           const bomb=game.escape.bombs.find(b=>b.id===id),timeline=bomb&&game.props.plantAnimations.escaperoot[bomb.animation];
           const visible=!!bomb&&slot.name===['PM','PPM','CB','GS'][bomb.variant]&&game.time-bomb.at>=timeline!.events.find(e=>e.name==='Show')!.at;
           slot.displayIndex=visible?0:-1;
           if(visible&&game.time-bomb!.at>=timeline!.events.find(e=>e.name==='charge')!.at&&!actor.rootCharged){slot.childArmature!.animation.play('Attack',1);actor.rootCharged=true;if(bomb!.variant>=2)this.onSound('escaperoot/cherryChargeSound');}
         }
-        if(actor.kind==='chardguard'){const p=game.plants.find(p=>p.id===id);const hand=slot.name.match(/HAND([012])/);if(p&&hand)slot.displayIndex=p.leaves!>2-Number(hand[1])?0:-1;}
-        if(actor.kind==='spikerock'){const spikes=actor.death?0:game.plants.find(p=>p.id===id)!.spikes!;if(slot.name==='spikeL')slot.displayIndex=spikes>=1?0:-1;if(slot.name==='spikeM')slot.displayIndex=spikes>=2?0:-1;if(slot.name==='spikeR')slot.displayIndex=spikes>=3?0:-1;}
+        if(actor.kind==='chardguard'){const p=plant;const hand=slot.name.match(/HAND([012])/);if(p&&hand)slot.displayIndex=p.leaves!>2-Number(hand[1])?0:-1;}
+        if(actor.kind==='spikerock'){const spikes=actor.death?0:plant!.spikes!;if(slot.name==='spikeL')slot.displayIndex=spikes>=1?0:-1;if(slot.name==='spikeM')slot.displayIndex=spikes>=2?0:-1;if(slot.name==='spikeR')slot.displayIndex=spikes>=3?0:-1;}
         if(actor.kind==='iceweed'){const spikes=game.iceweedSpikes.get(id)??1;if(slot.name.endsWith('_S1'))slot.displayIndex=spikes>=2?1:0;if(slot.name.endsWith('_S2'))slot.displayIndex=spikes>=3?1:0;}
         if((actor.kind==='explorer'||actor.kind==='torchlight')&&state&&!state.torch&&slot.name.startsWith('FIRE'))slot.displayIndex=-1;
       }
       if((actor.kind==='pirateParrot'||(actor.kind==='mummy'||actor.kind==='prospector')&&actor.root.scale.x<0||game.level.cannon&&(actor.kind==='seagull'||actor.kind==='pelican'))&&!alive.has(id)&&!actor.death)this.removeActor(id,actor);
     }
-    for(const z of [...game.zombies,...game.westFinale.allies]){const actor=this.actors.get(z.id)!,state=z.west;
+    for(const z of zombies){const actor=this.actors.get(z.id)!,state=z.west;
       if(state?.hat!==undefined)actor.rig.armature.getSlot('hat_HEAD')!.displayIndex=state.hat?0:-1;
       if(state?.poncho!==undefined){actor.rig.armature.getSlot('PONCHO')!.displayIndex=state.poncho>0?0:-1;actor.rig.armature.getSlot('SHIELD')!.displayIndex=state.plate!>0?Math.min(2,2-Math.ceil(state.plate!/game.props.zombies[z.kind].ShieldToughness*3)+1):-1;}
       if(z.kind==='prospector'){const tnt=actor.rig.armature.getSlot('TNT')!.childArmature!,name=state!.dirty?'Nothing':!state!.ignited?'Out':state!.fuse!>20/3?'Small':state!.fuse!>10/3?'Mid':'Big';if(tnt.animation.lastAnimationName!==name)tnt.animation.play(name,0);for(const slot of actor.rig.armature.getSlots())if(slot.name.includes('_ASH'))slot.displayIndex=state!.dirty?0:-1;}
@@ -1154,6 +1171,6 @@ export class Scene {
     for(const fragment of this.fragments){fragment.rig.removeFromParent();fragment.rig.dispose();}this.fragments=[];
     for(const flight of this.sunFlights){flight.rig.removeFromParent();flight.rig.dispose();}this.sunFlights=[];
     this.seenDeaths.clear();this.seenEffects.clear();this.flowerAnimation='Idle';this.npcTransition=null;
-    this.actors.clear(); this.highlight.clear(); PixiFactory.advanceTime(0);
+    this.actors.clear(); this.aliveActors.clear(); this.plantsById.clear(); this.zombiesById.clear(); this.liveZombiesById.clear(); this.syncZombies.length=0; this.highlight.clear(); PixiFactory.advanceTime(0);
   }
 }

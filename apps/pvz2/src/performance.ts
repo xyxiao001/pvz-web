@@ -1,5 +1,12 @@
 import type { Texture } from 'pixi.js';
 
+type HeapPerformance = { memory?: { usedJSHeapSize: number } };
+
+// Optional browser telemetry: unavailable browsers do not get an estimated JS value.
+export function jsHeapBytes(source: HeapPerformance): number | undefined {
+  return source.memory?.usedJSHeapSize;
+}
+
 // Measure rendered frames with wall-clock time, independent of game speed and ticker clamping.
 export class FrameRate {
   private startedAt: number | null = null;

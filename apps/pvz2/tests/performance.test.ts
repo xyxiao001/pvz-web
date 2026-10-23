@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Texture, TextureSource, Rectangle, Ticker } from 'pixi.js';
-import { FrameRate, estimateTextureBytes } from '../src/performance';
+import { FrameRate, estimateTextureBytes, jsHeapBytes } from '../src/performance';
+import { FrameTicker } from '../src/frame-ticker';
+import { readFrameLimit, saveFrameLimit, type FrameLimit } from '../src/frame-limit';
 import { ResourcePool, ResourceScope } from '../src/assets/resource-pool';
 
 test('FPS counts wall-clock frames and publishes only once per second', () => {
@@ -51,4 +53,43 @@ test('a 60 FPS ticker avoids duplicate battle updates on a 120 Hz display', () =
   assert.ok(frames >= 59 && frames <= 60, String(frames));
   assert.ok(Math.abs(seconds - 1) < 1 / 60, String(seconds));
   ticker.destroy();
+});
+
+test('frame limits persist, including zero for unlimited, while new profiles keep 60 FPS', () => {
+  const values=new Map<string,string>();
+  const storage={getItem:(key:string)=>values.get(key)??null,setItem:(key:string,value:string)=>{values.set(key,value);}};
+  assert.equal(readFrameLimit(storage),60);
+  for(const limit of [0,120,60,30] as const){saveFrameLimit(storage,limit);assert.equal(readFrameLimit(storage),limit);}
+});
+
+test('changing the live ticker limit preserves elapsed simulation time at 30, 60, 120 and unlimited', () => {
+  const ticker=new FrameTicker();let frames=0,seconds=0;
+  ticker.add(tick=>{frames++;seconds+=tick.deltaMS/1000;});ticker.lastTime=0;
+  const limits:FrameLimit[]=[60,30,120,0,60];
+  for(const [second,limit] of limits.entries()){
+    ticker.maxFPS=limit;const before=frames;
+    for(let frame=1;frame<=240;frame++)ticker.update(second*1000+frame*1000/240);
+    const expected=limit===0?240:limit;
+    assert.ok(Math.abs(frames-before-expected)<=1,`${limit}: ${frames-before} frames`);
+    assert.ok(Math.abs(seconds-(second+1))<1/30,`${limit}: ${seconds}s`);
+  }
+  ticker.destroy();
+});
+
+test('JS heap telemetry uses reported bytes and stays absent on unsupported browsers', () => {
+  assert.equal(jsHeapBytes({}),undefined);
+  assert.equal(jsHeapBytes({memory:{usedJSHeapSize:0}}),0);
+  assert.equal(jsHeapBytes({memory:{usedJSHeapSize:128*1024*1024}}),128*1024*1024);
+});
+
+test('fractional frame deadlines do not lose updates on matching 60/120 Hz displays', () => {
+  for(const rate of [60,120]){
+    const ticker=new FrameTicker();ticker.maxFPS=rate;ticker.lastTime=123.456;
+    let frames=0;ticker.add(()=>{frames++;});
+    for(let i=1;i<=rate*10;i++)ticker.update(123.456+i*1000/rate);
+    assert.equal(frames,rate*10);
+    ticker.stop();ticker.lastTime=20000;
+    ticker.update(20000+1000/rate);assert.equal(frames,rate*10+1);
+    ticker.destroy();
+  }
 });

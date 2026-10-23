@@ -1,0 +1,3 @@
+.frame-limit-option{display:flex;align-items:center;justify-content:space-between;gap:1.5cqw;color:#49301e;font:1.8cqw/1.4 "PingFang SC",sans-serif;text-align:left}
+.frame-limit-option select{padding:.4cqw .8cqw;border:.12cqw solid #7a4e2b;border-radius:.4cqw;background:#fff0c9;color:#49301e;font:inherit}
+.pause-window .frame-limit-option{margin:1.2cqw 1.6cqw}

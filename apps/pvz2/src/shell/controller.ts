@@ -1,3 +1,5 @@
+import { readFrameLimit, saveFrameLimit, frameLimitControl, type FrameLimit } from '../frame-limit';
+import '../frame-limit.css';
 import '../audio-controls.css';
 import { showPwa } from '../pwa';
 import { reportError } from '../errors';
@@ -313,6 +315,8 @@ export class WorldShell {
     this.modal('设置',`<div class="settings-section"><h3>声音</h3>${audioControls(this.audio)}</div><div class="settings-section"><h3>游玩方式</h3><label class="free-play-option"><span class="free-play-copy"><strong>自由选关</strong><small>解锁世界与关卡入口，通关进度照常保存。</small></span><input data-test-unlock type="checkbox" role="switch" aria-label="自由选关" ${this.progress.temporaryUnlock?'checked':''}><span class="free-play-switch" aria-hidden="true"></span></label><p class="settings-note">${this.progress.temporaryUnlock?'已开启 · 关闭后恢复按进度解锁':'未开启 · 按通关进度解锁'}</p></div><button class="settings-pwa" data-pwa>安装与更新 <span>桌面安装 · 离线资源 · 版本管理 ›</span></button><p class="settings-saved">设置自动保存到本机，刷新后仍有效</p><button class="native-button close-dialog">返回游戏</button><a class="switch-version" href="/">植物大战僵尸 1</a>`);
     this.$('.native-window').classList.add('settings-window');
     this.$('.settings-section').insertAdjacentHTML('afterend', `<div class="settings-section"><h3>画质</h3><select class="texture-quality" aria-label="素材画质"><option value="light">轻量版</option><option value="original">原图无损版</option><option value="enhanced">4K 增强版</option></select><p class="settings-note">原图无损版保留源图细节；4K 增强版使用两倍超分贴图，加载量和显存占用更高。切换后重新加载。</p></div>`);
+    this.$('.settings-section').insertAdjacentHTML('afterend', `<div class="settings-section">${frameLimitControl(readFrameLimit(localStorage))}<p class="settings-note">立即生效。无上限跟随屏幕刷新率，实际帧率取决于设备和浏览器。</p></div>`);
+    this.$<HTMLSelectElement>('[data-frame-limit]').onchange=event=>{const limit=Number((event.currentTarget as HTMLSelectElement).value) as FrameLimit;saveFrameLimit(localStorage,limit);this.renderer.app.ticker.maxFPS=limit;};
     const quality = this.$<HTMLSelectElement>('.texture-quality');
     quality.value = readTextureQuality(localStorage);
     quality.onchange = () => { saveTextureQuality(localStorage, quality.value as TextureQuality); location.reload(); };
