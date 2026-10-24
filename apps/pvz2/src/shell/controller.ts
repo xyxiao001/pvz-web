@@ -28,7 +28,6 @@ export class WorldShell {
   private busy = true;
   private audio = readAudio();
   private music = new Audio();
-  private musicPlay: Promise<void> | null = null;
   private currentWorld!: World;
   private cameraLayout = NaN;
   private clickSounds = new Map<string, HTMLAudioElement>();
@@ -71,7 +70,8 @@ export class WorldShell {
     for (const [name, path] of Object.entries(catalog.sounds)) {
       const clip = new Audio(); clip.preload = 'none'; clip.src = assetUrl(path); this.clickSounds.set(name, clip);
     }
-    this.host.addEventListener('pointerdown', () => { if(!this.feature)this.startMusic(); this.clickSound('touchStartSound'); });
+    for (const event of ['click', 'touchend']) this.host.addEventListener(event, () => { if(!this.feature)this.startMusic(); }, { capture: true });
+    this.host.addEventListener('pointerdown', () => this.clickSound('touchStartSound'));
     this.host.addEventListener('pointerup', () => this.clickSound('touchEndSound'));
     this.$('.map-arrow-left').onclick = () => this.step(-1); this.$('.map-arrow-right').onclick = () => this.step(1);
     window.addEventListener('keydown', event => {
@@ -126,7 +126,7 @@ export class WorldShell {
   private startMusic() {
     if (this.audio.music === 0) return;
     if (!this.music.src) this.music.src = assetUrl(this.catalog.music);
-    if(!this.musicPlay)this.musicPlay=playAudio(this.music);
+    if(this.music.paused)void playAudio(this.music);
   }
   private async choose(index: number) {
     if (this.busy || !this.$('.map-modal').hidden) return;
@@ -220,7 +220,7 @@ export class WorldShell {
     const world=this.currentWorld.id as EndlessWorld,unlocked=this.progress.endlessUnlocked(world),run=this.progress.endlessRun(world);
     this.modal(`${this.currentWorld.name} · 无尽挑战`,unlocked?`<p>每轮选择一株新植物，僵尸会逐渐增强。</p><p>轮次、植物、能量豆和剩余割草机会保存；退出后从本轮开头继续。</p>${run?`<p>当前第 ${run.round} 轮 · 最高通过 ${run.best} 轮</p>`:''}<button class="native-button" data-endless-play>${run?'继续挑战':'开始挑战'}</button>${run?'<button class="native-button" data-endless-reset>从第 1 轮重新挑战</button>':''}`:`<p>通关${this.currentWorld.name}第 ${ENDLESS_UNLOCK[world]} 天并领取无尽挑战奖励后解锁。</p><button class="native-button close-dialog">返回地图</button>`);
     if(!unlocked)return;
-    const play=async()=>{this.closeModal();this.save();this.renderer.stop();if(this.musicPlay)await this.musicPlay;this.music.pause();this.musicPlay=null;this.host.hidden=true;await this.play(`endless_${world}`,this.progress);};
+    const play=async()=>{this.busy=true;this.closeModal();this.save();this.music.pause();this.host.hidden=true;await this.renderer.suspend();await this.play(`endless_${world}`,this.progress);};
     this.$('[data-endless-play]').onclick=()=>{if(!run)this.progress.startEndless(world);void play();};
     if(run)this.$('[data-endless-reset]').onclick=()=>{this.progress.startEndless(world);void play();};
   }
@@ -232,7 +232,7 @@ export class WorldShell {
     if (state === 'locked') return;
     if(island.kind===2){await this.openGift(island);return;}
     if (id) {
-      this.save(); this.renderer.stop(); if(this.musicPlay) await this.musicPlay; this.music.pause(); this.musicPlay=null; this.host.hidden=true; await this.play(id, this.progress); return;
+      this.busy=true; this.save(); this.music.pause(); this.host.hidden=true; await this.renderer.suspend(); await this.play(id, this.progress); return;
     }
     this.modal(`${this.currentWorld.name} · 第 ${island.name} 关`, `<p>此关卡尚未接入。</p><button class="native-button close-dialog">返回地图</button>`);
   }
@@ -251,7 +251,7 @@ export class WorldShell {
     } finally { this.busy=false; }
   }
   private async openFeature(feature:Feature){
-    this.loading(true);this.renderer.stop();if(this.musicPlay)await this.musicPlay;this.music.pause();this.musicPlay=null;
+    this.loading(true);this.renderer.stop();this.music.pause();
     const {OuterFeatures}=await import('../outer/controller');
     const host=document.createElement('div');this.$('.world-frame').append(host);
     this.feature=new OuterFeatures(host,this.progress,this.storage,this.catalog,()=>this.closeFeature());
@@ -348,5 +348,5 @@ export class WorldShell {
     if(!this.$('.map-modal').hidden){this.closeModal();return;}
     this.save();if(this.map)await this.showChooser();else location.href='/';
   }
-  async resume() { this.audio=readAudio(); this.music.volume=this.audio.music; this.host.hidden=false; await this.openWorld(this.currentWorld); this.startMusic(); }
+  async resume() { this.audio=readAudio(); this.music.volume=this.audio.music; this.host.hidden=false; this.startMusic(); await this.openWorld(this.currentWorld); }
 }

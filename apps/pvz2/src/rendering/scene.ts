@@ -30,7 +30,6 @@ import { textureScope } from '../assets/textures';
 import { battleActors, zombieRig } from './resource-plan';
 import type { BattleLevel } from '../game/levels';
 import mowerPresentation from '../../public/assets/battle/mower.json';
-import 'pixi.js/prepare';
 import { BattleArt } from './battle-art';
 import { animationTimeline, specialAnimationTiming, bonkAnimationTiming, COMBAT_VIEW, type Skeleton } from './presentation';
 import { Application, Container, Graphics, Sprite, Texture, type Ticker } from 'pixi.js';
@@ -240,7 +239,7 @@ export class Scene {
       ]);
       this.factory.parseDragonBonesData(skeleton, name);
       this.factory.parseTextureAtlasData(atlas, texture, name);
-      await this.app.renderer.prepare.upload(texture);
+      this.app.renderer.texture.initSource(texture.source);
       skeletons.set(name, skeleton); progress(++done, total);
     });
     this.skeletons=skeletons;

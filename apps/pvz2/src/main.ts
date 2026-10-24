@@ -1,3 +1,4 @@
+import { installGameGestures } from './game-gestures';
 import {ENDLESS_LEVELS} from './game/endless';
 import './shell/style.css';
 import './cursor.css';
@@ -8,6 +9,7 @@ import { BATTLE_LEVELS } from './game/levels';
 import { WorldShell } from './shell/controller';
 
 installErrorReporting();
+installGameGestures(document);
 const app = document.querySelector<HTMLElement>('#app')!;
 app.innerHTML = '<main class="world-shell"></main><div class="battle-app" hidden></div>';
 const host = app.querySelector<HTMLElement>('.world-shell')!;

@@ -47,3 +47,10 @@ test('Interrupted audio settles without reporting; other failures are reported w
 test('Copied error text retains context, message and stack',()=>{
  const e=new TypeError('missing map');const text=errorDetails(e,'打开海盗地图');assert.ok(text.includes('打开海盗地图'));assert.ok(text.includes(e.stack!));
 });
+test('Safari stacks without an error header still retain the actual error name and reason',()=>{
+ const e=new TypeError('null is not an object (evaluating resource.width)');
+ e.stack='resourceWidth@https://example.test/PixiFactory.js:5:5883';
+ const text=errorDetails(e,'游戏运行错误');
+ assert.ok(text.includes('TypeError: null is not an object (evaluating resource.width)'));
+ assert.ok(text.includes(e.stack));
+});

@@ -1,6 +1,5 @@
 import { installFrameTicker } from '../frame-ticker';
 import { readFrameLimit } from '../frame-limit';
-import 'pixi.js/prepare';
 import { Application, Container, Sprite, Rectangle } from 'pixi.js';
 import { PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
 import { textureScope } from '../assets/textures';
@@ -31,7 +30,7 @@ export class NativeStage {
     if(!this.loaded.has(spec.rig))this.loaded.set(spec.rig,(async()=>{
       const base=spec.group==='actors'?`actors/${spec.rig}/`:`${this.groups[spec.rig]??spec.group}/rigs/${spec.rig}/`;
       const [skeleton,atlas,texture]=await Promise.all([json<object>(base+'skeleton.json'),json<object>(base+'atlas.json'),this.textures.load(assetUrl(base+'texture.webp'))]);
-      this.factory.parseDragonBonesData(skeleton,spec.rig);this.factory.parseTextureAtlasData(atlas,texture,spec.rig);await this.app.renderer.prepare.upload(texture);
+      this.factory.parseDragonBonesData(skeleton,spec.rig);this.factory.parseTextureAtlasData(atlas,texture,spec.rig);this.app.renderer.texture.initSource(texture.source);
     })());
     await this.loaded.get(spec.rig);
   }

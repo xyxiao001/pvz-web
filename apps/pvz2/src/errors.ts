@@ -6,7 +6,7 @@ let status: HTMLElement;
 const seen = new Set<string>();
 
 export function errorDetails(error: unknown, context: string) {
-  return `${context}\n${error instanceof Error ? error.stack || `${error.name}: ${error.message}` : String(error)}`;
+  return `${context}\n${error instanceof Error ? `${error.name}: ${error.message}\n${error.stack ?? ''}` : String(error)}`;
 }
 
 /** Keep reporting outside the game DOM so disposing a scene cannot remove it. */

@@ -1,5 +1,5 @@
 :root{font-family:"PingFang SC","Microsoft YaHei",sans-serif;color:#fff;background:#10191b;font-synthesis:none;-webkit-tap-highlight-color:transparent}
-*{box-sizing:border-box}body{margin:0}button,a{touch-action:manipulation}button{font:inherit;cursor:pointer}a{color:inherit;text-decoration:none}[hidden]{display:none!important}button:focus-visible,a:focus-visible{outline:3px solid #fff59a;outline-offset:3px}
+html{touch-action:none;overscroll-behavior:none}*{box-sizing:border-box}body{margin:0}button,a{touch-action:manipulation}button{font:inherit;cursor:pointer}a{color:inherit;text-decoration:none}[hidden]{display:none!important}button:focus-visible,a:focus-visible{outline:3px solid #fff59a;outline-offset:3px}
 .world-shell{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .world-frame{position:relative;width:min(100vw,calc((100dvh - 30px)*1.6));aspect-ratio:1.6;overflow:hidden;container-type:inline-size;background:#00c6d3;isolation:isolate;user-select:none;-webkit-user-select:none;touch-action:none}
 .map-canvas{position:absolute;inset:0}.map-canvas canvas{display:block;touch-action:none;width:100%;height:100%}

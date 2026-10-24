@@ -125,7 +125,11 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
     $('#overlay').hidden = false;
   };
   const sound = (name: string) => {
-    const variants = clips.get(name)!;
+    let variants = clips.get(name);
+    if (!variants) {
+      variants = scene.art.catalog.sounds[name].map(path => { const audio = new Audio(assetUrl(path)); audio.preload = 'none'; return audio; });
+      clips.set(name, variants);
+    }
     const clip = variants[Math.floor(Math.random()*variants.length)];
     clip.volume=preferences.effects; clip.currentTime=0; if (clip.volume>0) void playAudio(clip);
     return clip;
@@ -169,7 +173,6 @@ export function createBattle(host: HTMLElement, onReturn: () => void, levelConfi
 
       $<HTMLImageElement>('.sun-counter img').src=scene.art.image(scene.app,'sunIcon');
       $<HTMLImageElement>('#shovel img').src=scene.art.image(scene.app,'shovel',bonuses.shovelRefund>0?'IdleSunback':'Idle');
-      for(const [name,paths] of Object.entries(scene.art.catalog.sounds)) clips.set(name,paths.map(path=>{const audio=new Audio(assetUrl(path));audio.preload='none';return audio;}));
       music.src=assetUrl(levelConfig.presentation.music);
       if(levelConfig.id!=='egypt1'){
         $<HTMLImageElement>('#plant-food img').src=scene.art.image(scene.app,'food','Idle');

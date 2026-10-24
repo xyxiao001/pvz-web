@@ -4,7 +4,6 @@ import { rewardPlantArt } from './reward-art';
 import { applyCostume, type CostumePlant } from './costumes';
 import { reportError } from '../errors';
 import { textureScope } from '../assets/textures';
-import 'pixi.js/prepare';
 import { Application, Assets, Container, Sprite, Texture, Text, ColorMatrixFilter, Rectangle } from 'pixi.js';
 import { PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
 import { assetUrl, json, loadInBatches } from '../assets/load';
@@ -150,7 +149,7 @@ export class MapRenderer {
       const path = `shell/rigs/${key}/`;
       const [skeleton, atlas, texture] = await Promise.all([json<object>(path + 'skeleton.json'), json<object>(path + 'atlas.json'), this.textures.load(assetUrl(path + 'texture.webp'))]);
       this.factory.parseDragonBonesData(skeleton, key); this.factory.parseTextureAtlasData(atlas, texture, key);
-      await this.app.renderer.prepare.upload(texture); this.loaded.add(key);
+      this.app.renderer.texture.initSource(texture.source); this.loaded.add(key);
     });
   }
   private clear() {
@@ -392,6 +391,11 @@ export class MapRenderer {
   }
   private setCamera(x: number) { this.hoverIsland(null); this.camera = clampCamera(this.map!, x); this.positionMap(); }
   moveBy(delta: number) { this.velocity = 0; this.setCamera(this.camera + delta); }
-  start() { this.app.ticker.maxFPS=readFrameLimit(localStorage); this.app.start(); }
+  start() { this.observer.observe(this.host); this.app.ticker.maxFPS=readFrameLimit(localStorage); this.app.start(); }
+  async suspend() {
+    this.stop(); this.observer.disconnect();
+    // The hidden map retains its CPU assets, but does not need resident GPU copies.
+    for (const texture of await this.textures.values()) texture.source.unload();
+  }
   stop() { this.hoverIsland(null); this.app.stop(); this.velocity = 0; }
 }

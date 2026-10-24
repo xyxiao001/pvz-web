@@ -38,7 +38,7 @@ export class BattleArt {
       const [skeleton, atlas, texture] = await Promise.all([json<object>(`${base}/skeleton.json`), json<object>(`${base}/atlas.json`), textures.load(assetUrl(`${base}/texture.webp`))]);
       this.factory.parseDragonBonesData(skeleton, rig.rig);
       this.factory.parseTextureAtlasData(atlas, texture, rig.rig);
-      await app.renderer.prepare.upload(texture);
+      app.renderer.texture.initSource(texture.source);
       progress(++done,rigs.length);
     });
     return rigs.length;
