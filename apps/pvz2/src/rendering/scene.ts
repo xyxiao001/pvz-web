@@ -118,7 +118,7 @@ const RIGS: Record<RigName, { armature: string; idle: string; scale: number }> =
   ra: { armature: 'RaZombie', idle: 'Walk', scale: .51 },
 };
 
-interface Actor {knighted?:boolean; rootGrown?:boolean;rootCharged?:boolean; captured?:boolean;capturing?:boolean; root: Container; rig: PixiArmatureDisplay; kind: RigName; animation: string; actionAt: number; armor?: PixiArmatureDisplay; armorKind?:string; armLost: boolean; mask?:Graphics;camelFrame?:number;plank?:PixiArmatureDisplay;plankState?:string;plankAt?:number; death?: {cause:DeathCause|'plant';elapsed:number;fadeAt:number;fallAt:number} }
+interface Actor {knighted?:boolean; rootGrown?:boolean;rootCharged?:boolean; captured?:boolean;capturing?:boolean; root: Container; rig: PixiArmatureDisplay; kind: RigName; animation: string; actionAt: number; armor?: PixiArmatureDisplay; butter?: PixiArmatureDisplay; armorKind?:string; armLost: boolean; mask?:Graphics;camelFrame?:number;plank?:PixiArmatureDisplay;plankState?:string;plankAt?:number; death?: {cause:DeathCause|'plant';elapsed:number;fadeAt:number;fallAt:number} }
 interface Fragment {rig:PixiArmatureDisplay;x:number;y:number;ground:number;vx:number;vy:number;spin:number;age:number;landed:number}
 
 export class Scene {
@@ -550,6 +550,16 @@ export class Scene {
       if(Object.hasOwn(this.costumes,actor.kind))applyCostume(actor.rig.armature.getSlots(),this.costumes[actor.kind]);
       const state=game.specialZombies.get(id);
       const plant=plantsById.get(id),zombie=zombiesById.get(id),liveZombie=liveZombiesById.get(id);
+      // The native butterFacePAR follows poisonSOCKET, independently of the paused zombie rig.
+      const butterBone=liveZombie&&game.time<(liveZombie.butteredUntil??0)?actor.rig.armature.getBone('poisonSOCKET'):null;
+      if(butterBone){
+        if(!actor.butter){actor.butter=this.art.build('plantDirt','idle','butter');actor.root.addChild(actor.butter);}
+        butterBone.updateGlobalTransform();
+        actor.butter.position.set(actor.rig.x+butterBone.global.x*actor.rig.scale.x,actor.rig.y+butterBone.global.y*actor.rig.scale.y);
+        actor.butter.scale.set(butterBone.global.scaleX*actor.rig.scale.x,butterBone.global.scaleY*actor.rig.scale.y);
+        actor.butter.rotation=butterBone.global.rotation;
+      }
+      if(actor.butter)actor.butter.visible=!!butterBone;
       const hideCostume=!Object.hasOwn(this.costumes,actor.kind)&&(game.darkPlants.handles(actor.kind as PlantKind)||actor.kind==='fumeshroom'||game.future.handles(actor.kind as PlantKind)||game.western.handles(actor.kind as PlantKind)||game.westFinale.handles(actor.kind as PlantKind));
       if(actor.kind==='puffshroom'&&!actor.death){const p=plant!,life=game.westFinale.states.get(id)!.life;actor.rig.armature.getSlot('head')!.displayIndex=life>40?0:life>20?1:2;actor.root.alpha=p.action!=='food'&&life<10&&life>0&&Math.floor(4*life)%4===1?100/255:1;}
       if(actor.kind==='chomper'&&!actor.death){const count=game.darkPlants.states.get(id)!.chews.length;for(const slot of actor.rig.armature.getSlots()){if(['ARM1','ARM1_','HAND1','HAND1_'].includes(slot.name))slot.displayIndex=count>=1?0:-1;if(['ARM2','ARM2_','HAND2','HAND2_'].includes(slot.name))slot.displayIndex=count>=2?0:-1;}}
@@ -622,7 +632,7 @@ export class Scene {
   }
 
   private removeActor(id:number,actor:Actor) {
-    actor.plank?.removeFromParent();actor.plank?.dispose();actor.rig.removeFromParent();actor.rig.dispose();actor.armor?.removeFromParent();actor.armor?.dispose();actor.root.destroy({children:true});this.actors.delete(id);
+    actor.butter?.removeFromParent();actor.butter?.dispose();actor.plank?.removeFromParent();actor.plank?.dispose();actor.rig.removeFromParent();actor.rig.dispose();actor.armor?.removeFromParent();actor.armor?.dispose();actor.root.destroy({children:true});this.actors.delete(id);
   }
   private dropFragment(actor:Actor,part:'head'|'arm'|'Cone'|'Bucket'|'Bricks'|'Helmet') {
     const rig=this.rig(part==='Helmet'&&actor.kind!=='iceage'&&actor.kind!=='dino'?'dark':(actor.kind==='jetpackVeteran'||actor.kind==='futureJetpack'||actor.kind==='discoJetpack')?'future':actor.kind,part==='Bricks'?'BricksDrop':actor.kind==='iceageHunterVeteran'&&(part==='head'||part==='arm')?part+'_v':part);rig.scale.set(RIGS[actor.kind].scale);
