@@ -8,7 +8,7 @@ import 'pixi.js/prepare';
 import { Application, Assets, Container, Sprite, Texture, Text, ColorMatrixFilter, Rectangle } from 'pixi.js';
 import { PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbones-runtime';
 import { assetUrl, json, loadInBatches } from '../assets/load';
-import { clampCamera, islandStates, isWorldMigrated } from './navigation';
+import { cameraToReveal, clampCamera, islandStates, isWorldMigrated } from './navigation';
 import { WorldScrollGesture } from './world-scroll';
 import type { CampaignCatalog } from '../rendering/battle-art';
 import type { StoreCatalog, Wallet } from './store';
@@ -73,6 +73,7 @@ export class MapRenderer {
     }); this.observer.observe(this.host);
     const x = (event: PointerEvent) => (event.clientX - this.app.canvas.getBoundingClientRect().left) / this.scale;
     this.app.canvas.addEventListener('pointerdown', event => {
+      event.preventDefault();
       this.hoverIsland(null);
       this.velocity = 0; this.pointer = { id: event.pointerId, x: x(event), origin: x(event), moved: false };
       this.app.canvas.setPointerCapture(event.pointerId);
@@ -86,6 +87,11 @@ export class MapRenderer {
       const next = x(event), delta = next - this.pointer.x;
       if (Math.abs(next - this.pointer.origin) > 6) this.pointer.moved = true;
       if (this.mode === 'map' && this.pointer.moved) { this.velocity = -delta * 60; this.setCamera(this.camera - delta); }
+      if (this.mode === 'chooser' && this.pointer.moved) {
+        this.transition = .2;
+        this.carousel = Math.max(0, Math.min((this.catalog.worlds.length - 1) * 264, this.carousel - delta));
+        this.positionChooser();
+      }
       this.pointer.x = next;
     });
     this.app.canvas.addEventListener('pointerup', event => {
@@ -101,7 +107,7 @@ export class MapRenderer {
         if (island) this.onIsland(island);
       }
     });
-    this.app.canvas.addEventListener('pointercancel', () => { this.pointer = null; this.velocity = 0; });
+    this.app.canvas.addEventListener('pointercancel', () => { this.pointer = null; this.velocity = 0; if (this.mode === 'chooser') this.selectWorld(this.carouselTarget / 264); });
     this.app.canvas.addEventListener('pointerleave', () => this.hoverIsland(null));
     this.app.canvas.addEventListener('wheel', event => {
       event.preventDefault();
@@ -328,12 +334,24 @@ export class MapRenderer {
     this.draws.push(...this.plantDraws(island)); this.positionMap();
   }
   async presentCompletion(events: MapEvent[], onEvent: (event: MapEvent) => void, sound: (name: string) => void) {
-    let elapsed = 0, next = 0;
+    this.velocity = 0;
+    let elapsed = 0, next = 0, focus = 0;
+    const focusEvents = events.filter(event => event.action !== 'path');
+    let panStart = this.camera, panTarget = this.camera, panAt = 0;
+    const panDuration = .4;
     const end = Math.max(...events.map(e => e.at + (e.action === 'reward' ? 0 : this.progression.durations[e.action])));
     await new Promise<void>((resolve, reject) => {
       const tick = () => {
         try {
           elapsed += Math.min(this.app.ticker.deltaMS / 1000, .05);
+          while (focus < focusEvents.length && focusEvents[focus].at - panDuration <= elapsed) {
+            const event = focusEvents[focus++], island = this.map!.islands.find(n => n.node === event.node)!;
+            panStart = this.camera; panTarget = cameraToReveal(this.map!, this.camera, island.x); panAt = elapsed;
+          }
+          if (this.camera !== panTarget) {
+            const t = Math.min(1, (elapsed - panAt) / panDuration);
+            this.setCamera(panStart + (panTarget - panStart) * (1 - (1 - t) ** 3));
+          }
           while (next < events.length && events[next].at <= elapsed) {
             const event = events[next++], island = this.map!.islands.find(n => n.node === event.node)!;
             if (event.action === 'finish') this.animateIsland(event.node, 'node', 'Finish', 'IdleFinished');

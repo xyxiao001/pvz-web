@@ -43,10 +43,10 @@ export class WorldShell {
     this.progress = new ProgressStore(storage);
     const saved = storage.getItem(NAVIGATION_KEY);
     this.navigation = saved === null ? initialNavigation() : JSON.parse(saved);
-    host.innerHTML = `<div class="world-frame"><div class="map-canvas"></div><div class="map-controls"></div>
+    host.innerHTML = `<div class="world-frame"><div class="map-canvas"></div><div class="map-controls"><button class="endless-entry" aria-label="无尽挑战" title="无尽挑战" hidden><span class="endless-symbol" aria-hidden="true">∞</span><span>无尽挑战</span></button></div>
       <div class="world-labels"></div><div class="map-level-targets"></div>
       <button class="map-arrow map-arrow-left" aria-label="向左浏览"><span></span></button><button class="map-arrow map-arrow-right" aria-label="向右浏览"><span></span></button>
-      <button class="endless-entry native-button">无尽挑战</button><div class="map-modal" hidden></div><div class="map-loading" role="status"><span class="loading-flower">✿</span><span>正在准备世界地图…</span></div></div>
+      <div class="map-modal" hidden></div><div class="map-loading" role="status"><span class="loading-flower">✿</span><span>正在准备世界地图…</span></div></div>
       <div class="world-caption"><a href="/">‹ 植物大战僵尸 1</a><span class="map-caption">世界地图</span><span></span></div>`;
     this.music.loop = true; this.music.preload = 'none'; this.music.volume = this.audio.music;
   }
@@ -84,10 +84,10 @@ export class WorldShell {
     else await this.showChooser();
   }
   private save() { this.storage.setItem(NAVIGATION_KEY, JSON.stringify(this.navigation)); }
-  private loading(show: boolean) { this.busy = show; this.$('.map-loading').hidden = !show; this.$('.map-controls').inert = show; }
+  private loading(show: boolean) { this.busy = show; this.$('.map-loading').hidden = !show; this.$('.map-controls').inert = show; this.$('.endless-entry').hidden = show; }
   private makeControls() {
     const names: Record<string,string> = { exitButton: '返回', settingButton: '设置', arcadeButton: '小游戏', almanacButton: '图鉴', zengardenButton: '禅境花园', storeButton: '商店' };
-    this.$('.map-controls').innerHTML = Object.entries(this.catalog.buttons).map(([id,b]) => `<button class="native-icon" data-control="${id}" aria-label="${names[id]}" title="${names[id]}"  style="left:${b.x/10.24}%;top:${b.y/6.4}%;width:${b.w/10.24}%;height:${b.h/6.4}%;--normal:url('${assetUrl(b.normal.image)}');--hover:url('${assetUrl(b.hover.image)}');--pressed:url('${assetUrl(b.pressed.image)}')"></button>`).join('');
+    this.$('.map-controls').insertAdjacentHTML('beforeend', Object.entries(this.catalog.buttons).map(([id,b]) => `<button class="native-icon" data-control="${id}" aria-label="${names[id]}" title="${names[id]}"  style="left:${b.x/10.24}%;top:${b.y/6.4}%;width:${b.w/10.24}%;height:${b.h/6.4}%;--normal:url('${assetUrl(b.normal.image)}');--hover:url('${assetUrl(b.hover.image)}');--pressed:url('${assetUrl(b.pressed.image)}')"></button>`).join(''));
     this.$('[data-control="exitButton"]').onclick = () => { void this.back(); };
     const settings = this.$('[data-control="settingButton"]');
     if (this.storage.getItem(QUALITY_HINT_SEEN_KEY) === null) {
@@ -109,6 +109,8 @@ export class WorldShell {
     for(const [control,feature] of Object.entries({arcadeButton:'arcade',almanacButton:'almanac',zengardenButton:'garden'}))this.$(`[data-control="${control}"]`).onclick=()=>{void this.openFeature(feature as Feature);};
     const ticket=this.catalog.toolbar.find(d=>d.name==='TicketCounter')!;
     const target=document.createElement('button');target.className='ticket-target';target.setAttribute('aria-label','门票');target.style.cssText=`left:${(512+ticket.x)/10.24}%;top:${(320+ticket.y)/6.4}%;width:${ticket.w!*ticket.sx/10.24}%;height:${ticket.h!*ticket.sy/6.4}%;`;target.onclick=()=>{void this.openFeature('tickets');};this.$('.map-controls').append(target);
+    const coin=this.catalog.toolbar.find(d=>d.name==='CoinCounter')!;
+    this.$('.endless-entry').style.cssText=`right:${(1024-(512+coin.x-coin.w!*coin.sx/2)+10)/10.24}%;top:${(320+coin.y)/6.4}%;`;
     new Tickets(this.storage,this.progress.shop()).refresh();this.renderer.setCurrencies(this.progress.shop().read());
     const skin = this.catalog.window;
     this.host.style.setProperty('--window-fill',`url('${assetUrl(skin.windowCommon.image)}')`);
@@ -183,7 +185,7 @@ export class WorldShell {
           const clip = new Audio(assetUrl(paths[Math.floor(Math.random()*paths.length)]));
           clip.volume = this.audio.effects; if (clip.volume > 0) void playAudio(clip);
         });
-        this.progress.finishPresentation();
+        this.progress.finishPresentation(); this.save();
         const finalStates = islandStates(this.map,this.completed(),this.progress.rewardNodes(world.id),this.progress.temporaryUnlock);
         for (const button of this.host.querySelectorAll<HTMLElement>('[data-level-node]')) {
           const island = this.map.islands.find(n=>n.node===Number(button.dataset.levelNode))!;

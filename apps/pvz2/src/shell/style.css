@@ -1,7 +1,7 @@
 :root{font-family:"PingFang SC","Microsoft YaHei",sans-serif;color:#fff;background:#10191b;font-synthesis:none;-webkit-tap-highlight-color:transparent}
 *{box-sizing:border-box}body{margin:0}button,a{touch-action:manipulation}button{font:inherit;cursor:pointer}a{color:inherit;text-decoration:none}[hidden]{display:none!important}button:focus-visible,a:focus-visible{outline:3px solid #fff59a;outline-offset:3px}
 .world-shell{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.world-frame{position:relative;width:min(100vw,calc((100dvh - 30px)*1.6));aspect-ratio:1.6;overflow:hidden;container-type:inline-size;background:#00c6d3;isolation:isolate}
+.world-frame{position:relative;width:min(100vw,calc((100dvh - 30px)*1.6));aspect-ratio:1.6;overflow:hidden;container-type:inline-size;background:#00c6d3;isolation:isolate;user-select:none;-webkit-user-select:none;touch-action:none}
 .map-canvas{position:absolute;inset:0}.map-canvas canvas{display:block;touch-action:none;width:100%;height:100%}
 .map-controls,.map-level-targets,.world-labels{position:absolute;inset:0;pointer-events:none}
 .native-icon{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;border:0;background:var(--normal) center/100% 100% no-repeat;padding:0}.native-icon:hover:enabled{background-image:var(--hover)}.native-icon:active:enabled{background-image:var(--pressed)}.native-icon:disabled{cursor:default}
@@ -52,5 +52,8 @@
 .costume-reward{display:block;margin:1cqw auto;width:24%;height:18cqw;object-fit:contain}
 }
 
-.endless-entry {position:absolute;right:2%;bottom:3%;z-index:8;min-width:9em;font-size:clamp(14px,2vw,23px)}
+.endless-entry{position:absolute;transform:translateY(-50%);width:10.5%;height:6.6%;display:flex;align-items:center;justify-content:center;gap:.45cqw;padding:0 .5cqw;pointer-events:auto;border:.18cqw solid #f5dba0;border-radius:.8cqw;background:linear-gradient(#668f43,#34552b);box-shadow:0 0 0 .16cqw #50351e,inset 0 .18cqw #e5f6a36b,0 .25cqw .3cqw #0006;color:#fff3cf;text-shadow:0 .12cqw .1cqw #20381b;font:1.25cqw PvZMap,"PingFang SC",sans-serif;white-space:nowrap}
+.endless-symbol{font:700 2.7cqw/1 sans-serif;color:#f5d47b;text-shadow:0 .15cqw #49371b}
+.endless-entry:hover{background:linear-gradient(#7fa54e,#426633)}
+.endless-entry:active{background:linear-gradient(#34552b,#5b803c);box-shadow:0 0 0 .16cqw #50351e,inset 0 .18cqw .4cqw #0006}
 .world-shell:not([data-view="map"]) .endless-entry {display:none}

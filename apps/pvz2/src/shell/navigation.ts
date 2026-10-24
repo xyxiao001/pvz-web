@@ -42,3 +42,9 @@ export function bounds(map: WorldMap) {
 export function clampCamera(map: WorldMap, value: number) {
   const range = bounds(map); return Math.max(range.min, Math.min(range.max, value));
 }
+
+// Leave room around an unlocking island instead of centering every nearby node.
+export function cameraToReveal(map: WorldMap, camera: number, islandX: number) {
+  const screenX = 512 + islandX - camera;
+  return clampCamera(map, camera + (screenX < 256 ? screenX - 256 : screenX > 768 ? screenX - 768 : 0));
+}
