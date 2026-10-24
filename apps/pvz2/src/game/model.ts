@@ -1,3 +1,4 @@
+import {inCombatView} from './combat-view';
 import {Beghouled} from './beghouled';
 import {ModernBattle,modernArmor} from './modern';
 import {SkyBoss} from './sky-boss';
@@ -692,7 +693,7 @@ export class Game {
         if(event==='Shoot')this.shoot(p,false);
         if(event==='Lob'||event==='Lob_Butter')this.throwCabbage(p);
         if(event==='lobFood'&&p.kind==='sapfling')for(let i=0;i<20;i++)this.lob(p,-1,cellX(Math.floor(this.random()*9)),rowY(Math.floor(this.random()*5))-45,true);
-        if(event==='lobFood')for(const z of this.zombies.filter(z=>z.hp>0))this.lob(p,z.id,z.x,rowY(z.row)-45,true);
+        if(event==='lobFood')for(const z of this.zombies.filter(z=>z.hp>0&&(p.kind!=='kernelpult'||inCombatView(z.x,!!this.level.boss))))this.lob(p,z.id,z.x,rowY(z.row)-45,true);
         if(/^foodLob[0-3]$/.test(event)){
           const band=Number(event.at(-1)),left=6-band*2,right=left+2;
           const targets=this.zombies.filter(z=>z.hp>0&&(band===0||z.x<cellX(right))&&(band===3||z.x>cellX(left)));
@@ -703,7 +704,7 @@ export class Game {
       if(elapsed>=animation.duration){p.action='idle';p.animation='Idle';}
       return;
     }
-    if(this.time>=p.nextAction&&(this.zombies.some(z=>z.hp>0&&this.inLane(z,p.row)&&(p.kind!=='sapfling'||z!==this.boss?.zombie)&&z.x>cellX(p.column)-15&&z.x<1150)||p.kind!=='sapfling'&&this.graves.some(g=>g.row===p.row&&g.column>p.column))){
+    if(this.time>=p.nextAction&&(this.zombies.some(z=>z.hp>0&&this.inLane(z,p.row)&&(p.kind!=='sapfling'||z!==this.boss?.zombie)&&z.x>cellX(p.column)-15&&z.x<1150&&(p.kind!=='kernelpult'||inCombatView(z.x,!!this.level.boss)))||p.kind!=='sapfling'&&this.graves.some(g=>g.row===p.row&&g.column>p.column))){
       p.action='shoot';p.actionAt=this.time;p.eventIndex=0;p.variant=(p.kind==='kernelpult'||p.kind==='snowdrop')&&this.random()<props.ChanceToButter;
       p.animation=lobber?(p.variant?'Lob_Butter':'Lob'):'Shoot';
       p.nextAction=this.time+(lobber?props.ThrowInterval:props.ShootInterval)+this.random()*(lobber?props.ThrowIntervalAdditional:props.ShootIntervalAdditional);
@@ -797,7 +798,7 @@ export class Game {
   }
 
   private throwCabbage(p:Plant) {
-    const target=this.zombies.filter(z=>z.hp>0&&this.inLane(z,p.row)&&(p.kind!=='sapfling'||z!==this.boss?.zombie)&&z.x>cellX(p.column)-15).sort((a,b)=>a.x-b.x)[0];
+    const target=this.zombies.filter(z=>z.hp>0&&this.inLane(z,p.row)&&(p.kind!=='sapfling'||z!==this.boss?.zombie)&&z.x>cellX(p.column)-15&&(p.kind!=='kernelpult'||inCombatView(z.x,!!this.level.boss))).sort((a,b)=>a.x-b.x)[0];
     const grave=this.graves.filter(g=>g.hp>0&&g.row===p.row&&g.column>p.column).sort((a,b)=>a.column-b.column)[0];
     if(target)this.lob(p,target.id,target.x,rowY(target.row)-45,false);
     else if(grave&&p.kind!=='sapfling')this.lob(p,grave.id,cellX(grave.column),rowY(grave.row)-40,false);

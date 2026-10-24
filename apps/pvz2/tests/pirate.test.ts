@@ -1,3 +1,4 @@
+import {COMBAT_VIEW,inCombatView} from '../src/game/combat-view';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -774,10 +775,10 @@ test('cannon impact keeps the authored pause for surviving birds in the hit spaw
 });
 
 
-test('offscreen final-wave zombies killed by kernel plant food settle without waiting for an actor',()=>{
+test('visible final-wave zombies killed by kernel plant food settle without waiting for an actor',()=>{
  const g=create(5);g.wave=g.level.waves.length;g['nextWave']=Infinity;g.sun=1000;
  g.plant('kernelpult',2,2);
- const targets=['pirate','pirate','seagull'].map((kind,row)=>g.spawnZombie(kind as 'pirate'|'seagull',row,1234));
+ const targets=['pirate','pirate','seagull'].map((kind,row)=>g.spawnZombie(kind as 'pirate'|'seagull',row,900));
  g.food=1;assert.equal(g.plantFood(2,2),true);tick(g,4);
  assert.equal(g.phase,'won');assert.equal(g.zombies.length,0);
  assert.deepEqual(g.deaths.map(d=>d.zombie.id).sort((a,b)=>a-b),targets.map(z=>z.id));
@@ -789,4 +790,41 @@ test('kernel butter finishes its flight when its offscreen target dies first',()
  g.lob(g.plants[0],target.id,target.x,rowY(target.row)-45,true);g.damage(target,1000);tick(g,4);
  assert.equal(g.missiles.length,0);assert.equal(g.phase,'playing');assert.deepEqual(g.zombies.map(z=>z.id),[remaining.id]);
  g.damage(remaining,10000);tick(g,1/60);assert.equal(g.phase,'won');
+});
+
+
+test('kernel attacks use the same horizontal bounds as the normal and boss combat cameras',()=>{
+ const edge=COMBAT_VIEW.x+1200/COMBAT_VIEW.zoom;
+ assert.equal(inCombatView(edge,false),true);assert.equal(inCombatView(edge+.01,false),false);
+ assert.equal(inCombatView(COMBAT_VIEW.x-.01,false),false);
+ assert.equal(inCombatView(1199,true),true);assert.equal(inCombatView(1200.01,true),false);
+});
+test('kernel normal attacks wait for entry into combat view',()=>{
+ const g=create(5);g['nextWave']=Infinity;g.sun=1000;g.plant('kernelpult',2,2);
+ const z=g.spawnZombie('pirate_armor2',2,1100);tick(g,2);
+ assert.equal(g.plants[0].action,'idle');assert.equal(g.missiles.length,0);assert.equal(z.armor,1100);assert.equal(z.butteredUntil,undefined);
+ z.x=900;tick(g,1);assert.ok(g.missiles.some(m=>m.targetId===z.id));tick(g,2);assert.ok(z.armor<1100);
+});
+test('kernel lob animation does not acquire a target that moved outside combat view',()=>{
+ const g=create(5);g['nextWave']=Infinity;g.sun=1000;g.plant('kernelpult',2,2);
+ const z=g.spawnZombie('pirate_armor2',2,900);g.plants[0].nextAction=0;tick(g,1/60);assert.equal(g.plants[0].action,'shoot');
+ z.x=1200;tick(g,3);assert.equal(g.missiles.length,0);assert.equal(z.armor,1100);assert.equal(z.butteredUntil,undefined);
+});
+test('kernel plant food targets visible zombies and leaves offscreen armor and movement intact',()=>{
+ const g=create(5);g['nextWave']=Infinity;g.sun=1000;g.plant('kernelpult',2,2);g.plants[0].nextAction=Infinity;
+ const visible=g.spawnZombie('pirate_armor2',1,900),offscreen=g.spawnZombie('pirate_armor2',3,1234);
+ g.food=1;g.plantFood(2,2);tick(g,3);
+ assert.equal(visible.armor,900);assert.ok(visible.butteredUntil!>g.time);
+ assert.equal(offscreen.armor,1100);assert.equal(offscreen.butteredUntil,undefined);assert.ok(offscreen.x<1234);
+});
+test('Pirate 5 last-wave kernel plant food cannot pin waiting zombies outside combat view',()=>{
+ const g=create(5);g.wave=15;g['nextWave']=0;g.sun=99999;
+ for(let row=0;row<5;row++)for(const column of [1,2,3]){g.cooldowns.kernelpult=0;g.plant('kernelpult',row,column);}
+ let sawWaiting=false,sawVisibleButter=false;
+ for(let i=0;i<60*180&&g.phase==='playing';i++){
+  if(i===30){g.food=1;g.plantFood(2,2);}
+  g.tick(1/60);g.events.length=0;
+  for(const z of g.zombies)if(!inCombatView(z.x,false)){sawWaiting=true;assert.equal(z.butteredUntil,undefined);}else if(z.butteredUntil!>g.time)sawVisibleButter=true;
+ }
+ assert.equal(sawWaiting,true);assert.equal(sawVisibleButter,true);assert.equal(g.phase,'won');
 });

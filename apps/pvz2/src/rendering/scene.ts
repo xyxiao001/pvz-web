@@ -1,3 +1,4 @@
+import {combatView} from '../game/combat-view';
 import {modernPortals,portalWorldIndex} from '../game/modern-portals';
 import { BattleFactory } from './battle-factory';
 import { installFrameTicker } from '../frame-ticker';
@@ -1202,7 +1203,7 @@ export class Scene {
   setCamera(x:number,zoom=1,y=0){this.cameraX=x;this.cameraY=y;this.cameraZoom=zoom;this.applyCamera();}
   frameCombat(progress=1) {
     const start=this.art.catalog.presentation.seedChoosingCameraX;
-    const view=this.bossView?{x:0,y:0,zoom:1}:COMBAT_VIEW;
+    const view=combatView(this.bossView);
     this.setCamera(start+(view.x-start)*progress,1+(view.zoom-1)*progress,view.y*progress);
   }
   frameCorral(progress:number){const view=COMBAT_VIEW;this.setCamera(view.x+(this.art.catalog.presentation.camera.PanStreetOffset-view.x)*progress,view.zoom+(1-view.zoom)*progress,view.y*(1-progress));}

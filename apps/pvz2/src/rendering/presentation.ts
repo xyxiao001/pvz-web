@@ -2,8 +2,7 @@ import type {PlantKind} from '../game/level';
 
 export const seedCardAnimation=(kind:PlantKind)=>kind==='hollyknight'?'hollybarrier':kind==='cantaloupe'?'cantaloupepult':kind==='peach'?'heavenlypeach':kind==='bloominghearts'?'bloomingheart':kind==='gatling'?'gatlingpea':kind.startsWith('tool_projectile_bowlingbulb')?kind.slice(5):kind==='scaredyshroom'?'scaredyShroom':kind==='powerplant'?'powerplant_epsilon':kind==='empea'?'empeach':kind==='laser_bean'?'laserbean':kind==='cherry_bomb'?'cherribomb':kind==='imitater'?'imitator':kind;
 
-// Fit all nine columns and five rows, keeping the street spawn area outside combat view.
-export const COMBAT_VIEW = { x: -48, y: 60, zoom: 1.18 };
+export {COMBAT_VIEW} from '../game/combat-view';
 
 export interface Skeleton {
   armature: { name: string; frameRate: number; animation: { name: string; duration?: number; frame?: { duration?: number; sound?: string; events?: { name: string }[] }[] }[] }[];
