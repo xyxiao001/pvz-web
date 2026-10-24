@@ -772,3 +772,21 @@ test('cannon impact keeps the authored pause for surviving birds in the hit spaw
  tick(g,.2);assert.equal(follower.x,x);assert.notEqual(other.x,otherX);
  tick(g,.3);assert.notEqual(follower.x,x);
 });
+
+
+test('offscreen final-wave zombies killed by kernel plant food settle without waiting for an actor',()=>{
+ const g=create(5);g.wave=g.level.waves.length;g['nextWave']=Infinity;g.sun=1000;
+ g.plant('kernelpult',2,2);
+ const targets=['pirate','pirate','seagull'].map((kind,row)=>g.spawnZombie(kind as 'pirate'|'seagull',row,1234));
+ g.food=1;assert.equal(g.plantFood(2,2),true);tick(g,4);
+ assert.equal(g.phase,'won');assert.equal(g.zombies.length,0);
+ assert.deepEqual(g.deaths.map(d=>d.zombie.id).sort((a,b)=>a-b),targets.map(z=>z.id));
+ assert.equal(g.events.filter(e=>e.type==='win').length,1);
+});
+test('kernel butter finishes its flight when its offscreen target dies first',()=>{
+ const g=create(5);g.wave=g.level.waves.length;g['nextWave']=Infinity;g.sun=1000;
+ g.plant('kernelpult',2,2);const target=g.spawnZombie('pirate',2,1234),remaining=g.spawnZombie('pirate_armor2',3,1500);
+ g.lob(g.plants[0],target.id,target.x,rowY(target.row)-45,true);g.damage(target,1000);tick(g,4);
+ assert.equal(g.missiles.length,0);assert.equal(g.phase,'playing');assert.deepEqual(g.zombies.map(z=>z.id),[remaining.id]);
+ g.damage(remaining,10000);tick(g,1/60);assert.equal(g.phase,'won');
+});
