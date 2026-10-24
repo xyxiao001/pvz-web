@@ -10,6 +10,7 @@ import { PixiFactory, WorldClock, type PixiArmatureDisplay } from 'pixi-dragonbo
 import { assetUrl, json, loadInBatches } from '../assets/load';
 import { cameraToReveal, clampCamera, islandStates, isWorldMigrated } from './navigation';
 import { WorldScrollGesture } from './world-scroll';
+import { bindMapDrag } from './map-input';
 import type { CampaignCatalog } from '../rendering/battle-art';
 import type { StoreCatalog, Wallet } from './store';
 import type { MapEvent } from './progression';
@@ -39,7 +40,7 @@ export class MapRenderer {
   private carouselStart = 0;
   private carouselTarget = 0;
   private transition = .2;
-  private pointer: { id: number; x: number; origin: number; moved: boolean } | null = null;
+  private pointer: { x: number; origin: number; moved: boolean } | null = null;
   private hoveredIsland: number | null = null;
   private scale = 1;
   private grey = new ColorMatrixFilter();
@@ -71,43 +72,46 @@ export class MapRenderer {
       this.scale = this.host.clientWidth / 1024; this.root.scale.set(this.scale);
       this.app.renderer.resize(this.host.clientWidth, this.host.clientWidth * 640 / 1024); this.app.render();
     }); this.observer.observe(this.host);
-    const x = (event: PointerEvent) => (event.clientX - this.app.canvas.getBoundingClientRect().left) / this.scale;
-    this.app.canvas.addEventListener('pointerdown', event => {
-      event.preventDefault();
-      this.hoverIsland(null);
-      this.velocity = 0; this.pointer = { id: event.pointerId, x: x(event), origin: x(event), moved: false };
-      this.app.canvas.setPointerCapture(event.pointerId);
-    });
+    const x = (event: { clientX: number }) => (event.clientX - this.app.canvas.getBoundingClientRect().left) / this.scale;
     this.app.canvas.addEventListener('pointermove', event => {
+      if (event.pointerType === 'touch') return;
       const px=x(event),py=(event.clientY-this.app.canvas.getBoundingClientRect().top)/this.scale;
       const index=Math.round((px-512+this.carousel)/264);
       this.app.canvas.title=this.mode==='chooser'&&py>100&&py<570&&index>=0&&index<this.catalog.worlds.length&&!isWorldMigrated(this.catalog.worlds[index].id)?'尚未迁移':'';
       if (event.pointerType === 'mouse' && !this.pointer && this.mode === 'map') this.hoverIsland(this.islandAt(px, py)?.node ?? null);
-      if (!this.pointer || this.pointer.id !== event.pointerId) return;
-      const next = x(event), delta = next - this.pointer.x;
-      if (Math.abs(next - this.pointer.origin) > 6) this.pointer.moved = true;
-      if (this.mode === 'map' && this.pointer.moved) { this.velocity = -delta * 60; this.setCamera(this.camera - delta); }
-      if (this.mode === 'chooser' && this.pointer.moved) {
-        this.transition = .2;
-        this.carousel = Math.max(0, Math.min((this.catalog.worlds.length - 1) * 264, this.carousel - delta));
-        this.positionChooser();
-      }
-      this.pointer.x = next;
     });
-    this.app.canvas.addEventListener('pointerup', event => {
-      const pointer = this.pointer; if (!pointer) return;
-      this.pointer = null;
-      if (pointer.moved) { if (this.mode === 'chooser') this.onStep(x(event) < pointer.origin ? 1 : -1); return; }
-      const px = x(event), py = (event.clientY - this.app.canvas.getBoundingClientRect().top) / this.scale;
-      if (this.mode === 'chooser') {
-        const index = Math.round((px - 512 + this.carousel) / 264);
-        if (index >= 0 && index < this.catalog.worlds.length && py > 100 && py < 570) this.onWorld(index);
-      } else {
-        const island = this.islandAt(px, py);
-        if (island) this.onIsland(island);
-      }
+    bindMapDrag(this.app.canvas, {
+      start: event => {
+        this.hoverIsland(null);
+        this.velocity = 0; this.pointer = { x: x(event), origin: x(event), moved: false };
+      },
+      move: event => {
+        const pointer = this.pointer!;
+        const next = x(event), delta = next - pointer.x;
+        if (Math.abs(next - pointer.origin) > 6) pointer.moved = true;
+        if (this.mode === 'map' && pointer.moved) { this.velocity = -delta * 60; this.setCamera(this.camera - delta); }
+        if (this.mode === 'chooser' && pointer.moved) {
+          this.transition = .2;
+          this.carousel = Math.max(0, Math.min((this.catalog.worlds.length - 1) * 264, this.carousel - delta));
+          this.positionChooser();
+        }
+        pointer.x = next;
+      },
+      end: event => {
+        const pointer = this.pointer!;
+        this.pointer = null;
+        if (pointer.moved) { if (this.mode === 'chooser') this.onStep(x(event) < pointer.origin ? 1 : -1); return; }
+        const px = x(event), py = (event.clientY - this.app.canvas.getBoundingClientRect().top) / this.scale;
+        if (this.mode === 'chooser') {
+          const index = Math.round((px - 512 + this.carousel) / 264);
+          if (index >= 0 && index < this.catalog.worlds.length && py > 100 && py < 570) this.onWorld(index);
+        } else {
+          const island = this.islandAt(px, py);
+          if (island) this.onIsland(island);
+        }
+      },
+      cancel: () => { this.pointer = null; this.velocity = 0; if (this.mode === 'chooser') this.selectWorld(this.carouselTarget / 264); },
     });
-    this.app.canvas.addEventListener('pointercancel', () => { this.pointer = null; this.velocity = 0; if (this.mode === 'chooser') this.selectWorld(this.carouselTarget / 264); });
     this.app.canvas.addEventListener('pointerleave', () => this.hoverIsland(null));
     this.app.canvas.addEventListener('wheel', event => {
       event.preventDefault();
